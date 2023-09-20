@@ -3,20 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "tauri dev",
+    "dev:front": "next frontend",
+    "build": "cargo tauri build",
+    "build:front": "next build frontend",
+    "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
+    "start": "next start frontend",
+    "lint:front": "next lint frontend",
+    "lint:back": "cargo clippy --manifest-path ./src-tauri/Cargo.toml",
+    "lint": "npm run lint:front && npm run lint:back",
+    "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.4.0",
+    "next": "13.4.19",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
     "@types/node": "20.6.1",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
-    "next": "13.4.19",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "typescript": "5.2.2"
   }
 }
