@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::fs::{self, File};
+use std::fs::{self};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -11,21 +11,30 @@ mod conditions;
 mod parser;
 mod values;
 
+/// root block in each config.json
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct ConditionsConfig {
-    name: Option<String>,
-    description: Option<String>,
-    priority: Option<i32>,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    description: String,
+    #[serde(default)]
+    priority: i32,
     override_animations_folder: Option<String>,
-    conditions: Option<Vec<ConditionSet>>, // Assuming conditions can be of various types
+    #[serde(default)]
+    conditions: Vec<ConditionSet>,
 }
 
+/// name space config.json
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct MainConfig {
-    name: Option<String>,
-    description: Option<String>,
-    author: Option<String>,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    description: String,
+    #[serde(default)]
+    author: String,
 }
 
 const ACTOR_FOLDER: &str = "meshes\\actors";
@@ -57,13 +66,16 @@ fn generate_main_config_file(
     fs::create_dir_all(&oar_mod_path)?;
 
     let mc = MainConfig {
-        author: author.map(|a| a.to_string()),
-        name: Some(name.to_string()),
-        description: None,
+        author: author.unwrap_or_default().to_string(),
+        name: name.to_string(),
+        description: String::default(),
     };
 
     // Serialize and write the MainConfig to the config file
-    let mut file = File::create(&file_path)?;
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&file_path)?;
     let json = serde_json::to_string_pretty(&mc)?;
     file.write_all(json.as_bytes())?;
 
@@ -224,11 +236,11 @@ fn generate_conditions_config_file(conditions_file: &Path) -> Result<(), Box<dyn
 
     let conditions_list = parse_conditions(&conditions);
     let config = ConditionsConfig {
-        name: Some(name.to_string()),
-        description: None,
-        priority: Some(priority),
+        name: name.to_string(),
+        description: String::default(),
+        priority,
         override_animations_folder: Some(conditions_folder.to_string()),
-        conditions: Some(conditions_list),
+        conditions: conditions_list,
     };
 
     let config_file_path = Path::new(conditions_folder).join("config.json");

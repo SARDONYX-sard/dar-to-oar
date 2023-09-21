@@ -1,0 +1,75 @@
+use serde::{Deserialize, Serialize};
+
+use crate::converter::values::PluginValue;
+
+use super::condition::Condition;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct HasMagicEffect {
+    #[serde(flatten)]
+    pub condition: Condition,
+    #[serde(rename = "Magic effect")]
+    pub magic_effect: PluginValue,
+    #[serde(rename = "Active effects only")]
+    #[serde(default)]
+    pub active_effects_only: bool,
+}
+
+impl Default for HasMagicEffect {
+    fn default() -> Self {
+        Self {
+            condition: Condition::new("HasMagicEffect"),
+            magic_effect: PluginValue::default(),
+            active_effects_only: false,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+    use serde_json;
+
+    #[test]
+    fn should_serialize_has_magic_effect() {
+        let has_magic_effect = HasMagicEffect::default();
+
+        let expected = r#"{
+  "condition": "HasMagicEffect",
+  "requiredVersion": "1.0.0.0",
+  "Magic effect": {
+    "pluginName": "",
+    "formID": ""
+  },
+  "Active effects only": false
+}"#;
+        let serialized = serde_json::to_string_pretty(&has_magic_effect).unwrap();
+        assert_eq!(expected, serialized);
+    }
+
+    #[test]
+    fn should_deserialize_has_magic_effect() {
+        let json_str = r#"{
+            "condition": "HasMagicEffect",
+            "requiredVersion": "1.0.0.0",
+            "Magic effect": {
+                "pluginName": "Skyrim.esm",
+                "formID": "7"
+            },
+            "Active effects only": true
+        }"#;
+
+        let deserialized: HasMagicEffect = serde_json::from_str(json_str).unwrap();
+        let expected = HasMagicEffect {
+            magic_effect: PluginValue {
+                plugin_name: "Skyrim.esm".to_string(),
+                form_id: "7".to_string(), // This is player
+            },
+            active_effects_only: true,
+            ..Default::default()
+        };
+
+        assert_eq!(expected, deserialized);
+    }
+}

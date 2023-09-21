@@ -1,12 +1,13 @@
 use super::conditions::{
-    CompareValues, Condition, ConditionSet, CurrentWeather, FactionRank, HasKeyword,
-    HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType, HasSpell, IsActorBase, IsClass,
-    IsCombatStyle, IsEquipped, IsEquippedHasKeyword, IsEquippedType, IsInFaction, IsInLocation,
-    IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn, IsWornHasKeyword, NumericComparison,
-    Or, RandomCondition,
+    CompareValues, Condition, ConditionSet, CurrentGameTime, CurrentWeather, FactionRank,
+    HasKeyword, HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType, HasSpell,
+    IsActorBase, IsClass, IsCombatStyle, IsEquipped, IsEquippedHasKeyword, IsEquippedType,
+    IsInFaction, IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType,
+    IsWorldSpace, IsWorn, IsWornHasKeyword, Level, Or, RandomCondition,
 };
 use super::values::{
-    ActorValue, KeywordValue, NumericValue, PluginValue, RandomValue, TypeValue, ValueSet,
+    ActorValue, Cmp, Direction, DirectionValue, FormValue, Keyword, NumericValue, PluginValue,
+    StaticValue, TypeValue, WeaponType,
 };
 
 fn get_plugin_value(condition: &str) -> Option<PluginValue> {
@@ -21,12 +22,12 @@ fn get_plugin_value(condition: &str) -> Option<PluginValue> {
     }
 }
 
-fn get_keyword_value(condition: &str) -> Option<KeywordValue> {
+fn get_keyword_value(condition: &str) -> Option<Keyword> {
     match get_plugin_value(condition) {
-        Some(plugin_value) => Some(KeywordValue {
-            form: Some(plugin_value),
+        Some(form) => Some(Keyword::Form(FormValue {
+            form,
             ..Default::default()
-        }),
+        })),
         None => None,
     }
 }
@@ -43,6 +44,7 @@ fn parse_condition(condition: &str, is_negated: bool) -> ConditionSet {
         "ValueEqualTo" | "ValueLessThan" => {
             parse_compare(condition_name, condition_set[1], is_negated)
         }
+
         actor if condition_name.starts_with("IsActor") => {
             parse_actor(actor, condition_set[1], is_negated)
         }
@@ -52,149 +54,130 @@ fn parse_condition(condition: &str, is_negated: bool) -> ConditionSet {
         equip if condition_name.starts_with("IsEquipped") => {
             parse_equip(equip, condition_set[1], is_negated)
         }
-        "IsLevelLessThan" => ConditionSet::NumericComparison(NumericComparison {
-            condition: Condition {
-                condition: Some("Level".to_string()),
-                negated: is_negated,
-                ..Default::default()
-            },
-            comparison: Some("<".to_string()),
-            numeric_value: Some(NumericValue {
+        "IsLevelLessThan" => ConditionSet::Level(Level {
+            comparison: Cmp::Lt,
+            numeric_value: NumericValue::StaticValue(StaticValue {
                 value: condition_set[1].parse().unwrap(),
             }),
+            ..Default::default()
         }),
         "CurrentWeather" => ConditionSet::CurrentWeather(CurrentWeather {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            weather: get_plugin_value(condition_set[1]),
+            weather: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsRace" => ConditionSet::IsRace(IsRace {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            race: get_plugin_value(condition_set[1]),
+            race: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsClass" => ConditionSet::IsClass(IsClass {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            class: get_plugin_value(condition_set[1]),
+            class: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsCombatStyle" => ConditionSet::IsCombatStyle(IsCombatStyle {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            combat_style: get_plugin_value(condition_set[1]),
+            combat_style: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsVoiceType" => ConditionSet::IsVoiceType(IsVoiceType {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            voice_type: get_plugin_value(condition_set[1]),
+            voice_type: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsParentCell" => ConditionSet::IsParentCell(IsParentCell {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            cell: get_plugin_value(condition_set[1]),
+            cell: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsWorldSpace" => ConditionSet::IsWorldSpace(IsWorldSpace {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            worldspace: get_plugin_value(condition_set[1]),
+            world_space: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
-        "IsMovementDirection" => ConditionSet::NumericComparison(NumericComparison {
+        "IsMovementDirection" => ConditionSet::IsDirectionMovement(IsMovementDirection {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            comparison: None,
-            numeric_value: Some(NumericValue {
-                value: condition_set[1].parse().unwrap(),
-            }),
+            direction: DirectionValue {
+                value: Direction::try_from(
+                    condition_set[1].parse::<f64>().unwrap_or_default() as u64
+                )
+                .unwrap_or_default(),
+            },
+            ..Default::default()
         }),
         "IsInLocation" => ConditionSet::IsInLocation(IsInLocation {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            location: get_plugin_value(condition_set[1]),
+            location: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsWorn" => ConditionSet::IsWorn(IsWorn {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            form: get_plugin_value(condition_set[1]),
+            form: get_plugin_value(condition_set[1]).unwrap_or_default(),
         }),
         "IsWornHasKeyword" => ConditionSet::IsWornHasKeyword(IsWornHasKeyword {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            keyword: get_keyword_value(condition_set[1]),
+            keyword: get_keyword_value(condition_set[1]).unwrap_or_default(),
         }),
         has_cond if condition_name.starts_with("Has") => {
             parse_has(has_cond, condition_set[1], is_negated)
         }
         "Random" => {
             let numeric_value = match condition_set[1].parse().ok() {
-                Some(num) => Some(NumericValue { value: num }),
+                Some(value) => Some(NumericValue::StaticValue(StaticValue { value })),
                 None => None,
             };
 
             ConditionSet::RandomCondition(RandomCondition {
                 condition: Condition {
-                    condition: Some(condition_name.to_string()),
                     negated: is_negated,
                     ..Default::default()
                 },
-                comparison: Some("<=".to_string()),
-                random_value: Some(RandomValue { min: 0.0, max: 1.0 }),
-                numeric_value,
+                comparison: Cmp::Le,
+                numeric_value: numeric_value.unwrap_or_default(),
                 ..Default::default()
             })
         }
         "CurrentGameTimeLessThan" => {
-            let numeric_value = match condition_set[1].parse().ok() {
-                Some(num) => Some(NumericValue { value: num }),
-                None => None,
-            };
-            ConditionSet::NumericComparison(NumericComparison {
+            let value = condition_set[1].parse().unwrap_or_default();
+            ConditionSet::CurrentGameTime(CurrentGameTime {
                 condition: Condition {
-                    condition: Some("CurrentGameTime".to_string()),
                     negated: is_negated,
                     ..Default::default()
                 },
-                comparison: Some("<".to_string()),
-                numeric_value,
+                comparison: Cmp::Lt,
+                numeric_value: NumericValue::StaticValue(StaticValue { value }),
             })
         }
         _ => {
             log::warn!("Condition({condition_name}) has no explicit mapping.");
 
             ConditionSet::Condition(Condition {
-                condition: Some("CurrentGameTime".to_string()),
                 negated: is_negated,
                 ..Default::default()
             })
@@ -206,20 +189,19 @@ fn parse_condition(condition: &str, is_negated: bool) -> ConditionSet {
 fn parse_compare(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionSet {
     let values: Vec<&str> = arg1.split(',').map(|s| s.trim()).collect();
     let value_a = get_plugin_value(values[0]).unwrap();
-    let value_b = NumericValue {
+    let value_b = StaticValue {
         value: values[1].parse().unwrap(),
     };
 
     let create_compare = |comparison: &str| {
         ConditionSet::CompareValues(CompareValues {
             condition: Condition {
-                condition: Some("CompareValues".to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            value_a: ValueSet::PluginValue(value_a),
-            comparison: comparison.to_string(),
-            value_b: ValueSet::NumericValue(value_b),
+            value_a: NumericValue::GlobalVariable(value_a),
+            comparison: comparison.try_into().unwrap_or_default(),
+            value_b: NumericValue::StaticValue(value_b),
         })
     };
 
@@ -232,42 +214,40 @@ fn parse_compare(condition_name: &str, arg1: &str, is_negated: bool) -> Conditio
 
 fn parse_actor(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionSet {
     let values: Vec<&str> = arg1.split(',').map(|s| s.trim()).collect();
-    let value_b = NumericValue {
+    let value_b = StaticValue {
         value: values[1].parse().unwrap(),
     };
 
-    let create_actor_cond = |comparison: &str, actor_type: &str| {
+    let create_actor_cond = |comparison: Cmp, actor_type: &str| {
         let value_a = ActorValue {
-            actor_value: Some(values[0].parse().unwrap()),
-            actor_value_type: actor_type.to_string(),
+            actor_value: values[0].parse().unwrap_or_default(),
+            actor_value_type: actor_type.try_into().unwrap_or_default(),
         };
 
         ConditionSet::CompareValues(CompareValues {
             condition: Condition {
-                condition: Some("CompareValues".to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            value_a: ValueSet::ActorValue(value_a),
-            comparison: comparison.to_string(),
-            value_b: ValueSet::NumericValue(value_b),
+            value_a: NumericValue::ActorValue(value_a),
+            comparison,
+            value_b: NumericValue::StaticValue(value_b),
         })
     };
 
     match condition_name {
-        "IsActorValueEqualTo" => create_actor_cond("==", ""),
-        "IsActorValueBaseLessThan" => create_actor_cond("<", "Base"),
-        "IsActorValueMaxEqualTo" => create_actor_cond("==", "Max"),
-        "IsActorValueMaxLessThan" => create_actor_cond("<", "Max"),
-        "IsActorValuePercentageEqualTo" => create_actor_cond("==", "Percentage"),
-        "IsActorValuePercentageLessThan" => create_actor_cond("<", "Percentage"),
+        "IsActorValueEqualTo" => create_actor_cond(Cmp::Eq, ""),
+        "IsActorValueBaseLessThan" => create_actor_cond(Cmp::Le, "Base"),
+        "IsActorValueMaxEqualTo" => create_actor_cond(Cmp::Eq, "Max"),
+        "IsActorValueMaxLessThan" => create_actor_cond(Cmp::Lt, "Max"),
+        "IsActorValuePercentageEqualTo" => create_actor_cond(Cmp::Eq, "Percentage"),
+        "IsActorValuePercentageLessThan" => create_actor_cond(Cmp::Lt, "Percentage"),
         "IsActorBase" => ConditionSet::IsActorBase(IsActorBase {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            actor_base: get_plugin_value(condition_name),
+            actor_base: get_plugin_value(condition_name).unwrap_or_default(),
         }),
         _ => unreachable!(),
     }
@@ -275,20 +255,18 @@ fn parse_actor(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionS
 
 fn parse_faction(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionSet {
     let values: Vec<&str> = arg1.split(',').map(|s| s.trim()).collect();
-    let numeric_value = match values[1].parse().ok() {
-        Some(num) => Some(NumericValue { value: num }),
-        None => None,
-    };
+    let numeric_value = NumericValue::StaticValue(StaticValue {
+        value: values[1].parse().unwrap_or_default(),
+    });
 
-    let create_cond = |comparison: &str| {
+    let create_cond = |comparison: Cmp| {
         ConditionSet::FactionRank(FactionRank {
             condition: Condition {
-                condition: Some("FactionRank".to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            faction: get_plugin_value(values[0]),
-            comparison: Some(comparison.to_string()),
+            faction: get_plugin_value(values[0]).unwrap_or_default(),
+            comparison,
             numeric_value,
         })
     };
@@ -296,14 +274,13 @@ fn parse_faction(condition_name: &str, arg1: &str, is_negated: bool) -> Conditio
     match condition_name {
         "IsInFaction" => ConditionSet::IsInFaction(IsInFaction {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            faction: get_plugin_value(condition_name),
+            faction: get_plugin_value(condition_name).unwrap_or_default(),
         }),
-        "IsFactionRankEqualTo" => create_cond("=="),
-        "IsFactionRankLessThan" => create_cond("<"),
+        "IsFactionRankEqualTo" => create_cond(Cmp::Eq),
+        "IsFactionRankLessThan" => create_cond(Cmp::Lt),
         _ => unreachable!(),
     }
 }
@@ -312,22 +289,21 @@ fn parse_equip(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionS
     match condition_name {
         "IsEquippedRight" | "IsEquippedLeft" => ConditionSet::IsEquipped(IsEquipped {
             condition: Condition {
-                condition: Some(condition_name.to_string()),
                 negated: is_negated,
                 ..Default::default()
             },
-            form: get_plugin_value(arg1),
+            form: get_plugin_value(arg1).unwrap_or_default(),
+            left_hand: condition_name.ends_with("Left"),
             ..Default::default()
         }),
 
         "IsEquippedRightType" | "IsEquippedLeftType" => {
-            let type_value = match arg1.parse().ok() {
-                Some(value) => Some(TypeValue { value }),
-                None => None,
+            let type_value = TypeValue {
+                value: WeaponType::try_from(arg1.parse::<f64>().unwrap_or_default() as i64)
+                    .unwrap_or_default(),
             };
             ConditionSet::IsEquippedType(IsEquippedType {
                 condition: Condition {
-                    condition: Some("IsEquippedType".to_string()),
                     negated: is_negated,
                     ..Default::default()
                 },
@@ -339,12 +315,11 @@ fn parse_equip(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionS
         "IsEquippedRightHasKeyword" | "IsEquippedLeftHasKeyword" => {
             ConditionSet::IsEquippedHasKeyword(IsEquippedHasKeyword {
                 condition: Condition {
-                    condition: Some("IsEquippedType".to_string()),
                     negated: is_negated,
                     ..Default::default()
                 },
                 left_hand: condition_name == "IsEquippedLeftHasKeyword",
-                keyword: get_keyword_value(arg1),
+                keyword: get_keyword_value(arg1).unwrap_or_default(),
             })
         }
         _ => unreachable!(),
@@ -353,7 +328,7 @@ fn parse_equip(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionS
 
 fn parse_has(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionSet {
     let condition = Condition {
-        condition: Some(condition_name.to_string()),
+        condition: condition_name.to_string(),
         negated: is_negated,
         ..Default::default()
     };
@@ -361,29 +336,31 @@ fn parse_has(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionSet
     match condition_name {
         "HasKeyword" => ConditionSet::HasKeyword(HasKeyword {
             condition,
-            keyword: get_keyword_value(arg1),
+            keyword: get_keyword_value(arg1).unwrap_or_default(),
         }),
         "HasPerk" => ConditionSet::HasPerk(HasPerk {
             condition,
-            perk: get_plugin_value(arg1),
+            perk: get_plugin_value(arg1).unwrap_or_default(),
         }),
         "HasSpell" => ConditionSet::HasSpell(HasSpell {
             condition,
-            spell: get_plugin_value(arg1),
+            spell: get_plugin_value(arg1).unwrap_or_default(),
         }),
         "HasMagicEffect" => ConditionSet::HasMagicEffect(HasMagicEffect {
             condition,
             magic_effect: get_plugin_value(arg1).expect("Not found plugin argument"),
+            ..Default::default()
         }),
         "HasMagicEffectWithKeyword" => {
             ConditionSet::HasMagicEffectWithKeyword(HasMagicEffectWithKeyword {
                 condition,
-                keyword: get_keyword_value(arg1),
+                keyword: get_keyword_value(arg1).unwrap_or_default(),
+                ..Default::default()
             })
         }
         "HasRefType" => ConditionSet::HasRefType(HasRefType {
             condition,
-            location_ref_type: get_plugin_value(arg1),
+            location_ref_type: get_plugin_value(arg1).unwrap_or_default(),
         }),
         _ => unreachable!(),
     }
@@ -415,25 +392,102 @@ pub(crate) fn parse_conditions(conditions: &[&str]) -> Vec<ConditionSet> {
             is_negated = true;
         }
 
-        if let Some(or_ref) = or.as_mut() {
-            if let Some(ref mut or_conditions) = or_conditions {
-                or_conditions.push(parse_condition(
+        match or.as_mut() {
+            Some(or_ref) => {
+                if let Some(ref mut or_conditions) = or_conditions {
+                    or_conditions.push(parse_condition(
+                        cleaned.trim_start_matches("NOT"),
+                        is_negated,
+                    ));
+                    if !in_or_loop {
+                        or_ref.conditions = or_conditions.clone();
+                        or_conditions.clear();
+                        or = None;
+                    }
+                }
+            }
+            None => {
+                result.push(parse_condition(
                     cleaned.trim_start_matches("NOT"),
                     is_negated,
                 ));
-                if !in_or_loop {
-                    or_ref.conditions = or_conditions.clone();
-                    or_conditions.clear();
-                    or = None;
-                }
             }
-        } else {
-            result.push(parse_condition(
-                cleaned.trim_start_matches("NOT"),
-                is_negated,
-            ));
         }
     }
 
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_parse_conditions_single_condition() {
+        let conditions = vec!["Condition1"];
+        let result = parse_conditions(&conditions);
+
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0], parse_condition("Condition1", false));
+    }
+
+    #[test]
+    fn test_parse_conditions_multiple_conditions() {
+        let conditions = vec!["Condition1", "Condition2"];
+        let result = parse_conditions(&conditions);
+
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0], parse_condition("Condition1", false));
+        assert_eq!(result[1], parse_condition("Condition2", false));
+    }
+
+    #[test]
+    fn test_parse_conditions_negated_conditions() {
+        let conditions = vec!["NOT Condition1", "NOT Condition2"];
+        let result = parse_conditions(&conditions);
+
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0], parse_condition("Condition1", true));
+        assert_eq!(result[1], parse_condition("Condition2", true));
+    }
+
+    #[test]
+    fn test_parse_conditions_or_conditions() {
+        let conditions = vec!["Condition1 OR", "Condition2"];
+        let result = parse_conditions(&conditions);
+
+        assert_eq!(result.len(), 2);
+        assert_eq!(
+            result[0],
+            ConditionSet::Or(Or {
+                conditions: vec![parse_condition("Condition1", false)],
+                ..Default::default()
+            })
+        );
+        assert_eq!(result[1], parse_condition("Condition2", false));
+    }
+
+    #[test]
+    fn test_parse_conditions_mixed_conditions() {
+        let conditions = vec![
+            "Condition1",
+            "NOT Condition2",
+            "Condition3 OR",
+            "Condition4",
+        ];
+        let result = parse_conditions(&conditions);
+
+        assert_eq!(result.len(), 4);
+        assert_eq!(result[0], parse_condition("Condition1", false));
+        assert_eq!(result[1], parse_condition("Condition2", true));
+        assert_eq!(
+            result[2],
+            ConditionSet::Or(Or {
+                conditions: vec![parse_condition("Condition3", false)],
+                ..Default::default()
+            })
+        );
+        assert_eq!(result[3], parse_condition("Condition4", false));
+    }
 }
