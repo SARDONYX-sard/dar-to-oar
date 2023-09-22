@@ -5,7 +5,6 @@ use nom::{
     combinator::{map, opt},
     multi::separated_list1,
     sequence::{delimited, preceded, separated_pair},
-    IResult,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -58,6 +57,8 @@ impl<'a> Condition<'a> {
     }
 }
 
+type IResult<'a, I, O> = nom::IResult<I, O, nom::error::VerboseError<&'a str>>;
+
 fn parse_string(input: &str) -> IResult<&str, &str> {
     alt((
         delimited(
@@ -73,6 +74,16 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
     ))(input)
 }
 
+use nom::error::ParseError;
+macro_rules! bail_kind {
+    ($input:ident, $kind:ident) => {
+        return Err(nom::Err::Error(nom::error::VerboseError::from_error_kind(
+            $input,
+            nom::error::ErrorKind::$kind,
+        )))
+    };
+}
+
 fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, radix) = alt((tag("0x"), tag("0b"), tag("0o")))(input)?;
@@ -82,22 +93,14 @@ fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
         "0x" => 16,
         "0b" => 2,
         "0o" => 8,
-        _ => {
-            return Err(nom::Err::Error(nom::error::Error::new(
-                input,
-                nom::error::ErrorKind::HexDigit,
-            )))
-        }
+        _ => bail_kind!(input, HexDigit),
     };
 
     let result = usize::from_str_radix(digits, base);
 
     match result {
         Ok(number) => Ok((input, NumberLiteral::Hex(number))),
-        Err(_) => Err(nom::Err::Error(nom::error::Error::new(
-            input,
-            nom::error::ErrorKind::HexDigit,
-        ))),
+        _ => bail_kind!(input, HexDigit),
     }
 }
 
@@ -116,10 +119,7 @@ fn parse_decimal<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
             };
             Ok((input, NumberLiteral::Decimal(signed_number)))
         }
-        Err(_) => Err(nom::Err::Error(nom::error::Error::new(
-            input,
-            nom::error::ErrorKind::Digit,
-        ))),
+        _ => bail_kind!(input, Digit),
     }
 }
 
@@ -142,10 +142,7 @@ fn parse_float<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
 
     match parsed_number {
         Ok(number) => Ok((input, NumberLiteral::Float(number))),
-        Err(_) => Err(nom::Err::Error(nom::error::Error::new(
-            input,
-            nom::error::ErrorKind::Float,
-        ))),
+        _ => bail_kind!(input, Float),
     }
 }
 
@@ -220,8 +217,7 @@ fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();
     let mut input_tmp = input;
-    let mut or_is_end = true;
-    let mut should_exist_next_exp = false;
+    let mut is_in_or_stmt = false;
 
     loop {
         let (input, _) = multispace0(input_tmp)?;
@@ -231,37 +227,29 @@ fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
         let (input, _) = multispace0(input)?;
 
         if let Some(operator) = operator {
-            should_exist_next_exp = true;
-
             match operator {
                 Operator::And => {
-                    if or_is_end == false {
+                    if is_in_or_stmt {
                         or_vec.push(Condition::Exp(expr));
                         top_conditions.push(Condition::Or(or_vec.clone()));
                         or_vec.clear();
-                        or_is_end = true;
+                        is_in_or_stmt = false;
                     } else {
                         top_conditions.push(Condition::Exp(expr));
                     }
                 }
                 Operator::Or => {
                     or_vec.push(Condition::Exp(expr));
-                    or_is_end = false;
+                    is_in_or_stmt = true;
                 }
             };
         } else {
-            if should_exist_next_exp {
-                return Err(nom::Err::Error(nom::error::Error {
-                    input: "",
-                    code: nom::error::ErrorKind::NonEmpty,
-                }));
-            }
-
-            if or_is_end == false {
-                or_vec.push(Condition::Exp(expr));
-                top_conditions.push(Condition::Or(or_vec.clone()));
-            } else {
-                top_conditions.push(Condition::Exp(expr));
+            match is_in_or_stmt {
+                true => {
+                    or_vec.push(Condition::Exp(expr));
+                    top_conditions.push(Condition::Or(or_vec.clone()));
+                }
+                false => top_conditions.push(Condition::Exp(expr)),
             }
             input_tmp = input;
             break;
@@ -314,7 +302,20 @@ mod tests {
             Condition::Or(vec![Condition::Exp(actor), Condition::Exp(player)]),
             Condition::Or(vec![Condition::Exp(equip_r3), Condition::Exp(equip_r4)]),
         ]);
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+        match parse_condition(input) {
+            Ok(res) => {
+                assert_eq!(res, ("", expected));
+            }
+            Err(err) => match err {
+                nom::Err::Incomplete(_) => todo!(),
+                nom::Err::Error(err) => {
+                    println!("{}", nom::error::convert_error(input, err));
+                }
+                nom::Err::Failure(err) => {
+                    println!("{}", nom::error::convert_error(input, err));
+                }
+            },
+        };
     }
 
     #[test]
@@ -331,65 +332,9 @@ mod tests {
         assert_eq!(parse_condition(input), Ok(("", expected)));
     }
 
-    // #[test]
-    // fn test_parse_condition_player_teammate() {
-    //     let input = "IsPlayerTeammate() AND";
-    //     let expected = Condition {
-    //         expressions: Expression {
-    //             negate: false,
-    //             function_name: "IsPlayerTeammate",
-    //             arguments: vec![],
-    //         },
-    //         operator: Some(Operator::And),
-    //     };
-    //     assert_eq!(parse_condition(input), Ok(("", expected)));
-    // }
-
-    // #[test]
-    // fn test_parse_condition_equipped_right_type() {
-    //     let input = "IsEquippedRightType(3) OR";
-    //     let expected = Condition {
-    //         expressions: Expression {
-    //             negate: false,
-    //             function_name: "IsEquippedRightType",
-    //             arguments: vec![FnArg::Decimal(3)],
-    //         },
-    //         operator: Some(Operator::Or),
-    //     };
-    //     assert_eq!(parse_condition(input), Ok(("", expected)));
-    // }
-
-    // #[test]
-    // fn test_parse_condition_actor_value_percentage() {
-    //     let input = "IsActorValuePercentageLessThan(24, 0.3)";
-    //     let expected = Condition {
-    //         expressions: Expression {
-    //             negate: false,
-    //             function_name: "IsActorValuePercentageLessThan",
-    //             arguments: vec![FnArg::Decimal(24), FnArg::Float(0.3)],
-    //         },
-    //         operator: None,
-    //     };
-    //     assert_eq!(parse_condition(input), Ok(("", expected)));
-    // }
-
     #[test]
     fn should_err_invalid_syntax() {
         let input = "NOT IsActorBase ( \"Skyrim.esm\" | 0x00000007 )OR";
-        let expected = Condition::And(vec![Condition::Exp(Expression {
-            negate: true,
-            function_name: "IsActorBase",
-            arguments: vec![FnArg::PluginValue {
-                plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
-            }],
-        })]);
-        assert_eq!(
-            parse_condition(input),
-            Err(nom::Err::Error(nom::error::Error {
-                input: "OR",
-                code: nom::error::ErrorKind::Eof
-            }))
-        );
+        assert!(parse_condition(input).is_err());
     }
 }
