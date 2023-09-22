@@ -424,70 +424,52 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_parse_conditions_single_condition() {
-        let conditions = vec!["Condition1"];
-        let result = parse_conditions(&conditions);
+    fn should_parse_conditions() {
+        let input: Vec<&str> = r#"
+            IsActorBase("Skyrim.esm" | 0x00000007) OR
+            IsPlayerTeammate() AND
+            IsEquippedRightType(3) OR
+            IsEquippedRightType(4)
+        "#
+        .lines()
+        .collect();
 
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0], parse_condition("Condition1", false));
-    }
+        let conditions = parse_conditions(&input);
 
-    #[test]
-    fn test_parse_conditions_multiple_conditions() {
-        let conditions = vec!["Condition1", "Condition2"];
-        let result = parse_conditions(&conditions);
-
-        assert_eq!(result.len(), 2);
-        assert_eq!(result[0], parse_condition("Condition1", false));
-        assert_eq!(result[1], parse_condition("Condition2", false));
-    }
-
-    #[test]
-    fn test_parse_conditions_negated_conditions() {
-        let conditions = vec!["NOT Condition1", "NOT Condition2"];
-        let result = parse_conditions(&conditions);
-
-        assert_eq!(result.len(), 2);
-        assert_eq!(result[0], parse_condition("Condition1", true));
-        assert_eq!(result[1], parse_condition("Condition2", true));
-    }
-
-    #[test]
-    fn test_parse_conditions_or_conditions() {
-        let conditions = vec!["Condition1 OR", "Condition2"];
-        let result = parse_conditions(&conditions);
-
-        assert_eq!(result.len(), 2);
-        assert_eq!(
-            result[0],
+        let expected: Vec<ConditionSet> = vec![
             ConditionSet::Or(Or {
-                conditions: vec![parse_condition("Condition1", false)],
+                conditions: vec![
+                    ConditionSet::IsActorBase(IsActorBase {
+                        actor_base: PluginValue {
+                            plugin_name: "Skyrim.esm".to_string(),
+                            form_id: "0x00000007".to_string(),
+                        },
+                        ..Default::default()
+                    }),
+                    ConditionSet::Condition(Condition::new("IsPlayerTeammate")),
+                ],
                 ..Default::default()
-            })
-        );
-        assert_eq!(result[1], parse_condition("Condition2", false));
-    }
-
-    #[test]
-    fn test_parse_conditions_mixed_conditions() {
-        let conditions = vec![
-            "Condition1",
-            "NOT Condition2",
-            "Condition3 OR",
-            "Condition4",
+            }),
+            ConditionSet::Or(Or {
+                conditions: vec![
+                    ConditionSet::IsEquippedType(IsEquippedType {
+                        type_value: TypeValue {
+                            value: WeaponType::WarAxe,
+                        },
+                        ..Default::default()
+                    }),
+                    ConditionSet::IsEquippedType(IsEquippedType {
+                        type_value: TypeValue {
+                            value: WeaponType::Mace,
+                        },
+                        left_hand: true,
+                        ..Default::default()
+                    }),
+                ],
+                ..Default::default()
+            }),
         ];
-        let result = parse_conditions(&conditions);
 
-        assert_eq!(result.len(), 4);
-        assert_eq!(result[0], parse_condition("Condition1", false));
-        assert_eq!(result[1], parse_condition("Condition2", true));
-        assert_eq!(
-            result[2],
-            ConditionSet::Or(Or {
-                conditions: vec![parse_condition("Condition3", false)],
-                ..Default::default()
-            })
-        );
-        assert_eq!(result[3], parse_condition("Condition4", false));
+        assert_eq!(expected, conditions);
     }
 }

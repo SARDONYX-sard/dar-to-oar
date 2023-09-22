@@ -9,6 +9,7 @@ use parser::parse_conditions;
 
 mod conditions;
 mod parser;
+mod dar_syntax;
 mod values;
 
 /// root block in each config.json
