@@ -8,8 +8,9 @@ use conditions::ConditionSet;
 use parser::parse_conditions;
 
 mod conditions;
-mod parser;
 mod dar_syntax;
+mod error;
+mod parser;
 mod values;
 
 /// root block in each config.json

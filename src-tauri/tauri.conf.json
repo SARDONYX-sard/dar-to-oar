@@ -6,7 +6,7 @@
     "distDir": "../out"
   },
   "package": {
-    "productName": "dar-to-oar",
+    "productName": "dar2oar",
     "version": "0.1.0"
   },
   "tauri": {
@@ -22,12 +22,19 @@
       },
       "fs": {
         "all": true
+      },
+      "shell": {
+        "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
       }
     },
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "SARDONYX-sard",
       "deb": {
         "depends": []
       },

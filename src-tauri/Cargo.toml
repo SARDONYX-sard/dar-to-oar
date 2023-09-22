@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "dar2oar"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["SARDONYX-sard"]
-license = ""
-repository = ""
-default-run = "app"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/SARDONYX-sard/dar2oar"
+default-run = "dar2oar"
 edition = "2021"
 rust-version = "1.60"
 
@@ -15,13 +15,19 @@ rust-version = "1.60"
 tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
+# Reporting error
 ariadne = "0.3.0"
+# For CLI
 clap = { version = "4.4.4", features = ["derive"] }
+# Logger
 log = "0.4.20"
+# Syntax
 nom = { version = "7.1.3", features = ["alloc"] }
+# Json converter
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = { version = "1.4.0", features = ["dialog-open", "fs-all"] }
+# For GUI
+tauri = { version = "1.4.0", features = [ "shell-open", "dialog-open", "fs-all"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [dev-dependencies]

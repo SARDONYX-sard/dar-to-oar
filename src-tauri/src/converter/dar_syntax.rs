@@ -1,8 +1,45 @@
+//! DAR syntax parser
+//!
+//! # Example
+//! ```txt
+//! IsActorBase("Skyrim.esm" | 0x00000007) OR
+//! IsPlayerTeammate() AND
+//! IsEquippedRightType(3) OR
+//! IsEquippedRightType(4)
+//! ```
+//!
+//! # EBNF
+//! - A | B: A or B
+//! - \[ A \]: A is option
+//! - { "," A }: 0 or more repetitions "," A
+//!
+//! ```ebnf
+//! expression    = [ "NOT" ] function ( "AND" | "OR" ) ;
+//! argument_list = argument { "," argument } ;
+//! argument      = plugin | number ;
+//!
+//! function      = identifier | identifier "(" argument_list ")" ;
+//!
+//! identifier    = (ASCII | "_") { ASCII | "_" } ;
+//!
+//! plugin        = string "|" number ;
+//!
+//! string        = "\"" [^"\n]* "\"" | "'" [^'\n]* "'" ;
+//! number        = decimal | hex | float ;
+//!
+//! decimal       = ["-"] digit { digit } ;
+//! hex           = "0x" hex_digit { hex_digit } ;
+//! float         = ["-"] digit { digit } "." digit { digit } ;
+//! digit         = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+//! hex_digit     = digit | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"  ;
+//! ```
+
 use nom::{
     branch::alt,
     bytes::complete::{escaped, tag, take_while1},
     character::complete::{char, digit1, multispace0, one_of, space0},
     combinator::{map, opt},
+    error::context,
     multi::separated_list1,
     sequence::{delimited, preceded, separated_pair},
 };
@@ -57,7 +94,18 @@ impl<'a> Condition<'a> {
     }
 }
 
+/// IResult wrapped for VerboseError
 type IResult<'a, I, O> = nom::IResult<I, O, nom::error::VerboseError<&'a str>>;
+
+use nom::error::ParseError; // To use from_error_kind
+macro_rules! bail_kind {
+    ($input:ident, $kind:ident) => {
+        return Err(nom::Err::Error(nom::error::VerboseError::from_error_kind(
+            $input,
+            nom::error::ErrorKind::$kind,
+        )))
+    };
+}
 
 fn parse_string(input: &str) -> IResult<&str, &str> {
     alt((
@@ -72,16 +120,6 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
             char('"'),
         ),
     ))(input)
-}
-
-use nom::error::ParseError;
-macro_rules! bail_kind {
-    ($input:ident, $kind:ident) => {
-        return Err(nom::Err::Error(nom::error::VerboseError::from_error_kind(
-            $input,
-            nom::error::ErrorKind::$kind,
-        )))
-    };
 }
 
 fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
@@ -171,7 +209,10 @@ fn parse_argument<'a>(input: &'a str) -> IResult<&str, FnArg<'a>> {
 }
 
 fn parse_ident(input: &str) -> IResult<&str, &str> {
-    take_while1(|c: char| c.is_alphanumeric() || c == '_')(input)
+    context(
+        "Expected ident. (Example: IsActorBase)",
+        take_while1(|c: char| c.is_alphanumeric() || c == '_'),
+    )(input)
 }
 
 fn parse_fn_call<'a>(input: &'a str) -> IResult<&'a str, (&'a str, Vec<FnArg<'a>>)> {
@@ -189,12 +230,15 @@ fn parse_fn_call<'a>(input: &'a str) -> IResult<&'a str, (&'a str, Vec<FnArg<'a>
     Ok((input, (fn_name, args)))
 }
 
+/// - Expect an AND or OR string.
+/// - After AND or OR comes Expression with a line break in between, so the line break is also checked.
 fn parse_operator(input: &str) -> IResult<&str, Operator> {
     let (input, _) = multispace0(input)?;
-    alt((
+    let (input, operator) = alt((
         map(tag("AND"), |_| Operator::And),
         map(tag("OR"), |_| Operator::Or),
-    ))(input)
+    ))(input)?;
+    Ok((input, operator))
 }
 
 fn parse_expression(input: &str) -> IResult<&str, Expression> {
@@ -223,8 +267,12 @@ fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
         let (input, _) = multispace0(input_tmp)?;
         let (input, expr) = parse_expression(input)?;
         let (input, _) = multispace0(input)?;
-        let (input, operator) = opt(parse_operator)(input)?;
-        let (input, _) = multispace0(input)?;
+        let (mut input, operator) = opt(parse_operator)(input)?;
+        if operator.is_some() {
+            let (inp, _) = space0(input)?;
+            let (inp, _) = preceded(opt(char('\r')), char('\n'))(inp)?;
+            input = inp;
+        }
 
         if let Some(operator) = operator {
             match operator {
@@ -262,6 +310,8 @@ fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
 
 #[cfg(test)]
 mod tests {
+    use crate::converter::error::convert_error;
+
     use super::*;
     use pretty_assertions::assert_eq;
 
@@ -309,10 +359,10 @@ mod tests {
             Err(err) => match err {
                 nom::Err::Incomplete(_) => todo!(),
                 nom::Err::Error(err) => {
-                    println!("{}", nom::error::convert_error(input, err));
+                    panic!("{}", convert_error(input, err));
                 }
                 nom::Err::Failure(err) => {
-                    println!("{}", nom::error::convert_error(input, err));
+                    panic!("{}", convert_error(input, err));
                 }
             },
         };
@@ -335,6 +385,23 @@ mod tests {
     #[test]
     fn should_err_invalid_syntax() {
         let input = "NOT IsActorBase ( \"Skyrim.esm\" | 0x00000007 )OR";
-        assert!(parse_condition(input).is_err());
+        // assert!(parse_condition(input).is_err());
+        match parse_condition(input) {
+            Ok(res) => {
+                dbg!(res);
+                unreachable!()
+            }
+            Err(err) => match err {
+                nom::Err::Incomplete(_) => todo!(),
+                nom::Err::Error(err) => {
+                    dbg!(&err);
+                    println!("{}", convert_error(input, err));
+                }
+                nom::Err::Failure(err) => {
+                    dbg!(&err);
+                    println!("{}", convert_error(input, err));
+                }
+            },
+        };
     }
 }
