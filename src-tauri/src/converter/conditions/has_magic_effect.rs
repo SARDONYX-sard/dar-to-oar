@@ -45,7 +45,7 @@ mod tests {
   "Active effects only": false
 }"#;
         let serialized = serde_json::to_string_pretty(&has_magic_effect).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -64,12 +64,12 @@ mod tests {
         let expected = HasMagicEffect {
             magic_effect: PluginValue {
                 plugin_name: "Skyrim.esm".to_string(),
-                form_id: "7".to_string(), // This is player
+                form_id: "7".into(), // This is player
             },
             active_effects_only: true,
             ..Default::default()
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }

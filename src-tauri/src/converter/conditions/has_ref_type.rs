@@ -32,7 +32,7 @@ mod tests {
             condition: Condition::new("HasRefType"),
             location_ref_type: PluginValue {
                 plugin_name: "MyPlugin".to_string(),
-                form_id: "12345".to_string(),
+                form_id: "12345".into(),
             },
         };
 
@@ -45,7 +45,7 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&has_ref_type).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -64,11 +64,11 @@ mod tests {
             condition: Condition::new("HasRefType"),
             location_ref_type: PluginValue {
                 plugin_name: "AnotherPlugin".to_string(),
-                form_id: "54321".to_string(),
+                form_id: "54321".into(),
             },
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -80,6 +80,6 @@ mod tests {
             location_ref_type: Default::default(),
         };
 
-        assert_eq!(expected, default_has_ref_type);
+        assert_eq!(default_has_ref_type, expected);
     }
 }

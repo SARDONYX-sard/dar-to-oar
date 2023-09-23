@@ -60,26 +60,24 @@ mod tests {
     #[test]
     fn should_serialize_keyword_default() {
         let keyword_enum = Keyword::default();
-
+        let serialized = serde_json::to_string_pretty(&keyword_enum).unwrap();
         let expected = r#"{
   "editorID": ""
 }"#;
-        let serialized = serde_json::to_string_pretty(&keyword_enum).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
     fn should_deserialize_keyword_enum_literal() {
-        let json_str = r#"{
+        let input = r#"{
   "editorID": "SomeKeyword"
 }"#;
-
-        let deserialized: Keyword = serde_json::from_str(json_str).unwrap();
+        let deserialized: Keyword = serde_json::from_str(input).unwrap();
         let expected = Keyword::Literal(LiteralValue {
             editor_id: "SomeKeyword".to_string(),
         });
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -93,26 +91,26 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&keyword_enum).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
     fn should_deserialize_keyword_enum_form() {
-        let json_str = r#"{
+        let input = r#"{
   "form": {
     "pluginName": "MyPlugin",
     "formID": "12345"
   }
 }"#;
 
-        let deserialized: Keyword = serde_json::from_str(json_str).unwrap();
+        let deserialized: Keyword = serde_json::from_str(input).unwrap();
         let expected = Keyword::Form(FormValue {
             form: PluginValue {
                 plugin_name: "MyPlugin".to_string(),
-                form_id: "12345".to_string(),
+                form_id: "12345".into(),
             },
         });
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }

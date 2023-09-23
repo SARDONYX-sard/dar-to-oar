@@ -7,12 +7,11 @@ use std::path::{Path, PathBuf};
 use conditions::ConditionSet;
 use parser::parse_conditions;
 
+mod condition_parser;
 mod conditions;
 mod dar_syntax;
-mod error;
 mod parser;
 mod values;
-mod dar_interface;
 
 /// root block in each config.json
 #[derive(Debug, Clone, Serialize, Deserialize)]

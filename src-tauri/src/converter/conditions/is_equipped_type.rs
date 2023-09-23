@@ -50,7 +50,7 @@ mod tests {
   "Left hand": false
 }"#;
         let serialized = serde_json::to_string_pretty(&is_equipped_type).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
             left_hand: false,
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -88,6 +88,6 @@ mod tests {
             left_hand: false,
         };
 
-        assert_eq!(expected, default_is_equipped_type);
+        assert_eq!(default_is_equipped_type, expected);
     }
 }

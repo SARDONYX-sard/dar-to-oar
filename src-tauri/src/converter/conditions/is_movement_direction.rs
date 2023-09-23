@@ -50,7 +50,7 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&is_movement_direction).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -86,6 +86,6 @@ mod tests {
             direction: Default::default(),
         };
 
-        assert_eq!(expected, default_is_movement_direction);
+        assert_eq!(default_is_movement_direction, expected);
     }
 }

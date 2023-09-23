@@ -78,7 +78,7 @@ pub enum NumberLiteral {
 impl fmt::Display for NumberLiteral {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            NumberLiteral::Hex(hex) => write!(f, "{hex:x}"),
+            NumberLiteral::Hex(hex) => write!(f, "0x{hex:x}"),
             NumberLiteral::Decimal(decimal) => write!(f, "{decimal}"),
             NumberLiteral::Float(float) => write!(f, "{float}"),
         }
@@ -338,9 +338,8 @@ fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::converter::error::convert_error;
-
     use super::*;
+    use crate::converter::dar_syntax::error::convert_error;
     use pretty_assertions::assert_eq;
 
     #[test]

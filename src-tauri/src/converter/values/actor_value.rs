@@ -1,3 +1,4 @@
+use super::numeric_literal::NumericLiteral;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -5,7 +6,8 @@ pub struct ActorValue {
     /// default: 0
     #[serde(default)]
     #[serde(rename = "actorValue")]
-    pub actor_value: i32,
+    pub actor_value: NumericLiteral,
+    /// OAR GUI selection => config.json value
     /// - Actor Value => "Value"
     /// - Base Actor Value => "Base"
     /// - Max Actor Value => "Max"
@@ -14,6 +16,13 @@ pub struct ActorValue {
     pub actor_value_type: ActorValueType,
 }
 
+/// OAR GUI selection => config.json value
+/// - Actor Value => "Value"
+/// - Base Actor Value => "Base"
+/// - Max Actor Value => "Max"
+/// - Actor Value Percentage (0-1) => "Percentage"
+///
+/// default: ActorValue
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum ActorValueType {
     #[default]

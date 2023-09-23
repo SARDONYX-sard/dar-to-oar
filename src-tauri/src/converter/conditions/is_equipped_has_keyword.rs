@@ -18,7 +18,7 @@ pub struct IsEquippedHasKeyword {
 impl Default for IsEquippedHasKeyword {
     fn default() -> Self {
         Self {
-            condition: Condition::new("IsEquipped"),
+            condition: Condition::new("IsEquippedHasKeyword"),
             keyword: Default::default(),
             left_hand: false,
         }

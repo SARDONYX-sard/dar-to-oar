@@ -15,7 +15,7 @@ fn get_plugin_value(condition: &str) -> Option<PluginValue> {
     if condition_split.len() == 2 {
         Some(PluginValue {
             plugin_name: condition_split[0].replace("\"", ""),
-            form_id: condition_split[1][2..].trim_start_matches('0').to_string(),
+            form_id: condition_split[1][2..].trim_start_matches('0').into(),
         })
     } else {
         None
@@ -220,7 +220,9 @@ fn parse_actor(condition_name: &str, arg1: &str, is_negated: bool) -> ConditionS
 
     let create_actor_cond = |comparison: Cmp, actor_type: &str| {
         let value_a = ActorValue {
-            actor_value: values[0].parse().unwrap_or_default(),
+            actor_value: super::values::NumericLiteral::Float(
+                values[0].parse::<f32>().unwrap_or_default(),
+            ),
             actor_value_type: actor_type.try_into().unwrap_or_default(),
         };
 
@@ -442,7 +444,7 @@ mod tests {
                     ConditionSet::IsActorBase(IsActorBase {
                         actor_base: PluginValue {
                             plugin_name: "Skyrim.esm".to_string(),
-                            form_id: "0x00000007".to_string(),
+                            form_id: "0x00000007".into(),
                         },
                         ..Default::default()
                     }),

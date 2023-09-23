@@ -2,6 +2,8 @@ use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 
+use super::NumericLiteral;
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct TypeValue {
     pub value: WeaponType,
@@ -79,6 +81,26 @@ impl TryFrom<i64> for WeaponType {
             18 => WeaponType::Torch,
             _ => return Err("Invalid value for WeaponType"),
         })
+    }
+}
+
+impl TryFrom<NumericLiteral> for WeaponType {
+    type Error = &'static str;
+
+    fn try_from(value: NumericLiteral) -> Result<Self, Self::Error> {
+        match value {
+            NumericLiteral::Hex(num) => match num {
+                1..=18 => Ok((num as i64).try_into().expect("unreachable")),
+                _ => Err("Got hex, Out of range 1..=18"),
+            },
+            NumericLiteral::Decimal(num) => match num {
+                -1..=18 => Ok((num as i64).try_into().expect("unreachable")),
+                _ => Err("Got Decimal, Out of range -1..=18"),
+            },
+            NumericLiteral::Float(num) => match num {
+                num => Ok(num.to_string().as_str().try_into()?),
+            },
+        }
     }
 }
 

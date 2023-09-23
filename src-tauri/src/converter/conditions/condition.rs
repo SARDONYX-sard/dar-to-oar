@@ -18,6 +18,7 @@ pub struct Condition {
     pub required_version: String,
     /// condition to **Not** (default is `false`).
     #[serde(default)]
+    // NOTE: There is code written under the assumption that it is skipped when false (e.g. IsEquipped).
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 }

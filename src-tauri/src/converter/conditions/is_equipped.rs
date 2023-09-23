@@ -36,7 +36,7 @@ mod tests {
         let is_equipped = IsEquipped {
             form: PluginValue {
                 plugin_name: "MyPlugin".to_string(),
-                form_id: "12345".to_string(),
+                form_id: "12345".into(),
             },
             left_hand: true,
             ..Default::default()
@@ -52,7 +52,7 @@ mod tests {
   "Left hand": true
 }"#;
         let serialized = serde_json::to_string_pretty(&is_equipped).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -72,12 +72,12 @@ mod tests {
             condition: Condition::new("IsEquipped"),
             form: PluginValue {
                 plugin_name: "AnotherPlugin".to_string(),
-                form_id: "54321".to_string(),
+                form_id: "54321".into(),
             },
             left_hand: false,
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]

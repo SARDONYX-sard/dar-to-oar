@@ -61,7 +61,7 @@ mod tests {
         let faction_rank = FactionRank {
             faction: PluginValue {
                 plugin_name: "CustomPlugin".to_string(),
-                form_id: "54321".to_string(),
+                form_id: "54321".into(),
             },
             comparison: Cmp::Lt,
             numeric_value: NumericValue::StaticValue(StaticValue { value: 75.0 }),
@@ -103,7 +103,7 @@ mod tests {
             condition: Condition::new("FactionRank"),
             faction: PluginValue {
                 plugin_name: "MyPlugin".to_string(),
-                form_id: "12345".to_string(),
+                form_id: "12345".into(),
             },
             comparison: Cmp::Ge,
             numeric_value: NumericValue::StaticValue(StaticValue { value: 50.0 }),

@@ -15,3 +15,9 @@ use serde::{Deserialize, Serialize};
 pub struct StaticValue {
     pub value: f32,
 }
+
+impl From<f32> for StaticValue {
+    fn from(value: f32) -> Self {
+        StaticValue { value }
+    }
+}

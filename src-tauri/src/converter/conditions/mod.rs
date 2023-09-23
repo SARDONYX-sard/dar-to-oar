@@ -1,3 +1,4 @@
+mod and;
 mod compare_values;
 mod condition;
 mod current_game_time;
@@ -21,10 +22,11 @@ use crate::converter::values::PluginValue;
 use serde::{Deserialize, Serialize};
 
 pub use self::{
-    compare_values::CompareValues, condition::Condition, current_game_time::CurrentGameTime,
-    current_weather::CurrentWeather, faction_rank::FactionRank, has_keyword::HasKeyword,
-    has_magic_effect::HasMagicEffect, has_magic_effect_with_keyword::HasMagicEffectWithKeyword,
-    has_perk::HasPerk, has_ref_type::HasRefType, is_equipped::IsEquipped,
+    and::And, compare_values::CompareValues, condition::Condition,
+    current_game_time::CurrentGameTime, current_weather::CurrentWeather, faction_rank::FactionRank,
+    has_keyword::HasKeyword, has_magic_effect::HasMagicEffect,
+    has_magic_effect_with_keyword::HasMagicEffectWithKeyword, has_perk::HasPerk,
+    has_ref_type::HasRefType, is_equipped::IsEquipped,
     is_equipped_has_keyword::IsEquippedHasKeyword, is_equipped_type::IsEquippedType,
     is_movement_direction::IsMovementDirection, is_worn_has_keyword::IsWornHasKeyword,
     level::Level, or::Or, random::RandomCondition,
@@ -80,6 +82,7 @@ create_two_field_condition!(
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ConditionSet {
+    And(And),
     Condition(Condition),
     CompareValues(CompareValues),
     CurrentGameTime(CurrentGameTime),

@@ -42,7 +42,7 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&has_perk).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -61,11 +61,11 @@ mod tests {
             condition: Condition::new("HasPerk"),
             perk: PluginValue {
                 plugin_name: "SomePlugin".to_string(),
-                form_id: "12345".to_string(),
+                form_id: "12345".into(),
             },
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -77,6 +77,6 @@ mod tests {
             perk: PluginValue::default(),
         };
 
-        assert_eq!(expected, default_has_perk);
+        assert_eq!(default_has_perk, expected);
     }
 }

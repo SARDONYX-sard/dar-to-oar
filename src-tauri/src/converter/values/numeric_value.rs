@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use super::{
     actor_value::ActorValue, graph_value::GraphValue, plugin_value::PluginValue,
     static_value::StaticValue,
 };
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 /// In fact, it can be variously accepted rather than Numeric,
 /// but the GUI description of OAR says Numeric Value, so we follow it.
@@ -69,12 +69,12 @@ mod tests {
     #[test]
     fn should_serialize_numeric_value_static() {
         let numeric_value = NumericValue::StaticValue(StaticValue::default());
+        let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
 
         let expected = r#"{
   "value": 0.0
 }"#;
-        let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -86,7 +86,7 @@ mod tests {
   "formID": ""
 }"#;
         let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -98,23 +98,23 @@ mod tests {
         let deserialized: NumericValue = serde_json::from_str(json_str).unwrap();
         let expected = NumericValue::StaticValue(StaticValue { value: 42.0 });
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
     fn should_deserialize_numeric_value_global_variable() {
         let json_str = r#"{
             "pluginName": "MyPlugin",
-            "formID": "12345"
+            "formID": "0x12345"
         }"#;
 
         let deserialized: NumericValue = serde_json::from_str(json_str).unwrap();
         let expected = NumericValue::GlobalVariable(PluginValue {
-            plugin_name: "MyPlugin".to_string(),
-            form_id: "12345".to_string(),
+            plugin_name: "MyPlugin".into(),
+            form_id: "0x12345".into(),
         });
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]

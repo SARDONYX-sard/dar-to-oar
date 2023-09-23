@@ -68,8 +68,8 @@ mod tests {
         let expected = HasMagicEffectWithKeyword {
             keyword: Keyword::Form(FormValue {
                 form: PluginValue {
-                    plugin_name: "Skyrim.esm".to_string(),
-                    form_id: "7".to_string(), // This is player
+                    plugin_name: "Skyrim.esm".into(),
+                    form_id: "7".into(), // This is player
                 },
             }),
             active_effects_only: true,

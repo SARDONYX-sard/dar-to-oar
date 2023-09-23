@@ -32,8 +32,8 @@ impl Default for CompareValues {
 #[cfg(test)]
 mod tests {
     use crate::converter::values::{
-        ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericValue, PluginValue,
-        StaticValue,
+        ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericLiteral, NumericValue,
+        PluginValue, StaticValue,
     };
 
     use super::*;
@@ -66,11 +66,11 @@ mod tests {
     fn should_stringify_compare_values_with_actor_value() {
         let compare_values = CompareValues {
             value_a: NumericValue::ActorValue(ActorValue {
-                actor_value: 123,
+                actor_value: NumericLiteral::Decimal(123),
                 actor_value_type: ActorValueType::Base,
             }),
             value_b: NumericValue::ActorValue(ActorValue {
-                actor_value: 456,
+                actor_value: NumericLiteral::Decimal(456),
                 actor_value_type: ActorValueType::Max,
             }),
             comparison: Cmp::Ge,
@@ -132,11 +132,11 @@ mod tests {
         let compare_values = CompareValues {
             value_a: NumericValue::GlobalVariable(PluginValue {
                 plugin_name: "my_plugin.esm".to_string(),
-                form_id: "1".to_string(),
+                form_id: 1usize.into(),
             }),
             value_b: NumericValue::GlobalVariable(PluginValue {
                 plugin_name: "another_plugin.esp".to_string(),
-                form_id: "2".to_string(),
+                form_id: "2".into(),
             }),
             comparison: Cmp::Gt,
             ..Default::default()
