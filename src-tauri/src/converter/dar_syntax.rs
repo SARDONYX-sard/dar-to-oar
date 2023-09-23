@@ -34,6 +34,8 @@
 //! hex_digit     = digit | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"  ;
 //! ```
 
+use std::fmt;
+
 use nom::{
     branch::alt,
     bytes::complete::{escaped, tag, take_while1},
@@ -53,6 +55,19 @@ pub enum FnArg<'a> {
     Number(NumberLiteral),
 }
 
+impl fmt::Display for FnArg<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            FnArg::PluginValue {
+                plugin_name,
+                form_id,
+            } => write!(f, "PluginName: {plugin_name}, formID: {form_id}"),
+            FnArg::Number(num) => write!(f, "{num}"),
+        }
+    }
+}
+
+/// Hex | Decimal | Float
 #[derive(Debug, Clone, PartialEq)]
 pub enum NumberLiteral {
     Hex(usize),
@@ -60,13 +75,26 @@ pub enum NumberLiteral {
     Float(f32),
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Expression<'a> {
-    pub negate: bool,
-    pub function_name: &'a str,
-    pub arguments: Vec<FnArg<'a>>,
+impl fmt::Display for NumberLiteral {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            NumberLiteral::Hex(hex) => write!(f, "{hex:x}"),
+            NumberLiteral::Decimal(decimal) => write!(f, "{decimal}"),
+            NumberLiteral::Float(float) => write!(f, "{float}"),
+        }
+    }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct Expression<'a> {
+    /// not condition
+    pub negated: bool,
+    /// function name == condition name
+    pub fn_name: &'a str,
+    pub args: Vec<FnArg<'a>>,
+}
+
+/// AND | OR
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operator {
     And,
@@ -250,9 +278,9 @@ fn parse_expression(input: &str) -> IResult<&str, Expression> {
     Ok((
         input,
         Expression {
-            negate: negate.is_some(),
-            function_name,
-            arguments: args,
+            negated: negate.is_some(),
+            fn_name: function_name,
+            args,
         },
     ))
 }
@@ -325,27 +353,27 @@ mod tests {
 "#;
 
         let actor = Expression {
-            negate: false,
-            function_name: "IsActorBase",
-            arguments: vec![FnArg::PluginValue {
+            negated: false,
+            fn_name: "IsActorBase",
+            args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Hex(0x00000007),
             }],
         };
         let player = Expression {
-            negate: false,
-            function_name: "IsPlayerTeammate",
-            arguments: vec![],
+            negated: false,
+            fn_name: "IsPlayerTeammate",
+            args: vec![],
         };
         let equip_r3 = Expression {
-            negate: false,
-            function_name: "IsEquippedRightType",
-            arguments: vec![FnArg::Number(NumberLiteral::Decimal(3))],
+            negated: false,
+            fn_name: "IsEquippedRightType",
+            args: vec![FnArg::Number(NumberLiteral::Decimal(3))],
         };
         let equip_r4 = Expression {
-            negate: false,
-            function_name: "IsEquippedRightType",
-            arguments: vec![FnArg::Number(NumberLiteral::Decimal(4))],
+            negated: false,
+            fn_name: "IsEquippedRightType",
+            args: vec![FnArg::Number(NumberLiteral::Decimal(4))],
         };
 
         let expected = Condition::And(vec![
@@ -372,9 +400,9 @@ mod tests {
     fn should_parse_with_space() {
         let input = r#" IsActorBase ( "Skyrim.esm"|0x00000007 ) "#;
         let expected = Condition::And(vec![Condition::Exp(Expression {
-            negate: false,
-            function_name: "IsActorBase",
-            arguments: vec![FnArg::PluginValue {
+            negated: false,
+            fn_name: "IsActorBase",
+            args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Hex(0x00000007),
             }],

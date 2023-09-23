@@ -12,6 +12,7 @@ mod dar_syntax;
 mod error;
 mod parser;
 mod values;
+mod dar_interface;
 
 /// root block in each config.json
 #[derive(Debug, Clone, Serialize, Deserialize)]
