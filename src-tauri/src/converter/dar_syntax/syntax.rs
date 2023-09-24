@@ -39,7 +39,7 @@ use std::fmt;
 use nom::{
     branch::alt,
     bytes::complete::{escaped, tag, take_while1},
-    character::complete::{char, digit1, multispace0, one_of, space0},
+    character::complete::{char, digit1, hex_digit1, multispace0, one_of, space0},
     combinator::{map, opt},
     error::context,
     multi::separated_list1,
@@ -153,7 +153,7 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
 fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, radix) = alt((tag("0x"), tag("0b"), tag("0o")))(input)?;
-    let (input, digits) = digit1(input)?;
+    let (input, digits) = hex_digit1(input)?;
 
     let base = match radix {
         "0x" => 16,
@@ -343,6 +343,34 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
+    fn test_parse_hex_number() {
+        assert_eq!(parse_radix_number("0x1A"), Ok(("", NumberLiteral::Hex(26))));
+    }
+
+    #[test]
+    fn test_parse_binary_number() {
+        assert_eq!(
+            parse_radix_number("0b1010"),
+            Ok(("", NumberLiteral::Hex(10)))
+        );
+    }
+
+    #[test]
+    fn test_parse_octal_number() {
+        assert_eq!(parse_radix_number("0o37"), Ok(("", NumberLiteral::Hex(31))));
+    }
+
+    #[test]
+    fn test_parse_invalid_input() {
+        assert!(parse_radix_number("0z123").is_err());
+    }
+
+    #[test]
+    fn test_parse_missing_digits() {
+        assert!(parse_radix_number("0x").is_err());
+    }
+
+    #[test]
     fn test_parse_conditions() {
         let input = r#"
             IsActorBase("Skyrim.esm" | 0x00000007) OR
@@ -430,5 +458,24 @@ mod tests {
                 }
             },
         };
+    }
+
+    #[test]
+    fn test() {
+        let input = r#"
+HasMagicEffect("Smooth Animation.esp"|0x000803) AND
+NOT IsInCombat() AND
+NOT IsAttacking() AND
+IsInFaction("Skyrim.esm"|0x000DB1) OR
+IsPlayerTeammate() AND
+IsEquippedLeftType(1) OR
+IsEquippedLeftType(2) OR
+IsEquippedLeftType(3) OR
+IsEquippedLeftType(4) AND
+IsEquippedRightType(3) OR
+IsEquippedRightType(4)
+     "#;
+
+        println!("{:?}", parse_condition(input));
     }
 }
