@@ -224,7 +224,7 @@ fn generate_conditions_config_file(conditions_file: &Path) -> Result<(), Box<dyn
     let binding = fs::read_to_string(conditions_file)?;
     println!("Parsing conditions at path: {}", conditions_folder);
 
-    let conditions_list = parse_dar2oar(&binding);
+    let conditions_list = parse_dar2oar(&binding)?;
     let config = ConditionsConfig {
         name: name.to_string(),
         description: String::default(),
