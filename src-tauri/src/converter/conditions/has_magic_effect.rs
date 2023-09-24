@@ -1,24 +1,32 @@
-use serde::{Deserialize, Serialize};
-
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::PluginValue;
-
-use super::condition::Condition;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasMagicEffect {
-    #[serde(flatten)]
-    pub condition: Condition,
+    /// Condition name "HasMagicEffect"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
+    #[serde(default)]
     #[serde(rename = "Magic effect")]
     pub magic_effect: PluginValue,
-    #[serde(rename = "Active effects only")]
     #[serde(default)]
+    #[serde(rename = "Active effects only")]
     pub active_effects_only: bool,
 }
 
 impl Default for HasMagicEffect {
     fn default() -> Self {
         Self {
-            condition: Condition::new("HasMagicEffect"),
+            condition: "HasMagicEffect".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             magic_effect: PluginValue::default(),
             active_effects_only: false,
         }

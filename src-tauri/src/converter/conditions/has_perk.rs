@@ -1,11 +1,18 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::PluginValue;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasPerk {
-    #[serde(flatten)]
-    pub condition: Condition,
+    /// Condition name "HasRefType"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
     #[serde(default)]
     #[serde(rename = "Perk")]
     pub perk: PluginValue,
@@ -14,7 +21,9 @@ pub struct HasPerk {
 impl Default for HasPerk {
     fn default() -> Self {
         Self {
-            condition: Condition::new("HasPerk"),
+            condition: "HasPerk".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             perk: Default::default(),
         }
     }
@@ -28,10 +37,7 @@ mod tests {
 
     #[test]
     fn should_serialize_has_perk() {
-        let has_perk = HasPerk {
-            condition: Condition::new("HasPerk"),
-            perk: PluginValue::default(),
-        };
+        let has_perk = HasPerk::default();
 
         let expected = r#"{
   "condition": "HasPerk",
@@ -50,6 +56,7 @@ mod tests {
         let json_str = r#"{
   "condition": "HasPerk",
   "requiredVersion": "1.0.0.0",
+  "negated": true,
   "Perk": {
     "pluginName": "SomePlugin",
     "formID": "12345"
@@ -58,25 +65,14 @@ mod tests {
 
         let deserialized: HasPerk = serde_json::from_str(json_str).unwrap();
         let expected = HasPerk {
-            condition: Condition::new("HasPerk"),
+            negated: true,
             perk: PluginValue {
-                plugin_name: "SomePlugin".to_string(),
+                plugin_name: "SomePlugin".into(),
                 form_id: "12345".into(),
             },
+            ..Default::default()
         };
 
         assert_eq!(deserialized, expected);
-    }
-
-    #[test]
-    fn should_default_has_perk() {
-        let default_has_perk = HasPerk::default();
-
-        let expected = HasPerk {
-            condition: Condition::new("HasPerk"),
-            perk: PluginValue::default(),
-        };
-
-        assert_eq!(default_has_perk, expected);
     }
 }

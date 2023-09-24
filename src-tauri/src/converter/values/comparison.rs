@@ -1,6 +1,13 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 
+/// Comparison
+/// - Eq: Equal("==") <- default
+/// - Ne: Not Equal("!=")
+/// - Gt: Greater than(">")
+/// - Lt: Less than("<")
+/// - Ge: Greater than or equal(">=")
+/// - Le: Lesser than or equal("<="),
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum Cmp {
     #[default]

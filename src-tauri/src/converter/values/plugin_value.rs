@@ -10,6 +10,10 @@ pub struct PluginValue {
     /// - NOTE:
     /// OAR seems to only allow input of hexadecimal numbers, but also supports decimal numbers for DAR.
     /// But convert to hexadecimal when holding
+    ///
+    /// TODO: Support \u0000 pattern
+    /// "formID": "0\u0000\u0000\u0000\u0000\u0000"
+    /// "formID": "0A\u0000\u0000\u0000\u0000"
     #[serde(rename = "formID")]
     #[serde(default)]
     pub form_id: FormID,

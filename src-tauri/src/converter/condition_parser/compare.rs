@@ -1,7 +1,7 @@
 use super::dar_interface::ParseError;
 use crate::{
     converter::{
-        conditions::{CompareValues, Condition, ConditionSet},
+        conditions::{CompareValues, ConditionSet},
         dar_syntax::syntax::FnArg,
         values::{Cmp, NumericValue},
     },
@@ -27,13 +27,11 @@ pub(super) fn parse_compare(
 
     let create_compare = |comparison: Cmp| {
         ConditionSet::CompareValues(CompareValues {
-            condition: Condition {
-                negated,
-                ..Default::default()
-            },
+            negated,
             value_a: NumericValue::GlobalVariable(plugin_value),
             comparison,
             value_b: NumericValue::StaticValue(static_value),
+            ..Default::default()
         })
     };
 

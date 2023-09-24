@@ -1,18 +1,29 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::PluginValue;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CurrentWeather {
-    #[serde(flatten)]
-    pub condition: Condition,
+    /// Condition name "CurrentWeather"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
+    #[serde(default)]
+    #[serde(rename = "Weather")]
     pub weather: PluginValue,
 }
 
 impl Default for CurrentWeather {
     fn default() -> Self {
         Self {
-            condition: Condition::new("CurrentWeather"),
+            condition: "CurrentWeather".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             weather: Default::default(),
         }
     }
@@ -31,7 +42,7 @@ mod tests {
         let expected = r#"{
   "condition": "CurrentWeather",
   "requiredVersion": "1.0.0.0",
-  "weather": {
+  "Weather": {
     "pluginName": "",
     "formID": ""
   }
@@ -45,7 +56,7 @@ mod tests {
         let json_str = r#"{
             "condition": "CurrentWeather",
             "requiredVersion": "1.0.0.0",
-            "weather": {
+            "Weather": {
                 "pluginName": "",
                 "formID": ""
             }

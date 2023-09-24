@@ -1,11 +1,18 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::{Cmp, NumericValue};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CompareValues {
-    #[serde(flatten)]
-    pub condition: Condition,
+    /// Condition name "CompareValues"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
     #[serde(default)]
     #[serde(rename = "Value A")]
     pub value_a: NumericValue,
@@ -21,7 +28,9 @@ pub struct CompareValues {
 impl Default for CompareValues {
     fn default() -> Self {
         Self {
-            condition: Condition::new("CompareValues"),
+            condition: "CompareValues".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             value_a: NumericValue::default(),
             comparison: Cmp::Eq,
             value_b: NumericValue::default(),

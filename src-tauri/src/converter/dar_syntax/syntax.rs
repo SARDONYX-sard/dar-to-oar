@@ -285,7 +285,7 @@ fn parse_expression(input: &str) -> IResult<&str, Expression> {
     ))
 }
 
-fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
+pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();
     let mut input_tmp = input;

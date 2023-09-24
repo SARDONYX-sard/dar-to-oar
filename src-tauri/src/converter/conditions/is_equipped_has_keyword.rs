@@ -1,14 +1,20 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::Keyword;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct IsEquippedHasKeyword {
-    #[serde(flatten)]
-    pub condition: Condition,
-    #[serde(rename = "Keyword")]
+    /// Condition name "IsEquippedHasKeyword"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
     #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
+    #[serde(default)]
+    #[serde(rename = "Keyword")]
     pub keyword: Keyword,
     #[serde(default)]
     #[serde(rename = "Left hand")]
@@ -18,9 +24,21 @@ pub struct IsEquippedHasKeyword {
 impl Default for IsEquippedHasKeyword {
     fn default() -> Self {
         Self {
-            condition: Condition::new("IsEquippedHasKeyword"),
+            condition: "IsEquippedHasKeyword".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             keyword: Default::default(),
             left_hand: false,
         }
     }
 }
+
+// {
+//     "condition": "IsEquippedHasKeyword",
+//     "requiredVersion": "1.0.0.0",
+//     "negated": true,
+//     "Keyword": {
+//         "editorID": "ExampleKeyword"
+//     },
+//     "Left hand": true
+// }

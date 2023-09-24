@@ -8,6 +8,7 @@ pub struct GraphValue {
     pub graph_variable_type: GraphVariableType, // Use the enum type here
 }
 
+/// Float | Int | Bool
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum GraphVariableType {
     #[default]
@@ -42,5 +43,24 @@ impl<'de> Deserialize<'de> for GraphVariableType {
             "Bool" => Ok(GraphVariableType::Bool),
             _ => Err(serde::de::Error::custom("Invalid graph variable type")),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+    use serde_json;
+
+    #[test]
+    fn should_serialize_current_weather() {
+        let graph_value = GraphValue::default();
+
+        let expected = r#"{
+  "graphVariable": "",
+  "graphVariableType": "Float"
+}"#;
+        let serialized = serde_json::to_string_pretty(&graph_value).unwrap();
+        assert_eq!(expected, serialized);
     }
 }

@@ -1,24 +1,29 @@
-use super::condition::Condition;
-use crate::converter::values::{Cmp, DirectionValue};
+use super::{condition::default_required_version, is_false};
+use crate::converter::values::DirectionValue;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsMovementDirection {
-    #[serde(flatten)]
-    pub condition: Condition,
-    #[serde(rename = "Comparison")]
+    /// Condition name "IsMovementDirection"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
     #[serde(default)]
-    pub comparison: Cmp,
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
+    #[serde(default)]
     #[serde(rename = "Direction")]
-    #[serde(default)]
     pub direction: DirectionValue,
 }
 
 impl Default for IsMovementDirection {
     fn default() -> Self {
         Self {
-            condition: Condition::new("IsMovementDirection"),
-            comparison: Default::default(),
+            condition: "IsMovementDirection".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             direction: Default::default(),
         }
     }
@@ -44,7 +49,6 @@ mod tests {
         let expected = r#"{
   "condition": "IsMovementDirection",
   "requiredVersion": "1.0.0.0",
-  "Comparison": "==",
   "Direction": {
     "value": 4.0
   }
@@ -55,10 +59,11 @@ mod tests {
 
     #[test]
     fn should_deserialize_is_movement_direction() {
+        // This is the actual json output by OAR.
         let json_str = r#"{
             "condition": "IsMovementDirection",
             "requiredVersion": "1.0.0.0",
-            "Comparison": "!=",
+            "negated": true,
             "Direction": {
                 "value": 2.0
             }
@@ -66,7 +71,7 @@ mod tests {
 
         let deserialized: IsMovementDirection = serde_json::from_str(json_str).unwrap();
         let expected = IsMovementDirection {
-            comparison: Cmp::Ne,
+            negated: true,
             direction: DirectionValue {
                 value: Direction::Right,
             },
@@ -74,18 +79,5 @@ mod tests {
         };
 
         assert_eq!(deserialized, expected);
-    }
-
-    #[test]
-    fn should_default_is_movement_direction() {
-        let default_is_movement_direction = IsMovementDirection::default();
-
-        let expected = IsMovementDirection {
-            condition: Condition::new("IsMovementDirection"),
-            comparison: Default::default(),
-            direction: Default::default(),
-        };
-
-        assert_eq!(default_is_movement_direction, expected);
     }
 }

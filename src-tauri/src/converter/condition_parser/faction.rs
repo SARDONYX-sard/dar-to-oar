@@ -1,7 +1,7 @@
 use super::dar_interface::ParseError;
 use crate::{
     converter::{
-        conditions::{Condition, ConditionSet, FactionRank, IsInFaction},
+        conditions::{ConditionSet, FactionRank, IsInFaction},
         dar_syntax::syntax::FnArg,
         values::Cmp,
     },
@@ -11,27 +11,23 @@ use crate::{
 pub(super) fn parse_faction(
     condition_name: &str,
     args: Vec<FnArg<'_>>,
-    is_negated: bool,
+    negated: bool,
 ) -> Result<ConditionSet, ParseError> {
     let create_cond = |comparison: Cmp| -> Result<ConditionSet, ParseError> {
         Ok(ConditionSet::FactionRank(FactionRank {
-            condition: Condition {
-                negated: is_negated,
-                ..Default::default()
-            },
+            negated,
             faction: get_try_into!(args[0], "PluginValue")?,
             comparison,
             numeric_value: get_into!(args[1], "NumericValue"),
+            ..Default::default()
         }))
     };
 
     Ok(match condition_name {
         "IsInFaction" => ConditionSet::IsInFaction(IsInFaction {
-            condition: Condition {
-                negated: is_negated,
-                ..Default::default()
-            },
+            negated,
             faction: get_try_into!(args[0], "PluginValue")?,
+            ..Default::default()
         }),
         "IsFactionRankEqualTo" => create_cond(Cmp::Eq)?,
         "IsFactionRankLessThan" => create_cond(Cmp::Lt)?,
@@ -66,14 +62,12 @@ mod tests {
         let result = parse_faction(condition_name, args, is_negated);
 
         let expected = Ok(ConditionSet::IsInFaction(IsInFaction {
-            condition: Condition {
-                negated: is_negated,
-                ..Default::default()
-            },
+            negated: false,
             faction: PluginValue {
                 plugin_name: "Skyrim.esm".into(),
                 form_id: "7".into(),
             },
+            ..Default::default()
         }));
 
         assert_eq!(result, expected);
@@ -94,16 +88,14 @@ mod tests {
         let result = parse_faction(condition_name, args, is_negated);
 
         let expected = Ok(ConditionSet::FactionRank(FactionRank {
-            condition: Condition {
-                negated: is_negated,
-                ..Default::default()
-            },
+            negated: true,
             faction: PluginValue {
                 plugin_name: "Skyrim.esm".into(),
                 form_id: "7".into(),
             },
             comparison: Cmp::Eq,
             numeric_value: NumericValue::StaticValue(0.3.into()),
+            ..Default::default()
         }));
 
         assert_eq!(result, expected);

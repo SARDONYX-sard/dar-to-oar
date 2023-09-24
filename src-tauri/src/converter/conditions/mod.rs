@@ -1,7 +1,6 @@
 mod and;
 mod compare_values;
 mod condition;
-mod current_game_time;
 mod current_weather;
 mod faction_rank;
 mod has_keyword;
@@ -14,37 +13,113 @@ mod is_equipped_has_keyword;
 mod is_equipped_type;
 mod is_movement_direction;
 mod is_worn_has_keyword;
-mod level;
 mod or;
 mod random;
 
-use crate::converter::values::PluginValue;
-use serde::{Deserialize, Serialize};
-
 pub use self::{
-    and::And, compare_values::CompareValues, condition::Condition,
-    current_game_time::CurrentGameTime, current_weather::CurrentWeather, faction_rank::FactionRank,
-    has_keyword::HasKeyword, has_magic_effect::HasMagicEffect,
+    and::And, compare_values::CompareValues, condition::Condition, current_weather::CurrentWeather,
+    faction_rank::FactionRank, has_keyword::HasKeyword, has_magic_effect::HasMagicEffect,
     has_magic_effect_with_keyword::HasMagicEffectWithKeyword, has_perk::HasPerk,
     has_ref_type::HasRefType, is_equipped::IsEquipped,
     is_equipped_has_keyword::IsEquippedHasKeyword, is_equipped_type::IsEquippedType,
-    is_movement_direction::IsMovementDirection, is_worn_has_keyword::IsWornHasKeyword,
-    level::Level, or::Or, random::RandomCondition,
+    is_movement_direction::IsMovementDirection, is_worn_has_keyword::IsWornHasKeyword, or::Or,
+    random::RandomCondition,
 };
+
+use self::condition::default_required_version;
+use crate::converter::values::PluginValue;
+use crate::converter::values::{Cmp, NumericValue};
+use serde::{Deserialize, Serialize};
 
 pub(super) fn is_false(t: &bool) -> bool {
     *t == false
 }
 
-/// Macro for automatic generation of structures that have only condition and PluginValue
-#[macro_export]
-macro_rules! create_two_field_condition {
-    ($($name:ident, $field:ident => $rename_field:literal),+ $(,)?) => {
-        $(
+/// Generate structures that have only condition, Comparison and NumericValue
+///
+/// # Examples
+/// ```rust
+/// gen_cmp_num_struct!(
+///     /// - OAR: Level
+///     /// - Condition name "Level"
+///     Level,
+///     /// Compare current game time and numeric value.
+///     /// - Condition name "CurrentGameTime"
+///     CurrentGameTime
+/// );
+/// ```
+macro_rules! gen_cmp_num_struct {
+    ($($(#[$attr:meta])* $name:ident),+ $(,)?) => {
+      $(
+        $(#[$attr])*
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
         pub struct $name {
-            #[serde(flatten)]
-            pub condition: Condition,
+            pub condition: String,
+            #[serde(default = "default_required_version")]
+            #[serde(rename = "requiredVersion")]
+            pub required_version: String,
+            #[serde(default)]
+            #[serde(skip_serializing_if = "is_false")]
+            pub negated: bool,
+
+            /// == | != | > | >= | < | <=
+            #[serde(default)]
+            #[serde(rename = "Comparison")]
+            pub comparison: Cmp,
+            #[serde(default)]
+            #[serde(rename = "Numeric value")]
+            pub numeric_value: NumericValue,
+        }
+
+        impl Default for $name {
+            fn default() -> Self {
+                Self {
+                    condition: stringify!($name).into(),
+                    required_version: default_required_version(),
+                    negated: Default::default(),
+                    comparison: Default::default(),
+                    numeric_value: Default::default(),
+                }
+            }
+        }
+      )+
+    };
+}
+
+gen_cmp_num_struct!(
+    /// - OAR: Level
+    /// - Condition name "Level"
+    Level,
+    /// Compare current game time and numeric value.
+    /// - Condition name "CurrentGameTime"
+    CurrentGameTime
+);
+
+/// generate structures that have only condition and PluginValue
+///
+/// # Examples
+/// StructName, fieldName => serde Name
+/// ```rust
+/// gen_one_plugin_struct!(
+///  HasSpell, spell => "Spell",
+///  IsActorBase, actor_base => "Actor base"
+/// )
+/// ```
+#[macro_export]
+macro_rules! gen_one_plugin_struct {
+    ($($(#[$attr:meta])* $name:ident, $field:ident => $rename_field:literal),+ $(,)?) => {
+        $(
+        $(#[$attr])*
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct $name {
+            pub condition: String,
+            #[serde(default = "default_required_version")]
+            #[serde(rename = "requiredVersion")]
+            pub required_version: String,
+            #[serde(default)]
+            #[serde(skip_serializing_if = "is_false")]
+            pub negated: bool,
+
             #[serde(rename = $rename_field)]
             #[serde(default)]
             pub $field: PluginValue,
@@ -53,7 +128,9 @@ macro_rules! create_two_field_condition {
         impl Default for $name {
             fn default() -> Self {
                 Self {
-                    condition: Condition::new(stringify!($name)),
+                    condition: stringify!($name).into(),
+                    required_version: default_required_version(),
+                    negated: Default::default(),
                     $field: Default::default(),
                 }
             }
@@ -62,7 +139,7 @@ macro_rules! create_two_field_condition {
     };
 }
 
-create_two_field_condition!(
+gen_one_plugin_struct!(
   HasSpell, spell => "Spell",
   IsActorBase, actor_base => "Actor base",
   IsClass, class => "Class",
@@ -115,4 +192,16 @@ pub enum ConditionSet {
     Level(Level),
     Or(Or),
     RandomCondition(RandomCondition),
+}
+
+impl TryFrom<ConditionSet> for Vec<ConditionSet> {
+    type Error = &'static str;
+
+    fn try_from(value: ConditionSet) -> Result<Self, Self::Error> {
+        Ok(match value {
+            ConditionSet::And(and) => and.conditions,
+            ConditionSet::Or(or) => or.conditions,
+            _ => return Err("Only And or Or can be converted to Vec."),
+        })
+    }
 }

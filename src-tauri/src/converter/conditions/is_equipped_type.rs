@@ -1,11 +1,18 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::TypeValue;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsEquippedType {
-    #[serde(flatten)]
-    pub condition: Condition,
+    /// Condition name "IsEquippedType"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
     #[serde(default)]
     #[serde(rename = "Type")]
     pub type_value: TypeValue,
@@ -17,7 +24,9 @@ pub struct IsEquippedType {
 impl Default for IsEquippedType {
     fn default() -> Self {
         Self {
-            condition: Condition::new("IsEquippedType"),
+            condition: "IsEquippedType".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             type_value: Default::default(),
             left_hand: false,
         }
@@ -35,6 +44,7 @@ mod tests {
     #[test]
     fn should_serialize_is_equipped_type() {
         let is_equipped_type = IsEquippedType {
+            negated: true,
             type_value: TypeValue {
                 value: WeaponType::Bow,
             },
@@ -44,6 +54,7 @@ mod tests {
         let expected = r#"{
   "condition": "IsEquippedType",
   "requiredVersion": "1.0.0.0",
+  "negated": true,
   "Type": {
     "value": 7.0
   },
@@ -66,11 +77,11 @@ mod tests {
 
         let deserialized: IsEquippedType = serde_json::from_str(json_str).unwrap();
         let expected = IsEquippedType {
-            condition: Condition::new("IsEquippedType"),
             type_value: TypeValue {
                 value: WeaponType::IllusionSpell,
             },
             left_hand: false,
+            ..Default::default()
         };
 
         assert_eq!(deserialized, expected);
@@ -81,11 +92,11 @@ mod tests {
         let default_is_equipped_type = IsEquippedType::default();
 
         let expected = IsEquippedType {
-            condition: Condition::new("IsEquippedType"),
             type_value: TypeValue {
                 value: WeaponType::Unarmed,
             },
             left_hand: false,
+            ..Default::default()
         };
 
         assert_eq!(default_is_equipped_type, expected);

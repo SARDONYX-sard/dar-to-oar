@@ -1,7 +1,7 @@
 use super::dar_interface::ParseError;
 use crate::{
     converter::{
-        conditions::{CompareValues, Condition, ConditionSet, IsActorBase},
+        conditions::{CompareValues, ConditionSet, IsActorBase},
         dar_syntax::syntax::FnArg,
         values::{ActorValue, ActorValueType, Cmp, NumericValue},
     },
@@ -11,22 +11,19 @@ use crate::{
 pub(super) fn parse_actor(
     condition_name: &str,
     args: Vec<FnArg<'_>>,
-    is_negated: bool,
+    negated: bool,
 ) -> Result<ConditionSet, ParseError> {
     let create_actor_cond =
         |comparison: Cmp, actor_value_type: ActorValueType| -> Result<ConditionSet, ParseError> {
             Ok(ConditionSet::CompareValues(CompareValues {
-                condition: Condition {
-                    negated: is_negated,
-                    condition: "CompareValues".into(),
-                    ..Default::default()
-                },
+                negated,
                 value_a: NumericValue::ActorValue(ActorValue {
                     actor_value: get_try_into!(args[0], "Hex | Decimal | Float")?,
                     actor_value_type,
                 }),
                 comparison,
                 value_b: NumericValue::StaticValue(get_try_into!(args[1], "Float")?),
+                ..Default::default()
             }))
         };
 
@@ -38,12 +35,9 @@ pub(super) fn parse_actor(
         "IsActorValuePercentageEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::Percentage)?,
         "IsActorValuePercentageLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::Percentage)?,
         "IsActorBase" => ConditionSet::IsActorBase(IsActorBase {
-            condition: Condition {
-                negated: is_negated,
-                condition: condition_name.into(),
-                ..Default::default()
-            },
+            negated,
             actor_base: get_try_into!(args[0], "PluginValue")?,
+            ..Default::default()
         }),
         _ => unreachable!(),
     })
@@ -71,17 +65,14 @@ mod tests {
         let result = parse_actor(condition_name, args, is_negated);
 
         let expected = ConditionSet::CompareValues(CompareValues {
-            condition: Condition {
-                negated: false,
-                condition: "CompareValues".into(),
-                ..Default::default()
-            },
+            negated: false,
             value_a: NumericValue::ActorValue(ActorValue {
                 actor_value: NumericLiteral::Float(3.3),
                 ..Default::default() // NOTE: The DAR contains the actor_type in the function name.
             }),
             comparison: Cmp::Eq,
             value_b: NumericValue::StaticValue(StaticValue { value: 3.5 }),
+            ..Default::default()
         });
 
         match result {
@@ -104,15 +95,12 @@ mod tests {
         let result = parse_actor(condition_name, args, is_negated);
 
         let expected = Ok(ConditionSet::IsActorBase(IsActorBase {
-            condition: Condition {
-                negated: true,
-                condition: "IsActorBase".into(),
-                ..Default::default()
-            },
+            negated: true,
             actor_base: PluginValue {
                 plugin_name: "Skyrim.esm".into(),
                 form_id: "7".into(),
             },
+            ..Default::default()
         }));
 
         assert_eq!(result, expected);

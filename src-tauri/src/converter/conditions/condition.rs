@@ -1,9 +1,9 @@
 use super::is_false;
 use serde::{Deserialize, Serialize};
 
-const REQUIRED_VERSION: &str = "1.0.0.0";
+pub const REQUIRED_VERSION: &str = "1.0.0.0";
 
-fn default_required_version() -> String {
+pub fn default_required_version() -> String {
     REQUIRED_VERSION.to_string()
 }
 

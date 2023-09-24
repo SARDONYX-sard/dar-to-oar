@@ -1,14 +1,21 @@
-use super::condition::Condition;
+use super::{condition::default_required_version, is_false};
 use crate::converter::values::PluginValue;
 use serde::{Deserialize, Serialize};
 
+/// - OAR: IsEquipped
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct IsEquipped {
-    #[serde(flatten)]
-    pub condition: Condition,
-    #[serde(rename = "Form")]
+    /// Condition name "IsEquipped"
+    pub condition: String,
+    #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
+    pub required_version: String,
     #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
+    pub negated: bool,
+
+    #[serde(default)]
+    #[serde(rename = "Form")]
     pub form: PluginValue,
     #[serde(default)]
     #[serde(rename = "Left hand")]
@@ -18,7 +25,9 @@ pub struct IsEquipped {
 impl Default for IsEquipped {
     fn default() -> Self {
         Self {
-            condition: Condition::new("IsEquipped"),
+            condition: "IsEquipped".into(),
+            required_version: default_required_version(),
+            negated: Default::default(),
             form: PluginValue::default(),
             left_hand: false,
         }
@@ -57,39 +66,30 @@ mod tests {
 
     #[test]
     fn should_deserialize_is_equipped() {
+        // This is the actual json output by OAR.
         let json_str = r#"{
             "condition": "IsEquipped",
             "requiredVersion": "1.0.0.0",
+            "negated": true,
             "Form": {
-                "pluginName": "AnotherPlugin",
-                "formID": "54321"
+                "pluginName": "Skyrim.esm",
+                "formID": "7"
             },
             "Left hand": false
         }"#;
 
         let deserialized: IsEquipped = serde_json::from_str(json_str).unwrap();
         let expected = IsEquipped {
-            condition: Condition::new("IsEquipped"),
+            condition: "IsEquipped".into(),
+            negated: true,
             form: PluginValue {
-                plugin_name: "AnotherPlugin".to_string(),
-                form_id: "54321".into(),
+                plugin_name: "Skyrim.esm".to_string(),
+                form_id: "7".into(),
             },
             left_hand: false,
+            ..Default::default()
         };
 
         assert_eq!(deserialized, expected);
-    }
-
-    #[test]
-    fn should_default_is_equipped() {
-        let default_is_equipped = IsEquipped::default();
-
-        let expected = IsEquipped {
-            condition: Condition::new("IsEquipped"),
-            form: PluginValue::default(),
-            left_hand: false,
-        };
-
-        assert_eq!(expected, default_is_equipped);
     }
 }

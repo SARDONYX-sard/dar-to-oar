@@ -1,7 +1,7 @@
 use super::dar_interface::ParseError;
 use crate::{
     converter::{
-        conditions::{Condition, ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
+        conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
         dar_syntax::syntax::FnArg,
         values::{NumericLiteral, TypeValue},
     },
@@ -17,12 +17,7 @@ pub(super) fn parse_equip(
     dbg!(&args);
     Ok(match condition_name {
         "IsEquippedRight" | "IsEquippedLeft" => ConditionSet::IsEquipped(IsEquipped {
-            condition: Condition {
-                condition: "IsEquipped".into(),
-                // NOTE: not exist negated in IsEquipped
-                // Therefore, always set it to false and do not reflect it in json.
-                ..Default::default()
-            },
+            negated,
             form: get_try_into!(args[0], "PluginValue")?,
             left_hand: condition_name == "IsEquippedLeft",
             ..Default::default()
@@ -35,11 +30,7 @@ pub(super) fn parse_equip(
                 })?,
             };
             ConditionSet::IsEquippedType(IsEquippedType {
-                condition: Condition {
-                    negated,
-                    condition: "IsEquippedType".into(),
-                    ..Default::default()
-                },
+                negated,
                 left_hand: condition_name == "IsEquippedLeftType",
                 type_value,
                 ..Default::default()
@@ -47,13 +38,10 @@ pub(super) fn parse_equip(
         }
         "IsEquippedRightHasKeyword" | "IsEquippedLeftHasKeyword" => {
             ConditionSet::IsEquippedHasKeyword(IsEquippedHasKeyword {
-                condition: Condition {
-                    negated,
-                    condition: "IsEquippedHasKeyword".into(),
-                    ..Default::default()
-                },
+                negated,
                 left_hand: condition_name == "IsEquippedLeftHasKeyword",
                 keyword: get_into!(args[0], "Keyword"),
+                ..Default::default()
             })
         }
         _ => unreachable!(),
