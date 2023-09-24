@@ -373,7 +373,7 @@ mod tests {
     #[test]
     fn test_parse_conditions() {
         let input = r#"
-            IsActorBase("Skyrim.esm" | 0x00000007) OR
+            IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
             IsPlayerTeammate() AND
             IsEquippedRightType(3) OR
             IsEquippedRightType(4)
@@ -384,7 +384,7 @@ mod tests {
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
+                form_id: NumberLiteral::Hex(0x00BCDEF7),
             }],
         };
         let player = Expression {
@@ -458,24 +458,5 @@ mod tests {
                 }
             },
         };
-    }
-
-    #[test]
-    fn test() {
-        let input = r#"
-HasMagicEffect("Smooth Animation.esp"|0x000803) AND
-NOT IsInCombat() AND
-NOT IsAttacking() AND
-IsInFaction("Skyrim.esm"|0x000DB1) OR
-IsPlayerTeammate() AND
-IsEquippedLeftType(1) OR
-IsEquippedLeftType(2) OR
-IsEquippedLeftType(3) OR
-IsEquippedLeftType(4) AND
-IsEquippedRightType(3) OR
-IsEquippedRightType(4)
-     "#;
-
-        println!("{:?}", parse_condition(input));
     }
 }

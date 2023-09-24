@@ -82,7 +82,6 @@ impl<'de> Deserialize<'de> for NumericLiteral {
             where
                 E: serde::de::Error,
             {
-                dbg!(value);
                 if value.starts_with("0x") {
                     // Parse hexadecimal value
                     let hex_value = value.trim_start_matches("0x");

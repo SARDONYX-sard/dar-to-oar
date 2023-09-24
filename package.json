@@ -9,6 +9,7 @@
     "build:front": "next build frontend",
     "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
     "start": "next start frontend",
+    "test": "cd ./src-tauri && cargo test",
     "lint:front": "next lint frontend",
     "lint:back": "cargo clippy --manifest-path ./src-tauri/Cargo.toml",
     "lint": "npm run lint:front && npm run lint:back",

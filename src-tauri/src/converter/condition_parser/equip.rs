@@ -13,8 +13,6 @@ pub(super) fn parse_equip(
     args: Vec<FnArg<'_>>,
     negated: bool,
 ) -> Result<ConditionSet, ParseError> {
-    dbg!(condition_name);
-    dbg!(&args);
     Ok(match condition_name {
         "IsEquippedRight" | "IsEquippedLeft" => ConditionSet::IsEquipped(IsEquipped {
             negated,

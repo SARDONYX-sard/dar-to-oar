@@ -33,6 +33,7 @@ export default function Converter() {
       success: "Completed.",
       loading: "Converting...",
       error: (e) => {
+        console.error(e);
         return `${e}`;
       },
     });

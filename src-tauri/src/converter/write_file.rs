@@ -1,5 +1,5 @@
+use crate::converter::condition_parser::parse_dar2oar;
 use crate::converter::conditions::ConditionSet;
-use crate::converter::parse_dar2oar;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::{self};
@@ -16,6 +16,7 @@ pub(crate) struct ConditionsConfig {
     description: String,
     #[serde(default)]
     priority: i32,
+    #[serde(skip_serializing_if = "Option::is_none")]
     override_animations_folder: Option<String>,
     #[serde(default)]
     conditions: Vec<ConditionSet>,
@@ -32,15 +33,21 @@ pub(crate) struct MainConfig {
     author: String,
 }
 
-const ACTOR_FOLDER: &str = "meshes\\actors";
-const FIRST_PERSON_FOLDER: &str = "_1stperson";
-const ANIMATION_FOLDER: &str = "animations";
-const DAR_FOLDER: &str = "DynamicAnimationReplacer";
-const DAR_CONDITIONS_FOLDER: &str = "_CustomConditions";
-const OAR_FOLDER: &str = "OpenAnimationReplacer";
+/// Path from just under the `data` directory in the Skyrim root directory to `actor`.
+/// So, in `"Skyrim SpecialEdition/data/"`
+const ACTOR_PATH: &str = "meshes\\actors";
+const FIRST_PERSON_DIR_NAME: &str = "_1stperson";
+const ANIM_DIR_NAME: &str = "animations";
+const DAR_DIR_NAME: &str = "DynamicAnimationReplacer";
+const DAR_CONDITIONS_DIR_NAME: &str = "_CustomConditions";
+const OAR_DIR_NAME: &str = "OpenAnimationReplacer";
 const DAR_CONDITIONS_FILE_NAME: &str = "_conditions.txt";
 const CONFIG_FILE_NAME: &str = "config.json";
 
+/// # Parameters
+/// - mod_name: If this item is None, the trailing directory name of oar_mod_folder is used.
+///     - e.g. mod_name: None, oar_mod_folder: "./test/oar" => mod_name: "oar"
+/// - oar_config_path: Intermediate path to config.json (NOTE: oar_mod_folder is root dir)
 fn generate_main_config_file(
     dar_actor_folder: &Path,
     oar_mod_folder: &Path,
@@ -56,7 +63,6 @@ fn generate_main_config_file(
         dar_actor_folder.file_name().unwrap().to_str().unwrap()
     );
     let oar_mod_path = oar_mod_folder.join(oar_config_path).join(&name);
-    let file_path = oar_mod_path.join(CONFIG_FILE_NAME);
 
     fs::create_dir_all(&oar_mod_path)?;
 
@@ -66,6 +72,7 @@ fn generate_main_config_file(
         description: String::default(),
     };
 
+    let file_path = oar_mod_path.join(CONFIG_FILE_NAME);
     // Serialize and write the MainConfig to the config file
     let mut file = std::fs::OpenOptions::new()
         .write(true)
@@ -93,9 +100,9 @@ fn build_oar_directory(
         mod_author,
     )?;
     let dar_conditions_folder = dar_actor_folder
-        .join(ANIMATION_FOLDER)
-        .join(DAR_FOLDER)
-        .join(DAR_CONDITIONS_FOLDER);
+        .join(ANIM_DIR_NAME)
+        .join(DAR_DIR_NAME)
+        .join(DAR_CONDITIONS_DIR_NAME);
 
     copy_directory(
         &dar_conditions_folder,
@@ -150,7 +157,7 @@ fn build_oar_directories(
     mod_name: Option<&str>,
     mod_author: Option<&str>,
 ) -> Result<Vec<PathBuf>, Box<dyn Error>> {
-    let dar_directory_info = dar_mod_folder.join(ACTOR_FOLDER);
+    let dar_directory_info = dar_mod_folder.join(ACTOR_PATH);
     let dar_actor_folders = fs::read_dir(&dar_directory_info)?
         .filter_map(|entry| {
             if let Ok(entry) = entry {
@@ -164,14 +171,14 @@ fn build_oar_directories(
     let mut animations_directories = Vec::new();
 
     for dar_actor_folder in dar_actor_folders {
-        if dar_actor_folder.join(FIRST_PERSON_FOLDER).exists() {
-            let oar_1st_person_config_path = Path::new(ACTOR_FOLDER)
+        if dar_actor_folder.join(FIRST_PERSON_DIR_NAME).exists() {
+            let oar_1st_person_config_path = Path::new(ACTOR_PATH)
                 .join(dar_actor_folder.file_name().unwrap_or_default())
-                .join(FIRST_PERSON_FOLDER)
-                .join(ANIMATION_FOLDER)
-                .join(OAR_FOLDER);
+                .join(FIRST_PERSON_DIR_NAME)
+                .join(ANIM_DIR_NAME)
+                .join(OAR_DIR_NAME);
 
-            let first_person_dar_directory = dar_actor_folder.join(FIRST_PERSON_FOLDER);
+            let first_person_dar_directory = dar_actor_folder.join(FIRST_PERSON_DIR_NAME);
             let oar_animations_1st_person_folder = build_oar_directory(
                 &first_person_dar_directory,
                 oar_mod_folder,
@@ -183,10 +190,10 @@ fn build_oar_directories(
             animations_directories.push(oar_animations_1st_person_folder);
         }
 
-        let oar_config_path = Path::new(ACTOR_FOLDER)
+        let oar_config_path = Path::new(ACTOR_PATH)
             .join(dar_actor_folder.file_name().unwrap_or_default())
-            .join(ANIMATION_FOLDER)
-            .join(OAR_FOLDER);
+            .join(ANIM_DIR_NAME)
+            .join(OAR_DIR_NAME);
 
         let oar_animations_folder = build_oar_directory(
             &dar_actor_folder,
@@ -278,4 +285,26 @@ pub fn convert_dar_to_oar(
     convert_conditions(&directories)?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn should_create_config_file() {
+        let dar_actor_folder = Path::new("../test/Smooth Moveset");
+        let oar_mod_folder = Path::new("../test/Smooth Moveset");
+        let oar_config_path = "config.json";
+        let mod_name = Some("Smooth Moveset");
+        let author = None;
+        dbg!(generate_main_config_file(
+            dar_actor_folder,
+            oar_mod_folder,
+            oar_config_path,
+            mod_name,
+            author,
+        ));
+    }
 }
