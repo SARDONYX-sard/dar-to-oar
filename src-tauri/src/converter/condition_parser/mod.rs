@@ -7,24 +7,21 @@ mod faction;
 mod has;
 mod macros;
 
-pub use crate::converter::write_file::convert_dar_to_oar;
-
 use self::conditions::parse_conditions;
 use crate::converter::conditions::ConditionSet;
-use crate::converter::dar_syntax::convert_error;
-use std::error::Error;
+use crate::converter::dar_syntax::{convert_error, syntax::parse_condition};
+use anyhow::bail;
 
-pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>, Box<dyn Error>> {
-    let (_, dar_syn) = match crate::converter::dar_syntax::syntax::parse_condition(input) {
+pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
+    let (_, dar_syn) = match parse_condition(input) {
         Ok(syn) => syn,
         Err(err) => {
             let err = match err {
-                nom::Err::Incomplete(_) => todo!(),
+                nom::Err::Incomplete(_) => bail!("Error Incomplete"),
                 nom::Err::Error(err) => err,
-                nom::Err::Failure(_) => todo!(),
+                nom::Err::Failure(err) => err,
             };
-
-            return Err(convert_error(input, err).into());
+            bail!(convert_error(input, err));
         }
     };
     Ok(parse_conditions(dar_syn)?.try_into()?)

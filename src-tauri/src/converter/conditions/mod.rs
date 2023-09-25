@@ -195,13 +195,20 @@ pub enum ConditionSet {
 }
 
 impl TryFrom<ConditionSet> for Vec<ConditionSet> {
-    type Error = &'static str;
+    type Error = ConditionError;
 
     fn try_from(value: ConditionSet) -> Result<Self, Self::Error> {
         Ok(match value {
             ConditionSet::And(and) => and.conditions,
             ConditionSet::Or(or) => or.conditions,
-            _ => return Err("Only And or Or can be converted to Vec."),
+            _ => return Err(ConditionError::CastError),
         })
     }
+}
+
+#[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
+pub enum ConditionError {
+    // Couldn't cast
+    #[error("Only And or Or can be converted to Vec.")]
+    CastError,
 }

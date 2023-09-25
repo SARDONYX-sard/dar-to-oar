@@ -2,6 +2,7 @@ use crate::converter::convert_dar_to_oar;
 use clap::{arg, command, Parser, Subcommand};
 use std::path::Path;
 
+/// dar2oar --src "DAR path" --src "OAR path" --name "" --author ""
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
 pub(crate) struct Cli {
@@ -17,28 +18,29 @@ pub(crate) enum Commands {
 
 #[derive(Debug, Parser)]
 pub(crate) struct SubArgs {
-    /// source dir path
-    #[clap(value_parser)]
-    dar_mod_folder: String,
-    /// destination dir path
-    #[clap(value_parser)]
-    oar_mod_folder: String,
-    /// mod name
+    /// DAR source dir path
+    #[clap(long, value_parser)]
+    src: String,
+    /// OAR destination dir path
+    #[clap(long, value_parser)]
+    dist: String,
+    /// mod name in config.json & folder name
+    /// - If not, it is extracted from the mod name in src.
     #[arg(long)]
-    mod_name: Option<String>,
-    /// Keeps local symbols (e.g., those starting with `.L`
+    name: Option<String>,
+    /// mod author in config.json
     #[arg(long)]
-    mod_author: Option<String>,
+    author: Option<String>,
 }
 
 pub(crate) fn run_cli(args: Commands) {
     match args {
         Commands::Cli(sub_args) => {
             convert_dar_to_oar(
-                &Path::new(&sub_args.dar_mod_folder),
-                &Path::new(&sub_args.oar_mod_folder),
-                sub_args.mod_name.as_deref(),
-                sub_args.mod_author.as_deref(),
+                &Path::new(&sub_args.src),
+                &Path::new(&sub_args.dist),
+                sub_args.name.as_deref(),
+                sub_args.author.as_deref(),
             )
             .unwrap_or_else(|err| eprintln!("{err}"));
         }

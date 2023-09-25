@@ -9,13 +9,13 @@ use crate::converter::conditions::{
     IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
     IsWornHasKeyword, Level, Or, RandomCondition,
 };
-use crate::converter::dar_syntax::syntax::{Condition as Condition_, Expression};
+use crate::converter::dar_syntax::syntax::{self, Expression};
 use crate::converter::values::{Cmp, DirectionValue, NumericValue};
 use crate::{gen_cond, get_into, get_try_into};
 
-pub fn parse_conditions(input: Condition_) -> Result<ConditionSet, ParseError> {
+pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
     Ok(match input {
-        Condition_::And(conditions) => {
+        syntax::Condition::And(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -25,7 +25,7 @@ pub fn parse_conditions(input: Condition_) -> Result<ConditionSet, ParseError> {
                 ..Default::default()
             })
         }
-        Condition_::Or(conditions) => {
+        syntax::Condition::Or(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -35,7 +35,7 @@ pub fn parse_conditions(input: Condition_) -> Result<ConditionSet, ParseError> {
                 ..Default::default()
             })
         }
-        Condition_::Exp(expression) => parse_condition(expression)?,
+        syntax::Condition::Exp(expression) => parse_condition(expression)?,
     })
 }
 
@@ -164,9 +164,15 @@ mod tests {
             args: vec![FnArg::Number(NumberLiteral::Decimal(4))],
         };
 
-        let input = Condition_::And(vec![
-            Condition_::Or(vec![Condition_::Exp(actor), Condition_::Exp(player)]),
-            Condition_::Or(vec![Condition_::Exp(equip_r3), Condition_::Exp(equip_r4)]),
+        let input = syntax::Condition::And(vec![
+            syntax::Condition::Or(vec![
+                syntax::Condition::Exp(actor),
+                syntax::Condition::Exp(player),
+            ]),
+            syntax::Condition::Or(vec![
+                syntax::Condition::Exp(equip_r3),
+                syntax::Condition::Exp(equip_r4),
+            ]),
         ]);
 
         let conditions = parse_conditions(input);
