@@ -11,7 +11,7 @@ The GUI is currently not producing the expected output due to an unknown bug.
 - Download latest version.
 
 Click this.
-[dar2oar:v0.1.0a](https://github.com/SARDONYX-sard/dar-to-oar/releases/download/0.1.0a/dar2oar.exe)
+[dar2oar for x64-windows:v0.1.0a](https://github.com/SARDONYX-sard/dar-to-oar/releases/download/0.1.0a/dar2oar.exe)
 
 - Example
 
@@ -155,11 +155,11 @@ Smooth Moveset
     └─Unarmed_2
 ```
 
-### If no correspondence table is passed to --mapping_file: The name of the priority folder is used
+### If no correspondence table is passed to --mapping_file
 
-the name of the priority folder is used.
+The name of the priority folder is used.
 
-Sample
+- Sample result
 
 ```txt
 └─Smooth Moveset
