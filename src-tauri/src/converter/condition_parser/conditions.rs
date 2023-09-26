@@ -117,7 +117,7 @@ fn parse_condition<'a>(condition: Expression<'a>) -> Result<ConditionSet, ParseE
             ..Default::default()
         }),
         _ => {
-            log::warn!("Condition({fn_name}) has no explicit mapping.");
+            log::debug!("Condition({fn_name}) has no explicit mapping.");
 
             ConditionSet::Condition(Condition {
                 negated,

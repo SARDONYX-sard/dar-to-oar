@@ -1,6 +1,7 @@
 mod and;
 mod compare_values;
 mod condition;
+mod condition_config;
 mod current_weather;
 mod faction_rank;
 mod has_keyword;
@@ -13,17 +14,19 @@ mod is_equipped_has_keyword;
 mod is_equipped_type;
 mod is_movement_direction;
 mod is_worn_has_keyword;
+mod namespace_config;
 mod or;
 mod random;
 
 pub use self::{
-    and::And, compare_values::CompareValues, condition::Condition, current_weather::CurrentWeather,
-    faction_rank::FactionRank, has_keyword::HasKeyword, has_magic_effect::HasMagicEffect,
+    and::And, compare_values::CompareValues, condition::Condition,
+    condition_config::ConditionsConfig, current_weather::CurrentWeather, faction_rank::FactionRank,
+    has_keyword::HasKeyword, has_magic_effect::HasMagicEffect,
     has_magic_effect_with_keyword::HasMagicEffectWithKeyword, has_perk::HasPerk,
     has_ref_type::HasRefType, is_equipped::IsEquipped,
     is_equipped_has_keyword::IsEquippedHasKeyword, is_equipped_type::IsEquippedType,
-    is_movement_direction::IsMovementDirection, is_worn_has_keyword::IsWornHasKeyword, or::Or,
-    random::RandomCondition,
+    is_movement_direction::IsMovementDirection, is_worn_has_keyword::IsWornHasKeyword,
+    namespace_config::MainConfig, or::Or, random::RandomCondition,
 };
 
 use self::condition::default_required_version;

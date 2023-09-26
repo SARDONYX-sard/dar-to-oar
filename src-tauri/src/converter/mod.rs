@@ -4,4 +4,4 @@ mod dar_syntax;
 mod fs;
 mod values;
 
-pub use crate::converter::fs::old::convert_dar_to_oar;
+pub use crate::converter::fs::{convert_dar_to_oar, read_mapping_table};

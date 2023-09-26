@@ -18,18 +18,19 @@ export default function Converter() {
 
   const getCacheStr = (cacheKey: string) =>
     localStorage.getItem(cacheKey) ?? "";
-  const [cachePath, setCachePath] = useState(getCacheStr("defaultPath"));
+  const [cacheSrc, setCacheSrc] = useState(getCacheStr("defaultSrcPath"));
+  const [cacheDist, setCacheDist] = useState(getCacheStr("defaultDistPath"));
   const [modName, setModName] = useState(getCacheStr("modName"));
   const [authorName, setAuthorName] = useState(getCacheStr("authorName"));
 
   const handleConverter = (): void => {
-    if (cachePath === "") {
+    if (cacheSrc === "") {
       toast.error("First, please select Directory.");
       handleDefaultPath();
       return;
     }
 
-    toast.promise(convertDar2oar(cachePath, cachePath, modName, authorName), {
+    toast.promise(convertDar2oar(cacheSrc, cacheSrc, modName, authorName), {
       success: "Completed.",
       loading: "Converting...",
       error: (e) => {
@@ -38,7 +39,7 @@ export default function Converter() {
       },
     });
 
-    convertDar2oar(cachePath, cachePath, modName, authorName).catch((e) =>
+    convertDar2oar(cacheSrc, cacheSrc, modName, authorName).catch((e) =>
       toast.error(`${e}`)
     );
   };
@@ -46,11 +47,11 @@ export default function Converter() {
   const handleDefaultPath = async () => {
     const setDefaultPath = (str: string) => {
       localStorage.setItem("defaultPath", str);
-      setCachePath(str);
+      setCacheSrc(str);
     };
 
     setDir({
-      defaultPath: cachePath,
+      defaultPath: cacheSrc,
       setDefaultPath,
     }).catch((e) => toast.error(`${e}`));
   };
@@ -68,13 +69,13 @@ export default function Converter() {
     <main className={styles.main}>
       <Toaster position="bottom-right" reverseOrder={false} />
       <div className={styles.description}>
-        <h2>{cachePath}</h2>
+        <h2>{cacheSrc}</h2>
       </div>
 
       <div className={styles.grid}>
         <div className={styles.card}>
           <h2>
-            Mod Name <span>-&gt;</span>
+            Mod Name(Option) <span>-&gt;</span>
           </h2>
 
           <input type="text" value={modName} onInput={handleModName} />
@@ -82,7 +83,7 @@ export default function Converter() {
 
         <div className={styles.card}>
           <h2>
-            Author Name <span>-&gt;</span>
+            Author Name(Option) <span>-&gt;</span>
           </h2>
           <input type="text" value={authorName} onInput={handleAuthorName} />
         </div>
@@ -94,7 +95,7 @@ export default function Converter() {
           rel="noopener noreferrer"
         >
           <h2>
-            Link <span>-&gt;</span>
+            Mapping Table Path<span>-&gt;</span>
           </h2>
         </a>
 

@@ -15,6 +15,7 @@ rust-version = "1.60"
 tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
+anyhow = { version = "1.0.75", features = ["backtrace"] }
 # ariadne = "0.3.0"                                   # Reporting error
 # const-str = "0.5.6"                                 # Generate const str. More flexible than std
 clap = { version = "4.4.4", features = ["derive"] } # For CLI
@@ -29,9 +30,11 @@ tauri = { version = "1.4.0", features = [
   "fs-all",
 ] } # For GUI
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" } # logger
+walkdir = "2.4.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
+simple-log = "1.6.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

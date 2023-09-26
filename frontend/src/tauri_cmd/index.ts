@@ -14,7 +14,8 @@ export async function convertDar2oar(
   srcDir: string,
   distDir: string,
   modName?: string,
-  modAuthor?: string
+  modAuthor?: string,
+  mappingPath?: string
 ): Promise<void> {
   try {
     await invoke("convert_dar2oar", {
@@ -22,6 +23,7 @@ export async function convertDar2oar(
       oarModFolder: distDir,
       modName,
       modAuthor,
+      mappingPath
     });
   } catch (e) {
     throw new Error(`${e}`);

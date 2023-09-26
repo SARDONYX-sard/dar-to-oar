@@ -1,74 +1,186 @@
-mod constants;
-mod visiter;
-mod write;
+mod mapping_table;
+mod path_changer;
 
-use super::condition_parser::parse_dar2oar;
-use super::conditions::ConditionSet;
-use serde::{Deserialize, Serialize};
+pub use mapping_table::read_mapping_table;
+
+use crate::converter::condition_parser::parse_dar2oar;
+use crate::converter::conditions::{ConditionsConfig, MainConfig};
+use crate::converter::fs::path_changer::parse_dar_path;
+use anyhow::{Context as _, Result};
 use std::collections::HashMap;
-use std::ffi::OsStr;
 use std::fs;
-use std::io::{self, Write};
-use std::path::Path;
+use std::io::{self, Read, Write};
+use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 
-/// Each animation root config.json
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct ConditionsConfig {
-    #[serde(default)]
-    name: String,
-    #[serde(default)]
-    description: String,
-    #[serde(default)]
-    priority: i32,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    override_animations_folder: Option<String>,
-    #[serde(default)]
-    conditions: Vec<ConditionSet>,
-}
-
-fn write_configs<P>(file_path: P, content: &str) -> io::Result<()>
+fn read_file<P>(file_path: P) -> io::Result<String>
 where
     P: AsRef<Path>,
 {
-    let mut mapping = HashMap::new();
-    mapping.insert("8213000", "Hey".to_string());
+    let mut file = fs::File::open(file_path)?;
+    let mut content = String::new();
+    file.read_to_string(&mut content)?;
+    Ok(content)
+}
 
-    let file_path_str = file_path.as_ref().to_str().unwrap_or_default();
-
-    if let Some(idx) = file_path_str.find("DynamicAnimationReplacer") {
-        let priority = file_path
-            .as_ref()
-            .ancestors()
-            .skip_while(|path| path.file_name() == Some(OsStr::new("_conditions.txt")))
-            .next()
-            .unwrap()
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
-
-        let name: String = mapping
-            .get(priority.as_str())
-            .unwrap_or(&"".to_owned())
-            .to_string();
-
-        let target_path = Path::new(&file_path_str[0..idx]).join("OpenAnimationReplacer");
-
-        // parse _condition.txt
-        let config_json = ConditionsConfig {
-            name,
-            priority: priority.parse().unwrap_or_default(),
-            conditions: parse_dar2oar(&content).unwrap(),
-            ..Default::default()
-        };
-
-        fs::create_dir_all(&target_path)?;
-
-        // config.jsonを生成した新しいパスに書き込む
-        let mut config_file = fs::File::create(&target_path.join("config.json")).unwrap();
-        let json = serde_json::to_string_pretty(&config_json).unwrap();
-        config_file.write_all(json.as_bytes()).unwrap();
-    }
+fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> anyhow::Result<()>
+where
+    P: AsRef<Path>,
+{
+    let target_path = oar_dir.as_ref().join("config.json");
+    let mut config_file = fs::File::create(&target_path).with_context(|| {
+        let msg = format!("writing section config target: {:?}", target_path);
+        log::error!("{}", msg);
+        msg
+    })?;
+    let json = serde_json::to_string_pretty(&config_json)?;
+    config_file.write_all(json.as_bytes())?;
     Ok(())
+}
+
+fn write_name_space_config<P>(
+    oar_name_space_path: P,
+    mod_name: &str,
+    author: Option<&str>,
+) -> anyhow::Result<()>
+where
+    P: AsRef<Path>,
+{
+    let config_json = MainConfig {
+        name: mod_name.into(),
+        author: author.unwrap_or_default().into(),
+        ..Default::default()
+    };
+    fs::create_dir_all(&oar_name_space_path)?;
+    let mut config_file = fs::File::create(oar_name_space_path.as_ref().join("config.json"))?;
+    let json = serde_json::to_string_pretty(&config_json)?;
+    config_file.write_all(json.as_bytes())?;
+    Ok(())
+}
+
+pub fn convert_dar_to_oar<P>(
+    dar_dir: P,
+    oar_dir: Option<PathBuf>,
+    mod_name: Option<&str>,
+    author: Option<&str>,
+    section_table: Option<HashMap<String, String>>,
+) -> Result<()>
+where
+    P: AsRef<Path>,
+{
+    let mut is_write_main = false;
+
+    for entry in WalkDir::new(dar_dir) {
+        let entry = entry?;
+        let path = entry.path();
+        let (oar_name_space_path, parsed_mod_name, priority, remain) = match parse_dar_path(&path) {
+            Ok(data) => data,
+            Err(_) => {
+                // NOTE: The first search is skipped because it does not yet lead to the DAR file.
+                continue;
+            }
+        };
+        let parsed_mod_name = mod_name
+            .and_then(|s| Some(s.to_string()))
+            .unwrap_or_else(|| {
+                parsed_mod_name
+                    .and_then(|s| Some(s))
+                    .unwrap_or("Unknown".into())
+            });
+        let oar_name_space_path = oar_dir
+            .as_ref()
+            .unwrap_or(&oar_name_space_path)
+            .to_path_buf()
+            .join(mod_name.unwrap_or(&parsed_mod_name));
+
+        if path.is_dir() {
+            log::debug!("Dir: {:?}", path);
+        } else if path.extension().is_some() {
+            log::debug!("File: {:?}", path);
+            let file_name = path
+                .file_name()
+                .context("Not found file name")?
+                .to_str()
+                .context("This file isn't valid utf8")?;
+
+            let priority = &priority.context("Not found priority")?;
+
+            let section_name = section_table
+                .as_ref()
+                .and_then(|table| table.get(priority))
+                .unwrap_or(priority);
+
+            let section_root = oar_name_space_path.join(section_name);
+            log::trace!("section root: {:?}", section_root);
+            fs::create_dir_all(&section_root)?;
+            if file_name == "_conditions.txt" {
+                match read_file(&path) {
+                    Ok(content) => {
+                        log::trace!("Content:\n{}", content);
+
+                        let config_json = ConditionsConfig {
+                            name: section_name.into(),
+                            priority: priority.parse()?,
+                            conditions: parse_dar2oar(&content)?,
+                            ..Default::default()
+                        };
+
+                        write_section_config(section_root, config_json)?
+                    }
+                    Err(err) => log::error!("Error reading file {path:?}: {err}"),
+                }
+
+                if !is_write_main {
+                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                        .with_context(|| {
+                            format!(
+                                "Failed to write name space config to: {:?}",
+                                oar_name_space_path
+                            )
+                        })?;
+                    is_write_main = true;
+                }
+            } else {
+                if let Some(remain) = remain {
+                    let non_leaf_dir = section_root.join(remain);
+                    fs::create_dir_all(&non_leaf_dir)?;
+                    fs::copy(path, &non_leaf_dir.join(file_name))?;
+                } else {
+                    // maybe motion files(.hex)
+                    fs::copy(path, section_root.join(file_name))?;
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::converter::fs::mapping_table::read_mapping_table;
+
+    #[test]
+    fn should_traverse() -> anyhow::Result<()> {
+        let config = simple_log::LogConfigBuilder::builder()
+            .path("../convert.log")
+            .size(1 * 100)
+            .roll_count(10)
+            .level("debug")
+            .output_file()
+            .output_console()
+            .build();
+        simple_log::new(config).unwrap();
+
+        let table_content = "../test/settings/mapping_table.txt";
+        let mapping = read_mapping_table(table_content)?;
+        convert_dar_to_oar(
+            "../test/data/Smooth Moveset",
+            None,
+            None,
+            None,
+            Some(mapping),
+        )
+    }
 }

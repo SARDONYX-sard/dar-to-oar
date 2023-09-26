@@ -1,6 +1,6 @@
-use crate::converter::convert_dar_to_oar;
+use crate::converter::{convert_dar_to_oar, read_mapping_table};
 use clap::{arg, command, Parser, Subcommand};
-use std::path::Path;
+use std::path::PathBuf;
 
 /// dar2oar --src "DAR path" --src "OAR path" --name "" --author ""
 #[derive(Debug, Parser)]
@@ -23,7 +23,7 @@ pub(crate) struct SubArgs {
     src: String,
     /// OAR destination dir path
     #[clap(long, value_parser)]
-    dist: String,
+    dist: Option<String>,
     /// mod name in config.json & folder name
     /// - If not, it is extracted from the mod name in src.
     #[arg(long)]
@@ -31,18 +31,32 @@ pub(crate) struct SubArgs {
     /// mod author in config.json
     #[arg(long)]
     author: Option<String>,
+    /// path to section name table
+    #[arg(long)]
+    mapping_file: Option<String>,
 }
 
-pub(crate) fn run_cli(args: Commands) {
+pub(crate) fn run_cli(args: Commands) -> anyhow::Result<()> {
     match args {
         Commands::Cli(sub_args) => {
+            let dist: Option<PathBuf> = sub_args.dist.map(|dist| PathBuf::from(&dist));
+
+            let table = match sub_args.mapping_file {
+                Some(table_path) => {
+                    let mapping = read_mapping_table(table_path)?;
+                    Some(mapping)
+                }
+                None => None,
+            };
+
             convert_dar_to_oar(
-                &Path::new(&sub_args.src),
-                &Path::new(&sub_args.dist),
+                sub_args.src,
+                dist,
                 sub_args.name.as_deref(),
                 sub_args.author.as_deref(),
-            )
-            .unwrap_or_else(|err| eprintln!("{err}"));
+                table,
+            )?;
+            Ok(())
         }
     }
 }

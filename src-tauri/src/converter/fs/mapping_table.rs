@@ -4,14 +4,6 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-pub struct ParseSettings {
-    src_dir: String,
-    dist_dir: String,
-    mod_name: String,
-    mod_author: String,
-    mapping_table: HashMap<String, String>,
-}
-
 pub fn read_mapping_table(table_path: impl AsRef<Path>) -> anyhow::Result<HashMap<String, String>> {
     let mut file_contents = String::new();
     match File::open(table_path) {
@@ -26,17 +18,24 @@ pub fn read_mapping_table(table_path: impl AsRef<Path>) -> anyhow::Result<HashMa
 fn parse_mapping_table(table: &str) -> HashMap<String, String> {
     let mut map = HashMap::new();
 
-    let mut current_key = String::new();
+    // Sequential numbering of duplicate keys when no key is available.
+    let mut current_section_name = String::new();
+    let mut idx = 0;
     for line in table.lines() {
         let mapping: Vec<&str> = line.split_whitespace().collect();
-        let value = match mapping.get(1) {
-            Some(key) => {
-                current_key = key.to_string();
-                key
+        let section_name = match mapping.get(1) {
+            Some(val) => {
+                current_section_name = val.to_string();
+                idx += 0;
+                current_section_name.clone()
             }
-            None => current_key.as_str(),
+            None => {
+                idx += 1;
+                format!("{}_{}", current_section_name, idx)
+            }
         };
-        map.insert(mapping[0].to_string(), value.to_string());
+
+        map.insert(mapping[0].to_string(), section_name.clone());
     }
 
     map
