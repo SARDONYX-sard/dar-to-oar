@@ -26,7 +26,7 @@ fn parse_mapping_table(table: &str) -> HashMap<String, String> {
         let section_name = match mapping.get(1) {
             Some(val) => {
                 current_section_name = val.to_string();
-                idx += 0;
+                idx = 0;
                 current_section_name.clone()
             }
             None => {
