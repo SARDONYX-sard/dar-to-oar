@@ -8,6 +8,11 @@ The GUI is currently not producing the expected output due to an unknown bug.
 
 ## Getting Started for User
 
+- Download latest version.
+
+Click this.
+[dar2oar:v0.1.0a](https://github.com/SARDONYX-sard/dar-to-oar/releases/download/0.1.0a/dar2oar.exe)
+
 - Example
 
 ```shell
