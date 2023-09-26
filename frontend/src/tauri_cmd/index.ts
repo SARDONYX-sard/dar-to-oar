@@ -15,7 +15,8 @@ export async function convertDar2oar(
   distDir: string,
   modName?: string,
   modAuthor?: string,
-  mappingPath?: string
+  mappingPath?: string,
+  logLevel?: "trace" | "debug" | "info" | "warn" | "error"
 ): Promise<void> {
   try {
     await invoke("convert_dar2oar", {
@@ -23,7 +24,8 @@ export async function convertDar2oar(
       oarModFolder: distDir,
       modName,
       modAuthor,
-      mappingPath
+      mappingPath,
+      logLevel,
     });
   } catch (e) {
     throw new Error(`${e}`);
@@ -44,6 +46,27 @@ export async function setDir(pathState: {
   const res = await open({
     defaultPath,
     directory: true,
+  });
+
+  if (typeof res === "string") {
+    setDefaultPath(res);
+  }
+}
+
+/**
+ * @param pathState
+ *
+ * # Throw Error
+ */
+export async function setFile(pathState: {
+  defaultPath: string;
+  setDefaultPath: (s: string) => void;
+}): Promise<void> {
+  const { defaultPath, setDefaultPath } = pathState;
+
+  const res = await open({
+    defaultPath,
+    directory: false,
   });
 
   if (typeof res === "string") {
