@@ -5,7 +5,7 @@ const nextConfig = {
     appDir: true,
   },
   distDir: "../out",
-  // output: "export",
+  output: "export",
   swcMinify: true,
 };
 
