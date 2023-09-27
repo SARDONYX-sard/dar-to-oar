@@ -16,10 +16,14 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@mui/icons-material": "^5.14.11",
+    "@mui/lab": "^5.0.0-alpha.146",
+    "@mui/material": "^5.14.11",
     "@tauri-apps/api": "^1.4.0",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.46.2",
     "react-hot-toast": "^2.4.1",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
   },

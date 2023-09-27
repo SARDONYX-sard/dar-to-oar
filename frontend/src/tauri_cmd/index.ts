@@ -1,31 +1,33 @@
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 
+type ConverterArgs = {
+  src: string;
+  dist?: string;
+  modName?: string;
+  modAuthor?: string;
+  mappingPath?: string;
+  logLevel?: "trace" | "debug" | "info" | "warn" | "error";
+};
+
 /**
- *
- * @param srcDir
- * @param distDir
- * @param modName
- * @param modAuthor
- *
+ * Convert DAR to OAR
  * # Throw Error
  */
-export async function convertDar2oar(
-  srcDir: string,
-  distDir: string,
-  modName?: string,
-  modAuthor?: string,
-  mappingPath?: string,
-  logLevel?: "trace" | "debug" | "info" | "warn" | "error"
-): Promise<void> {
+export async function convertDar2oar(props: ConverterArgs): Promise<void> {
+  const src = props.src === "" ? undefined : props.src;
+  const dist = props.dist === "" ? undefined : props.dist;
+  const modName = props.modName === "" ? undefined : props.modName;
+  const modAuthor = props.modAuthor === "" ? undefined : props.modAuthor;
+
   try {
     await invoke("convert_dar2oar", {
-      darModFolder: srcDir,
-      oarModFolder: distDir,
+      darModFolder: src,
+      oarModFolder: dist,
       modName,
       modAuthor,
-      mappingPath,
-      logLevel,
+      mappingPath: props.mappingPath,
+      logLevel: props.logLevel,
     });
   } catch (e) {
     throw new Error(`${e}`);
@@ -33,43 +35,23 @@ export async function convertDar2oar(
 }
 
 /**
- * @param pathState
- *
+ * Open a file or Dir
  * # Throw Error
  */
-export async function setDir(pathState: {
-  defaultPath: string;
-  setDefaultPath: (s: string) => void;
-}): Promise<void> {
-  const { defaultPath, setDefaultPath } = pathState;
-
+export async function openPath(
+  path: string,
+  setPath: (path: string) => void,
+  isDir: boolean
+) {
   const res = await open({
-    defaultPath,
-    directory: true,
+    defaultPath: path,
+    directory: isDir,
   });
 
   if (typeof res === "string") {
-    setDefaultPath(res);
-  }
-}
-
-/**
- * @param pathState
- *
- * # Throw Error
- */
-export async function setFile(pathState: {
-  defaultPath: string;
-  setDefaultPath: (s: string) => void;
-}): Promise<void> {
-  const { defaultPath, setDefaultPath } = pathState;
-
-  const res = await open({
-    defaultPath,
-    directory: false,
-  });
-
-  if (typeof res === "string") {
-    setDefaultPath(res);
+    //! NOTE:
+    //! It is important to use setter here!
+    //! If we don't get the result within this function, somehow the previous value comes in.
+    setPath(res);
   }
 }
