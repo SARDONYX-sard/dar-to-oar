@@ -42,7 +42,10 @@ export default function Settings() {
 }
 
 const sample = `body {
+    background-attachment: fixed;
     background-image: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 main > form > div > div,
