@@ -1,13 +1,15 @@
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
+
 type ConverterArgs = {
   src: string;
   dist?: string;
   modName?: string;
   modAuthor?: string;
   mappingPath?: string;
-  logLevel?: "trace" | "debug" | "info" | "warn" | "error";
+  logLevel?: LogLevel;
 };
 
 /**

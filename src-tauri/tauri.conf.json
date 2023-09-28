@@ -74,11 +74,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 750,
         "resizable": true,
         "theme": "Dark",
         "title": "DAR to OAR Converter",
-        "width": 800
+        "width": 650
       }
     ]
   }

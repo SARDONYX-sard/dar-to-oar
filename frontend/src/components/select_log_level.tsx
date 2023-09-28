@@ -3,9 +3,10 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { UseFormRegister } from "react-hook-form";
+import type { LogLevel } from "../tauri_cmd";
 
 interface IFormValues {
-  logLevel: "trace" | "debug" | "info" | "warn" | "error";
+  logLevel: LogLevel;
 }
 
 export const SelectLogLevel = React.forwardRef<

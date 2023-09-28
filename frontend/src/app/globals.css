@@ -82,8 +82,9 @@
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
   min-height: 100vh;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 body {
@@ -94,7 +95,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-  background-color: #90d7f8fd;
+  background-color: #055381fd;
 }
 
 a {
