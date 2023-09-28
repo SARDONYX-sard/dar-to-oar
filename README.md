@@ -4,8 +4,6 @@
 
 Currently we are managing to work in CLI mode.
 
-The GUI is currently not producing the expected output due to an unknown bug.
-
 ## Getting Started for User
 
 - Download latest version.
