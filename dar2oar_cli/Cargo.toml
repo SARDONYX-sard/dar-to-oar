@@ -1,0 +1,25 @@
+[package]
+name = "dar2oar_cli"
+version = "0.1.0"
+description = "DAR to OAR Converter CLI"
+authors = ["SARDONYX-sard"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/SARDONYX-sard/dar2oar"
+edition = "2021"
+rust-version = "1.60"
+
+[[bin]]
+name = "dar2oar"
+path = "./src/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = { version = "1.0.75", features = ["backtrace"] }
+clap = { version = "4.4.4", features = ["derive"] }       # For CLI
+dar2oar_core = { path = "../dar2oar_core" }
+log = "0.4.20"                                            # Logger
+simple-log = "1.6.0"                                      # Logger
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"

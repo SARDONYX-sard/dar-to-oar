@@ -2,7 +2,7 @@
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
   "files.exclude": {
-    // "**/node_modules": true // optional
+    "**/node_modules": true // optional
   },
   "files.trimTrailingWhitespace": true,
   "files.watcherExclude": {

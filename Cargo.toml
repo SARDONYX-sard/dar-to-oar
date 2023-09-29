@@ -1,0 +1,9 @@
+[workspace.package]
+name = "dar2oar"
+version = "0.1.0"
+description = "DAR to OAR Converter"
+
+[workspace]
+members = ["dar2oar_core", "dar2oar_cli", "src-tauri"]
+default-members = ["dar2oar_cli"]
+resolver = "2"
