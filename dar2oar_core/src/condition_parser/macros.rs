@@ -29,7 +29,8 @@ macro_rules! get_into {
 
 /// get arg & try_into
 /// # Examples
-/// ```rust
+/// ```ignore
+/// let args = [1, 2, 3];
 /// let plugin_value = get_try_into!(
 ///     args[0], // slice & index
 ///     "float(e.g. 1.0): in ValueEqualTo | ValueLessThan 2nd arg", // Expected

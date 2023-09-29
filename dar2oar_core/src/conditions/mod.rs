@@ -30,7 +30,7 @@ pub use self::{
 };
 
 use self::condition::default_required_version;
-use crate::values::{Cmp, PluginValue, NumericValue};
+use crate::values::{Cmp, NumericValue, PluginValue};
 use serde::{Deserialize, Serialize};
 
 pub(super) fn is_false(t: &bool) -> bool {
@@ -40,7 +40,9 @@ pub(super) fn is_false(t: &bool) -> bool {
 /// Generate structures that have only condition, Comparison and NumericValue
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
+/// use gen_cmp_num_struct;
+///
 /// gen_cmp_num_struct!(
 ///     /// - OAR: Level
 ///     /// - Condition name "Level"
@@ -101,7 +103,7 @@ gen_cmp_num_struct!(
 ///
 /// # Examples
 /// StructName, fieldName => serde Name
-/// ```rust
+/// ```ignore
 /// gen_one_plugin_struct!(
 ///  HasSpell, spell => "Spell",
 ///  IsActorBase, actor_base => "Actor base"

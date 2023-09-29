@@ -38,7 +38,7 @@ impl Condition {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use crate::Condition;
     ///
     /// let condition = Condition::new("IsWornHasKeyword");

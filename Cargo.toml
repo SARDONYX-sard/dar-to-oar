@@ -1,5 +1,4 @@
 [workspace.package]
-name = "dar2oar"
 version = "0.1.0"
 description = "DAR to OAR Converter"
 

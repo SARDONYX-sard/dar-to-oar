@@ -149,6 +149,7 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
     ))(input)
 }
 
+/// NOTE: All octal and binary notations are replaced by hex (the value to be retained is in decimal), and hexadecimal notation is used for notation.
 fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, radix) = alt((tag("0x"), tag("0b"), tag("0o")))(input)?;

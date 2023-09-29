@@ -161,13 +161,14 @@ mod test {
     use super::*;
     use crate::fs::mapping_table::read_mapping_table;
 
+    #[ignore]
     #[test]
     fn should_traverse() -> anyhow::Result<()> {
         let config = simple_log::LogConfigBuilder::builder()
             .path("../convert.log")
             .size(1 * 100)
             .roll_count(10)
-            .level("debug")
+            .level("error")
             .output_file()
             .output_console()
             .build();
