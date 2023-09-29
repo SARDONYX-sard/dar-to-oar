@@ -7,11 +7,17 @@
 Click this.
 [dar2oar release](https://github.com/SARDONYX-sard/dar-to-oar/releases)
 
-- GUI
+### GUI
 
-  Click g_dar2oar
+Click g_dar2oar.exe
 
-- CLI Example
+![Convert page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/930ffd65-563e-41d6-ab6f-1f6383ae5305)
+
+![Settings page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/db5251d4-5216-47e0-970e-176d76f3e250)
+
+### CLI
+
+Example
 
 ```shell
 ./dar2oar cli --src "./data/Smooth Moveset" --mapping-file "./settings/mapping_table.txt"
