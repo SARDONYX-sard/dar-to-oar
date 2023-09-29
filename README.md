@@ -1,5 +1,11 @@
 # DAR to OAR Converter(GUI & CLI)
 
+- What is DAR?
+  [Dynamic Animation Replacer](https://www.nexusmods.com/skyrimspecialedition/mods/33746)
+
+- What is OAR?
+  [Open Animation Replacer](https://www.nexusmods.com/skyrimspecialedition/mods/92109)
+
 ## Getting Started for User
 
 - Download latest version.
@@ -20,35 +26,24 @@ Click g_dar2oar.exe
 Example
 
 ```shell
-./dar2oar cli --src "./data/Smooth Moveset" --mapping-file "./settings/mapping_table.txt"
+./dar2oar --src "./data/Smooth Moveset" --mapping-file "./settings/mapping_table.txt"
 ```
 
 - options help
 
 ```shell
-Usage: dar2oar.exe [COMMAND]
+DAR to OAR Converter CLI
 
-Commands:
-  cli   run with cli mode
-  help  Print this message or the help of the given subcommand(s)
+Usage: dar2oar.exe [OPTIONS] --src <SRC>
 
 Options:
-  -h, --help     Print help
-  -V, --version  Print version
-
-run with cli mode
-
-Usage: dar2oar.exe cli [OPTIONS] --src <SRC>
-
-Required:
       --src <SRC>                    DAR source dir path
-
-Options:
-      --dist <DIST>                  OAR destination dir path
-      --name <NAME>                  mod name in config.json & folder name - If not, it is extracted from the mod name in src
+      --dist <DIST>                  OAR destination dir path(If not, it is inferred from src)
+      --name <NAME>                  mod name in config.json & folder name(If not, it is inferred from src)
       --author <AUTHOR>              mod author in config.json
       --mapping-file <MAPPING_FILE>  path to section name table
   -h, --help                         Print help
+  -V, --version                      Print version
 ```
 
 ## What is the mapping file?
