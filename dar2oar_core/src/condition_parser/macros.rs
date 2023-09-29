@@ -28,15 +28,6 @@ macro_rules! get_into {
 }
 
 /// get arg & try_into
-/// # Examples
-/// ```ignore
-/// let args = [1, 2, 3];
-/// let plugin_value = get_try_into!(
-///     args[0], // slice & index
-///     "float(e.g. 1.0): in ValueEqualTo | ValueLessThan 2nd arg", // Expected
-///     "None" // Actual(This is option)
-/// )?;
-/// ```
 #[macro_export]
 macro_rules! get_try_into {
     ($args:ident[$index:literal], $expected:literal) => {

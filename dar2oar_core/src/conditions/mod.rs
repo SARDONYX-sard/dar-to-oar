@@ -38,20 +38,6 @@ pub(super) fn is_false(t: &bool) -> bool {
 }
 
 /// Generate structures that have only condition, Comparison and NumericValue
-///
-/// # Examples
-/// ```ignore
-/// use gen_cmp_num_struct;
-///
-/// gen_cmp_num_struct!(
-///     /// - OAR: Level
-///     /// - Condition name "Level"
-///     Level,
-///     /// Compare current game time and numeric value.
-///     /// - Condition name "CurrentGameTime"
-///     CurrentGameTime
-/// );
-/// ```
 macro_rules! gen_cmp_num_struct {
     ($($(#[$attr:meta])* $name:ident),+ $(,)?) => {
       $(
@@ -100,15 +86,6 @@ gen_cmp_num_struct!(
 );
 
 /// generate structures that have only condition and PluginValue
-///
-/// # Examples
-/// StructName, fieldName => serde Name
-/// ```ignore
-/// gen_one_plugin_struct!(
-///  HasSpell, spell => "Spell",
-///  IsActorBase, actor_base => "Actor base"
-/// )
-/// ```
 #[macro_export]
 macro_rules! gen_one_plugin_struct {
     ($($(#[$attr:meta])* $name:ident, $field:ident => $rename_field:literal),+ $(,)?) => {

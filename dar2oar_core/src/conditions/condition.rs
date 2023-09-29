@@ -35,14 +35,6 @@ impl Default for Condition {
 
 impl Condition {
     /// Creates a new `Condition` with the specified name.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use crate::Condition;
-    ///
-    /// let condition = Condition::new("IsWornHasKeyword");
-    /// ```
     pub fn new(condition: &str) -> Self {
         Self {
             condition: condition.to_string(),
