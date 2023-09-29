@@ -13,3 +13,6 @@
 *.pem
 test/
 *.log
+
+# Rust build cache
+**/target

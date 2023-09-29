@@ -1,17 +1,17 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod cli;
-mod converter;
-mod tauri;
+mod cmd;
+mod runner;
 
-use crate::cli::{run_cli, Cli};
-use clap::Parser as _;
-use tauri::runner::run_tauri;
+use crate::runner::run_tauri;
 
-fn main() -> anyhow::Result<()> {
-    match Cli::parse().command {
-        Some(args) => run_cli(args),
-        None => run_tauri(),
+fn main() -> std::io::Result<()> {
+    match run_tauri() {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            std::process::exit(1);
+        }
     }
 }

@@ -1,17 +1,17 @@
-# DAR to OAR Converter
-
-## Warning
-
-Currently we are managing to work in CLI mode.
+# DAR to OAR Converter(GUI & CLI)
 
 ## Getting Started for User
 
 - Download latest version.
 
 Click this.
-[dar2oar for x64-windows:v0.1.0a](https://github.com/SARDONYX-sard/dar-to-oar/releases/download/0.1.0a/dar2oar.exe)
+[dar2oar release](https://github.com/SARDONYX-sard/dar-to-oar/releases)
 
-- Example
+- GUI
+
+  Click g_dar2oar
+
+- CLI Example
 
 ```shell
 ./dar2oar cli --src "./data/Smooth Moveset" --mapping-file "./settings/mapping_table.txt"
@@ -184,10 +184,18 @@ The name of the priority folder is used.
 
 ## For Developer
 
-- Develop
+- GUI
 
 ```bash
-npm run dev
+npm run dev # dev
+npm run build # release
+```
+
+- CLI
+
+```bash
+cargo run # dev
+cargo build # release
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the
