@@ -21,9 +21,24 @@ pub struct Args {
     /// path to section name table
     #[arg(long)]
     mapping_file: Option<String>,
+    /// log_level trace | debug | info | warn | error
+    #[arg(long, default_value = "error")]
+    log_level: String,
+    #[arg(long, default_value = "./convert.log")]
+    log_path: String,
 }
 
 pub fn run_cli(args: Args) -> anyhow::Result<()> {
+    let config = simple_log::LogConfigBuilder::builder()
+        .path(args.log_path)
+        .size(1 * 100)
+        .roll_count(10)
+        .level(args.log_level)
+        .output_file()
+        .output_console()
+        .build();
+    simple_log::new(config).unwrap();
+
     let dist: Option<PathBuf> = args.dist.map(|dist| PathBuf::from(&dist));
 
     let table = match args.mapping_file {

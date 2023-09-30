@@ -42,6 +42,8 @@ Options:
       --name <NAME>                  mod name in config.json & folder name(If not, it is inferred from src)
       --author <AUTHOR>              mod author in config.json
       --mapping-file <MAPPING_FILE>  path to section name table
+      --log-level <LOG_LEVEL>        log_level trace | debug | info | warn | error [default: error]
+      --log-path <LOG_PATH>          [default: ./convert.log]
   -h, --help                         Print help
   -V, --version                      Print version
 ```
