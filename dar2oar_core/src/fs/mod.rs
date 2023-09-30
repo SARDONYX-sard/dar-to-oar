@@ -103,7 +103,10 @@ where
                 .to_str()
                 .context("This file isn't valid utf8")?;
 
-            let priority = &priority.context("Not found priority")?;
+            // Files that do not have a priority dir, i.e., files on the same level as the priority dir,
+            // are copied to the name space folder location.
+            // For this reason, an empty string should be put in the name space folder.
+            let priority = &priority.unwrap_or_default();
 
             let section_name = section_table
                 .as_ref()

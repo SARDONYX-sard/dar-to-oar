@@ -51,13 +51,23 @@ pub fn parse_dar_path(
                 .and_then(|path| path.to_str().and_then(|path| Some(path.to_owned())))
         });
 
+    // The name of the priority dir must be
+    // - No extension (i.e., should be dir)
+    // - The name of the dir must be a number, with no extension (i.e., it should be dir).
+    // Other than the above, set to None.
     let priority = path
         .iter()
         .position(|os_str| os_str == OsStr::new("_CustomConditions"))
         .and_then(|idx| {
             paths
                 .get(idx + 1)
-                .and_then(|path| path.to_str().and_then(|path| Some(path.to_owned())))
+                .and_then(|path| path.to_str())
+                .and_then(|path| {
+                    Path::new(path)
+                        .extension()
+                        .and_then(|_| None)
+                        .or(path.parse::<i64>().is_ok().then(|| path.to_owned()))
+                })
         });
 
     let non_leaf_remain = path
