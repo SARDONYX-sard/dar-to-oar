@@ -75,18 +75,11 @@ where
         let path = entry.path();
         let (oar_name_space_path, parsed_mod_name, priority, remain) = match parse_dar_path(&path) {
             Ok(data) => data,
-            Err(_) => {
-                // NOTE: The first search is skipped because it does not yet lead to the DAR file.
-                continue;
-            }
+            Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
         };
         let parsed_mod_name = mod_name
             .and_then(|s| Some(s.to_string()))
-            .unwrap_or_else(|| {
-                parsed_mod_name
-                    .and_then(|s| Some(s))
-                    .unwrap_or("Unknown".into())
-            });
+            .unwrap_or(parsed_mod_name.unwrap_or("Unknown".into()));
         let oar_name_space_path = oar_dir
             .as_ref()
             .unwrap_or(&oar_name_space_path)
