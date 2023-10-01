@@ -10,13 +10,10 @@ pub fn convert_dar2oar(
     mapping_path: Option<String>,
     log_level: Option<String>,
 ) -> Result<(), String> {
-    let dist = match oar_mod_folder {
-        Some(dist) => match !dist.is_empty() {
-            true => None,
-            false => Some(Path::new(dist).to_path_buf()),
-        },
-        None => None,
-    };
+    let dist = oar_mod_folder.and_then(|dist| match dist.is_empty() {
+        true => None,
+        false => Some(Path::new(dist).to_path_buf()),
+    });
     let table = match mapping_path {
         Some(ref table_path) => {
             let mapping = match read_mapping_table(table_path) {
