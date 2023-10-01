@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
 /// # Returns
-/// oar root path, mod name, priority, non leaf remain(Path excluding file from priority to the end)
+/// oar root path, is_1st_person_dir, mod name, priority, non leaf remain(Path excluding file from priority to the end)
 ///
 /// # Errors
 /// - If `DynamicAnimationReplacer` is not found in path
@@ -21,9 +21,20 @@ use std::path::{Path, PathBuf};
 /// - "\<ABS or related ParentDir\>/\<ModName\>/_1stperson/character/animations/DynamicAnimationReplacer/_CustomConditions/\<priority\>/_conditions.txt"
 pub fn parse_dar_path(
     path: impl AsRef<Path>,
-) -> Result<(PathBuf, Option<String>, Option<String>, Option<PathBuf>)> {
+) -> Result<(
+    PathBuf,
+    bool,
+    Option<String>,
+    Option<String>,
+    Option<PathBuf>,
+)> {
     let path = path.as_ref();
     let paths: Vec<&OsStr> = path.iter().collect();
+
+    let is_1st_person = path
+        .iter()
+        .position(|os_str| os_str == OsStr::new("_1stperson"))
+        .is_some();
 
     let oar_root = path
         .iter()
@@ -83,7 +94,7 @@ pub fn parse_dar_path(
             })
         });
 
-    Ok((oar_root, mod_name, priority, non_leaf_remain))
+    Ok((oar_root, is_1st_person, mod_name, priority, non_leaf_remain))
 }
 
 #[cfg(test)]
@@ -98,7 +109,7 @@ mod test {
         let result = parse_dar_path(path);
 
         assert!(result.is_ok());
-        let (oar_root, mod_name, priority, remain) = result.unwrap();
+        let (oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
 
         assert_eq!(
             oar_root,
@@ -106,6 +117,7 @@ mod test {
                 "../ModName/meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"
             )
         );
+        assert_eq!(is_1st_person, true);
         assert_eq!(mod_name, Some("ModName".to_string()));
         assert_eq!(priority, Some("8107000".to_string()));
         assert_eq!(remain, None);
@@ -117,12 +129,13 @@ mod test {
         let result = parse_dar_path(path);
 
         assert!(result.is_ok());
-        let (oar_root, mod_name, priority, remain) = result.unwrap();
+        let (oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
 
         assert_eq!(
             oar_root,
             PathBuf::from("../ModName/meshes/actors/character/animations/OpenAnimationReplacer")
         );
+        assert_eq!(is_1st_person, false);
         assert_eq!(mod_name, Some("ModName".to_string()));
         assert_eq!(priority, Some("8107000".to_string()));
         assert_eq!(remain, Some(Path::new("InnerDir").to_path_buf()));

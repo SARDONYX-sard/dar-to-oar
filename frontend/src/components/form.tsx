@@ -104,7 +104,9 @@ export function ConvertForm() {
                 }}
                 onBlur={onBlur}
                 error={Boolean(error)}
-                helperText={error?.message}
+                helperText={
+                  "Any path under a dir named DynamicAnimationReplacer can be specified."
+                }
               />
               <PathSelector path={value} isDir setValue={setStorage("src")} />
             </>
@@ -121,7 +123,7 @@ export function ConvertForm() {
             <>
               <TextField
                 label="OAR(dist) Directory"
-                placeholder="<MOD NAME>/OpenAnimationReplacer/_CustomCondition/"
+                placeholder="<MOD NAME>"
                 value={value}
                 variant="outlined"
                 margin="dense"
@@ -131,7 +133,9 @@ export function ConvertForm() {
                 }}
                 onBlur={onBlur}
                 error={Boolean(error)}
-                helperText={error?.message}
+                helperText={
+                  "A dir named meshes/actors/ will be created in the specified directory."
+                }
               />
               <PathSelector path={value} isDir setValue={setStorage("dist")} />
             </>
@@ -159,7 +163,9 @@ export function ConvertForm() {
                 }}
                 onBlur={onBlur}
                 error={Boolean(error)}
-                helperText={error?.message}
+                helperText={
+                  "Correspondence path that can change the priority number to your own section name instead of the dir name"
+                }
               />
               <PathSelector path={value} setValue={setStorage("mappingPath")} />
             </>

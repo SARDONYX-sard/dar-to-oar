@@ -73,17 +73,25 @@ where
     for entry in WalkDir::new(dar_dir) {
         let entry = entry?;
         let path = entry.path();
-        let (oar_name_space_path, parsed_mod_name, priority, remain) = match parse_dar_path(&path) {
-            Ok(data) => data,
-            Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
-        };
+        let (oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
+            match parse_dar_path(&path) {
+                Ok(data) => data,
+                Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
+            };
         let parsed_mod_name = mod_name
             .and_then(|s| Some(s.to_string()))
             .unwrap_or(parsed_mod_name.unwrap_or("Unknown".into()));
         let oar_name_space_path = oar_dir
             .as_ref()
-            .unwrap_or(&oar_name_space_path)
-            .to_path_buf()
+            .and_then(|path| {
+                Some(match is_1st_person {
+                    true => path.join(
+                        "meshes/actors/character/_1stperson/animations/OpenAnimationReplacer",
+                    ),
+                    false => path.join("meshes/actors/character/animations/OpenAnimationReplacer"),
+                })
+            })
+            .unwrap_or(oar_name_space_path)
             .join(mod_name.unwrap_or(&parsed_mod_name));
 
         if path.is_dir() {
