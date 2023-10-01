@@ -22,6 +22,10 @@ fn parse_mapping_table(table: &str) -> HashMap<String, String> {
     let mut current_section_name = String::new();
     let mut idx = 0;
     for line in table.lines() {
+        if line.starts_with("//") {
+            continue;
+        };
+
         let mapping: Vec<&str> = line.split_whitespace().collect();
         let section_name = match mapping.get(1) {
             Some(val) => {
@@ -55,6 +59,7 @@ mod tests {
 8000000  Combat
 8000001
 8000001  Base
+// This is a line comment
 8000002
 8000005
 8000005  Female

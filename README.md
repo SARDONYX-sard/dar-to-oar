@@ -37,15 +37,26 @@ DAR to OAR Converter CLI
 Usage: dar2oar.exe [OPTIONS] --src <SRC>
 
 Options:
-      --src <SRC>                    DAR source dir path
-      --dist <DIST>                  OAR destination dir path(If not, it is inferred from src)
-      --name <NAME>                  mod name in config.json & folder name(If not, it is inferred from src)
-      --author <AUTHOR>              mod author in config.json
-      --mapping-file <MAPPING_FILE>  path to section name table
-      --log-level <LOG_LEVEL>        log_level trace | debug | info | warn | error [default: error]
-      --log-path <LOG_PATH>          [default: ./convert.log]
-  -h, --help                         Print help
-  -V, --version                      Print version
+      --src <SRC>
+          DAR source dir path
+      --dist <DIST>
+          OAR destination dir path(If not, it is inferred from src)
+      --name <NAME>
+          mod name in config.json & folder name(If not, it is inferred from src)
+      --author <AUTHOR>
+          mod author in config.json
+      --mapping-file <MAPPING_FILE>
+          path to section name table
+      --mapping-1person-file <MAPPING_1PERSON_FILE>
+          path to section name table(For _1st_person)
+      --log-level <LOG_LEVEL>
+          log_level trace | debug | info | warn | error [default: error]
+      --log-path <LOG_PATH>
+          [default: ./convert.log]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
 ```
 
 ## What is the mapping file?
@@ -64,6 +75,7 @@ Sample
 8000000  Combat
 8000001
 8000002
+// This is a line comment. // to line breaks are ignored.
 8000005
 8000005  Female
 8001000

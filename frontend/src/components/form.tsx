@@ -15,6 +15,7 @@ type FormProps = {
   modName: string;
   modAuthor: string;
   mappingPath: string;
+  mapping1personPath: string;
   logLevel: LogLevel;
   loading: boolean;
 };
@@ -43,6 +44,7 @@ export function ConvertForm() {
       modName: localStorage.getItem("modName") ?? "",
       modAuthor: localStorage.getItem("modAuthor") ?? "",
       mappingPath: localStorage.getItem("mappingPath") ?? "",
+      mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
       logLevel: tryGetLogLevel(),
       loading: false as boolean,
     } satisfies FormProps,
@@ -168,6 +170,39 @@ export function ConvertForm() {
                 }
               />
               <PathSelector path={value} setValue={setStorage("mappingPath")} />
+            </>
+          )}
+        />
+
+        <Controller
+          name="mapping1personPath"
+          control={control}
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error },
+          }) => (
+            <>
+              <TextField
+                sx={{ minWidth: "100%" }}
+                label="Mapping Table Path(For _1st_person)"
+                placeholder="../mapping_table_for_1st_person.txt"
+                value={value}
+                variant="outlined"
+                margin="dense"
+                onChange={(e) => {
+                  localStorage.setItem("mappingPath", e.target.value);
+                  onChange(e);
+                }}
+                onBlur={onBlur}
+                error={Boolean(error)}
+                helperText={
+                  "Correspondence path that can change the priority number to your own section name instead of the dir name"
+                }
+              />
+              <PathSelector
+                path={value}
+                setValue={setStorage("mapping1personPath")}
+              />
             </>
           )}
         />
