@@ -74,7 +74,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 750,
+        "height": 850,
         "resizable": true,
         "theme": "Dark",
         "title": "DAR to OAR Converter",

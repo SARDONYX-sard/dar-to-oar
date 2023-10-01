@@ -21,6 +21,9 @@ pub struct Args {
     /// path to section name table
     #[arg(long)]
     mapping_file: Option<String>,
+    /// path to section name table(For _1st_person)
+    #[arg(long)]
+    mapping_1person_file: Option<String>,
     /// log_level trace | debug | info | warn | error
     #[arg(long, default_value = "error")]
     log_level: String,
@@ -49,12 +52,21 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
         None => None,
     };
 
+    let table_1person = match args.mapping_1person_file {
+        Some(table_path) => {
+            let mapping = read_mapping_table(table_path)?;
+            Some(mapping)
+        }
+        None => None,
+    };
+
     convert_dar_to_oar(
         args.src,
         dist,
         args.name.as_deref(),
         args.author.as_deref(),
         table,
+        table_1person
     )?;
     Ok(())
 }

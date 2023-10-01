@@ -9,6 +9,7 @@ type ConverterArgs = {
   modName?: string;
   modAuthor?: string;
   mappingPath?: string;
+  mapping1personPath?: string;
   logLevel?: LogLevel;
 };
 
@@ -29,6 +30,7 @@ export async function convertDar2oar(props: ConverterArgs): Promise<void> {
       modName,
       modAuthor,
       mappingPath: props.mappingPath,
+      mapping1personPath: props.mapping1personPath,
       logLevel: props.logLevel,
     });
   } catch (e) {

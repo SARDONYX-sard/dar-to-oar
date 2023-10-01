@@ -72,6 +72,7 @@ pub fn convert_dar_to_oar<P>(
     mod_name: Option<&str>,
     author: Option<&str>,
     section_table: Option<HashMap<String, String>>,
+    section_1person_table: Option<HashMap<String, String>>,
 ) -> Result<()>
 where
     P: AsRef<Path>,
@@ -115,10 +116,13 @@ where
             // For this reason, an empty string should be put in the name space folder.
             let priority = &priority.unwrap_or_default();
 
-            let section_name = section_table
-                .as_ref()
-                .and_then(|table| table.get(priority))
-                .unwrap_or(priority);
+            let section_name = match is_1st_person {
+                true => section_1person_table
+                    .as_ref()
+                    .and_then(|table| table.get(priority)),
+                false => section_table.as_ref().and_then(|table| table.get(priority)),
+            }
+            .unwrap_or(priority);
 
             let section_root = oar_name_space_path.join(section_name);
             log::trace!("section root: {:?}", section_root);
@@ -189,6 +193,7 @@ mod test {
             None,
             None,
             Some(mapping),
+            None,
         )
     }
 }
