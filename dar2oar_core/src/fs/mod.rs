@@ -38,6 +38,9 @@ where
     Ok(())
 }
 
+/// If there is no name_space_config file, create one.
+/// If it exists, do nothing. (This behavior is intended to facilitate the creation of config files
+/// for 1st_person and 3rd_person.)
 fn write_name_space_config<P>(
     oar_name_space_path: P,
     mod_name: &str,
@@ -46,13 +49,18 @@ fn write_name_space_config<P>(
 where
     P: AsRef<Path>,
 {
+    let target_file = oar_name_space_path.as_ref().join("config.json");
+    if target_file.exists() {
+        return Ok(());
+    }
+
     let config_json = MainConfig {
         name: mod_name.into(),
         author: author.unwrap_or_default().into(),
         ..Default::default()
     };
     fs::create_dir_all(&oar_name_space_path)?;
-    let mut config_file = fs::File::create(oar_name_space_path.as_ref().join("config.json"))?;
+    let mut config_file = fs::File::create(target_file)?;
     let json = serde_json::to_string_pretty(&config_json)?;
     config_file.write_all(json.as_bytes())?;
     Ok(())
@@ -68,8 +76,6 @@ pub fn convert_dar_to_oar<P>(
 where
     P: AsRef<Path>,
 {
-    let mut is_write_main = false;
-
     for entry in WalkDir::new(dar_dir) {
         let entry = entry?;
         let path = entry.path();
@@ -134,23 +140,20 @@ where
                     Err(err) => log::error!("Error reading file {path:?}: {err}"),
                 }
 
-                if !is_write_main {
-                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
-                        .with_context(|| {
-                            format!(
-                                "Failed to write name space config to: {:?}",
-                                oar_name_space_path
-                            )
-                        })?;
-                    is_write_main = true;
-                }
+                write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                    .with_context(|| {
+                        format!(
+                            "Failed to write name space config to: {:?}",
+                            oar_name_space_path
+                        )
+                    })?;
             } else {
+                // maybe motion files(.hex)
                 if let Some(remain) = remain {
                     let non_leaf_dir = section_root.join(remain);
                     fs::create_dir_all(&non_leaf_dir)?;
                     fs::copy(path, &non_leaf_dir.join(file_name))?;
                 } else {
-                    // maybe motion files(.hex)
                     fs::copy(path, section_root.join(file_name))?;
                 }
             }
