@@ -67,15 +67,21 @@ export function ConvertForm() {
     modName,
     modAuthor,
     mappingPath,
+    mapping1personPath,
   }) => {
     setLoading(true);
 
-    await convertDar2oar({ src, dist, modName, modAuthor, mappingPath }).catch(
-      (e) => {
-        toast.error(`${e}`);
-        setLoading(false);
-      }
-    );
+    await convertDar2oar({
+      src,
+      dist,
+      modName,
+      modAuthor,
+      mappingPath,
+      mapping1personPath,
+    }).catch((e) => {
+      toast.error(`${e}`);
+      setLoading(false);
+    });
     setLoading(false);
   };
 
@@ -155,7 +161,7 @@ export function ConvertForm() {
               <TextField
                 sx={{ minWidth: "100%" }}
                 label="Mapping Table Path"
-                placeholder="../mapping_table.txt"
+                placeholder="./mapping_table.txt"
                 value={value}
                 variant="outlined"
                 margin="dense"
@@ -185,12 +191,12 @@ export function ConvertForm() {
               <TextField
                 sx={{ minWidth: "100%" }}
                 label="Mapping Table Path(For _1st_person)"
-                placeholder="../mapping_table_for_1st_person.txt"
+                placeholder="./mapping_table_for_1st_person.txt"
                 value={value}
                 variant="outlined"
                 margin="dense"
                 onChange={(e) => {
-                  localStorage.setItem("mappingPath", e.target.value);
+                  localStorage.setItem("mapping1personPath", e.target.value);
                   onChange(e);
                 }}
                 onBlur={onBlur}
