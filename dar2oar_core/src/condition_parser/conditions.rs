@@ -215,6 +215,7 @@ mod tests {
                     ..Default::default()
                 }),
             ],
+            ..Default::default()
         });
 
         assert_eq!(conditions, Ok(expected));

@@ -14,7 +14,7 @@ pub struct Or {
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
-    #[serde(rename = "conditions")]
+    #[serde(rename = "Conditions")]
     pub conditions: Vec<ConditionSet>,
 }
 
