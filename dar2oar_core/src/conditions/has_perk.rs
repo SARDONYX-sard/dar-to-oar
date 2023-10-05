@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasPerk {
-    /// Condition name "HasRefType"
+    /// Condition name "HasPerk"
     pub condition: String,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
