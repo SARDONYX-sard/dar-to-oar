@@ -1,6 +1,6 @@
 [package]
 name = "dar2oar_core"
-version = "0.1.0"
+version = "0.1.1"
 description = "DAR to OAR Converter Core"
 authors = ["SARDONYX-sard"]
 license = "MIT OR Apache-2.0"
