@@ -26,10 +26,10 @@ fn parse_mapping_table(table: &str) -> HashMap<String, String> {
             continue;
         };
 
-        let mapping: Vec<&str> = line.split_whitespace().collect();
+        let mapping: Vec<&str> = line.splitn(2, ' ').collect();
         let section_name = match mapping.get(1) {
             Some(val) => {
-                current_section_name = val.to_string();
+                current_section_name = val.trim().to_string();
                 idx = 0;
                 current_section_name.clone()
             }
