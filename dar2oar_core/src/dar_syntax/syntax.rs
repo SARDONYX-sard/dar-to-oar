@@ -293,12 +293,28 @@ pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
 
     loop {
         let (input, _) = multispace0(input_tmp)?;
-        let (input, expr) = parse_expression(input)?;
-        let (input, _) = multispace0(input)?;
+        let (input, expr) = opt(parse_expression)(input)?;
+
+        // NOTE:
+        // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
+        // but others write it, so it cannot be an error.
+        let expr = match expr {
+            Some(expr) => expr,
+            None => {
+                match is_in_or_stmt {
+                    true => {
+                        top_conditions.push(Condition::Or(or_vec.clone()));
+                    }
+                    false => {}
+                }
+                break;
+            }
+        };
+
+        let (input, _) = space0(input)?;
         let (mut input, operator) = opt(parse_operator)(input)?;
         if operator.is_some() {
-            let (inp, _) = space0(input)?;
-            let (inp, _) = preceded(opt(char('\r')), char('\n'))(inp)?;
+            let (inp, _) = multispace0(input)?;
             input = inp;
         }
 
@@ -409,7 +425,7 @@ mod tests {
         ]);
         match parse_condition(input) {
             Ok(res) => {
-                assert_eq!(res, ("", expected));
+                assert_eq!(res, ("\n", expected));
             }
             Err(err) => match err {
                 nom::Err::Incomplete(_) => todo!(),
@@ -438,25 +454,17 @@ mod tests {
     }
 
     #[test]
-    fn should_err_invalid_syntax() {
+    fn should_parse_tailing_invalid_syntax() {
         let input = "NOT IsActorBase ( \"Skyrim.esm\" | 0x00000007 )OR";
-        // assert!(parse_condition(input).is_err());
-        match parse_condition(input) {
-            Ok(res) => {
-                dbg!(res);
-                unreachable!()
-            }
-            Err(err) => match err {
-                nom::Err::Incomplete(_) => todo!(),
-                nom::Err::Error(err) => {
-                    dbg!(&err);
-                    println!("{}", convert_error(input, err));
-                }
-                nom::Err::Failure(err) => {
-                    dbg!(&err);
-                    println!("{}", convert_error(input, err));
-                }
-            },
-        };
+        let expected = Condition::And(vec![Condition::Or(vec![Condition::Exp(Expression {
+            negated: true,
+            fn_name: "IsActorBase",
+            args: vec![FnArg::PluginValue {
+                plugin_name: "Skyrim.esm",
+                form_id: NumberLiteral::Hex(0x00000007),
+            }],
+        })])]);
+
+        assert_eq!(parse_condition(input), Ok(("", expected)));
     }
 }
