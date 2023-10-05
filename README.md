@@ -17,9 +17,8 @@ Click this.
 
 Click g_dar2oar.exe
 
-![Convert page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/930ffd65-563e-41d6-ab6f-1f6383ae5305)
-
-![Settings page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/db5251d4-5216-47e0-970e-176d76f3e250)
+![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/45cf20e7-c8c5-4b24-aeb0-e9aa67fe0a08)
+![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/31d430ed-399c-40b5-912a-a6d046dba869)
 
 ### CLI
 
@@ -199,6 +198,15 @@ The name of the priority folder is used.
 
 ## For Developer
 
+requirements Building the CLI
+
+- Rustup latest
+
+Building the GUI
+
+- Rustup latest
+- Node.js (LTS 18)
+
 - GUI
 
 ```bash
@@ -210,7 +218,7 @@ npm run build # release
 
 ```bash
 cargo run # dev
-cargo build # release
+cargo build --release # release
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the
