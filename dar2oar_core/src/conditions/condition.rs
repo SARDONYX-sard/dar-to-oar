@@ -13,6 +13,7 @@ pub struct Condition {
     #[serde(default)]
     pub condition: String,
     #[serde(default = "default_required_version")]
+    #[serde(rename = "requiredVersion")]
     /// The required version for this condition.
     pub required_version: String,
     /// condition to **Not** (default is `false`).
