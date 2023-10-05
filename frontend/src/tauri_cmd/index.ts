@@ -22,6 +22,9 @@ export async function convertDar2oar(props: ConverterArgs): Promise<void> {
   const dist = props.dist === "" ? undefined : props.dist;
   const modName = props.modName === "" ? undefined : props.modName;
   const modAuthor = props.modAuthor === "" ? undefined : props.modAuthor;
+  const mapping1personPath =
+    props.mapping1personPath === "" ? undefined : props.mapping1personPath;
+  const mappingPath = props.mappingPath === "" ? undefined : props.mappingPath;
 
   try {
     await invoke("convert_dar2oar", {
@@ -29,8 +32,8 @@ export async function convertDar2oar(props: ConverterArgs): Promise<void> {
       oarModFolder: dist,
       modName,
       modAuthor,
-      mappingPath: props.mappingPath,
-      mapping1personPath: props.mapping1personPath,
+      mappingPath,
+      mapping1personPath,
       logLevel: props.logLevel,
     });
   } catch (e) {
