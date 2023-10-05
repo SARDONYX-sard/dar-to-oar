@@ -25,6 +25,7 @@ impl From<NumberLiteral> for NumericLiteral {
         }
     }
 }
+
 impl From<&NumberLiteral> for NumericLiteral {
     fn from(value: &NumberLiteral) -> Self {
         match *value {
@@ -39,19 +40,7 @@ impl TryFrom<FnArg<'_>> for NumericLiteral {
     type Error = ParseError;
 
     fn try_from(value: FnArg) -> Result<Self, Self::Error> {
-        match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Err(ParseError::UnexpectedValue(
-                "Float(e.g. 3.0)".to_string(),
-                format!(
-                    "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
-                    plugin_name, form_id
-                ),
-            )),
-            FnArg::Number(num) => Ok(num.into()),
-        }
+        NumericLiteral::try_from(&value)
     }
 }
 
@@ -64,7 +53,7 @@ impl TryFrom<&FnArg<'_>> for NumericLiteral {
                 plugin_name,
                 form_id,
             } => Err(ParseError::UnexpectedValue(
-                "Float(e.g. 3.0)".to_string(),
+                "Number(e.g. 3.0)".to_string(),
                 format!(
                     "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
                     plugin_name, form_id
@@ -94,29 +83,25 @@ impl From<&FnArg<'_>> for NumericValue {
     }
 }
 
+impl From<&NumberLiteral> for StaticValue {
+    fn from(value: &NumberLiteral) -> Self {
+        match *value {
+            NumberLiteral::Float(value) => Self { value },
+            NumberLiteral::Decimal(value) => Self {
+                value: value as f32,
+            },
+            NumberLiteral::Hex(value) => Self {
+                value: value as f32,
+            },
+        }
+    }
+}
+
 impl TryFrom<FnArg<'_>> for StaticValue {
     type Error = ParseError;
 
     fn try_from(value: FnArg) -> Result<Self, Self::Error> {
-        match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Err(ParseError::UnexpectedValue(
-                "Float(e.g. 3.0)".to_string(),
-                format!(
-                    "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
-                    plugin_name, form_id
-                ),
-            )),
-            FnArg::Number(num) => match num {
-                NumberLiteral::Float(value) => Ok(Self { value }),
-                num => Err(ParseError::UnexpectedValue(
-                    "Float(e.g. 3.0)".to_string(),
-                    num.to_string(),
-                )),
-            },
-        }
+        StaticValue::try_from(&value)
     }
 }
 
@@ -129,19 +114,13 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
                 plugin_name,
                 form_id,
             } => Err(ParseError::UnexpectedValue(
-                "Float(e.g. 3.0)".to_string(),
+                "StaticValue(e.g. 3.0)".to_string(),
                 format!(
                     "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
                     plugin_name, form_id
                 ),
             )),
-            FnArg::Number(num) => match num {
-                NumberLiteral::Float(value) => Ok(Self { value: *value }),
-                num => Err(ParseError::UnexpectedValue(
-                    "Float(e.g. 3.0)".to_string(),
-                    num.to_string(),
-                )),
-            },
+            FnArg::Number(num) => Ok(num.into()),
         }
     }
 }
@@ -160,7 +139,7 @@ impl TryFrom<FnArg<'_>> for PluginValue {
             }),
             FnArg::Number(num) => match num {
                 num => Err(ParseError::UnexpectedValue(
-                    "Float(e.g. 3.0".to_string(),
+                    "plugin_name, form_id (in cast FnArg to PluginValue)".to_string(),
                     num.to_string(),
                 )),
             },
@@ -182,7 +161,7 @@ impl TryFrom<&FnArg<'_>> for PluginValue {
             }),
             FnArg::Number(num) => match num {
                 num => Err(ParseError::UnexpectedValue(
-                    "Float(e.g. 3.0".to_string(),
+                    "plugin_name, form_id (in cast &FnArg to PluginValue)".to_string(),
                     num.to_string(),
                 )),
             },
@@ -220,7 +199,7 @@ impl TryFrom<&FnArg<'_>> for Direction {
                 plugin_name,
                 form_id,
             } => Err(ParseError::UnexpectedValue(
-                "Float(e.g. 3.0)".to_string(),
+                "1..=4(in Cast &FnArg to Direction)".to_string(),
                 format!(
                     "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
                     plugin_name, form_id
