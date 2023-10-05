@@ -8,7 +8,6 @@ pub fn default_required_version() -> String {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Condition {
     /// Condition name (e.g. IsWornHasKeyword)
     #[serde(default)]
