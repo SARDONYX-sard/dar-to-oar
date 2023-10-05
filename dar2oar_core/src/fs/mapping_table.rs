@@ -26,22 +26,25 @@ fn parse_mapping_table(table: &str) -> HashMap<String, String> {
             continue;
         };
 
-        let mapping: Vec<&str> = line.splitn(2, ' ').collect();
-        let section_name = match mapping.get(1) {
-            Some(val) => {
+        let mapping = match line.find(' ') {
+            Some(idx) => line.split_at(idx),
+            None => (line, ""),
+        };
+        let section_name = match mapping.1 {
+            "" => {
+                idx += 1;
+                format!("{}_{}", current_section_name, idx)
+            }
+            val => {
                 current_section_name = val.trim().to_string();
                 idx = 0;
                 current_section_name.clone()
             }
-            None => {
-                idx += 1;
-                format!("{}_{}", current_section_name, idx)
-            }
         };
 
-        match mapping.get(0) {
-            Some(key) => map.insert(key.to_string(), section_name.clone()),
-            None => continue, // Skip blank lines.
+        match mapping.0 {
+            "" | "\r\n" | "\n" => continue, // Skip blank lines.
+            key => map.insert(key.to_string(), section_name.clone()),
         };
     }
 
