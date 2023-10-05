@@ -3,9 +3,8 @@ use crate::values::Keyword;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct IsWornHasKeyword {
-    /// Condition name "Random"
+    /// Condition name "IsWornHasKeyword"
     pub condition: String,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
@@ -22,21 +21,10 @@ pub struct IsWornHasKeyword {
 impl Default for IsWornHasKeyword {
     fn default() -> Self {
         Self {
-            condition: "Level".into(),
+            condition: "IsWornHasKeyword".into(),
             required_version: default_required_version(),
             negated: Default::default(),
             keyword: Default::default(),
         }
     }
 }
-
-// actual json
-// {
-//    "condition": "Level",
-//    "requiredVersion": "1.0.0.0",
-//    "negated": true,
-//    "Comparison": "==",
-//    "Numeric value": {
-//        "value": 0.0
-//    }
-//}
