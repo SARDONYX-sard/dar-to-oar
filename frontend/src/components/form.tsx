@@ -4,9 +4,7 @@ import toast from "react-hot-toast";
 import { Box, Grid, FormGroup, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { PathSelector } from "./path_selector";
-import { SelectLogLevel } from "./select_log_level";
 import { convertDar2oar } from "../tauri_cmd";
-import type { LogLevel } from "../tauri_cmd";
 import type { SubmitHandler } from "react-hook-form";
 
 type FormProps = {
@@ -16,25 +14,11 @@ type FormProps = {
   modAuthor: string;
   mappingPath: string;
   mapping1personPath: string;
-  logLevel: LogLevel;
   loading: boolean;
 };
 
-const tryGetLogLevel = (): LogLevel => {
-  const logLevel = localStorage.getItem("logLevel");
-  switch (logLevel) {
-    case "trace":
-    case "debug":
-    case "info":
-    case "warn":
-      return logLevel;
-    default:
-      return "error";
-  }
-};
-
 export function ConvertForm() {
-  const { register, handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
     shouldFocusError: false,
@@ -45,7 +29,6 @@ export function ConvertForm() {
       modAuthor: localStorage.getItem("modAuthor") ?? "",
       mappingPath: localStorage.getItem("mappingPath") ?? "",
       mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
-      logLevel: tryGetLogLevel(),
       loading: false as boolean,
     } satisfies FormProps,
   });
@@ -259,13 +242,6 @@ export function ConvertForm() {
                 error={Boolean(error)}
                 helperText={error?.message}
               />
-            )}
-          />
-          <Controller
-            name="logLevel"
-            control={control}
-            render={({ field: { value } }) => (
-              <SelectLogLevel value={value} {...register("logLevel")} />
             )}
           />
         </Grid>
