@@ -1,4 +1,5 @@
 import { useInsertionEffect } from "react";
+import { useStorageState } from "@/hooks";
 
 /**
  * Inject CSS dynamically on the client side.
@@ -6,15 +7,18 @@ import { useInsertionEffect } from "react";
  * Frequent style recalculation is inevitable,
  * but this hook can solve the delay problem caused by style injection lifecycle discrepancies.
  *  - See: [useInsertionEffect](https://react.dev/reference/react/useInsertionEffect)
- * @param css
  */
-export function useDynStyle(css: string) {
+export function useDynStyle() {
+  const [style, setStyle] = useStorageState("customCSS");
+
   useInsertionEffect(() => {
     const styleElement = document.createElement("style");
-    styleElement.innerHTML = css;
+    styleElement.innerHTML = style;
     document.head.appendChild(styleElement);
     return () => {
       document.head.removeChild(styleElement);
     };
-  }, [css]);
+  }, [style]);
+
+  return [style, setStyle] as const;
 }

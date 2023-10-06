@@ -1,11 +1,10 @@
 "use client";
 
 import { Box, Button, TextField } from "@mui/material";
-import { useDynStyle, useStorageState } from "@/hooks";
+import { useDynStyle } from "@/hooks";
 
 export default function Settings() {
-  const [style, setStyle] = useStorageState("customCSS");
-  useDynStyle(style);
+  const [style, setStyle] = useDynStyle();
 
   return (
     <Box
