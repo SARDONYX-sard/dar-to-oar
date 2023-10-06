@@ -1,11 +1,10 @@
-import ConvertButton from "./convert_btn";
-import React from "react";
-import toast from "react-hot-toast";
-import { Box, Grid, FormGroup, TextField } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
-import { PathSelector } from "./path_selector";
-import { convertDar2oar } from "../tauri_cmd";
+import { Box, FormGroup, Grid, TextField } from "@mui/material";
 import type { SubmitHandler } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { convertDar2oar } from "../tauri_cmd";
+import ConvertButton from "./convert_btn";
+import { PathSelector } from "./path_selector";
 
 type FormProps = {
   src: string;

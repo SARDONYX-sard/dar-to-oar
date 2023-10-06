@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import TransformIcon from "@mui/icons-material/Transform";
@@ -21,9 +21,9 @@ const Nav = styled(BottomNavigation)(() => {
 
 export default function MenuNavigation() {
   const router = useRouter();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const location = window.location.pathname;
     if (location === "/") {
       setValue(0);

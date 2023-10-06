@@ -1,7 +1,7 @@
-import * as React from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { forwardRef } from "react";
 import { UseFormRegister } from "react-hook-form";
 import type { LogLevel } from "../tauri_cmd";
 
@@ -9,7 +9,7 @@ interface IFormValues {
   logLevel: LogLevel;
 }
 
-export const SelectLogLevel = React.forwardRef<
+export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
   { value: string } & ReturnType<UseFormRegister<IFormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {

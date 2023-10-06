@@ -1,6 +1,6 @@
+import { Button } from "@mui/material";
 import toast from "react-hot-toast";
 import { openPath } from "../tauri_cmd";
-import { Button } from "@mui/material";
 
 type Props = {
   path: string;

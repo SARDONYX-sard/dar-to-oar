@@ -1,4 +1,8 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll.sortJSON": false
+    // "source.organizeImports": true
+  },
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
   "files.exclude": {
