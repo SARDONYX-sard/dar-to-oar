@@ -1,14 +1,14 @@
 "use client";
 
 import { Toaster } from "react-hot-toast";
-import { useToastLimit } from "@/hooks";
+import { useDynStyle, useStorageState, useToastLimit } from "@/hooks";
 import { ConvertForm } from "@/components/form";
 import { Box } from "@mui/material";
-import { useStorageState } from "../../hooks";
 
 export default function Converter() {
   useToastLimit(1);
-  const [value, _setValue] = useStorageState("customCSS");
+  const [style, _setStyle] = useStorageState("customCSS");
+  useDynStyle(style);
 
   return (
     <>
@@ -24,7 +24,6 @@ export default function Converter() {
       >
         <ConvertForm />
       </Box>
-      <style>{value}</style>
       <Toaster position="bottom-right" reverseOrder={false} />
     </>
   );

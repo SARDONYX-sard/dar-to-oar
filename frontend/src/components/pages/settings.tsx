@@ -1,10 +1,11 @@
 "use client";
 
 import { Box, Button, TextField } from "@mui/material";
-import { useStorageState } from "../../hooks";
+import { useDynStyle, useStorageState } from "@/hooks";
 
 export default function Settings() {
-  const [value, setValue] = useStorageState("customCSS");
+  const [style, setStyle] = useStorageState("customCSS");
+  useDynStyle(style);
 
   return (
     <Box
@@ -27,16 +28,14 @@ export default function Settings() {
         margin="dense"
         multiline
         onChange={(e) => {
-          setValue(e.target.value);
+          setStyle(e.target.value);
         }}
         placeholder="{ body: url('https://localhost' }"
-        value={value}
+        value={style}
       />
-      <Button variant="outlined" onClick={() => setValue(sample)}>
+      <Button variant="outlined" onClick={() => setStyle(sample)}>
         use Sample
       </Button>
-
-      <style>{value}</style>
     </Box>
   );
 }
