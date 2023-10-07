@@ -2,7 +2,7 @@ use clap::{arg, Parser};
 use dar2oar_core::{convert_dar_to_oar, read_mapping_table};
 use std::path::PathBuf;
 
-/// dar2oar --src "DAR path" --src "OAR path" --name "" --author ""
+/// dar2oar --src "DAR path" --dist "OAR path"
 #[derive(Debug, Parser)]
 #[command(version, about)]
 pub struct Args {
@@ -66,7 +66,6 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
         args.name.as_deref(),
         args.author.as_deref(),
         table,
-        table_1person
-    )?;
-    Ok(())
+        table_1person,
+    )
 }

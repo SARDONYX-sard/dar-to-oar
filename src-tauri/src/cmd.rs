@@ -1,6 +1,29 @@
 use dar2oar_core::{convert_dar_to_oar, read_mapping_table};
 use std::path::Path;
 
+/// early return with Err() and write log error.
+macro_rules! bail {
+    ($err:expr) => {{
+        log::error!("{}", $err);
+        return Err($err.to_string());
+    }};
+}
+
+macro_rules! try_get_mapping_table {
+    ($mapping_path:ident) => {
+        match $mapping_path {
+            Some(ref table_path) => {
+                let mapping = match read_mapping_table(table_path) {
+                    Ok(table) => table,
+                    Err(err) => bail!(err),
+                };
+                Some(mapping)
+            }
+            None => None,
+        }
+    };
+}
+
 #[tauri::command]
 pub fn convert_dar2oar(
     dar_mod_folder: &str,
@@ -15,34 +38,20 @@ pub fn convert_dar2oar(
         true => None,
         false => Some(Path::new(dist).to_path_buf()),
     });
-    let table = match mapping_path {
-        Some(ref table_path) => {
-            let mapping = match read_mapping_table(table_path) {
-                Ok(table) => table,
-                Err(err) => return Err(err.to_string()),
-            };
-            Some(mapping)
-        }
-        None => None,
-    };
-    let table_1person = match mapping_1person_path {
-        Some(ref table_path) => {
-            let mapping = match read_mapping_table(table_path) {
-                Ok(table) => table,
-                Err(err) => return Err(err.to_string()),
-            };
-            Some(mapping)
-        }
-        None => None,
-    };
 
-    let log_level = match log_level {
-        Some(level) => match level.as_str() {
-            "trace" | "debug" | "info" | "warn" | "error" => level,
-            _ => "error".to_owned(),
-        },
-        None => "error".to_owned(),
-    };
+    let table = try_get_mapping_table!(mapping_path);
+    let table_1person = try_get_mapping_table!(mapping_1person_path);
+
+    let log_level = log_level
+        .as_deref()
+        .and_then(|level| match level {
+            "trace" | "debug" | "info" | "warn" | "error" => Some(level),
+            unknown_level => {
+                log::warn!("unknown log level {}. fallback to error", unknown_level);
+                None
+            }
+        })
+        .unwrap_or("error");
 
     log::debug!("src: {}", dar_mod_folder);
     log::debug!("dist: {:?}", dist);
@@ -50,7 +59,7 @@ pub fn convert_dar2oar(
     log::debug!("mod_author: {:?}", mod_author);
     log::debug!("table path: {:?}", mapping_path.as_ref());
     log::debug!("1st person table path: {:?}", mapping_1person_path.as_ref());
-    log::debug!("log level: {:?}", log_level.as_str());
+    log::debug!("log level: {:?}", log_level);
 
     match convert_dar_to_oar(
         dar_mod_folder,
@@ -61,6 +70,6 @@ pub fn convert_dar2oar(
         table_1person,
     ) {
         Ok(_) => Ok(()),
-        Err(err) => return Err(err.to_string()),
+        Err(err) => bail!(err),
     }
 }
