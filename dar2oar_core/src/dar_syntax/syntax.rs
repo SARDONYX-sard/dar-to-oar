@@ -36,7 +36,7 @@
 
 use nom::{
     branch::alt,
-    bytes::complete::{escaped, tag, take_while1},
+    bytes::complete::{escaped, tag, take_until, take_while1},
     character::complete::{char, digit1, hex_digit1, multispace0, one_of, space0},
     combinator::{map, opt},
     error::context,
@@ -285,6 +285,11 @@ fn parse_expression(input: &str) -> IResult<&str, Expression> {
     ))
 }
 
+/// Comments starting with ';'
+fn comment(input: &str) -> IResult<&str, &str> {
+    preceded(char(';'), alt((take_until("\n"), take_until("\r\n"))))(input)
+}
+
 pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();
@@ -293,6 +298,15 @@ pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
 
     loop {
         let (input, _) = multispace0(input_tmp)?;
+        // Skip line comment.
+        match comment(input) {
+            Ok((input, _)) => {
+                input_tmp = input;
+                continue;
+            }
+            Err(_) => (),
+        };
+
         let (input, expr) = opt(parse_expression)(input)?;
 
         // NOTE:
@@ -391,7 +405,12 @@ mod tests {
         let input = r#"
             IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
             IsPlayerTeammate() AND
+            ; This is a line comment.
+            ; This is a line comment.
+
             IsEquippedRightType(3) OR
+
+            ; This is a line comment.
             IsEquippedRightType(4)
 "#;
 
