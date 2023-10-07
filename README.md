@@ -1,5 +1,11 @@
 # DAR to OAR Converter(GUI & CLI)
 
+[![Cargo Lint & Test](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml)
+
+[![Release Cli](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml)
+
+[![Release GUI](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml)
+
 - What is DAR?
   [Dynamic Animation Replacer](https://www.nexusmods.com/skyrimspecialedition/mods/33746)
 
