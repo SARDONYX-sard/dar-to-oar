@@ -55,7 +55,7 @@ jobs:
           tag: ${{ github.ref_name }}
 
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@2.1.1
+        uses: svenstaro/upload-release-action@v2
         with:
           release_name: DAR to OAR Converter v${{ github.ref }}
           body: ${{ steps.changelog.outputs.changes }}
