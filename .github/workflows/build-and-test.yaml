@@ -1,10 +1,10 @@
-name: bulid & Test
+name: Cargo Lint & Test
 
 on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"]
+    branches: "*"
 
 env:
   CARGO_TERM_COLOR: always
@@ -24,8 +24,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo build
+
+      - name: Run lint
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace
+        if: matrix.platform == 'ubuntu-20.04'
+
       - name: Run tests
-        run: cargo test --workspace
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace
