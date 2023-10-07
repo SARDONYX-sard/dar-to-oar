@@ -2,6 +2,16 @@ use anyhow::{Context as _, Result};
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
+/// - Ok: oar root path, is_1st_person_dir, mod name, priority, non leaf remain(Path excluding file from priority to the end)
+/// - Err: anyhow Error
+type DarPathsResult = Result<(
+    PathBuf,
+    bool,
+    Option<String>,
+    Option<String>,
+    Option<PathBuf>,
+)>;
+
 /// # Returns
 /// oar root path, is_1st_person_dir, mod name, priority, non leaf remain(Path excluding file from priority to the end)
 ///
@@ -19,31 +29,20 @@ use std::path::{Path, PathBuf};
 ///
 /// # DAR:
 /// - "\<ABS or related ParentDir\>/\<ModName\>/_1stperson/character/animations/DynamicAnimationReplacer/_CustomConditions/\<priority\>/_conditions.txt"
-pub fn parse_dar_path(
-    path: impl AsRef<Path>,
-) -> Result<(
-    PathBuf,
-    bool,
-    Option<String>,
-    Option<String>,
-    Option<PathBuf>,
-)> {
+pub fn parse_dar_path(path: impl AsRef<Path>) -> DarPathsResult {
     let path = path.as_ref();
     let paths: Vec<&OsStr> = path.iter().collect();
 
-    let is_1st_person = path
-        .iter()
-        .position(|os_str| os_str == OsStr::new("_1stperson"))
-        .is_some();
+    let is_1st_person = path.iter().any(|os_str| os_str == OsStr::new("_1stperson"));
 
     let oar_root = path
         .iter()
         .position(|os_str| os_str == OsStr::new("DynamicAnimationReplacer"))
         .and_then(|idx| {
-            paths.get(0..idx).and_then(|path| {
+            paths.get(0..idx).map(|path| {
                 let mut string = path.join(OsStr::new("/"));
                 string.push("/OpenAnimationReplacer");
-                Some(Path::new(&string).to_path_buf())
+                Path::new(&string).to_path_buf()
             })
         })
         .with_context(|| {
@@ -59,7 +58,7 @@ pub fn parse_dar_path(
         .and_then(|idx| {
             paths
                 .get(idx - 1)
-                .and_then(|path| path.to_str().and_then(|path| Some(path.to_owned())))
+                .and_then(|path| path.to_str().map(|path| path.to_owned()))
         });
 
     // The name of the priority dir must be
@@ -76,7 +75,7 @@ pub fn parse_dar_path(
                 .and_then(|path| {
                     Path::new(path)
                         .extension()
-                        .and_then(|_| None)
+                        .and(None)
                         .or(path.parse::<i64>().is_ok().then(|| path.to_owned()))
                 })
         });

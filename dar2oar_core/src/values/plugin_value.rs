@@ -68,7 +68,6 @@ impl From<NumericLiteral> for FormID {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-    use serde_json;
 
     #[test]
     fn should_serialize_plugin_value() {

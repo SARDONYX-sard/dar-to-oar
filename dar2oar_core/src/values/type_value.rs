@@ -97,9 +97,7 @@ impl TryFrom<NumericLiteral> for WeaponType {
                 -1..=18 => Ok((num as i64).try_into().expect("unreachable")),
                 _ => Err("Got Decimal, Out of range -1..=18"),
             },
-            NumericLiteral::Float(num) => match num {
-                num => Ok(num.to_string().as_str().try_into()?),
-            },
+            NumericLiteral::Float(num) => Ok(num.to_string().as_str().try_into()?),
         }
     }
 }
@@ -247,7 +245,6 @@ impl<'de> Deserialize<'de> for WeaponType {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-    use serde_json;
 
     #[test]
     fn should_serialize_type_value() {

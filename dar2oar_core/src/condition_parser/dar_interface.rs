@@ -137,12 +137,10 @@ impl TryFrom<FnArg<'_>> for PluginValue {
                 plugin_name: plugin_name.to_string(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
-            FnArg::Number(num) => match num {
-                num => Err(ParseError::UnexpectedValue(
-                    "plugin_name, form_id (in cast FnArg to PluginValue)".to_string(),
-                    num.to_string(),
-                )),
-            },
+            FnArg::Number(num) => Err(ParseError::UnexpectedValue(
+                "plugin_name, form_id (in cast FnArg to PluginValue)".to_string(),
+                num.to_string(),
+            )),
         }
     }
 }
@@ -159,12 +157,10 @@ impl TryFrom<&FnArg<'_>> for PluginValue {
                 plugin_name: plugin_name.to_string(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
-            FnArg::Number(num) => match num {
-                num => Err(ParseError::UnexpectedValue(
-                    "plugin_name, form_id (in cast &FnArg to PluginValue)".to_string(),
-                    num.to_string(),
-                )),
-            },
+            FnArg::Number(num) => Err(ParseError::UnexpectedValue(
+                "plugin_name, form_id (in cast &FnArg to PluginValue)".to_string(),
+                num.to_string(),
+            )),
         }
     }
 }
@@ -181,11 +177,9 @@ impl From<&FnArg<'_>> for Keyword {
                     form_id: NumericLiteral::from(form_id).into(),
                 },
             }),
-            FnArg::Number(num) => match num {
-                num => Self::Literal(crate::values::LiteralValue {
-                    editor_id: NumericLiteral::from(num).to_string(),
-                }),
-            },
+            FnArg::Number(num) => Self::Literal(crate::values::LiteralValue {
+                editor_id: NumericLiteral::from(num).to_string(),
+            }),
         }
     }
 }

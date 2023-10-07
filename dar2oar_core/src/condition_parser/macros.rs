@@ -20,10 +20,10 @@ macro_rules! get_arg {
 #[macro_export]
 macro_rules! get_into {
     ($args:ident[$index:literal], $expected:literal) => {
-        crate::get_arg!($args[$index], $expected)?.into()
+        $crate::get_arg!($args[$index], $expected)?.into()
     };
     ($args:ident[$index:literal], $expected:literal, $actual:literal) => {
-        crate::get_arg!($args[$index], $expected, $actual)?.into()
+        $crate::get_arg!($args[$index], $expected, $actual)?.into()
     };
 }
 
@@ -31,10 +31,10 @@ macro_rules! get_into {
 #[macro_export]
 macro_rules! get_try_into {
     ($args:ident[$index:literal], $expected:literal) => {
-        crate::get_arg!($args[$index], $expected)?.try_into()
+        $crate::get_arg!($args[$index], $expected)?.try_into()
     };
     ($args:ident[$index:literal], $expected:literal, $actual:literal) => {
-        crate::get_arg!($args[$index], $expected, $actual)?.try_into()
+        $crate::get_arg!($args[$index], $expected, $actual)?.try_into()
     };
 }
 
@@ -45,14 +45,14 @@ macro_rules! gen_cond {
     ($id:ident($field_name:ident, $negated:ident), $args:ident, $expected:literal) => {
         ConditionSet::$id($id {
             negated: $negated,
-            $field_name: crate::get_try_into!($args[0], $expected)?,
+            $field_name: $crate::get_try_into!($args[0], $expected)?,
             ..Default::default()
         })
     };
     ($id:ident($field_name:ident, $negated:ident), $args:ident, $expected:literal, into) => {
         ConditionSet::$id($id {
             negated: $negated,
-            $field_name: crate::get_into!($args[0], $expected),
+            $field_name: $crate::get_into!($args[0], $expected),
             ..Default::default()
         })
     };

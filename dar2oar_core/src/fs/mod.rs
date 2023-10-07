@@ -81,22 +81,20 @@ where
         let entry = entry?;
         let path = entry.path();
         let (oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
-            match parse_dar_path(&path) {
+            match parse_dar_path(path) {
                 Ok(data) => data,
                 Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
             };
         let parsed_mod_name = mod_name
-            .and_then(|s| Some(s.to_string()))
+            .map(|s| s.to_string())
             .unwrap_or(parsed_mod_name.unwrap_or("Unknown".into()));
         let oar_name_space_path = oar_dir
             .as_ref()
-            .and_then(|path| {
-                Some(match is_1st_person {
-                    true => path.join(
-                        "meshes/actors/character/_1stperson/animations/OpenAnimationReplacer",
-                    ),
-                    false => path.join("meshes/actors/character/animations/OpenAnimationReplacer"),
-                })
+            .map(|path| match is_1st_person {
+                true => {
+                    path.join("meshes/actors/character/_1stperson/animations/OpenAnimationReplacer")
+                }
+                false => path.join("meshes/actors/character/animations/OpenAnimationReplacer"),
             })
             .unwrap_or(oar_name_space_path)
             .join(mod_name.unwrap_or(&parsed_mod_name));
@@ -128,7 +126,7 @@ where
             log::trace!("section root: {:?}", section_root);
             fs::create_dir_all(&section_root)?;
             if file_name == "_conditions.txt" {
-                match read_file(&path) {
+                match read_file(path) {
                     Ok(content) => {
                         log::trace!("Content:\n{}", content);
 
@@ -177,7 +175,7 @@ mod test {
     fn should_traverse() -> anyhow::Result<()> {
         let config = simple_log::LogConfigBuilder::builder()
             .path("../convert.log")
-            .size(1 * 100)
+            .size(100)
             .roll_count(10)
             .level("error")
             .output_file()

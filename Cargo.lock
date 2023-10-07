@@ -598,7 +598,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_cli"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "clap",
@@ -610,7 +610,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "log",
@@ -969,7 +969,7 @@ dependencies = [
 
 [[package]]
 name = "g_dar2oar"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "dar2oar_core",

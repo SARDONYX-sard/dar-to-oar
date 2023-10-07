@@ -64,8 +64,8 @@ pub fn convert_dar2oar(
     match convert_dar_to_oar(
         dar_mod_folder,
         dist,
-        mod_name.as_deref(),
-        mod_author.as_deref(),
+        mod_name,
+        mod_author,
         table,
         table_1person,
     ) {

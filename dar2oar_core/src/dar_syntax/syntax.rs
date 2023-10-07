@@ -3,6 +3,7 @@
 //! # Example
 //! ```txt
 //! IsActorBase("Skyrim.esm" | 0x00000007) OR
+//! ; comment
 //! IsPlayerTeammate() AND
 //! IsEquippedRightType(3) OR
 //! IsEquippedRightType(4)
@@ -14,6 +15,9 @@
 //! - { "," A }: 0 or more repetitions "," A
 //!
 //! ```ebnf
+//! line          = comment | expression
+//!
+//! comment       = ";" [^"\n]* ;
 //! expression    = [ "NOT" ] function ( "AND" | "OR" ) ;
 //! argument_list = argument { "," argument } ;
 //! argument      = plugin | number ;
@@ -150,7 +154,7 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
 }
 
 /// NOTE: All octal and binary notations are replaced by hex (the value to be retained is in decimal), and hexadecimal notation is used for notation.
-fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
+fn parse_radix_number(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, radix) = alt((tag("0x"), tag("0b"), tag("0o")))(input)?;
     let (input, digits) = hex_digit1(input)?;
@@ -170,7 +174,7 @@ fn parse_radix_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     }
 }
 
-fn parse_decimal<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
+fn parse_decimal(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, is_negative) = opt(char('-'))(input)?;
     let (input, digits) = digit1(input)?;
@@ -189,7 +193,7 @@ fn parse_decimal<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     }
 }
 
-fn parse_float<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
+fn parse_float(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, is_negative) = opt(char('-'))(input)?;
     let (input, whole_part) = digit1(input)?;
@@ -212,11 +216,11 @@ fn parse_float<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
     }
 }
 
-fn parse_number<'a>(input: &'a str) -> IResult<&str, NumberLiteral> {
+fn parse_number(input: &str) -> IResult<&str, NumberLiteral> {
     alt((parse_radix_number, parse_float, parse_decimal))(input)
 }
 
-fn parse_plugin<'a>(input: &'a str) -> IResult<&'a str, FnArg<'a>> {
+fn parse_plugin(input: &str) -> IResult<&str, FnArg<'_>> {
     let (input, (plugin_name, form_id)) = separated_pair(
         preceded(space0, parse_string),
         preceded(space0, tag("|")),
@@ -232,8 +236,8 @@ fn parse_plugin<'a>(input: &'a str) -> IResult<&'a str, FnArg<'a>> {
     ))
 }
 
-fn parse_argument<'a>(input: &'a str) -> IResult<&str, FnArg<'a>> {
-    alt((parse_plugin, map(parse_number, |f| FnArg::Number(f))))(input)
+fn parse_argument(input: &str) -> IResult<&str, FnArg<'_>> {
+    alt((parse_plugin, map(parse_number, FnArg::Number)))(input)
 }
 
 fn parse_ident(input: &str) -> IResult<&str, &str> {
@@ -243,7 +247,7 @@ fn parse_ident(input: &str) -> IResult<&str, &str> {
     )(input)
 }
 
-fn parse_fn_call<'a>(input: &'a str) -> IResult<&'a str, (&'a str, Vec<FnArg<'a>>)> {
+fn parse_fn_call(input: &str) -> IResult<&str, (&str, Vec<FnArg<'_>>)> {
     let (input, fn_name) = parse_ident(input)?;
     let (input, _) = multispace0(input)?;
     let (input, _) = tag("(")(input)?;
@@ -290,7 +294,7 @@ fn comment(input: &str) -> IResult<&str, &str> {
     preceded(char(';'), alt((take_until("\n"), take_until("\r\n"))))(input)
 }
 
-pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
+pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();
     let mut input_tmp = input;
@@ -299,12 +303,9 @@ pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
     loop {
         let (input, _) = multispace0(input_tmp)?;
         // Skip line comment.
-        match comment(input) {
-            Ok((input, _)) => {
-                input_tmp = input;
-                continue;
-            }
-            Err(_) => (),
+        if let Ok((input, _)) = comment(input) {
+            input_tmp = input;
+            continue;
         };
 
         let (input, expr) = opt(parse_expression)(input)?;
@@ -363,7 +364,7 @@ pub fn parse_condition<'a>(input: &'a str) -> IResult<&'a str, Condition<'a>> {
         input_tmp = input;
     }
 
-    return Ok((input_tmp, top_conditions));
+    Ok((input_tmp, top_conditions))
 }
 
 #[cfg(test)]
