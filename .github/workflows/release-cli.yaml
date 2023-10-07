@@ -65,7 +65,7 @@ jobs:
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
-          release_name: DAR to OAR Converter v${{ github.ref }}
+          release_name: DAR to OAR Converter v${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changes }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.asset_name }}
