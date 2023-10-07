@@ -47,11 +47,27 @@ jobs:
           command: build
           args: --release --target ${{ matrix.target }} --all-features --verbose
 
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.1.1
         with:
+          release_name: DAR to OAR Converter v${{ github.ref }}
+          body: ${{ steps.changelog.outputs.changes }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           overwrite: true
+
+      - name: Commit CHANGELOG.md
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
+          file_pattern: CHANGELOG.md
