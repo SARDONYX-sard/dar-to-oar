@@ -34,7 +34,7 @@ pub struct Args {
 pub fn run_cli(args: Args) -> anyhow::Result<()> {
     let config = simple_log::LogConfigBuilder::builder()
         .path(args.log_path)
-        .size(1 * 100)
+        .size(100)
         .roll_count(10)
         .level(args.log_level)
         .output_file()

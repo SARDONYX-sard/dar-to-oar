@@ -1,7 +1,6 @@
 /// Copyright (c) 2014-2019 Geoffroy Couprie
 /// MIT License
 /// https://opensource.org/license/mit/
-
 use nom::{
     error::{VerboseError, VerboseErrorKind},
     Offset,

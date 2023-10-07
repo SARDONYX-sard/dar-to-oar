@@ -39,7 +39,7 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseE
     })
 }
 
-fn parse_condition<'a>(condition: Expression<'a>) -> Result<ConditionSet, ParseError> {
+fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError> {
     let Expression {
         negated,
         fn_name,

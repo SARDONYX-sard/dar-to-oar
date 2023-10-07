@@ -33,8 +33,9 @@ use self::condition::default_required_version;
 use crate::values::{Cmp, NumericValue, PluginValue};
 use serde::{Deserialize, Serialize};
 
+#[inline]
 pub(super) fn is_false(t: &bool) -> bool {
-    *t == false
+    !(*t)
 }
 
 /// Generate structures that have only condition, Comparison and NumericValue

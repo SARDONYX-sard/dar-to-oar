@@ -91,6 +91,6 @@ impl<'de> Deserialize<'de> for Cmp {
         cmp_str
             .as_str()
             .try_into()
-            .map_err(|err| serde::de::Error::custom(err))
+            .map_err(serde::de::Error::custom)
     }
 }

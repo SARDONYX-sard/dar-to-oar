@@ -1,9 +1,9 @@
 use super::dar_interface::ParseError;
 use crate::{
-        conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
-        dar_syntax::syntax::FnArg,
-        values::{NumericLiteral, TypeValue},
+    conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
+    dar_syntax::syntax::FnArg,
     get_into, get_try_into,
+    values::{NumericLiteral, TypeValue},
 };
 
 pub(super) fn parse_equip(

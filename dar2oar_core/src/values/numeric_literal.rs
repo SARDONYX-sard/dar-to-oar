@@ -116,7 +116,6 @@ impl<'de> Deserialize<'de> for NumericLiteral {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-    use serde_json;
 
     #[test]
     fn test_serialize_non_prefix_hex() {
@@ -134,9 +133,9 @@ mod tests {
 
     #[test]
     fn test_serialize_float() {
-        let value = NumericLiteral::Float(3.14);
+        let value = NumericLiteral::Float(3.12);
         let serialized = serde_json::to_string(&value).unwrap();
-        assert_eq!(serialized, "3.14");
+        assert_eq!(serialized, "3.12");
     }
 
     #[test]
@@ -155,9 +154,9 @@ mod tests {
 
     #[test]
     fn test_deserialize_float() {
-        let json = "3.14";
+        let json = "3.12";
         let deserialized: NumericLiteral = serde_json::from_str(json).unwrap();
-        assert_eq!(deserialized, NumericLiteral::Float(3.14));
+        assert_eq!(deserialized, NumericLiteral::Float(3.12));
     }
 
     #[test]

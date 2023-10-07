@@ -32,9 +32,8 @@ impl Default for HasRefType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::{ FormValue, PluginValue, LiteralValue };
+    use crate::values::{FormValue, LiteralValue, PluginValue};
     use pretty_assertions::assert_eq;
-    use serde_json;
 
     #[test]
     fn should_serialize_has_ref_type() {
