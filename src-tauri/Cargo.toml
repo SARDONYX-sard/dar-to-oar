@@ -1,6 +1,6 @@
 [package]
 name = "g_dar2oar"
-version = "0.1.2"
+version = "0.1.3"
 description = "DAR to OAR Converter GUI"
 authors = ["SARDONYX-sard"]
 license = "MIT OR Apache-2.0"
@@ -17,7 +17,9 @@ tauri-build = { version = "1.4.0", features = [] }
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 dar2oar_core = { path = "../dar2oar_core" }
 log = "0.4.20" # Logger
-tauri = { version = "1.4.0", features = [ "shell-all", "path-all",
+tauri = { version = "1.4.0", features = [
+  "shell-all",
+  "path-all",
   "dialog-open",
   "fs-all",
   "devtools",
