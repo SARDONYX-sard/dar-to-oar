@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use dar2oar_core::{convert_dar_to_oar, fs::sequential, read_mapping_table};
+use dar2oar_core::{convert_dar_to_oar, fs::parallel, read_mapping_table};
 use std::time::Duration;
 
 const REMOVE_TARGET: &str =
@@ -28,7 +28,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             let table_content = "../test/settings/mapping_table.txt";
             let mapping = read_mapping_table(table_content).unwrap();
 
-            convert_dar_to_oar(black_box(TARGET), None, None, None, Some(mapping), None)
+            parallel::convert_dar_to_oar(black_box(TARGET), None, None, None, Some(mapping), None)
         })
     });
 
@@ -40,7 +40,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             let table_content = "../test/settings/mapping_table.txt";
             let mapping = read_mapping_table(table_content).unwrap();
 
-            sequential::convert_dar_to_oar(black_box(TARGET), None, None, None, Some(mapping), None)
+            convert_dar_to_oar(black_box(TARGET), None, None, None, Some(mapping), None)
         })
     });
 

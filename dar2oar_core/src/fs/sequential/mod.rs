@@ -8,6 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
+/// Single thread converter
 pub fn convert_dar_to_oar<P>(
     dar_dir: P,
     oar_dir: Option<PathBuf>,

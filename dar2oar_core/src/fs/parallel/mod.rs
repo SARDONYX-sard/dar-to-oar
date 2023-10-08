@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+/// multi thread converter
 pub fn convert_dar_to_oar<P>(
     dar_dir: P,
     oar_dir: Option<PathBuf>,

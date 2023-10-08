@@ -1,10 +1,10 @@
 mod mapping_table;
-mod parallel;
-mod path_changer;
-pub mod sequential;
+pub mod parallel;
+pub mod path_changer;
+mod sequential;
 
 pub use mapping_table::read_mapping_table;
-pub use parallel::convert_dar_to_oar;
+pub use sequential::convert_dar_to_oar;
 
 use crate::conditions::{ConditionsConfig, MainConfig};
 use anyhow::Context as _;
