@@ -32,7 +32,7 @@
 //! number        = decimal | hex | float ;
 //!
 //! decimal       = ["-"] digit { digit } ;
-//! hex           = "0x" hex_digit { hex_digit } ;
+//! hex           = "0x" hex_digit { hex_digit } | "0X" hex_digit { hex_digit } ;
 //! float         = ["-"] digit { digit } "." digit { digit } ;
 //! digit         = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 //! hex_digit     = digit | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"  ;
@@ -156,13 +156,20 @@ fn parse_string(input: &str) -> IResult<&str, &str> {
 /// NOTE: All octal and binary notations are replaced by hex (the value to be retained is in decimal), and hexadecimal notation is used for notation.
 fn parse_radix_number(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
-    let (input, radix) = alt((tag("0x"), tag("0b"), tag("0o")))(input)?;
+    let (input, radix) = alt((
+        tag("0X"),
+        tag("0B"),
+        tag("0O"),
+        tag("0x"),
+        tag("0b"),
+        tag("0o"),
+    ))(input)?;
     let (input, digits) = hex_digit1(input)?;
 
     let base = match radix {
-        "0x" => 16,
-        "0b" => 2,
-        "0o" => 8,
+        "0x" | "0X" => 16,
+        "0b" | "0B" => 2,
+        "0o" | "0O" => 8,
         _ => bail_kind!(input, HexDigit),
     };
 
@@ -308,24 +315,10 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
             continue;
         };
 
-        let (input, expr) = opt(parse_expression)(input)?;
-
         // NOTE:
         // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
         // but others write it, so it cannot be an error.
-        let expr = match expr {
-            Some(expr) => expr,
-            None => {
-                match is_in_or_stmt {
-                    true => {
-                        top_conditions.push(Condition::Or(or_vec.clone()));
-                    }
-                    false => {}
-                }
-                break;
-            }
-        };
-
+        let (input, expr) = parse_expression(input)?;
         let (input, _) = space0(input)?;
         let (mut input, operator) = opt(parse_operator)(input)?;
         if operator.is_some() {
@@ -350,11 +343,19 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
                     is_in_or_stmt = true;
                 }
             };
+
+            if input.is_empty() {
+                if is_in_or_stmt {
+                    top_conditions.push(Condition::Or(or_vec.clone()));
+                }
+                input_tmp = input;
+                break;
+            }
         } else {
             match is_in_or_stmt {
                 true => {
                     or_vec.push(Condition::Exp(expr));
-                    top_conditions.push(Condition::Or(or_vec.clone()));
+                    top_conditions.push(Condition::Or(or_vec));
                 }
                 false => top_conditions.push(Condition::Exp(expr)),
             }
@@ -388,7 +389,7 @@ mod tests {
 
     #[test]
     fn test_parse_octal_number() {
-        assert_eq!(parse_radix_number("0o37"), Ok(("", NumberLiteral::Hex(31))));
+        assert_eq!(parse_radix_number("0O37"), Ok(("", NumberLiteral::Hex(31))));
     }
 
     #[test]
@@ -474,7 +475,7 @@ mod tests {
     }
 
     #[test]
-    fn should_parse_tailing_invalid_syntax() {
+    fn should_parse_tailing_or() {
         let input = "NOT IsActorBase ( \"Skyrim.esm\" | 0x00000007 )OR";
         let expected = Condition::And(vec![Condition::Or(vec![Condition::Exp(Expression {
             negated: true,
@@ -484,6 +485,21 @@ mod tests {
                 form_id: NumberLiteral::Hex(0x00000007),
             }],
         })])]);
+
+        assert_eq!(parse_condition(input), Ok(("", expected)));
+    }
+
+    #[test]
+    fn should_parse_tailing_and() {
+        let input = "NOT IsActorBase ( \"Skyrim.esm\" | 0x00000007 )AND";
+        let expected = Condition::And(vec![Condition::Exp(Expression {
+            negated: true,
+            fn_name: "IsActorBase",
+            args: vec![FnArg::PluginValue {
+                plugin_name: "Skyrim.esm",
+                form_id: NumberLiteral::Hex(0x00000007),
+            }],
+        })]);
 
         assert_eq!(parse_condition(input), Ok(("", expected)));
     }
