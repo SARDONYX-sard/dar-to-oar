@@ -26,8 +26,9 @@ pub(super) fn parse_actor(
         };
 
     Ok(match condition_name {
-        "IsActorValueEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::default())?,
-        "IsActorValueBaseLessThan" => create_actor_cond(Cmp::Le, ActorValueType::Base)?,
+        "IsActorValueEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::ActorValue)?,
+        "IsActorValueLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::ActorValue)?,
+        "IsActorValueBaseLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::Base)?,
         "IsActorValueMaxEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::Max)?,
         "IsActorValueMaxLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::Max)?,
         "IsActorValuePercentageEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::Percentage)?,
@@ -37,7 +38,12 @@ pub(super) fn parse_actor(
             actor_base: get_try_into!(args[0], "PluginValue")?,
             ..Default::default()
         }),
-        _ => unreachable!(),
+        unknown_condition => {
+            return Err(ParseError::UnexpectedValue(
+                "IsActor(Value|Base|Max|Percentage)(EqualTo|LessThan)".into(),
+                unknown_condition.into(),
+            ))
+        }
     })
 }
 

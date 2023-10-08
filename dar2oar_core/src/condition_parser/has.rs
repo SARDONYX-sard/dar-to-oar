@@ -33,6 +33,12 @@ pub(super) fn parse_has(
             "PluginValue in HasRefType",
             into
         ),
-        _ => unreachable!(),
+        unknown_condition => {
+            return Err(ParseError::UnexpectedValue(
+                "HasKeyword|HasPerk|HasSpell|HasMagicEffect|HasMagicEffectWithKeyword|HasRefType"
+                    .into(),
+                unknown_condition.into(),
+            ))
+        }
     })
 }
