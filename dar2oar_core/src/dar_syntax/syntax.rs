@@ -320,11 +320,8 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
         // but others write it, so it cannot be an error.
         let (input, expr) = parse_expression(input)?;
         let (input, _) = space0(input)?;
-        let (mut input, operator) = opt(parse_operator)(input)?;
-        if operator.is_some() {
-            let (inp, _) = multispace0(input)?;
-            input = inp;
-        }
+        let (input, operator) = opt(parse_operator)(input)?;
+        let (input, _) = multispace0(input)?;
 
         if let Some(operator) = operator {
             match operator {
@@ -371,7 +368,6 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dar_syntax::error::convert_error;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -404,6 +400,41 @@ mod tests {
 
     #[test]
     fn test_parse_conditions() {
+        let input = r#"
+IsActorBase("Skyrim.esm" | 0X000007) AND
+NOT IsInCombat() AND
+NOT IsActorValueLessThan(30, 60)
+      "#;
+
+        let expected = Condition::And(vec![
+            Condition::Exp(Expression {
+                fn_name: "IsActorBase",
+                args: vec![FnArg::PluginValue {
+                    plugin_name: "Skyrim.esm",
+                    form_id: NumberLiteral::Hex(0x7),
+                }],
+                negated: false,
+            }),
+            Condition::Exp(Expression {
+                fn_name: "IsInCombat",
+                args: vec![],
+                negated: true,
+            }),
+            Condition::Exp(Expression {
+                negated: true,
+                fn_name: "IsActorValueLessThan",
+                args: vec![
+                    FnArg::Number(NumberLiteral::Decimal(30)),
+                    FnArg::Number(NumberLiteral::Decimal(60)),
+                ],
+            }),
+        ]);
+
+        assert_eq!(parse_condition(input), Ok(("", expected)));
+    }
+
+    #[test]
+    fn test_parse_conditions_with_comments() {
         let input = r#"
             IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
             IsPlayerTeammate() AND
@@ -444,20 +475,8 @@ mod tests {
             Condition::Or(vec![Condition::Exp(actor), Condition::Exp(player)]),
             Condition::Or(vec![Condition::Exp(equip_r3), Condition::Exp(equip_r4)]),
         ]);
-        match parse_condition(input) {
-            Ok(res) => {
-                assert_eq!(res, ("\n", expected));
-            }
-            Err(err) => match err {
-                nom::Err::Incomplete(_) => todo!(),
-                nom::Err::Error(err) => {
-                    panic!("{}", convert_error(input, err));
-                }
-                nom::Err::Failure(err) => {
-                    panic!("{}", convert_error(input, err));
-                }
-            },
-        };
+
+        assert_eq!(parse_condition(input), Ok(("", expected)));
     }
 
     #[test]
