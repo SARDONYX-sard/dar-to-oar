@@ -58,8 +58,8 @@ Options:
           log_level trace | debug | info | warn | error [default: error]
       --log-path <LOG_PATH>
           Output path of log file [default: ./convert.log]
-      --run-parallel <RUN_PARALLEL>
-          use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.) [possible values: true, false]
+      --run-parallel
+          use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
   -h, --help
           Print help
   -V, --version

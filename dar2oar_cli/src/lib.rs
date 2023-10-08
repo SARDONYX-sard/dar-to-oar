@@ -32,7 +32,7 @@ pub struct Args {
     log_path: String,
     /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
     #[arg(long)]
-    run_parallel: Option<bool>,
+    run_parallel: bool,
 }
 
 pub fn run_cli(args: Args) -> anyhow::Result<()> {
@@ -65,7 +65,7 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
     };
 
     match args.run_parallel {
-        Some(true) => parallel::convert_dar_to_oar(
+        true => parallel::convert_dar_to_oar(
             args.src,
             dist,
             args.name.as_deref(),
@@ -73,7 +73,7 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
             table,
             table_1person,
         ),
-        Some(false) | None => convert_dar_to_oar(
+        false => convert_dar_to_oar(
             args.src,
             dist,
             args.name.as_deref(),
