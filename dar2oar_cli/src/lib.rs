@@ -1,5 +1,5 @@
 use clap::{arg, Parser};
-use dar2oar_core::{convert_dar_to_oar, read_mapping_table};
+use dar2oar_core::{convert_dar_to_oar, fs::parallel, read_mapping_table};
 use std::path::PathBuf;
 
 /// dar2oar --src "DAR path" --dist "OAR path"
@@ -27,8 +27,12 @@ pub struct Args {
     /// log_level trace | debug | info | warn | error
     #[arg(long, default_value = "error")]
     log_level: String,
+    /// Output path of log file
     #[arg(long, default_value = "./convert.log")]
     log_path: String,
+    /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
+    #[arg(long)]
+    run_parallel: Option<bool>,
 }
 
 pub fn run_cli(args: Args) -> anyhow::Result<()> {
@@ -60,12 +64,22 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
         None => None,
     };
 
-    convert_dar_to_oar(
-        args.src,
-        dist,
-        args.name.as_deref(),
-        args.author.as_deref(),
-        table,
-        table_1person,
-    )
+    match args.run_parallel {
+        Some(true) => parallel::convert_dar_to_oar(
+            args.src,
+            dist,
+            args.name.as_deref(),
+            args.author.as_deref(),
+            table,
+            table_1person,
+        ),
+        Some(false) | None => convert_dar_to_oar(
+            args.src,
+            dist,
+            args.name.as_deref(),
+            args.author.as_deref(),
+            table,
+            table_1person,
+        ),
+    }
 }

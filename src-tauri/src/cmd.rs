@@ -1,4 +1,4 @@
-use dar2oar_core::{convert_dar_to_oar, read_mapping_table};
+use dar2oar_core::{convert_dar_to_oar, fs::parallel, read_mapping_table};
 use std::path::Path;
 
 /// early return with Err() and write log error.
@@ -24,6 +24,7 @@ macro_rules! try_get_mapping_table {
     };
 }
 
+#[allow(clippy::too_many_arguments)]
 #[tauri::command]
 pub fn convert_dar2oar(
     dar_mod_folder: &str,
@@ -33,6 +34,7 @@ pub fn convert_dar2oar(
     mapping_path: Option<String>,
     mapping_1person_path: Option<String>,
     log_level: Option<String>,
+    run_parallel: Option<bool>,
 ) -> Result<(), String> {
     let dist = oar_mod_folder.and_then(|dist| match dist.is_empty() {
         true => None,
@@ -60,16 +62,30 @@ pub fn convert_dar2oar(
     log::debug!("table path: {:?}", mapping_path.as_ref());
     log::debug!("1st person table path: {:?}", mapping_1person_path.as_ref());
     log::debug!("log level: {:?}", log_level);
+    log::debug!("run parallel: {:?}", run_parallel);
 
-    match convert_dar_to_oar(
-        dar_mod_folder,
-        dist,
-        mod_name,
-        mod_author,
-        table,
-        table_1person,
-    ) {
-        Ok(_) => Ok(()),
-        Err(err) => bail!(err),
+    match run_parallel {
+        Some(true) => match parallel::convert_dar_to_oar(
+            dar_mod_folder,
+            dist,
+            mod_name,
+            mod_author,
+            table,
+            table_1person,
+        ) {
+            Ok(_) => Ok(()),
+            Err(err) => bail!(err),
+        },
+        Some(false) | None => match convert_dar_to_oar(
+            dar_mod_folder,
+            dist,
+            mod_name,
+            mod_author,
+            table,
+            table_1person,
+        ) {
+            Ok(_) => Ok(()),
+            Err(err) => bail!(err),
+        },
     }
 }
