@@ -1,4 +1,12 @@
-import { Box, Button, FormGroup, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Unstable_Grid2";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
@@ -16,6 +24,7 @@ type FormProps = {
   mappingPath: string;
   mapping1personPath: string;
   loading: boolean;
+  runParallel: boolean;
 };
 
 export function ConvertForm() {
@@ -30,6 +39,7 @@ export function ConvertForm() {
       modAuthor: localStorage.getItem("modAuthor") ?? "",
       mappingPath: localStorage.getItem("mappingPath") ?? "",
       mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
+      runParallel: localStorage.getItem("runParallel") === "true",
       loading: false as boolean,
     } satisfies FormProps,
   });
@@ -61,6 +71,7 @@ export function ConvertForm() {
     modAuthor,
     mappingPath,
     mapping1personPath,
+    runParallel,
   }) => {
     setLoading(true);
 
@@ -71,6 +82,7 @@ export function ConvertForm() {
       modAuthor,
       mappingPath,
       mapping1personPath,
+      runParallel,
     }).catch((e) => {
       toast.error(`${e}`);
       setLoading(false);
@@ -297,6 +309,30 @@ export function ConvertForm() {
 
           <Grid xs={4}>
             <LogFileButton />
+          </Grid>
+
+          <Grid xs={4}>
+            <Controller
+              name="runParallel"
+              control={control}
+              render={({ field: { value } }) => (
+                <Tooltip title="Use multi-threading. (In most cases, it slows down by tens of ms, but may be effective when there is more weight on CPU processing with fewer files to copy and more logic parsing of _condition.txt)">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onClick={() => {
+                          localStorage.setItem("runParallel", `${!value}`);
+                          setValue("runParallel", !value);
+                        }}
+                        checked={value}
+                        aria-label="Run Parallel"
+                      />
+                    }
+                    label="Run Parallel"
+                  />
+                </Tooltip>
+              )}
+            />
           </Grid>
         </Grid>
 

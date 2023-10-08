@@ -13,6 +13,7 @@ type ConverterArgs = {
   mappingPath?: string;
   mapping1personPath?: string;
   logLevel?: LogLevel;
+  runParallel?: boolean;
 };
 
 /**
@@ -27,6 +28,7 @@ export async function convertDar2oar(props: ConverterArgs): Promise<void> {
   const mapping1personPath =
     props.mapping1personPath === "" ? undefined : props.mapping1personPath;
   const mappingPath = props.mappingPath === "" ? undefined : props.mappingPath;
+  const runParallel = props.runParallel ?? false;
 
   try {
     await invoke("convert_dar2oar", {
@@ -37,6 +39,7 @@ export async function convertDar2oar(props: ConverterArgs): Promise<void> {
       mappingPath,
       mapping1personPath,
       logLevel: props.logLevel,
+      runParallel,
     });
   } catch (e) {
     throw new Error(`${e}`);
