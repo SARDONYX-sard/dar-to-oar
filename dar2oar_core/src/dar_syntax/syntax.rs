@@ -309,15 +309,16 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
 
     loop {
         let (input, _) = multispace0(input_tmp)?;
+        // Dealing with cases where nothing is written in _condition.txt
+        if input.is_empty() {
+            break;
+        }
         // Skip line comment.
         if let Ok((input, _)) = comment(input) {
             input_tmp = input;
             continue;
         };
 
-        // NOTE:
-        // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
-        // but others write it, so it cannot be an error.
         let (input, expr) = parse_expression(input)?;
         let (input, _) = space0(input)?;
         let (input, operator) = opt(parse_operator)(input)?;
@@ -341,6 +342,9 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
                 }
             };
 
+            // NOTE:
+            // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
+            // but others write it, so it cannot be an error.
             if input.is_empty() {
                 if is_in_or_stmt {
                     top_conditions.push(Condition::Or(or_vec.clone()));
