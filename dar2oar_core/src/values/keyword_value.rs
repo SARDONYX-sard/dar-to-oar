@@ -31,11 +31,17 @@ impl<'de> Deserialize<'de> for Keyword {
         if let Value::Object(map) = &value {
             if map.contains_key("editorID") {
                 // If the "editorID" field is present, assume it's a Literal
-                let keyword_value: LiteralValue = serde_json::from_value(value).unwrap();
+                let keyword_value: LiteralValue = match serde_json::from_value(value) {
+                    Ok(keyword) => keyword,
+                    Err(err) => return Err(serde::de::Error::custom(err)),
+                };
                 Ok(Keyword::Literal(keyword_value))
             } else if map.contains_key("form") {
                 // If both "pluginName" and "formID" fields are present, assume it's a Form
-                let form_value: FormValue = serde_json::from_value(value).unwrap();
+                let form_value: FormValue = match serde_json::from_value(value) {
+                    Ok(form) => form,
+                    Err(err) => return Err(serde::de::Error::custom(err)),
+                };
                 Ok(Keyword::Form(form_value))
             } else {
                 Err(serde::de::Error::custom(
