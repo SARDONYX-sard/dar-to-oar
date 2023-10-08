@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
+import { appLogDir } from "@tauri-apps/api/path";
+import { open as openShell } from "@tauri-apps/api/shell";
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -61,4 +63,11 @@ export async function openPath(
     //! If we don't get the result within this function, somehow the previous value comes in.
     setPath(res);
   }
+}
+
+export async function openLogFile() {
+  const logDir = await appLogDir();
+  const logFile = `${logDir}g_dar2oar.log`;
+  console.log(logFile);
+  await openShell(logFile);
 }

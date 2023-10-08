@@ -1,7 +1,8 @@
 "use client";
 
-import { Box, Button, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import { useDynStyle } from "@/hooks";
+import { SelectStyleList } from "./../style_list";
 
 export default function Settings() {
   const [style, setStyle] = useDynStyle();
@@ -32,22 +33,18 @@ export default function Settings() {
         placeholder="{ body: url('https://localhost' }"
         value={style}
       />
-      <Button variant="outlined" onClick={() => setStyle(sample)}>
-        use Sample
-      </Button>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-around",
+          width: "80%",
+          marginTop: "20px",
+          maxHeight: "30%",
+        }}
+      >
+        <SelectStyleList setStyle={setStyle} />
+      </Box>
     </Box>
   );
 }
-
-const sample = `body {
-    background-attachment: fixed;
-    background-image: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-main > form > div > div,
-main > div {
-    background-color: #2424248c;
-}
-`;

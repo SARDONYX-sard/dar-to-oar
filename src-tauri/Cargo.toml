@@ -17,8 +17,7 @@ tauri-build = { version = "1.4.0", features = [] }
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 dar2oar_core = { path = "../dar2oar_core" }
 log = "0.4.20" # Logger
-tauri = { version = "1.4.0", features = [
-  "shell-open",
+tauri = { version = "1.4.0", features = [ "shell-all", "path-all",
   "dialog-open",
   "fs-all",
   "devtools",

@@ -1,6 +1,10 @@
+"use client";
+
 import { Box, CircularProgress } from "@mui/material";
+import { useDynStyle } from "../../hooks";
 
 export default function Loading() {
+  useDynStyle();
   return (
     <>
       <Box

@@ -14,7 +14,16 @@ export function PathSelector({ path, isDir = false, setValue }: Props) {
   };
 
   return (
-    <Button type="button" onClick={handleClick}>
+    <Button
+      sx={{
+        marginTop: "9px",
+        width: "100%",
+        height: "55px",
+      }}
+      variant="outlined"
+      type="button"
+      onClick={handleClick}
+    >
       Select
     </Button>
   );

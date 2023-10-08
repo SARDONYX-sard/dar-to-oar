@@ -1,10 +1,12 @@
-import { Box, FormGroup, Grid, TextField } from "@mui/material";
+import { Box, Button, FormGroup, TextField } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { convertDar2oar } from "../tauri_cmd";
 import ConvertButton from "./convert_btn";
 import { PathSelector } from "./path_selector";
+import { LogFileButton } from "./log_file_btn";
 
 type FormProps = {
   src: string;
@@ -43,6 +45,15 @@ export function ConvertForm() {
     setValue("loading", loading);
   };
 
+  const handleAllClear = () => {
+    setStorage("dist")("");
+    setStorage("mapping1personPath")("");
+    setStorage("mappingPath")("");
+    setStorage("modAuthor")("");
+    setStorage("modName")("");
+    setStorage("src")("");
+  };
+
   const onSubmit: SubmitHandler<FormProps> = async ({
     src,
     dist,
@@ -70,6 +81,14 @@ export function ConvertForm() {
   return (
     <Grid container component="form" onSubmit={handleSubmit(onSubmit)}>
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
+        <Button
+          sx={{ width: "100%", marginBottom: "50px" }}
+          variant="outlined"
+          onClick={handleAllClear}
+        >
+          <span>All Clear</span>
+        </Button>
+
         <Controller
           name="src"
           control={control}
@@ -80,26 +99,32 @@ export function ConvertForm() {
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
-            <>
-              <TextField
-                label="DAR(src) Directory"
-                placeholder="<MOD NAME>/DynamicAnimationReplacer/_CustomCondition/"
-                required
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("src", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={
-                  "Any path under a dir named DynamicAnimationReplacer can be specified."
-                }
-              />
-              <PathSelector path={value} isDir setValue={setStorage("src")} />
-            </>
+            <Grid container spacing={2}>
+              <Grid xs={10}>
+                <TextField
+                  sx={{ width: "100%" }}
+                  label="DAR(src) Directory"
+                  placeholder="<MOD NAME>/DynamicAnimationReplacer/_CustomCondition/"
+                  required
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("src", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={
+                    "Any path under a dir named DynamicAnimationReplacer can be specified."
+                  }
+                />
+              </Grid>
+
+              <Grid xs={2}>
+                <PathSelector path={value} isDir setValue={setStorage("src")} />
+              </Grid>
+            </Grid>
           )}
         />
 
@@ -110,25 +135,34 @@ export function ConvertForm() {
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
-            <>
-              <TextField
-                label="OAR(dist) Directory"
-                placeholder="<MOD NAME>"
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("dist", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={
-                  "A dir named meshes/actors/ will be created in the specified directory."
-                }
-              />
-              <PathSelector path={value} isDir setValue={setStorage("dist")} />
-            </>
+            <Grid container spacing={2}>
+              <Grid xs={10}>
+                <TextField
+                  sx={{ width: "100%" }}
+                  label="OAR(dist) Directory"
+                  placeholder="<MOD NAME>"
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("dist", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={
+                    "A dir named meshes/actors/ will be created in the specified directory."
+                  }
+                />
+              </Grid>
+              <Grid xs={2}>
+                <PathSelector
+                  path={value}
+                  isDir
+                  setValue={setStorage("dist")}
+                />
+              </Grid>
+            </Grid>
           )}
         />
 
@@ -139,26 +173,34 @@ export function ConvertForm() {
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
-            <>
-              <TextField
-                sx={{ minWidth: "100%" }}
-                label="Mapping Table Path"
-                placeholder="./mapping_table.txt"
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("mappingPath", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={
-                  "Correspondence path that can change the priority number to your own section name instead of the dir name"
-                }
-              />
-              <PathSelector path={value} setValue={setStorage("mappingPath")} />
-            </>
+            <Grid container spacing={2}>
+              <Grid xs={10}>
+                <TextField
+                  sx={{ width: "100%" }}
+                  label="Mapping Table Path"
+                  placeholder="./mapping_table.txt"
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("mappingPath", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={
+                    "Correspondence path that can change the priority number to your own section name instead of the dir name"
+                  }
+                />
+              </Grid>
+
+              <Grid xs={2}>
+                <PathSelector
+                  path={value}
+                  setValue={setStorage("mappingPath")}
+                />
+              </Grid>
+            </Grid>
           )}
         />
 
@@ -169,80 +211,93 @@ export function ConvertForm() {
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
-            <>
-              <TextField
-                sx={{ minWidth: "100%" }}
-                label="Mapping Table Path(For _1st_person)"
-                placeholder="./mapping_table_for_1st_person.txt"
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("mapping1personPath", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={
-                  "Correspondence path that can change the priority number to your own section name instead of the dir name"
-                }
-              />
-              <PathSelector
-                path={value}
-                setValue={setStorage("mapping1personPath")}
-              />
-            </>
+            <Grid container spacing={2}>
+              <Grid xs={10}>
+                <TextField
+                  sx={{ minWidth: "100%" }}
+                  label="Mapping Table Path(For _1st_person)"
+                  placeholder="./mapping_table_for_1st_person.txt"
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("mapping1personPath", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={
+                    "Correspondence path that can change the priority number to your own section name instead of the dir name"
+                  }
+                />
+              </Grid>
+
+              <Grid xs={2}>
+                <PathSelector
+                  path={value}
+                  setValue={setStorage("mapping1personPath")}
+                />
+              </Grid>
+            </Grid>
           )}
         />
 
-        <Grid>
-          <Controller
-            name="modName"
-            control={control}
-            render={({
-              field: { onChange, onBlur, value },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Mod Name"
-                placeholder="Mod Name"
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("modName", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={error?.message}
-              />
-            )}
-          />
+        <Grid container spacing={2}>
+          <Grid xs={4}>
+            <Controller
+              name="modName"
+              control={control}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Mod Name"
+                  placeholder="Mod Name"
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("modName", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={error?.message}
+                />
+              )}
+            />
+          </Grid>
 
-          <Controller
-            name="modAuthor"
-            control={control}
-            render={({
-              field: { onChange, onBlur, value },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Mod Author Name"
-                placeholder="Name"
-                value={value}
-                variant="outlined"
-                margin="dense"
-                onChange={(e) => {
-                  localStorage.setItem("modAuthor", e.target.value);
-                  onChange(e);
-                }}
-                onBlur={onBlur}
-                error={Boolean(error)}
-                helperText={error?.message}
-              />
-            )}
-          />
+          <Grid xs={4}>
+            <Controller
+              name="modAuthor"
+              control={control}
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Mod Author Name"
+                  placeholder="Name"
+                  value={value}
+                  variant="outlined"
+                  margin="dense"
+                  onChange={(e) => {
+                    localStorage.setItem("modAuthor", e.target.value);
+                    onChange(e);
+                  }}
+                  onBlur={onBlur}
+                  error={Boolean(error)}
+                  helperText={error?.message}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid xs={4}>
+            <LogFileButton />
+          </Grid>
         </Grid>
 
         <Controller

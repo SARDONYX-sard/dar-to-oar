@@ -24,10 +24,13 @@
       "fs": {
         "all": true
       },
+      "path": {
+        "all": true
+      },
       "shell": {
-        "all": false,
+        "all": true,
         "execute": false,
-        "open": true,
+        "open": false,
         "scope": [],
         "sidecar": false
       }
@@ -78,7 +81,7 @@
         "resizable": true,
         "theme": "Dark",
         "title": "DAR to OAR Converter",
-        "width": 650
+        "width": 780
       }
     ]
   }

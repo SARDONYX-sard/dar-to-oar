@@ -8,15 +8,13 @@
     "build": "rimraf ./out && cargo tauri build",
     "build:front": "next build frontend",
     "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
-    "start": "next start frontend",
     "test": "cargo test --workspace",
     "lint:front": "next lint frontend",
     "lint:back": "cargo clippy --workspace",
     "lint": "npm run lint:front && npm run lint:back",
     "lint-fix:back": "cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "lint-fix:front": "next lint frontend --fix",
-    "lint:fix": "npm run lint-fix:front && npm run lint-fix:back",
-    "tauri": "tauri"
+    "lint:fix": "npm run lint-fix:front && npm run lint-fix:back"
   },
   "dependencies": {
     "@mui/icons-material": "^5.14.11",
