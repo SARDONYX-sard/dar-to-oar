@@ -14,7 +14,8 @@
     "lint": "npm run lint:front && npm run lint:back",
     "lint-fix:back": "cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "lint-fix:front": "next lint frontend --fix",
-    "lint:fix": "npm run lint-fix:front && npm run lint-fix:back"
+    "lint:fix": "npm run lint-fix:front && npm run lint-fix:back",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@mui/icons-material": "^5.14.11",
