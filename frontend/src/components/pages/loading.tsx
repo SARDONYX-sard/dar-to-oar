@@ -1,10 +1,9 @@
-"use client";
-
 import { Box, CircularProgress } from "@mui/material";
-import { useDynStyle } from "../../hooks";
 
+/** This is executed on the server side, so the client's API cannot be used
+ * (because it is an alternative page for preparing the Client).
+ */
 export default function Loading() {
-  useDynStyle();
   return (
     <>
       <Box
