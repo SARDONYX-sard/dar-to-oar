@@ -39,14 +39,25 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.git.createOrUpdateTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/development',
-              sha: context.sha,
-              message: 'Tagging commit for development',
-              force: true
-            });
+            try {
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/development',
+                sha: context.sha,
+                message: 'Tagging commit for development',
+                force: true
+              });
+            } catch (_e) {
+              github.rest.git.updateRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/development',
+                sha: context.sha,
+                message: 'Tagging commit for development',
+                force: true
+              });
+            }
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
