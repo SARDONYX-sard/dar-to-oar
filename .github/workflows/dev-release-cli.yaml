@@ -39,12 +39,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const octokit = require('@octokit/rest')();
-            octokit.repos.createOrUpdateTag({
+            github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: 'development',
-              sha: ${{ github.sha }},
+              ref: 'refs/tags/development',
+              sha: context.sha
               message: 'Tagging commit for development',
               force: true
             });
