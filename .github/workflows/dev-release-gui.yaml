@@ -61,4 +61,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseName: "DAR to OAR Converter Development-${{ github.sha }}" # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          tagName: development
           prerelease: true
