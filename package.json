@@ -1,6 +1,7 @@
 {
   "name": "dar-to-oar",
-  "version": "0.1.3",
+  "version": "0.1.4",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "tauri dev",

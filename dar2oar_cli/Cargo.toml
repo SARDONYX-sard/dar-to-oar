@@ -1,6 +1,6 @@
 [package]
 name = "dar2oar_cli"
-version = "0.1.3"
+version.workspace = true
 description = "DAR to OAR Converter CLI"
 authors = ["SARDONYX-sard"]
 license = "MIT OR Apache-2.0"

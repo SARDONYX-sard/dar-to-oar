@@ -1,6 +1,6 @@
 [package]
 name = "g_dar2oar"
-version = "0.1.3"
+version.workspace = true
 description = "DAR to OAR Converter GUI"
 authors = ["SARDONYX-sard"]
 license = "MIT OR Apache-2.0"
