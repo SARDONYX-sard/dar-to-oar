@@ -46,12 +46,6 @@ jobs:
           command: build
           args: --release --target ${{ matrix.target }} --all-features --verbose
 
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-
       - name: Compress binary
         run: |
           if [[ "${{ matrix.target }}" == *"linux"* ]]; then
@@ -64,7 +58,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           release_name: DAR to OAR Converter Development-${{ github.sha }}
-          body: ${{ steps.changelog.outputs.changes }}
+          body: "## Development release"
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.asset_name }}
           asset_name: ${{ matrix.asset_name }}
