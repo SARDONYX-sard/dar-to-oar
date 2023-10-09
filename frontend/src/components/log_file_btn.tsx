@@ -9,7 +9,7 @@ export const LogFileButton = () => {
       sx={{
         marginTop: "9px",
         width: "100%",
-        height: "80%",
+        height: "60%",
       }}
       variant="outlined"
       onClick={async () => openLogFile().catch((e) => toast.error(`${e}`))}

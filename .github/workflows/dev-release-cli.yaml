@@ -1,9 +1,8 @@
-name: Release Cli
+name: Development Release CLI
 
 on:
   push:
-    tags:
-      - "*"
+    branches: ["development"]
 
 jobs:
   build:
@@ -33,6 +32,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      # Without it, once created, the commit sha for the tag will not be updated.
+      - name: Recreate tag
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag "development" -m "Development version" --force
+          git push -f --tags
+        if: matrix.target == 'x86_64-pc-windows-gnu'
 
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -65,18 +73,11 @@ jobs:
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
-          release_name: DAR to OAR Converter v${{ github.ref_name }}
+          release_name: DAR to OAR Converter Development-${{ github.sha }}
           body: ${{ steps.changelog.outputs.changes }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.asset_name }}
           asset_name: ${{ matrix.asset_name }}
-          tag: ${{ github.ref }}
+          tag: "development"
+          prerelease: true
           overwrite: true
-
-      - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          branch: main
-          commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
-          file_pattern: CHANGELOG.md
-        if: matrix.target == 'x86_64-pc-windows-gnu'
