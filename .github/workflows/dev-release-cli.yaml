@@ -1,0 +1,74 @@
+name: Development Release CLI
+
+on:
+  push:
+    branches: ["development"]
+
+jobs:
+  build:
+    name: Release binary
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: dar2oar
+            asset_name: dar2oar-x86_64-unknown-linux-gnu.tar.gz
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            artifact_name: dar2oar
+            asset_name: dar2oar-x86_64-unknown-linux-musl.tar.gz
+          - os: ubuntu-latest
+            target: x86_64-pc-windows-gnu
+            artifact_name: dar2oar.exe
+            asset_name: dar2oar-x86_64-pc-windows-gnu.zip
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: dar2oar
+            asset_name: dar2oar-x86_64-apple-darwin.zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Cross build with all features
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --target ${{ matrix.target }} --all-features --verbose
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+
+      - name: Compress binary
+        run: |
+          if [[ "${{ matrix.target }}" == *"linux"* ]]; then
+            tar -czf ${{ matrix.asset_name }} target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          else
+            zip -r ${{ matrix.asset_name }} target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          fi
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          release_name: DAR to OAR Converter Development-${{ github.sha }}
+          body: ${{ steps.changelog.outputs.changes }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.asset_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          prerelease: true
+          overwrite: true
