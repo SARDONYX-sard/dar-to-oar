@@ -55,11 +55,12 @@ jobs:
           command: build
           args: --release --target ${{ matrix.target }} --all-features --verbose
 
-      - name: "Build Changelog"
+      - name: Update CHANGELOG
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v4.0.0
+        uses: requarks/changelog-action@v1
         with:
-          commitMode: true
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
         if: matrix.target == 'x86_64-pc-windows-gnu'
 
       - name: Compress binary
@@ -74,7 +75,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           release_name: DAR to OAR Converter Development-${{ github.sha }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.changes }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.asset_name }}
           asset_name: ${{ matrix.asset_name }}
