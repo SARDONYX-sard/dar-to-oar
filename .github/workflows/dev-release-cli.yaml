@@ -49,7 +49,14 @@ jobs:
             };
 
             try {
-              await github.rest.git.updateRef(refObj);
+              const existingRef = await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: refName
+              });
+
+              await github.rest.git.deleteRef(existingRef);
+              console.log(`Deleted existing tag ${refName}`);
             } catch (error) {
               console.log(`${error}`);
               await github.rest.git.createRef(refObj);
