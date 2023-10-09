@@ -35,15 +35,10 @@ jobs:
 
       # Without it, once created, the commit sha for the tag will not be updated.
       - name: Recreate tag
-        uses: actions/github-script@v5
+        uses: EndBug/latest-tag@latest
         with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/development',
-              sha: context.sha
-            })
+          ref: "development"
+          description: "Development release"
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
