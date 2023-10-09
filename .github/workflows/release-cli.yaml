@@ -77,6 +77,8 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
+          commit_user_email: github-actions[bot]@users.noreply.github.com
+          commit_author: github-actions[bot]
           commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
           file_pattern: CHANGELOG.md
         if: matrix.target == 'x86_64-pc-windows-gnu'
