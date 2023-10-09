@@ -37,6 +37,7 @@ jobs:
       - name: Recreate tag
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const octokit = require('@octokit/rest')();
             octokit.repos.createOrUpdateTag({
