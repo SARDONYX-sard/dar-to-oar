@@ -39,7 +39,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git tag "development" -m "Development version" --force
-          git git push origin development
+          git push origin development
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
