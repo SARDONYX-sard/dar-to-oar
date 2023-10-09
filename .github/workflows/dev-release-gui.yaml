@@ -1,4 +1,4 @@
-name: Release GUI
+name: Development Release GUI
 on:
   push:
     branches:
