@@ -91,10 +91,15 @@ export function ConvertForm() {
   };
 
   return (
-    <Grid container component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Grid
+      sx={{ display: "block", width: "95vw" }}
+      container
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
         <Button
-          sx={{ width: "100%", marginBottom: "50px" }}
+          sx={{ width: "100%", marginBottom: "35px" }}
           variant="outlined"
           onClick={handleAllClear}
         >
@@ -116,7 +121,7 @@ export function ConvertForm() {
                 <TextField
                   sx={{ width: "100%" }}
                   label="DAR(src) Directory"
-                  placeholder="<MOD NAME>/DynamicAnimationReplacer/_CustomCondition/"
+                  placeholder="[...]/<MOD NAME>"
                   required
                   value={value}
                   variant="outlined"
@@ -128,7 +133,20 @@ export function ConvertForm() {
                   onBlur={onBlur}
                   error={Boolean(error)}
                   helperText={
-                    "Any path under a dir named DynamicAnimationReplacer can be specified."
+                    <>
+                      <p>
+                        [Required] Path of dir containing
+                        &quot;DynamicAnimationReplacer&quot;.{" "}
+                      </p>
+                      <p>
+                        &quot;C:\\[...]/Mod Name/&quot; -&gt; Convert 1st & 3rd
+                        person
+                      </p>
+                      <p>
+                        &quot;[...]/animations/DynamicAnimationReplacer/&quot;
+                        -&gt; Convert only 3rd person
+                      </p>
+                    </>
                   }
                 />
               </Grid>
@@ -163,7 +181,7 @@ export function ConvertForm() {
                   onBlur={onBlur}
                   error={Boolean(error)}
                   helperText={
-                    "A dir named meshes/actors/ will be created in the specified directory."
+                    '[Optional] Creates a OAR path in specified directory.(e.g. "NewMod" -> "NewMod/meshes/[...])'
                   }
                 />
               </Grid>
@@ -200,9 +218,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={
-                    "Correspondence path that can change the priority number to your own section name instead of the dir name"
-                  }
+                  helperText={<MappingHelpBtn />}
                 />
               </Grid>
 
@@ -239,7 +255,7 @@ export function ConvertForm() {
                   onBlur={onBlur}
                   error={Boolean(error)}
                   helperText={
-                    "Correspondence path that can change the priority number to your own section name instead of the dir name"
+                    "[Optional] File path that helps map priority number to a section name."
                   }
                 />
               </Grid>
@@ -275,7 +291,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={error?.message}
+                  helperText={"[Optional]"}
                 />
               )}
             />
@@ -301,7 +317,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={error?.message}
+                  helperText={"[Optional]"}
                 />
               )}
             />
@@ -347,5 +363,30 @@ export function ConvertForm() {
         />
       </FormGroup>
     </Grid>
+  );
+}
+
+function MappingHelpBtn() {
+  const handleMappingClick = () =>
+    open(
+      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file"
+    );
+
+  return (
+    <>
+      <p>
+        [Optional] File path that helps map priority number to a section name.
+      </p>
+      <p>
+        See {" "}
+        <a
+          style={{ cursor: "pointer", color: "#00c2ff" }}
+          onClick={handleMappingClick}
+        >
+          [What is the mapping file?]
+        </a>
+        (Jump to wiki)
+      </p>
+    </>
   );
 }
