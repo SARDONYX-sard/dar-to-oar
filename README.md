@@ -15,16 +15,18 @@
 ## Getting Started for User
 
 - Download latest version.
+  [dar2oar release](https://github.com/SARDONYX-sard/dar-to-oar/releases)
 
-Click this.
-[dar2oar release](https://github.com/SARDONYX-sard/dar-to-oar/releases)
+## Please consider to read wiki
+
+[DAR to OAR Wiki](https://github.com/SARDONYX-sard/dar-to-oar/wiki/)
 
 ### GUI
 
 Click g_dar2oar.exe
 
-![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/45cf20e7-c8c5-4b24-aeb0-e9aa67fe0a08)
-![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/31d430ed-399c-40b5-912a-a6d046dba869)
+![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/bb50a3d3-c4fa-4aa8-9e9f-b82dd642b20c)
+![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/a5715ab9-fce9-489b-8cf1-dc533e24b609)
 
 ### CLI
 
@@ -65,169 +67,3 @@ Options:
   -V, --version
           Print version
 ```
-
-## What is the mapping file?
-
-You can rename the DAR priority folder name to a specific name corresponding to
-the priority, instead of using the section name, by passing the path in the
-correspondence table as shown below.
-
-### If a mapping file is passed
-
-Sample
-
-- mapping_table.txt
-
-```txt
-8000000  Combat
-8000001
-8000002
-// This is a line comment. // to line breaks are ignored.
-8000005
-8000005  Female
-8001000
-8001000  Unarmed
-8001010
-8001010  Sword
-```
-
-parse to(As you can see, if there is no corresponding priority folder name, a
-sequential number will be added at the end.)
-
-```txt
-8000000  Combat
-8000001  Combat_1
-8000002  Combat_2
-8000005  Female
-8001000  Unarmed
-8001010  Sword
-```
-
-result
-
-```txt
-Smooth Moveset
-    ├─1hm
-    ├─2hm
-    ├─Axe
-    │  └─XPMSE
-    ├─Axe+Shield
-    │  └─XPMSE
-    ├─Axe,
-    ├─Base
-    ├─Claw
-    │  └─XPMSE
-    ├─Claw+shield
-    │  └─XPMSE
-    ├─Dagger
-    │  └─XPMSE
-    ├─Dagger+Shield
-    │  └─XPMSE
-    ├─Dual
-    │  └─XPMSE
-    ├─Dual_1
-    │  └─XPMSE
-    ├─Dual_2
-    ├─Female
-    ├─Giant
-    ├─Giant_1
-    ├─Halberd
-    ├─Hammer,
-    ├─Javelin
-    ├─Javelin+Shield
-    ├─Katana
-    │  └─XPMSE
-    ├─LargeShield
-    ├─Mace
-    │  └─XPMSE
-    ├─Mace+Shield
-    │  └─XPMSE
-    ├─Non_1
-    ├─Non_2
-    ├─Pike
-    ├─Pike,
-    ├─Pike,_1
-    ├─Pike_1
-    ├─QuarterStaff
-    ├─QuarterStaff_1
-    ├─Rapier
-    │  └─XPMSE
-    ├─Rapier+shield
-    │  └─XPMSE
-    ├─Scythe
-    ├─Spear
-    ├─Spear+Shield
-    │  └─XPMSE
-    ├─Spear+Shield_1
-    ├─Sword
-    │  └─XPMSE
-    ├─Sword+Shield
-    │  └─XPMSE
-    ├─Sword+Shield_1
-    │  └─XPMSE
-    ├─Sword+Shield_2
-    ├─Sword_1
-    │  └─XPMSE
-    ├─Sword_2
-    ├─Unarmed
-    ├─Unarmed_1
-    │  └─XPMSE
-    └─Unarmed_2
-```
-
-### If no correspondence table is passed to --mapping_file
-
-The name of the priority folder is used.
-
-- Sample result
-
-```txt
-└─Smooth Moveset
-    ├─8000001
-    ├─8000005
-    ├─8001000
-    ├─8001010
-    │  └─XPMSE
-    ├─8001020
-    │  └─XPMSE
-    ├─8001040
-    │  └─XPMSE
-    ├─8001041
-    ├─8001050
-    │  └─XPMSE
-    ├─8001055
-    │  └─XPMSE
-    ├─8001060
-    ..........
-    ├─8003010
-    │  └─XPMSE
-    └─8213000
-```
-
-## For Developer
-
-requirements Building the CLI
-
-- Rustup latest
-
-Building the GUI
-
-- Rustup latest
-- Node.js (LTS 18)
-
-- GUI
-
-```bash
-npm run dev # dev
-npm run build # release
-```
-
-- CLI
-
-```bash
-cargo run # dev
-cargo build --release # release
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the
-result.
