@@ -1,11 +1,12 @@
 "use client";
 
 import { Box, TextField } from "@mui/material";
-import { useDynStyle } from "@/hooks";
+import { useDynStyle, useStorageState } from "@/hooks";
 import { SelectStyleList } from "./../style_list";
 
 export default function Settings() {
   const [style, setStyle] = useDynStyle();
+  const [preset, setPreset] = useStorageState("presetNumber", "0");
 
   return (
     <Box
@@ -29,6 +30,8 @@ export default function Settings() {
         multiline
         onChange={(e) => {
           setStyle(e.target.value);
+          localStorage.setItem("customCSS", e.target.value);
+          setPreset("0");
         }}
         placeholder="{ body: url('https://localhost' }"
         value={style}
@@ -43,7 +46,11 @@ export default function Settings() {
           maxHeight: "30%",
         }}
       >
-        <SelectStyleList setStyle={setStyle} />
+        <SelectStyleList
+          preset={preset}
+          setPreset={setPreset}
+          setStyle={setStyle}
+        />
       </Box>
     </Box>
   );
