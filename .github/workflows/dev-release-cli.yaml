@@ -39,25 +39,39 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const refName = 'refs/tags/development';
+
             try {
-              await github.rest.git.updateRef({
+              // Check if the tag exists
+              const existingRef = await github.rest.git.getRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                ref: 'refs/tags/development',
-                sha: context.sha,
-                message: 'Tagging commit for development',
-                force: true
+                ref: refName
               });
-            } catch (_e) {
-              await github.rest.git.createRef({
+
+              // If the tag exists, delete it
+              await github.rest.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                ref: 'refs/tags/development',
-                sha: context.sha,
-                message: 'Tagging commit for development',
-                force: true
+                ref: refName
               });
+
+              console.log(`Deleted existing tag ${refName}`);
+            } catch (error) {
+              // Ignore errors if the tag does not exist
+              console.log(`Tag ${refName} does not exist. Proceeding to create it.`);
             }
+
+            // Create the new tag
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: refName,
+              sha: context.sha,
+              message: 'Tagging commit for development'
+            });
+
+            console.log(`Created tag ${refName}`);
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
