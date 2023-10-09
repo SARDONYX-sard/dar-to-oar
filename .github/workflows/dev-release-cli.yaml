@@ -39,11 +39,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.git.createRef({
+            github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/development',
-              sha: context.sha
+              sha: context.sha,
               message: 'Tagging commit for development',
               force: true
             });
