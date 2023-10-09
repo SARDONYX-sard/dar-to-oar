@@ -35,11 +35,29 @@ jobs:
 
       # Without it, once created, the commit sha for the tag will not be updated.
       - name: Recreate tag
-        uses: EndBug/latest-tag@latest
+        uses: actions/github-script@v5
         with:
-          ref: "development"
-          description: "Development release"
-          force-branch: true
+          script: |
+            try {
+                await github.git.updateRef({
+                    owner, repo, ref, sha
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'refs/tags/development',
+                    sha: context.sha
+                });
+                console.log('Updating existing tag');
+            }
+            catch {
+                console.log('Creating new tag');
+                await github.git.createRef({
+                    owner, repo, ref, sha
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'refs/tags/development',
+                    sha: context.sha
+                });
+            }
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
