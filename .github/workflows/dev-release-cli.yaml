@@ -33,6 +33,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Without it, once created, the commit sha for the tag will not be updated.
+      - name: Recreate tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/development',
+              sha: context.sha
+            })
+
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -48,7 +60,10 @@ jobs:
 
       - name: "Build Changelog"
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v4
+        uses: mikepenz/release-changelog-builder-action@v4.0.0
+        with:
+          commitMode: true
+        if: matrix.target == 'x86_64-pc-windows-gnu'
 
       - name: Compress binary
         run: |
