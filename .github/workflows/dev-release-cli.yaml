@@ -39,6 +39,7 @@ jobs:
         with:
           ref: "development"
           description: "Development release"
+          force-branch: true
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
