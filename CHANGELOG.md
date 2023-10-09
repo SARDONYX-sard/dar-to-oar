@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2023-10-09
+### :sparkles: New Features
+- [`20a64c4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/20a64c485b02956647b299e6ba30e5b36f02b8e6) - add dev build ci & new form help text in GUI *(PR [#8](https://github.com/SARDONYX-sard/dar-to-oar/pull/8) by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`0b0af17`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0b0af17571a05d4cd9d7512312e3b2bfa383338d) - add license files *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.1.3] - 2023-10-08
 ### :sparkles: New Features
 - [`7d3605c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7d3605c168310ebbc6f1d0d74382cbca1d7105f3) - impl parallel walk dir(but this is slow) *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -39,3 +47,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.2]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.1...0.1.2
 [0.1.3]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.2...0.1.3
+[0.1.4]: https://github.com/SARDONYX-sard/dar-to-oar/compare/development...0.1.4
