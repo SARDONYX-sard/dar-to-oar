@@ -1,13 +1,15 @@
 import { useState } from "react";
 
-const getCacheStr = (cacheKey: string) => localStorage.getItem(cacheKey) ?? "";
+const getCacheStr = (cacheKey: string, initialState: string) =>
+  localStorage.getItem(cacheKey) ?? initialState;
 
 /**
  * useState with localStorage
  * @param keyName
+ * @param fallbackState - if localStorage.getItem is returned null, then use.
  */
-export function useStorageState(keyName: string) {
-  const [value, setValue] = useState(getCacheStr(keyName));
+export function useStorageState(keyName: string, fallbackState = "") {
+  const [value, setValue] = useState(getCacheStr(keyName, fallbackState));
 
   const setState = (value_: string) => {
     localStorage.setItem(keyName, value_);
