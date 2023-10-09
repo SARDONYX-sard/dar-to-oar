@@ -35,33 +35,10 @@ jobs:
 
       # Without it, once created, the commit sha for the tag will not be updated.
       - name: Recreate tag
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const refName = 'refs/tags/development';
-            const refObj = {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: refName,
-                sha: context.sha,
-                message: 'Tagging commit for development'
-            };
-
-            try {
-              const existingRef = await github.rest.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: refName
-              });
-
-              await github.rest.git.deleteRef(existingRef);
-              console.log(`Deleted existing tag ${refName}`);
-            } catch (error) {
-              console.log(`${error}`);
-              await github.rest.git.createRef(refObj);
-              console.log(`Created tag ${refName}`);
-            }
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag -s "development" -m "Development version" --force
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
