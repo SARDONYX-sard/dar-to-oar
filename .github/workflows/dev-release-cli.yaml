@@ -46,6 +46,10 @@ jobs:
           command: build
           args: --release --target ${{ matrix.target }} --all-features --verbose
 
+      - name: "Build Changelog"
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+
       - name: Compress binary
         run: |
           if [[ "${{ matrix.target }}" == *"linux"* ]]; then
@@ -58,7 +62,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           release_name: DAR to OAR Converter Development-${{ github.sha }}
-          body: "## Development release"
+          body: ${{ steps.changelog.outputs.changelog }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.asset_name }}
           asset_name: ${{ matrix.asset_name }}
