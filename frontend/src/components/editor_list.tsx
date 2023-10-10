@@ -1,4 +1,4 @@
-import { Tooltip, InputLabel, FormControl } from "@mui/material";
+import { InputLabel, FormControl } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { selectEditorMode } from "../utils/editor";
