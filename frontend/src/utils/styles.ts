@@ -6,9 +6,9 @@ const preset1 = `body {
   background-color: #000;
 }
 
-div:has(textarea),
+.ace_gutter,
 .MuiOutlinedInput-root {
-  background-color: #2424248c;
+  background-color: #2424248c !important;
 }
 
 .Mui-error {
@@ -56,7 +56,7 @@ const preset2 = `body {
   background-color: #000;
 }
 
-div:has(textarea),
+.ace_gutter,
 .MuiButton-outlined,
 .MuiOutlinedInput-root {
   background-color: #2424248c;
