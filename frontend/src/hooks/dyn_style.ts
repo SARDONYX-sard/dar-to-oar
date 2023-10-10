@@ -1,5 +1,6 @@
-import { useInsertionEffect, useState } from "react";
+import { useEffect, useInsertionEffect, useState } from "react";
 import { selectPreset, presetStyles } from "../utils/styles";
+import toast from "react-hot-toast";
 
 const getStyle = () => {
   const presetNumber = selectPreset(localStorage.getItem("presetNumber") ?? "");
@@ -30,4 +31,34 @@ export function useDynStyle(initialState = getStyle()) {
   }, [style]);
 
   return [style, setStyle] as const;
+}
+
+export function useInjectScript(
+  initialState = (() => localStorage.getItem("customJS") ?? "")()
+) {
+  const [script, setScript] = useState(initialState);
+  const [pathname, setPathname] = useState<string | null>(null);
+
+  useEffect(() => {
+    const scriptElement = document.createElement("script");
+    if (pathname !== window.location.pathname) {
+      try {
+        scriptElement.innerText = script;
+        scriptElement.id = "custom-script";
+        if (!document.getElementById("custom-script")) {
+          document.body.appendChild(scriptElement);
+        }
+      } catch (e) {
+        toast.error(`${e}`);
+      }
+      setPathname(window.location.pathname);
+    }
+    return () => {
+      if (document.getElementById("custom-script")) {
+        document.body.removeChild(scriptElement);
+      }
+    };
+  }, [script, pathname]);
+
+  return [script, setScript] as const;
 }

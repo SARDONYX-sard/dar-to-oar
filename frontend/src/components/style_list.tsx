@@ -13,9 +13,10 @@ export const SelectStyleList = ({ preset, setPreset, setStyle }: Props) => {
   return (
     <Tooltip
       title="You can choose a CSS preset. NOTE: The moment you edit the preset, Yourself CSS will be overwritten."
-      placement="top"
+      placement="right"
     >
       <Select
+        sx={{ marginLeft: "50px" }}
         name={preset}
         onChange={(e) => {
           const presetNumber = selectPreset(e.target.value);

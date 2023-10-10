@@ -134,18 +134,14 @@ export function ConvertForm() {
                   error={Boolean(error)}
                   helperText={
                     <>
-                      <p>
-                        [Required] Path of dir containing
-                        &quot;DynamicAnimationReplacer&quot;.{" "}
-                      </p>
-                      <p>
-                        &quot;C:\\[...]/Mod Name/&quot; -&gt; Convert 1st & 3rd
-                        person
-                      </p>
-                      <p>
-                        &quot;[...]/animations/DynamicAnimationReplacer/&quot;
-                        -&gt; Convert only 3rd person
-                      </p>
+                      [Required] Path of dir containing
+                      &quot;DynamicAnimationReplacer&quot;.
+                      <br />
+                      &quot;C:\\[...]/Mod Name/&quot; -&gt; Convert 1st & 3rd
+                      person
+                      <br />
+                      &quot;[...]/animations/DynamicAnimationReplacer/&quot;
+                      -&gt; Convert only 3rd person
                     </>
                   }
                 />
@@ -374,19 +370,16 @@ function MappingHelpBtn() {
 
   return (
     <>
-      <p>
-        [Optional] File path that helps map priority number to a section name.
-      </p>
-      <p>
-        See {" "}
-        <a
-          style={{ cursor: "pointer", color: "#00c2ff" }}
-          onClick={handleMappingClick}
-        >
-          [What is the mapping file?]
-        </a>
-        (Jump to wiki)
-      </p>
+      [Optional] File path that helps map priority number to a section name.
+      <br />
+      See{" "}
+      <a
+        style={{ cursor: "pointer", color: "#00c2ff" }}
+        onClick={handleMappingClick}
+      >
+        [What is the mapping file?]
+      </a>
+      (Jump to wiki)
     </>
   );
 }
