@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/material";
+import { Tooltip, InputLabel, FormControl } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { selectEditorMode } from "../utils/editor";
@@ -11,13 +11,15 @@ type Props = {
 
 export const SelectEditorMode = ({ editorMode, setEditorMode }: Props) => {
   return (
-    <Tooltip title="Editor Mode" placement="top">
+    <FormControl>
+      <InputLabel htmlFor="editor-select">Editor Mode</InputLabel>
       <Select
         name={editorMode ?? "default"}
         onChange={(e) => {
           const presetEditor = selectEditorMode(e.target.value);
           setEditorMode(presetEditor);
         }}
+        label="Editor Mode"
         labelId="editor-select-label"
         id="editor-select"
         value={editorMode ?? "default"}
@@ -25,6 +27,6 @@ export const SelectEditorMode = ({ editorMode, setEditorMode }: Props) => {
         <MenuItem value={"default"}>Default</MenuItem>
         <MenuItem value={"vim"}>Vim</MenuItem>
       </Select>
-    </Tooltip>
+    </FormControl>
   );
 };

@@ -141,7 +141,7 @@ export function ConvertForm() {
                       person
                       <br />
                       &quot;[...]/animations/DynamicAnimationReplacer/&quot;
-                      -&gt; Convert only 3rd person
+                      -&gt; Convert 3rd person
                     </>
                   }
                 />

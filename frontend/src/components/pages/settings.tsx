@@ -1,20 +1,23 @@
 "use client";
 
 import AceEditor from "react-ace";
-import type { EditorMode } from "@/utils/editor";
 import { Box } from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
+import type { EditorMode } from "@/utils/editor";
 import { SelectEditorMode } from "@/components/editor_list";
 import { SelectStyleList } from "@/components/style_list";
 import { Toaster } from "react-hot-toast";
 import { selectEditorMode } from "@/utils/editor";
 import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
 
+import "ace-builds/src-noconflict/ext-code_lens";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim";
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/snippets/css";
+import "ace-builds/src-noconflict/snippets/javascript";
 import "ace-builds/src-noconflict/theme-one_dark";
-import InputLabel from "@mui/material/InputLabel";
 
 export default function Settings() {
   const [style, setStyle] = useDynStyle();
@@ -44,16 +47,17 @@ export default function Settings() {
           width: "95%",
           backgroundColor: "#2424248c",
         }}
-        height="300px"
-        mode="css"
-        theme="one_dark"
-        value={style}
-        debounceChangePeriod={500}
         onChange={(value) => {
           setStyle(value);
           localStorage.setItem("customCSS", value);
           setPreset("0");
         }}
+        fontSize={"1rem"}
+        height="300px"
+        mode="css"
+        theme="one_dark"
+        value={style}
+        setOptions={{ useWorker: false }}
         placeholder="{ body: url('https://localhost' }"
         name="Custom CSS"
         enableBasicAutocompletion
@@ -61,28 +65,29 @@ export default function Settings() {
         enableSnippets
         keyboardHandler={selectEditorMode(editorMode)}
         highlightActiveLine
+        tabSize={2}
         editorProps={{ $blockScrolling: true }}
       />
 
-      <Box
-        sx={{
+      <div
+        style={{
           display: "flex",
-          justifyContent: "space-around",
-          width: "80%",
-          marginTop: "20px",
-          maxHeight: "20%",
+          justifyContent: "space-between",
+          width: "40%",
+          marginTop: "30px"
         }}
       >
-        <SelectStyleList
-          preset={preset}
-          setPreset={setPreset}
-          setStyle={setStyle}
-        />
-        <SelectEditorMode
-          editorMode={selectEditorMode(editorMode)}
-          setEditorMode={setEditorKeyMode}
-        />
-      </Box>
+          <SelectEditorMode
+            editorMode={selectEditorMode(editorMode)}
+            setEditorMode={setEditorKeyMode}
+          />
+
+          <SelectStyleList
+            preset={preset}
+            setPreset={setPreset}
+            setStyle={setStyle}
+          />
+      </div>
 
       <InputLabel error sx={{ marginTop: "20px" }}>
         Custom JavaScript(Please do not execute untrusted scripts)
@@ -92,10 +97,6 @@ export default function Settings() {
           width: "95%",
           backgroundColor: "#2424248c",
         }}
-        height="200px"
-        mode="javascript"
-        theme="one_dark"
-        value={script}
         onChange={(value) => {
           localStorage.setItem("customJS", value);
           setScript(value);
@@ -105,13 +106,20 @@ export default function Settings() {
     p.innerText = 'Hello';
     document.body.appendChild(p);
 )()"
-        name="Custom JavaScript"
+        editorProps={{ $blockScrolling: true }}
         enableBasicAutocompletion
         enableLiveAutocompletion
         enableSnippets
-        keyboardHandler={selectEditorMode(editorMode)}
+        fontSize={"1rem"}
+        height="250px"
         highlightActiveLine
-        editorProps={{ $blockScrolling: true }}
+        keyboardHandler={selectEditorMode(editorMode)}
+        mode="javascript"
+        name="Custom JavaScript"
+        setOptions={{ useWorker: false }}
+        tabSize={2}
+        theme="one_dark"
+        value={script}
       />
     </Box>
   );

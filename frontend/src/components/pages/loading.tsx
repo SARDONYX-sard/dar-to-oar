@@ -15,7 +15,7 @@ export default function Loading() {
         }}
       >
         <h1>Loading...</h1>
-        <CircularProgress />
+        <CircularProgress sx={{ marginTop: "20px" }} />
       </Box>
     </>
   );
