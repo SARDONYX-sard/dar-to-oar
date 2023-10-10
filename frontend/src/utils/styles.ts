@@ -11,7 +11,7 @@ const preset1 = `body {
   background-color: #2424248c !important;
 }
 
-.Mui-error {
+p.Mui-error {
   color: #ff1655;
   background-color: #2f2e2eba;
 }

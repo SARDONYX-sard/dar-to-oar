@@ -1,13 +1,14 @@
 "use client";
 
 import { ConvertForm } from "@/components/form";
-import { useDynStyle, useToastLimit } from "@/hooks";
+import { useDynStyle, useInjectScript, useToastLimit } from "@/hooks";
 import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 
 export default function Converter() {
   useToastLimit(1);
   useDynStyle();
+  useInjectScript();
 
   return (
     <>
