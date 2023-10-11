@@ -6,7 +6,7 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import TransformIcon from "@mui/icons-material/Transform";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { styled } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const Nav = styled(BottomNavigation)(() => {
   return {
@@ -21,16 +21,16 @@ const Nav = styled(BottomNavigation)(() => {
 
 export default function MenuNavigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    const location = window.location.pathname;
-    if (location === "/") {
+    if (pathname=== "/") {
       setValue(0);
-    } else if (location === "/settings") {
+    } else if (pathname=== "/settings") {
       setValue(1);
     }
-  }, [setValue]);
+  }, [setValue, pathname]);
 
   return (
     <Nav
