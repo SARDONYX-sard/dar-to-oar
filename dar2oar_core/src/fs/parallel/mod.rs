@@ -2,7 +2,7 @@ use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::fs::path_changer::parse_dar_path;
 use crate::fs::{read_file, write_name_space_config, write_section_config};
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 use jwalk::WalkDir;
 use std::collections::HashMap;
 use std::fs;
@@ -20,6 +20,8 @@ pub fn convert_dar_to_oar<P>(
 where
     P: AsRef<Path>,
 {
+    let mut is_converted_once = false;
+
     for entry in WalkDir::new(dar_dir) {
         let entry = entry?;
         let path = entry.path(); // Separate this for binding
@@ -86,15 +88,18 @@ where
                     Err(err) => log::error!("Error reading file {path:?}: {err}"),
                 }
 
-                write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
-                    .with_context(|| {
-                        format!(
-                            "Failed to write name space config to: {:?}",
-                            oar_name_space_path
-                        )
-                    })?;
+                if !is_converted_once {
+                    is_converted_once = true;
+                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                        .with_context(|| {
+                            format!(
+                                "Failed to write name space config to: {:?}",
+                                oar_name_space_path
+                            )
+                        })?;
+                }
             } else {
-                // maybe motion files(.hex)
+                // maybe motion files(.hkx)
                 if let Some(remain) = remain {
                     let non_leaf_dir = section_root.join(remain);
                     fs::create_dir_all(&non_leaf_dir)?;
@@ -106,5 +111,8 @@ where
         }
     }
 
-    Ok(())
+    match is_converted_once {
+        true => Ok(()),
+        false => bail!("DynamicAnimationReplacer dir was never found"),
+    }
 }
