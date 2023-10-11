@@ -15,7 +15,7 @@ pub fn read_mapping_table(table_path: impl AsRef<Path>) -> anyhow::Result<HashMa
     }
 }
 
-pub(super) fn parse_mapping_table(table: &str) -> HashMap<String, String> {
+fn parse_mapping_table(table: &str) -> HashMap<String, String> {
     let mut map = HashMap::new();
 
     // Sequential numbering of duplicate keys when no key is available.

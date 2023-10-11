@@ -133,9 +133,10 @@ mod test {
             .build();
         simple_log::new(config).unwrap();
 
-        let table = crate::fs::mapping_table::parse_mapping_table(include_str!(
-            "../../../../test/settings/UnderDog Animations_mapping_table.txt"
-        ));
+        // cannot use include_str!
+        let table =
+            crate::read_mapping_table("../test/settings/UnderDog Animations_mapping_table.txt")
+                .unwrap();
         convert_dar_to_oar(
             "../test/data/UNDERDOG Animations",
             None,

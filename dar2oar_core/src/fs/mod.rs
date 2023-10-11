@@ -64,33 +64,3 @@ where
     config_file.write_all(json.as_bytes())?;
     Ok(())
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[ignore]
-    #[test]
-    fn should_parallel_traverse() -> anyhow::Result<()> {
-        let config = simple_log::LogConfigBuilder::builder()
-            .path("../convert.log")
-            .size(100)
-            .roll_count(10)
-            .level("error")
-            .output_file()
-            .output_console()
-            .build();
-        simple_log::new(config).unwrap();
-
-        let table_content = "../test/settings/mapping_table.txt";
-        let mapping = read_mapping_table(table_content)?;
-        convert_dar_to_oar(
-            "../test/data/Modern Female Sitting Animations Overhaul",
-            None,
-            None,
-            None,
-            Some(mapping),
-            None,
-        )
-    }
-}
