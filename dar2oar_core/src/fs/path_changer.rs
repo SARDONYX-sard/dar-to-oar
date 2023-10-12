@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 /// - Err: anyhow Error
 type DarPathsResult = Result<(
     PathBuf,
+    PathBuf,
     bool,
     Option<String>,
     Option<String>,
@@ -29,20 +30,23 @@ type DarPathsResult = Result<(
 ///
 /// # DAR:
 /// - "\<ABS or related ParentDir\>/\<ModName\>/_1stperson/character/animations/DynamicAnimationReplacer/_CustomConditions/\<priority\>/_conditions.txt"
-pub fn parse_dar_path(path: impl AsRef<Path>) -> DarPathsResult {
+pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarPathsResult {
     let path = path.as_ref();
     let paths: Vec<&OsStr> = path.iter().collect();
 
     let is_1st_person = path.iter().any(|os_str| os_str == OsStr::new("_1stperson"));
 
-    let oar_root = path
+    let (dar_root, oar_root) = path
         .iter()
-        .position(|os_str| os_str == OsStr::new("DynamicAnimationReplacer"))
+        .position(|os_str| os_str == OsStr::new(dar_dirname.unwrap_or("DynamicAnimationReplacer")))
         .and_then(|idx| {
             paths.get(0..idx).map(|path| {
-                let mut string = path.join(OsStr::new("/"));
-                string.push("/OpenAnimationReplacer");
-                Path::new(&string).to_path_buf()
+                let mut dar = path.join(OsStr::new("/"));
+                let mut oar = dar.clone();
+                dar.push("/");
+                dar.push(dar_dirname.unwrap_or("DynamicAnimationReplacer"));
+                oar.push("/OpenAnimationReplacer");
+                (Path::new(&dar).to_path_buf(), Path::new(&oar).to_path_buf())
             })
         })
         .with_context(|| {
@@ -93,7 +97,14 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> DarPathsResult {
             })
         });
 
-    Ok((oar_root, is_1st_person, mod_name, priority, non_leaf_remain))
+    Ok((
+        dar_root,
+        oar_root,
+        is_1st_person,
+        mod_name,
+        priority,
+        non_leaf_remain,
+    ))
 }
 
 #[cfg(test)]
@@ -105,11 +116,15 @@ mod test {
     #[test]
     fn test_parse_dar_path_1st_person() {
         let path = Path::new("../ModName/meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer/_CustomConditions/8107000/_conditions.txt");
-        let result = parse_dar_path(path);
+        let result = parse_dar_path(path, None);
 
         assert!(result.is_ok());
-        let (oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
+        let (dar_root, oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
 
+        assert_eq!(
+            dar_root,
+            PathBuf::from("../ModName/meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer")
+        );
         assert_eq!(
             oar_root,
             PathBuf::from(
@@ -124,12 +139,16 @@ mod test {
 
     #[test]
     fn test_parse_dar_path_3rd_person() {
-        let path = Path::new("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer/_CustomConditions/8107000/InnerDir/_conditions.txt");
-        let result = parse_dar_path(path);
+        let path = Path::new("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer.mohidden/_CustomConditions/8107000/InnerDir/_conditions.txt");
+        let result = parse_dar_path(path, Some("DynamicAnimationReplacer.mohidden"));
 
         assert!(result.is_ok());
-        let (oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
+        let (dar_root, oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
 
+        assert_eq!(
+            dar_root,
+            PathBuf::from("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer.mohidden")
+        );
         assert_eq!(
             oar_root,
             PathBuf::from("../ModName/meshes/actors/character/animations/OpenAnimationReplacer")
@@ -145,7 +164,7 @@ mod test {
         // Create a path with invalid UTF-8 characters
         let invalid_path = OsStr::new("invalid_path").to_os_string();
         let path = Path::new(&invalid_path);
-        let result = parse_dar_path(path);
+        let result = parse_dar_path(path, None);
         assert!(result.is_err());
     }
 }

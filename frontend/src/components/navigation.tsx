@@ -5,7 +5,7 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import TransformIcon from "@mui/icons-material/Transform";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { styled } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { useRouter, usePathname } from "next/navigation";
 
 const Nav = styled(BottomNavigation)(() => {

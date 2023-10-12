@@ -1,30 +1,36 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::fs::path_changer::parse_dar_path;
-use crate::fs::{read_file, write_name_space_config, write_section_config};
-use anyhow::{Context as _, Result};
-use std::collections::HashMap;
+use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
+use anyhow::{bail, Context as _, Result};
+use jwalk::WalkDir;
 use std::fs;
-use std::path::{Path, PathBuf};
-use walkdir::WalkDir;
+use std::path::Path;
 
-/// Single thread converter
-pub fn convert_dar_to_oar<P>(
-    dar_dir: P,
-    oar_dir: Option<PathBuf>,
-    mod_name: Option<&str>,
-    author: Option<&str>,
-    section_table: Option<HashMap<String, String>>,
-    section_1person_table: Option<HashMap<String, String>>,
-) -> Result<()>
-where
-    P: AsRef<Path>,
-{
+/// multi thread converter
+/// # Return
+/// Complete info
+pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<String> {
+    let ConvertOptions {
+        dar_dir,
+        oar_dir,
+        mod_name,
+        author,
+        section_table,
+        section_1person_table,
+        hide_dar,
+    } = options;
+    let mut is_converted_once = false;
+    let mut dar_namespace = None; // To need rename to hidden
+    let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
+
     for entry in WalkDir::new(dar_dir) {
         let entry = entry?;
-        let path = entry.path();
-        let (oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
-            match parse_dar_path(path) {
+        let path = entry.path(); // Separate this for binding
+        let path = path.as_path();
+
+        let (dar_root, oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
+            match parse_dar_path(path, None) {
                 Ok(data) => data,
                 Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
             };
@@ -85,15 +91,25 @@ where
                     Err(err) => log::error!("Error reading file {path:?}: {err}"),
                 }
 
-                write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
-                    .with_context(|| {
-                        format!(
-                            "Failed to write name space config to: {:?}",
-                            oar_name_space_path
-                        )
-                    })?;
+                if is_1st_person {
+                    if dar_1st_namespace.is_none() {
+                        dar_1st_namespace = Some(dar_root);
+                    }
+                } else if dar_namespace.is_none() {
+                    dar_namespace = Some(dar_root);
+                }
+                if !is_converted_once {
+                    is_converted_once = true;
+                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                        .with_context(|| {
+                            format!(
+                                "Failed to write name space config to: {:?}",
+                                oar_name_space_path
+                            )
+                        })?;
+                }
             } else {
-                // maybe motion files(.hex)
+                // maybe motion files(.kkx)
                 if let Some(remain) = remain {
                     let non_leaf_dir = section_root.join(remain);
                     fs::create_dir_all(&non_leaf_dir)?;
@@ -105,36 +121,26 @@ where
         }
     }
 
-    Ok(())
-}
+    match is_converted_once {
+        true => {
+            let mut msg = "Conversion Completed.".to_string();
+            if hide_dar {
+                if let Some(dar_namespace) = dar_namespace {
+                    let mut dist = dar_namespace.clone();
+                    dist.as_mut_os_string().push(".mohidden");
+                    fs::rename(dar_namespace, dist)?;
+                    msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
+                };
 
-#[cfg(test)]
-mod test {
-    use super::*;
-    use crate::fs::mapping_table::read_mapping_table;
-
-    #[ignore]
-    #[test]
-    fn should_parallel_traverse() -> anyhow::Result<()> {
-        let config = simple_log::LogConfigBuilder::builder()
-            .path("../convert.log")
-            .size(100)
-            .roll_count(10)
-            .level("error")
-            .output_file()
-            .output_console()
-            .build();
-        simple_log::new(config).unwrap();
-
-        let table_content = "../test/settings/mapping_table.txt";
-        let mapping = read_mapping_table(table_content)?;
-        convert_dar_to_oar(
-            "../test/data/Modern Female Sitting Animations Overhaul",
-            None,
-            None,
-            None,
-            Some(mapping),
-            None,
-        )
+                if let Some(dar_1st_namespace) = dar_1st_namespace {
+                    let mut dist = dar_1st_namespace.clone();
+                    dist.as_mut_os_string().push(".mohidden");
+                    fs::rename(dar_1st_namespace, dist)?;
+                    msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
+                };
+            }
+            Ok(msg)
+        }
+        false => bail!("DynamicAnimationReplacer dir was never found"),
     }
 }

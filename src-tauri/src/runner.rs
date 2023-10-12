@@ -8,7 +8,11 @@ pub fn run_tauri() -> anyhow::Result<()> {
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![crate::cmd::convert_dar2oar])
+        .invoke_handler(tauri::generate_handler![
+            crate::cmd::convert_dar2oar,
+            crate::cmd::remove_oar_dir,
+            crate::cmd::restore_dar_dir,
+        ])
         .run(tauri::generate_context!())
         .context("Failed to execute tauri")
 }

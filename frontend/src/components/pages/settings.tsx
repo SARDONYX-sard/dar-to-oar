@@ -4,8 +4,8 @@ import AceEditor from "react-ace";
 import { Box } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import type { EditorMode } from "@/utils/editor";
-import { SelectEditorMode } from "@/components/editor_list";
-import { SelectStyleList } from "@/components/style_list";
+import { SelectEditorMode } from "@/components/lists/editor_list";
+import { SelectStyleList } from "@/components/lists/style_list";
 import { Toaster } from "react-hot-toast";
 import { selectEditorMode } from "@/utils/editor";
 import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
@@ -74,19 +74,19 @@ export default function Settings() {
           display: "flex",
           justifyContent: "space-between",
           width: "40%",
-          marginTop: "30px"
+          marginTop: "30px",
         }}
       >
-          <SelectEditorMode
-            editorMode={selectEditorMode(editorMode)}
-            setEditorMode={setEditorKeyMode}
-          />
+        <SelectEditorMode
+          editorMode={selectEditorMode(editorMode)}
+          setEditorMode={setEditorKeyMode}
+        />
 
-          <SelectStyleList
-            preset={preset}
-            setPreset={setPreset}
-            setStyle={setStyle}
-          />
+        <SelectStyleList
+          preset={preset}
+          setPreset={setPreset}
+          setStyle={setStyle}
+        />
       </div>
 
       <InputLabel error sx={{ marginTop: "20px" }}>

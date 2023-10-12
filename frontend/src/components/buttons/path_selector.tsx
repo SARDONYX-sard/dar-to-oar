@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import toast from "react-hot-toast";
-import { openPath } from "../tauri_cmd";
+import { openPath } from "../../tauri_cmd";
 
 type Props = {
   path: string;
@@ -8,7 +8,7 @@ type Props = {
   setValue: (value: string) => void;
 };
 
-export function PathSelector({ path, isDir = false, setValue }: Props) {
+export function SelectPathButton({ path, isDir = false, setValue }: Props) {
   const handleClick = async () => {
     openPath(path, setValue, isDir).catch((e) => toast.error(`${e}`));
   };

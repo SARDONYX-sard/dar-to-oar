@@ -11,7 +11,7 @@ const Menu = dynamic(() => import("../components/navigation"), {
   loading: () => <Loading />,
   ssr: false,
 });
-const ThemeProvider = dynamic(() => import("../components/theme"), {
+const ThemeProvider = dynamic(() => import("../components/providers/theme"), {
   loading: () => <Loading />,
 
   ssr: false,

@@ -14,36 +14,54 @@ type ConverterArgs = {
   mapping1personPath?: string;
   logLevel?: LogLevel;
   runParallel?: boolean;
+  hideDar?: boolean;
 };
 
 /**
  * Convert DAR to OAR
  * # Throw Error
  */
-export async function convertDar2oar(props: ConverterArgs): Promise<void> {
-  const src = props.src === "" ? undefined : props.src;
-  const dist = props.dist === "" ? undefined : props.dist;
+export async function convertDar2oar(props: ConverterArgs): Promise<string> {
+  const darDir = props.src === "" ? undefined : props.src;
+  const oarDir = props.dist === "" ? undefined : props.dist;
   const modName = props.modName === "" ? undefined : props.modName;
   const modAuthor = props.modAuthor === "" ? undefined : props.modAuthor;
   const mapping1personPath =
     props.mapping1personPath === "" ? undefined : props.mapping1personPath;
   const mappingPath = props.mappingPath === "" ? undefined : props.mappingPath;
   const runParallel = props.runParallel ?? false;
+  const hideDar = props.hideDar ?? false;
 
-  try {
-    await invoke("convert_dar2oar", {
-      darModFolder: src,
-      oarModFolder: dist,
-      modName,
-      modAuthor,
-      mappingPath,
-      mapping1personPath,
-      logLevel: props.logLevel,
-      runParallel,
-    });
-  } catch (e) {
-    throw new Error(`${e}`);
+  return invoke<string>("convert_dar2oar", {
+    darDir,
+    oarDir,
+    modName,
+    modAuthor,
+    mappingPath,
+    mapping1personPath,
+    logLevel: props.logLevel,
+    runParallel,
+    hideDar,
+  });
+}
+
+/**
+ * @param darPath
+ * # Throw Error
+ */
+export async function restoreDarDir(darDir: string) {
+  if (darDir === "") {
+    throw new Error("DAR dir must be specified.");
   }
+  return invoke<string>("restore_dar_dir", { darDir });
+}
+
+/**
+ * @param darPath
+ * # Throw Error
+ */
+export async function removeOarDir(path: string) {
+  await invoke("remove_oar_dir", { path });
 }
 
 /**
