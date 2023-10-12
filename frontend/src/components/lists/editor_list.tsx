@@ -1,7 +1,7 @@
 import { InputLabel, FormControl } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { selectEditorMode } from "../utils/editor";
+import { selectEditorMode } from "@/utils/editor";
 import type { EditorMode } from "@/utils/editor";
 
 type Props = {

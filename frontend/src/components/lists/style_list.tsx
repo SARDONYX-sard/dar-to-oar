@@ -1,7 +1,7 @@
 import { FormControl, Tooltip, InputLabel } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { selectPreset, presetStyles } from "../utils/styles";
+import { selectPreset, presetStyles } from "../../utils/styles";
 
 type Props = {
   setStyle: (value: string) => void;

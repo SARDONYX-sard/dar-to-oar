@@ -1,32 +1,36 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::fs::path_changer::parse_dar_path;
-use crate::fs::{read_file, write_name_space_config, write_section_config};
+use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
 use anyhow::{bail, Context as _, Result};
-use std::collections::HashMap;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use walkdir::WalkDir;
 
 /// Single thread converter
-pub fn convert_dar_to_oar<P>(
-    dar_dir: P,
-    oar_dir: Option<PathBuf>,
-    mod_name: Option<&str>,
-    author: Option<&str>,
-    section_table: Option<HashMap<String, String>>,
-    section_1person_table: Option<HashMap<String, String>>,
-) -> Result<()>
-where
-    P: AsRef<Path>,
-{
+///
+/// # Return
+/// Complete info
+pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<String> {
+    let ConvertOptions {
+        dar_dir,
+        oar_dir,
+        mod_name,
+        author,
+        section_table,
+        section_1person_table,
+        hide_dar,
+    } = options;
     let mut is_converted_once = false;
+    let mut dar_namespace = None; // To need rename to hidden
+    let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
     for entry in WalkDir::new(dar_dir) {
         let entry = entry?;
         let path = entry.path();
-        let (oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
-            match parse_dar_path(path) {
+
+        let (dar_root, oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
+            match parse_dar_path(path, None) {
                 Ok(data) => data,
                 Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
             };
@@ -87,6 +91,13 @@ where
                     Err(err) => log::error!("Error reading file {path:?}: {err}"),
                 }
 
+                if is_1st_person {
+                    if dar_1st_namespace.is_none() {
+                        dar_1st_namespace = Some(dar_root);
+                    }
+                } else if dar_namespace.is_none() {
+                    dar_namespace = Some(dar_root);
+                }
                 if !is_converted_once {
                     is_converted_once = true;
                     write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
@@ -111,7 +122,25 @@ where
     }
 
     match is_converted_once {
-        true => Ok(()),
+        true => {
+            let mut msg = "Conversion Completed.".to_string();
+            if hide_dar {
+                if let Some(dar_namespace) = dar_namespace {
+                    let mut dist = dar_namespace.clone();
+                    dist.as_mut_os_string().push(".mohidden");
+                    fs::rename(dar_namespace, dist)?;
+                    msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
+                };
+
+                if let Some(dar_1st_namespace) = dar_1st_namespace {
+                    let mut dist = dar_1st_namespace.clone();
+                    dist.as_mut_os_string().push(".mohidden");
+                    fs::rename(dar_1st_namespace, dist)?;
+                    msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
+                };
+            }
+            Ok(msg)
+        }
         false => bail!("DynamicAnimationReplacer dir was never found"),
     }
 }
@@ -137,13 +166,12 @@ mod test {
         let table =
             crate::read_mapping_table("../test/settings/UnderDog Animations_mapping_table.txt")
                 .unwrap();
-        convert_dar_to_oar(
-            "../test/data/UNDERDOG Animations",
-            None,
-            None,
-            None,
-            Some(table),
-            None,
-        )
+        convert_dar_to_oar(ConvertOptions {
+            dar_dir: "../test/data/UNDERDOG Animations",
+            section_table: Some(table),
+            hide_dar: true,
+            ..Default::default()
+        })?;
+        Ok(())
     }
 }

@@ -24,7 +24,16 @@ export default function Converter() {
       >
         <ConvertForm />
       </Box>
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+        toastOptions={{
+            style: {
+              color: "#fff",
+              background: "#1a1919e1",
+            }
+        }}
+      />
     </>
   );
 }

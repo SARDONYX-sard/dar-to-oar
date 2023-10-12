@@ -12,9 +12,11 @@ import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { convertDar2oar } from "../tauri_cmd";
-import ConvertButton from "./convert_btn";
-import { PathSelector } from "./path_selector";
-import { LogFileButton } from "./log_file_btn";
+import ConvertButton from "./buttons/convert_btn";
+import { LogFileButton } from "./buttons/log_file_btn";
+import { SelectPathButton } from "./buttons/path_selector";
+import { RemoveOarBtn } from "./buttons/remove_oar_btn";
+import { RestoreDarBtn } from "./buttons/restore_dar_btn";
 
 type FormProps = {
   src: string;
@@ -25,10 +27,11 @@ type FormProps = {
   mapping1personPath: string;
   loading: boolean;
   runParallel: boolean;
+  hideDar: boolean;
 };
 
 export function ConvertForm() {
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control, setValue, getValues } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
     shouldFocusError: false,
@@ -40,6 +43,7 @@ export function ConvertForm() {
       mappingPath: localStorage.getItem("mappingPath") ?? "",
       mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
       runParallel: localStorage.getItem("runParallel") === "true",
+      hideDar: localStorage.getItem("hideDar") === "true",
       loading: false as boolean,
     } satisfies FormProps,
   });
@@ -72,22 +76,27 @@ export function ConvertForm() {
     mappingPath,
     mapping1personPath,
     runParallel,
+    hideDar,
   }) => {
     setLoading(true);
 
-    await convertDar2oar({
-      src,
-      dist,
-      modName,
-      modAuthor,
-      mappingPath,
-      mapping1personPath,
-      runParallel,
-    }).catch((e) => {
-      toast.error(`${e}`);
+    try {
+      const completeInfo = await convertDar2oar({
+        src,
+        dist,
+        modName,
+        modAuthor,
+        mappingPath,
+        mapping1personPath,
+        runParallel,
+        hideDar,
+      });
+      toast.success(completeInfo);
+    } catch (err) {
+      toast.error(`${err}`);
+    } finally {
       setLoading(false);
-    });
-    setLoading(false);
+    }
   };
 
   return (
@@ -148,7 +157,11 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <PathSelector path={value} isDir setValue={setStorage("src")} />
+                <SelectPathButton
+                  path={value}
+                  isDir
+                  setValue={setStorage("src")}
+                />
               </Grid>
             </Grid>
           )}
@@ -182,7 +195,7 @@ export function ConvertForm() {
                 />
               </Grid>
               <Grid xs={2}>
-                <PathSelector
+                <SelectPathButton
                   path={value}
                   isDir
                   setValue={setStorage("dist")}
@@ -219,7 +232,7 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <PathSelector
+                <SelectPathButton
                   path={value}
                   setValue={setStorage("mappingPath")}
                 />
@@ -257,7 +270,7 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <PathSelector
+                <SelectPathButton
                   path={value}
                   setValue={setStorage("mapping1personPath")}
                 />
@@ -322,13 +335,26 @@ export function ConvertForm() {
           <Grid xs={4}>
             <LogFileButton />
           </Grid>
+        </Grid>
 
-          <Grid xs={4}>
+        <Grid container spacing={2}>
+          <Grid xs={3}>
             <Controller
               name="runParallel"
               control={control}
               render={({ field: { value } }) => (
-                <Tooltip title="Use multi-threading. (In most cases, it slows down by tens of ms, but may be effective when there is more weight on CPU processing with fewer files to copy and more logic parsing of _condition.txt)">
+                <Tooltip
+                  title={
+                    <p>
+                      Use multi-threading.
+                      <br />
+                      In most cases, it slows down by tens of ms, but may be
+                      effective when there is more weight on CPU processing with
+                      fewer files to copy and more logic parsing of
+                      &quot;_condition.txt&quot;
+                    </p>
+                  }
+                >
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -344,6 +370,51 @@ export function ConvertForm() {
                   />
                 </Tooltip>
               )}
+            />
+          </Grid>
+
+          <Grid xs={3}>
+            <Controller
+              name="hideDar"
+              control={control}
+              render={({ field: { value } }) => (
+                <Tooltip
+                  title={
+                    <p>
+                      After conversion, append &quot;.mohidden&quot; to the DAR
+                      dirname in &quot;DAR(src) Directory*&quot; to make it a
+                      hidden directory(For MO2 users)
+                      <br />
+                      <br />
+                      NOTE: Failure to cross the drive or No permission.
+                    </p>
+                  }
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onClick={() => {
+                          localStorage.setItem("hideDar", `${!value}`);
+                          setValue("hideDar", !value);
+                        }}
+                        checked={value}
+                        aria-label="Hide DAR"
+                      />
+                    }
+                    label="Hide DAR"
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+
+          <Grid xs={3}>
+            <RestoreDarBtn path={getValues("src")} />
+          </Grid>
+          <Grid xs={3}>
+            <RemoveOarBtn
+              darPath={getValues("src")}
+              oarPath={getValues("dist")}
             />
           </Grid>
         </Grid>

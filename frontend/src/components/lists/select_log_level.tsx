@@ -3,7 +3,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { forwardRef } from "react";
 import { UseFormRegister } from "react-hook-form";
-import type { LogLevel } from "../tauri_cmd";
+import type { LogLevel } from "@/tauri_cmd";
 
 interface IFormValues {
   logLevel: LogLevel;

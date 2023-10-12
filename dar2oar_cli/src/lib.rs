@@ -1,5 +1,9 @@
 use clap::{arg, Parser};
-use dar2oar_core::{convert_dar_to_oar, fs::parallel, read_mapping_table};
+use dar2oar_core::{
+    convert_dar_to_oar,
+    fs::{parallel, ConvertOptions},
+    read_mapping_table,
+};
 use std::path::PathBuf;
 
 /// dar2oar --src "DAR path" --dist "OAR path"
@@ -12,7 +16,7 @@ pub struct Args {
     /// OAR destination dir path(If not, it is inferred from src)
     #[clap(long, value_parser)]
     dist: Option<String>,
-    /// mod name in config.json & folder name(If not, it is inferred from src)
+    /// mod name in config.json & directory name(If not, it is inferred from src)
     #[arg(long)]
     name: Option<String>,
     /// mod author in config.json
@@ -33,6 +37,9 @@ pub struct Args {
     /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
     #[arg(long)]
     run_parallel: bool,
+    #[arg(long)]
+    /// After converting to OAR, add mohidden to the DAR directory before conversion to treat it as a hidden directory. (for MO2 users)
+    hide_dar: bool,
 }
 
 pub fn run_cli(args: Args) -> anyhow::Result<()> {
@@ -64,22 +71,26 @@ pub fn run_cli(args: Args) -> anyhow::Result<()> {
         None => None,
     };
 
-    match args.run_parallel {
-        true => parallel::convert_dar_to_oar(
-            args.src,
-            dist,
-            args.name.as_deref(),
-            args.author.as_deref(),
-            table,
-            table_1person,
-        ),
-        false => convert_dar_to_oar(
-            args.src,
-            dist,
-            args.name.as_deref(),
-            args.author.as_deref(),
-            table,
-            table_1person,
-        ),
-    }
+    let msg = match args.run_parallel {
+        true => parallel::convert_dar_to_oar(ConvertOptions {
+            dar_dir: args.src,
+            oar_dir: dist,
+            mod_name: args.name.as_deref(),
+            author: args.author.as_deref(),
+            section_table: table,
+            section_1person_table: table_1person,
+            hide_dar: args.hide_dar,
+        }),
+        false => convert_dar_to_oar(ConvertOptions {
+            dar_dir: args.src,
+            oar_dir: dist,
+            mod_name: args.name.as_deref(),
+            author: args.author.as_deref(),
+            section_table: table,
+            section_1person_table: table_1person,
+            hide_dar: args.hide_dar,
+        }),
+    }?;
+    log::debug!("{}", msg);
+    Ok(())
 }
