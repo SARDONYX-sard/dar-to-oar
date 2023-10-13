@@ -2,18 +2,18 @@ import { Tooltip } from "@mui/material";
 import Button from "@mui/material/Button";
 import { restoreDarDir } from "@/tauri_cmd";
 import toast from "react-hot-toast";
-import RestoreIcon from "@mui/icons-material/Restore";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 type Props = {
   path: string;
 };
 
-export const RestoreDarBtn = ({ path }: Props) => {
+export const UnhideDarBtn = ({ path }: Props) => {
   return (
     <Tooltip
       title={
         <p>
-          Restore the directory hidden by &quot;Hide DAR&quot;.(For MO2 user)
+          Unhide the directory hidden by &quot;Hide DAR&quot;.(For MO2 user)
         </p>
       }
     >
@@ -32,9 +32,9 @@ export const RestoreDarBtn = ({ path }: Props) => {
             toast.error(`${err}`);
           }
         }}
-        startIcon={<RestoreIcon />}
+        startIcon={<VisibilityIcon />}
       >
-        Restore DAR
+        Unhide DAR
       </Button>
     </Tooltip>
   );
