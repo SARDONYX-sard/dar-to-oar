@@ -20,6 +20,7 @@ export default function Converter() {
           placeContent: "center",
           height: "calc(100% - 56px)",
           width: "100%",
+          overflowX: "scroll",
         }}
       >
         <ConvertForm />
@@ -28,10 +29,10 @@ export default function Converter() {
         position="bottom-right"
         reverseOrder={false}
         toastOptions={{
-            style: {
-              color: "#fff",
-              background: "#1a1919e1",
-            }
+          style: {
+            color: "#fff",
+            background: "#1a1919e1",
+          },
         }}
       />
     </>
