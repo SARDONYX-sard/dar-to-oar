@@ -197,6 +197,7 @@ jobs:
             ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
           prerelease: ${{ fromJson(needs.plan.outputs.val).announcement_is_prerelease }}
           artifacts: "artifacts/*"
+          allowUpdates: true
       - name: Commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

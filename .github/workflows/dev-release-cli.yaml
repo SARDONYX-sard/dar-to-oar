@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       val: ${{ steps.plan.outputs.manifest }}
-      tag: ${{ github.ref_name || '' }}
+      tag: development
       tag-flag: ${{ !github.event.pull_request && format('--tag={0}', github.ref_name) || '' }}
       publishing: true
     env:
@@ -202,10 +202,9 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ needs.plan.outputs.tag }}
+          tag: development
           name: DAR to OAR Converter Development-${{ github.sha }}
-          body: |
-            ${{ steps.changelog.outputs.changes }}
-            ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
+          body: ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
           artifacts: "artifacts/*"
-          draft: true
+          prerelease: true
+          allowUpdates: true
