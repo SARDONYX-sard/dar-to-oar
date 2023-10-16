@@ -193,7 +193,7 @@ jobs:
         uses: requarks/changelog-action@v1
         with:
           token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ needs.plan.outputs.tag }}
       - name: "Download artifacts"
         uses: actions/download-artifact@v3
         with:
