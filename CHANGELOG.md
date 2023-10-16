@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2023-10-13
+### :sparkles: New Features
+- [`32c3150`](https://github.com/SARDONYX-sard/dar-to-oar/commit/32c31505303d1e04b52615c1f26e6147b09d3705) - **front**: add experimental customJS system *(commit by @SARDONYX-sard)*
+- [`9e41f60`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9e41f60e30e4b985b0ca0c8c87233c7277a907d9) - **core**: add sentinel in converter *(commit by @SARDONYX-sard)*
+- [`ae852d0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ae852d0757a0a7515856bf09ffbabf2c9c9a0a6e) - implement DAR hinder & OAR remover *(commit by @SARDONYX-sard)*
+
+### :bug: Bug Fixes
+- [`92563f2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/92563f2c6ff50c4c6dc47bbd1a0d165874be242b) - **front**: fix design *(commit by @SARDONYX-sard)*
+- [`330041f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/330041f1de0b8bd0cb59fb063e5a2d622b822c0f) - **front**: fix problem with navigation focus not changing color after pressing `alt+->` *(commit by @SARDONYX-sard)*
+- [`7231c65`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7231c65515febf95637110203bb67421c4fb5bda) - **ci**: remove draft option in release *(commit by @SARDONYX-sard)*
+- [`8af1069`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8af1069a9c3d51724f53c8d74c63c764ddb61226) - **core-test**: revert to dyn read file *(commit by @SARDONYX-sard)*
+
+### :recycle: Refactors
+- [`20c3c59`](https://github.com/SARDONYX-sard/dar-to-oar/commit/20c3c59109bc08dd90c8b180f7f817cab17e7acc) - **front**: remove unused import *(commit by @SARDONYX-sard)*
+
+### :wrench: Chores
+- [`85542ea`](https://github.com/SARDONYX-sard/dar-to-oar/commit/85542ea5820c0810be1c7a4a3e42e22943cbf523) - **bug-report**: add version selectors *(commit by @SARDONYX-sard)*
+
 ## [0.1.4] - 2023-10-09
 ### :sparkles: New Features
 - [`20a64c4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/20a64c485b02956647b299e6ba30e5b36f02b8e6) - add dev build ci & new form help text in GUI *(PR [#8](https://github.com/SARDONYX-sard/dar-to-oar/pull/8) by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -47,4 +65,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.2]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.1...0.1.2
 [0.1.3]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.2...0.1.3
-[0.1.4]: https://github.com/SARDONYX-sard/dar-to-oar/compare/development...0.1.4
+[0.1.4]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.3...0.1.4
+[0.1.5]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.4...0.1.5
