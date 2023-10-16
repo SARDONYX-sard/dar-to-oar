@@ -7,6 +7,11 @@ members = ["dar2oar_core", "dar2oar_cli", "src-tauri"]
 default-members = ["dar2oar_cli"]
 resolver = "2"
 
+# The profile that 'cargo dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
 # Config for 'cargo dist'
 [workspace.metadata.dist]
 # The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
@@ -23,10 +28,5 @@ targets = [
   "x86_64-pc-windows-msvc",
 ]
 # Publish jobs to run in CI
-pr-run-mode = "plan"
+pr-run-mode = "skip"
 allow-dirty = ["ci"]
-
-# The profile that 'cargo dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "thin"
