@@ -1,6 +1,6 @@
+use crate::deserialize_json;
 use super::{
-    actor_value::ActorValue, graph_value::GraphValue, plugin_value::PluginValue,
-    static_value::StaticValue,
+    actor_value::ActorValue, graph_value::GraphValue, static_value::StaticValue, FormValue,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -11,7 +11,7 @@ use serde_json::Value;
 #[serde(untagged)]
 pub enum NumericValue {
     StaticValue(StaticValue),
-    GlobalVariable(PluginValue),
+    GlobalVariable(FormValue),
     ActorValue(ActorValue),
     GraphVariable(GraphValue),
 }
@@ -32,20 +32,16 @@ impl<'de> Deserialize<'de> for NumericValue {
         if let Value::Object(map) = &value {
             if map.contains_key("value") {
                 // If the "value" field is present, assume it's a StaticValue
-                let static_value: StaticValue = serde_json::from_value(value).unwrap();
+                let static_value: StaticValue = deserialize_json!(value)?;
                 Ok(NumericValue::StaticValue(static_value))
-            } else if map.contains_key("pluginName") && map.contains_key("formID") {
-                // If both "pluginName" and "formID" fields are present, assume it's a GlobalVariable
-                let global_variable: PluginValue = serde_json::from_value(value).unwrap();
+            } else if map.contains_key("form") {
+                let global_variable = deserialize_json!(value)?;
                 Ok(NumericValue::GlobalVariable(global_variable))
             } else if map.contains_key("actorValue") {
-                // If the "actorValue" field is present, assume it's an ActorValue
-                let actor_value: ActorValue = serde_json::from_value(value).unwrap();
+                let actor_value: ActorValue = deserialize_json!(value)?;
                 Ok(NumericValue::ActorValue(actor_value))
             } else if map.contains_key("graphValue") {
-                // If the "graphValue" field is present, assume it's a GraphVariable
-                let graph_variable: GraphValue = serde_json::from_value(value).unwrap();
-                Ok(NumericValue::GraphVariable(graph_variable))
+                Ok(NumericValue::GraphVariable(deserialize_json!(value)?))
             } else {
                 Err(serde::de::Error::custom(
                     "Unable to determine NumericValue variant",
@@ -62,6 +58,8 @@ impl<'de> Deserialize<'de> for NumericValue {
 
 #[cfg(test)]
 mod tests {
+    use crate::values::PluginValue;
+
     use super::*;
     use pretty_assertions::assert_eq;
 
@@ -78,11 +76,13 @@ mod tests {
 
     #[test]
     fn should_serialize_numeric_value_global_variable() {
-        let numeric_value = NumericValue::GlobalVariable(PluginValue::default());
+        let numeric_value = NumericValue::GlobalVariable(FormValue::default());
 
         let expected = r#"{
-  "pluginName": "",
-  "formID": ""
+  "form": {
+    "pluginName": "",
+    "formID": ""
+  }
 }"#;
         let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
         assert_eq!(serialized, expected);
@@ -103,15 +103,20 @@ mod tests {
     #[test]
     fn should_deserialize_numeric_value_global_variable() {
         let json_str = r#"{
+          "form": {
             "pluginName": "MyPlugin",
             "formID": "0x12345"
+          }
         }"#;
 
         let deserialized: NumericValue = serde_json::from_str(json_str).unwrap();
-        let expected = NumericValue::GlobalVariable(PluginValue {
-            plugin_name: "MyPlugin".into(),
-            form_id: "0x12345".into(),
-        });
+        let expected = NumericValue::GlobalVariable(
+            PluginValue {
+                plugin_name: "MyPlugin".into(),
+                form_id: "0x12345".into(),
+            }
+            .into(),
+        );
 
         assert_eq!(deserialized, expected);
     }

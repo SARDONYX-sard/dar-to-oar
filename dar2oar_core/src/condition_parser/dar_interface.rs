@@ -70,10 +70,13 @@ impl From<&FnArg<'_>> for NumericValue {
             FnArg::PluginValue {
                 plugin_name,
                 form_id,
-            } => Self::GlobalVariable(PluginValue {
-                plugin_name: plugin_name.to_string(),
-                form_id: NumericLiteral::from(form_id).into(),
-            }),
+            } => Self::GlobalVariable(
+                PluginValue {
+                    plugin_name: plugin_name.to_string(),
+                    form_id: NumericLiteral::from(form_id).into(),
+                }
+                .into(),
+            ),
             FnArg::Number(num) => match num {
                 NumberLiteral::Float(value) => Self::StaticValue((*value).into()),
                 NumberLiteral::Decimal(value) => Self::StaticValue((*value as f32).into()),

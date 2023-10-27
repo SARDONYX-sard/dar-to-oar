@@ -49,7 +49,9 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
     Ok(match fn_name {
         "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
         actor if fn_name.starts_with("IsActor") => parse_actor(actor, args, negated)?,
-        faction if fn_name.starts_with("IsFaction") => parse_faction(faction, args, negated)?,
+        "IsInFaction" | "IsFactionRankEqualTo" | "IsFactionRankLessThan" => {
+            parse_faction(fn_name, args, negated)?
+        }
         equip if fn_name.starts_with("IsEquipped") => parse_equip(equip, args, negated)?,
         "IsLevelLessThan" => ConditionSet::Level(Level {
             negated,

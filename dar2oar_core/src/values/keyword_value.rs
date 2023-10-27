@@ -1,4 +1,4 @@
-use super::{LiteralValue, PluginValue};
+use super::{FormValue, LiteralValue};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -8,13 +8,6 @@ pub enum Keyword {
     Literal(LiteralValue),
     Form(FormValue),
 }
-
-/// Wrapper for wrapping pluginValue with a key called "form"
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct FormValue {
-    pub form: PluginValue,
-}
-
 impl Default for Keyword {
     fn default() -> Self {
         Self::Literal(LiteralValue::default())
@@ -59,6 +52,8 @@ impl<'de> Deserialize<'de> for Keyword {
 
 #[cfg(test)]
 mod tests {
+    use crate::values::PluginValue;
+
     use super::*;
     use pretty_assertions::assert_eq;
 
