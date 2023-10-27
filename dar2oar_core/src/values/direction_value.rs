@@ -136,7 +136,7 @@ mod tests {
   "value": 3.0
 }"#;
         let serialized = serde_json::to_string_pretty(&direction_value).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -150,7 +150,7 @@ mod tests {
             value: Direction::Forward,
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -161,7 +161,7 @@ mod tests {
             value: Direction::None,
         };
 
-        assert_eq!(expected, default_direction_value);
+        assert_eq!(default_direction_value, expected);
     }
 
     #[test]
@@ -170,7 +170,7 @@ mod tests {
 
         let expected = "2.0";
         let serialized = serde_json::to_string(&direction).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -180,6 +180,6 @@ mod tests {
         let deserialized: Direction = serde_json::from_str(json_str).unwrap();
         let expected = Direction::Left;
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }

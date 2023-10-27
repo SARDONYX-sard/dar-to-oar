@@ -256,7 +256,7 @@ mod tests {
   "value": -1.0
 }"#;
         let serialized = serde_json::to_string_pretty(&type_value).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -270,7 +270,7 @@ mod tests {
             value: WeaponType::Torch,
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 
     #[test]
@@ -284,6 +284,6 @@ mod tests {
             value: WeaponType::Greatsword,
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }
