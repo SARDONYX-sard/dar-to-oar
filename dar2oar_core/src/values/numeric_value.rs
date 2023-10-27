@@ -1,7 +1,7 @@
-use crate::deserialize_json;
 use super::{
     actor_value::ActorValue, graph_value::GraphValue, static_value::StaticValue, FormValue,
 };
+use crate::deserialize_json;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
