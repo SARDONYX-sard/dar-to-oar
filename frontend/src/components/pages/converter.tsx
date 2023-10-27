@@ -28,10 +28,10 @@ export default function Converter() {
         position="bottom-right"
         reverseOrder={false}
         toastOptions={{
-            style: {
-              color: "#fff",
-              background: "#1a1919e1",
-            }
+          style: {
+            color: "#fff",
+            background: "#1a1919e1",
+          },
         }}
       />
     </>

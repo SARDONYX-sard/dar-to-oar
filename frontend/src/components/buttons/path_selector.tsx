@@ -1,5 +1,6 @@
-import { Button } from "@mui/material";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import toast from "react-hot-toast";
+import { Button } from "@mui/material";
 import { openPath } from "../../tauri_cmd";
 
 type Props = {
@@ -20,9 +21,10 @@ export function SelectPathButton({ path, isDir = false, setValue }: Props) {
         width: "100%",
         height: "55px",
       }}
-      variant="outlined"
-      type="button"
       onClick={handleClick}
+      startIcon={<FolderOpenIcon />}
+      type="button"
+      variant="outlined"
     >
       Select
     </Button>

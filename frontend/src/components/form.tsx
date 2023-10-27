@@ -7,16 +7,18 @@ import {
   Tooltip,
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
+import ConvertButton from "./buttons/convert_btn";
 import Grid from "@mui/material/Unstable_Grid2";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import toast from "react-hot-toast";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { convertDar2oar } from "../tauri_cmd";
-import ConvertButton from "./buttons/convert_btn";
 import { LogFileButton } from "./buttons/log_file_btn";
-import { SelectPathButton } from "./buttons/path_selector";
 import { RemoveOarBtn } from "./buttons/remove_oar_btn";
-import { RestoreDarBtn } from "./buttons/restore_dar_btn";
+import { SelectPathButton } from "./buttons/path_selector";
+import { UnhideDarBtn } from "./buttons/unhide_dar_btn";
+import { convertDar2oar } from "../tauri_cmd";
 
 type FormProps = {
   src: string;
@@ -109,8 +111,9 @@ export function ConvertForm() {
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
         <Button
           sx={{ width: "100%", marginBottom: "35px" }}
-          variant="outlined"
           onClick={handleAllClear}
+          startIcon={<ClearAllIcon />}
+          variant="outlined"
         >
           <span>All Clear</span>
         </Button>
@@ -385,7 +388,6 @@ export function ConvertForm() {
                       dirname in &quot;DAR(src) Directory*&quot; to make it a
                       hidden directory(For MO2 users)
                       <br />
-                      <br />
                       NOTE: Failure to cross the drive or No permission.
                     </p>
                   }
@@ -401,7 +403,12 @@ export function ConvertForm() {
                         aria-label="Hide DAR"
                       />
                     }
-                    label="Hide DAR"
+                    label={
+                      <Box component="div" sx={{ display: "flex" }}>
+                        <VisibilityOffIcon />
+                        Hide DAR
+                      </Box>
+                    }
                   />
                 </Tooltip>
               )}
@@ -409,7 +416,7 @@ export function ConvertForm() {
           </Grid>
 
           <Grid xs={3}>
-            <RestoreDarBtn path={getValues("src")} />
+            <UnhideDarBtn path={getValues("src")} />
           </Grid>
           <Grid xs={3}>
             <RemoveOarBtn

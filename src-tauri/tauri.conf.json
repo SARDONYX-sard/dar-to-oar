@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "g_dar2oar",
-    "version": "0.1.5"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -28,11 +28,7 @@
         "all": true
       },
       "shell": {
-        "all": true,
-        "execute": false,
-        "open": false,
-        "scope": [],
-        "sidecar": false
+        "all": true
       }
     },
     "bundle": {

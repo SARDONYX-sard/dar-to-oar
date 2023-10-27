@@ -60,6 +60,6 @@ mod tests {
   "graphVariableType": "Float"
 }"#;
         let serialized = serde_json::to_string_pretty(&graph_value).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 }

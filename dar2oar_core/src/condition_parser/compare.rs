@@ -3,7 +3,7 @@ use crate::{
     conditions::{CompareValues, ConditionSet},
     dar_syntax::syntax::FnArg,
     get_try_into,
-    values::{Cmp, NumericValue},
+    values::{Cmp, NumericValue, PluginValue},
 };
 
 /// condition_name: "ValueEqualTo" | "ValueLessThan"
@@ -12,7 +12,7 @@ pub(super) fn parse_compare(
     args: Vec<FnArg<'_>>,
     negated: bool,
 ) -> Result<ConditionSet, ParseError> {
-    let plugin_value = get_try_into!(
+    let plugin_value: PluginValue = get_try_into!(
         args[0],
         "Plugin value: in ValueEqualTo | ValueLessThan 1st arg",
         "None"
@@ -26,7 +26,7 @@ pub(super) fn parse_compare(
     let create_compare = |comparison: Cmp| {
         ConditionSet::CompareValues(CompareValues {
             negated,
-            value_a: NumericValue::GlobalVariable(plugin_value),
+            value_a: NumericValue::GlobalVariable(plugin_value.into()),
             comparison,
             value_b: NumericValue::StaticValue(static_value),
             ..Default::default()

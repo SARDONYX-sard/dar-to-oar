@@ -68,7 +68,7 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -100,7 +100,7 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -133,20 +133,26 @@ mod tests {
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 
     #[test]
     fn should_stringify_compare_values_with_global_variable() {
         let compare_values = CompareValues {
-            value_a: NumericValue::GlobalVariable(PluginValue {
-                plugin_name: "my_plugin.esm".to_string(),
-                form_id: 1usize.into(),
-            }),
-            value_b: NumericValue::GlobalVariable(PluginValue {
-                plugin_name: "another_plugin.esp".to_string(),
-                form_id: "2".into(),
-            }),
+            value_a: NumericValue::GlobalVariable(
+                PluginValue {
+                    plugin_name: "my_plugin.esm".to_string(),
+                    form_id: 1usize.into(),
+                }
+                .into(),
+            ),
+            value_b: NumericValue::GlobalVariable(
+                PluginValue {
+                    plugin_name: "another_plugin.esp".to_string(),
+                    form_id: "2".into(),
+                }
+                .into(),
+            ),
             comparison: Cmp::Gt,
             ..Default::default()
         };
@@ -155,16 +161,20 @@ mod tests {
   "condition": "CompareValues",
   "requiredVersion": "1.0.0.0",
   "Value A": {
-    "pluginName": "my_plugin.esm",
-    "formID": "1"
+    "form": {
+      "pluginName": "my_plugin.esm",
+      "formID": "1"
+    }
   },
   "Comparison": ">",
   "Value B": {
-    "pluginName": "another_plugin.esp",
-    "formID": "2"
+    "form": {
+      "pluginName": "another_plugin.esp",
+      "formID": "2"
+    }
   }
 }"#;
         let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
-        assert_eq!(expected, serialized);
+        assert_eq!(serialized, expected);
     }
 }

@@ -8,6 +8,9 @@ repository = "https://github.com/SARDONYX-sard/dar2oar"
 edition = "2021"
 rust-version = "1.60"
 
+[package.metadata.dist]
+dist = false # To run CI and build separately from CLI (cargo dist)
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
