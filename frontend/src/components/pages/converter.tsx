@@ -20,7 +20,6 @@ export default function Converter() {
           placeContent: "center",
           height: "calc(100% - 56px)",
           width: "100%",
-          overflowX: "scroll",
         }}
       >
         <ConvertForm />
