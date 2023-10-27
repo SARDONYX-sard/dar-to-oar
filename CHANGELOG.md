@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2023-10-27
+### :sparkles: New Features
+- [`b42d5ed`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b42d5ed9c4bc297e180f6fe88139bb1268d8e107) - **front**: add icon & change msg *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`15f6c9e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/15f6c9e183cbca864b24b8441b08252054285bed) - **ci**: change bot email *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bc6425f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bc6425f00e577c3360fe64ae0187dfb4a00e676c) - **front**: add `overflowX` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`d842b6b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d842b6b704631ee0a24f265671eb01e68d5e8036) - **core**: wrapping PluginValue in "form" *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`68e62d4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/68e62d46b6384b798a4a93eb0a27c63a9bcff8ad) - **ci**: fix commit name *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`9bacf29`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9bacf29d1e8758cf9fc57db0f874d273971346cb) - **core**: change assert order *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5719787`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5719787a455e8bb1a536f65bedfc861a39434905) - **front**: remove `overflowX` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`05928a0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/05928a0b27e2a8e0ee5fa4a85f8b453f7063ed84) - **cargo**: organize item *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`687a385`](https://github.com/SARDONYX-sard/dar-to-oar/commit/687a38540421e5f44b530f66e5d2ec12547f6684) - update `CHANGELOG.md` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.1.5] - 2023-10-13
 ### :sparkles: New Features
 - [`32c3150`](https://github.com/SARDONYX-sard/dar-to-oar/commit/32c31505303d1e04b52615c1f26e6147b09d3705) - **front**: add experimental customJS system *(commit by @SARDONYX-sard)*
@@ -67,3 +86,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.3]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.2...0.1.3
 [0.1.4]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.3...0.1.4
 [0.1.5]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.4...0.1.5
+
+[0.1.6]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.5...0.1.6
