@@ -1,6 +1,6 @@
 # DAR to OAR Converter(GUI & CLI)
 
-[![Cargo Lint & Test](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml)
+[![Cargo Lint & Test](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml)
 
 [![Release Cli](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml/badge.svg)](https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml)
 
@@ -67,3 +67,10 @@ Options:
   -V, --version
           Print version
 ```
+
+## License
+
+- MIT OR Apache-2.0: Without the source of this application, we could not have
+  created this Rust converter. Thank you.
+
+- Original Application: MIT License Copyright (c) 2023 Allison Payne
