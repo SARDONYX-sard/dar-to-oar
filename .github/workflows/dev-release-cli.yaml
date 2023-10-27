@@ -204,7 +204,9 @@ jobs:
         with:
           tag: development
           name: DAR to OAR Converter Development-${{ github.sha }}
-          body: ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
+          body: |
+            ${{ steps.changelog.outputs.changes }}
+            ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
           artifacts: "artifacts/*"
           prerelease: true
           allowUpdates: true
