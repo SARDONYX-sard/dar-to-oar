@@ -32,6 +32,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           {children}
+          {/* To prevents the conversion button from being hidden because the menu is fixed. */}
+          <div style={{ height: "56px" }}></div>
           <Menu />
         </ThemeProvider>
       </body>

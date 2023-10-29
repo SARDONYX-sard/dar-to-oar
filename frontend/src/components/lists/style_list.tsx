@@ -36,6 +36,7 @@ export const SelectStyleList = ({ preset, setPreset, setStyle }: Props) => {
           <MenuItem value={"0"}>Custom</MenuItem>
           <MenuItem value={"1"}>Preset1</MenuItem>
           <MenuItem value={"2"}>Preset2</MenuItem>
+          <MenuItem value={"3"}>Preset3</MenuItem>
         </Select>
       </FormControl>
     </Tooltip>
