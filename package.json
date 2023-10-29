@@ -2,6 +2,7 @@
   "name": "dar-to-oar",
   "version": "0.1.6",
   "license": "MIT",
+  "homepage": "https://github.com/SARDONYX-sard/dar-to-oar",
   "private": true,
   "scripts": {
     "dev": "tauri dev",

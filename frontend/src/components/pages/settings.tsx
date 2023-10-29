@@ -1,9 +1,10 @@
 "use client";
 
 import AceEditor from "react-ace";
-import { Box } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
+import packageJson from "@/../../package.json";
 import type { EditorMode } from "@/utils/editor";
+import { Box } from "@mui/material";
 import { SelectEditorMode } from "@/components/lists/editor_list";
 import { SelectStyleList } from "@/components/lists/style_list";
 import { Toaster } from "react-hot-toast";
@@ -34,7 +35,7 @@ export default function Settings() {
       component="main"
       sx={{
         display: "flex",
-        marginBottom: "20px",
+        marginBottom: "1rem",
         flexDirection: "column",
         alignItems: "center",
         width: "100%",
@@ -121,6 +122,19 @@ export default function Settings() {
         theme="one_dark"
         value={script}
       />
+
+      <div>
+        <p>Version: {packageJson.version}</p>
+        <p>
+          Source Code:{" "}
+          <a
+            style={{ cursor: "pointer", color: "#00c2ff" }}
+            onClick={() => open(packageJson.homepage)}
+          >
+            GitHub
+          </a>
+        </p>
+      </div>
     </Box>
   );
 }

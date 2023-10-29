@@ -13,6 +13,7 @@ const Nav = styled(BottomNavigation)(() => {
     position: "fixed",
     bottom: 0,
     width: "100%",
+    zIndex: "100", // Because Ace-editor uses z-index and without it, it would be covered.
     ".Mui-selected": {
       color: "#99e4ee",
     },
@@ -25,9 +26,9 @@ export default function MenuNavigation() {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (pathname=== "/") {
+    if (pathname === "/") {
       setValue(0);
-    } else if (pathname=== "/settings") {
+    } else if (pathname === "/settings") {
       setValue(1);
     }
   }, [setValue, pathname]);

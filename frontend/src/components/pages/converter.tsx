@@ -16,9 +16,9 @@ export default function Converter() {
         component="main"
         sx={{
           display: "grid",
-          placeItems: "center",
+          minHeight: "calc(100vh - 56px)",
           placeContent: "center",
-          height: "calc(100% - 56px)",
+          placeItems: "center",
           width: "100%",
         }}
       >
