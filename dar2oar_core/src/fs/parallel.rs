@@ -19,12 +19,28 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         section_table,
         section_1person_table,
         hide_dar,
+        sender,
     } = options;
     let mut is_converted_once = false;
     let mut dar_namespace = None; // To need rename to hidden
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
-    for entry in WalkDir::new(dar_dir) {
+    let sender = sender.as_ref(); // Borrowing ownership here prevents move errors in the loop.
+    let entires = WalkDir::new(&dar_dir).into_iter();
+
+    let mut walk_len = 0;
+    if let Some(sender) = sender {
+        walk_len = WalkDir::new(dar_dir).into_iter().count(); // Lower performance cost when sender is None
+        log::debug!("Dir & File Counts: {}", walk_len);
+        sender.send(walk_len).await?;
+    }
+
+    for (idx, entry) in entires.enumerate() {
+        if let Some(sender) = sender {
+            log::debug!("Converted: {}/{}", idx, walk_len);
+            sender.send(idx).await?;
+        }
+
         let entry = entry?;
         let path = entry.path(); // Separate this for binding
         let path = path.as_path();

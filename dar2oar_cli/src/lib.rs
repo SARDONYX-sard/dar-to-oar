@@ -71,6 +71,7 @@ pub async fn run_cli(args: Args) -> anyhow::Result<()> {
         section_table: read_table!(args.mapping_file),
         section_1person_table: read_table!(args.mapping_1person_file),
         hide_dar: args.hide_dar,
+        ..Default::default()
     };
 
     let msg = match args.run_parallel {

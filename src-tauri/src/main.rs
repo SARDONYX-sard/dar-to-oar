@@ -9,7 +9,7 @@ use crate::runner::run_tauri;
 
 fn main() -> std::io::Result<()> {
     run_tauri().map_err(|err| {
-        log::error!("Error: {}", err);
+        tracing::error!("Error: {}", err);
         std::process::exit(1);
     })
 }
