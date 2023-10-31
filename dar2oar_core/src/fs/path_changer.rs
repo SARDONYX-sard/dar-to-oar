@@ -80,7 +80,12 @@ pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarP
                     Path::new(path)
                         .extension()
                         .and(None)
-                        .or(path.parse::<i64>().is_ok().then(|| path.to_owned()))
+                        .or(Some({
+                            path.parse::<i64>()
+                            .is_err()
+                            .then(|| log::debug!("Expected a priority dir name with numbers, but got \"{path}\" (perhaps a dir name as a memo)."));
+                            path.to_owned()
+                        }))
                 })
         });
 
