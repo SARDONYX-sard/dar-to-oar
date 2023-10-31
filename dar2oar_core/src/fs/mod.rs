@@ -1,17 +1,21 @@
 mod mapping_table;
-pub mod parallel;
-pub mod path_changer;
 mod sequential;
 
-pub use mapping_table::read_mapping_table;
-pub use sequential::convert_dar_to_oar;
+pub mod parallel;
+pub mod path_changer;
 
 use crate::conditions::{ConditionsConfig, MainConfig};
 use anyhow::Context as _;
+use async_walkdir::WalkDir;
 use std::collections::HashMap;
-use std::fs;
-use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
+use tokio::fs;
+use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
+use tokio_stream::StreamExt;
+use tracing::trace;
+
+pub use mapping_table::read_mapping_table;
+pub use sequential::convert_dar_to_oar;
 
 #[derive(Debug, Default, PartialEq)]
 pub struct ConvertOptions<'a, P: AsRef<Path>> {
@@ -31,35 +35,35 @@ pub struct ConvertOptions<'a, P: AsRef<Path>> {
     pub hide_dar: bool,
 }
 
-fn read_file<P>(file_path: P) -> io::Result<String>
+async fn read_file<P>(file_path: P) -> io::Result<String>
 where
     P: AsRef<Path>,
 {
-    let mut file = fs::File::open(file_path)?;
+    let mut file = fs::File::open(file_path).await?;
     let mut content = String::new();
-    file.read_to_string(&mut content)?;
+    file.read_to_string(&mut content).await?;
     Ok(content)
 }
 
-fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> anyhow::Result<()>
+async fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
 {
     let target_path = oar_dir.as_ref().join("config.json");
-    let mut config_file = fs::File::create(&target_path).with_context(|| {
+    let mut config_file = fs::File::create(&target_path).await.with_context(|| {
         let msg = format!("writing section config target: {:?}", target_path);
-        log::error!("{}", msg);
+        tracing::error!("{}", msg);
         msg
     })?;
     let json = serde_json::to_string_pretty(&config_json)?;
-    config_file.write_all(json.as_bytes())?;
+    config_file.write_all(json.as_bytes()).await?;
     Ok(())
 }
 
 /// If there is no name_space_config file, create one.
 /// If it exists, do nothing. (This behavior is intended to facilitate the creation of config files
 /// for 1st_person and 3rd_person.)
-fn write_name_space_config<P>(
+async fn write_name_space_config<P>(
     oar_name_space_path: P,
     mod_name: &str,
     author: Option<&str>,
@@ -77,10 +81,10 @@ where
         author: author.unwrap_or_default().into(),
         ..Default::default()
     };
-    fs::create_dir_all(&oar_name_space_path)?;
-    let mut config_file = fs::File::create(target_file)?;
+    fs::create_dir_all(&oar_name_space_path).await?;
+    let mut config_file = fs::File::create(target_file).await?;
     let json = serde_json::to_string_pretty(&config_json)?;
-    config_file.write_all(json.as_bytes())?;
+    config_file.write_all(json.as_bytes()).await?;
     Ok(())
 }
 
@@ -89,12 +93,13 @@ where
 ///
 /// # NOTE
 /// It is currently used only in GUI, but is implemented in Core as an API.
-pub fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
+pub async fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
     let mut restored_dar = None;
     let mut restored_1st_dar = None;
-    for entry in walkdir::WalkDir::new(dar_dir) {
-        let entry = entry?;
-        let path = entry.path();
+    let mut entries = WalkDir::new(dar_dir);
+    while let Some(entry) = entries.next().await {
+        let path = entry?.path();
+        let path = path.as_path();
         let (dar_root, _, is_1st_person, _, _, _) =
             match path_changer::parse_dar_path(path, Some("DynamicAnimationReplacer.mohidden")) {
                 Ok(data) => data,
@@ -116,7 +121,7 @@ pub fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
             .as_os_str()
             .to_string_lossy()
             .replace(".mohidden", "");
-        fs::rename(dar_root.clone(), dist)?;
+        fs::rename(dar_root.clone(), dist).await?;
         msg = format!("{}- Restored 3rd_person", msg);
     }
     if let Some(dar_root) = restored_1st_dar.as_ref() {
@@ -124,7 +129,7 @@ pub fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
             .as_os_str()
             .to_string_lossy()
             .replace(".mohidden", "");
-        fs::rename(dar_root.clone(), dist)?;
+        fs::rename(dar_root.clone(), dist).await?;
         msg = format!("{}\n- Restored 1rd_person", msg);
     }
 
@@ -137,12 +142,13 @@ pub fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
 
 /// # NOTE
 /// It is currently used only in GUI, but is implemented in Core as an API.
-pub fn remove_oar(dar_dir: impl AsRef<Path>) -> anyhow::Result<()> {
+pub async fn remove_oar(dar_dir: impl AsRef<Path>) -> anyhow::Result<()> {
     let mut restored_dar = None;
     let mut restored_1st_dar = None;
-    for entry in walkdir::WalkDir::new(dar_dir) {
-        let entry = entry?;
-        let path = entry.path();
+    let mut entries = WalkDir::new(dar_dir);
+    while let Some(entry) = entries.next().await {
+        let path = entry?.path();
+        let path = path.as_path();
         // NOTE: The OAR root obtained by parse fn is calculated and not guaranteed to exist.
         let (dar_root, oar_name_space_path, is_1st_person, _, _, _) =
             match path_changer::parse_dar_path(path, Some("DynamicAnimationReplacer.mohidden")) {
@@ -165,23 +171,16 @@ pub fn remove_oar(dar_dir: impl AsRef<Path>) -> anyhow::Result<()> {
     }
 
     if let Some((_, oar_root)) = restored_dar {
-        dbg!(&oar_root);
+        trace!("{:?}", &oar_root);
         if oar_root.exists() {
-            fs::remove_dir_all(oar_root)?;
+            fs::remove_dir_all(oar_root).await?;
         }
     }
     if let Some((_, oar_root)) = restored_1st_dar {
-        dbg!(&oar_root);
+        trace!("{:?}", &oar_root);
         if oar_root.exists() {
-            fs::remove_dir_all(oar_root)?;
+            fs::remove_dir_all(oar_root).await?;
         }
     }
     Ok(())
-}
-
-#[ignore]
-#[test]
-fn should_restore_dar() {
-    let dar_dir = "../test/data/UNDERDOG Animations";
-    remove_oar(dar_dir).unwrap();
 }

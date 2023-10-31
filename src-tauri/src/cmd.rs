@@ -1,3 +1,4 @@
+use crate::logging::change_log_level;
 use dar2oar_core::{
     convert_dar_to_oar,
     fs::{parallel, remove_oar, restore_dar, ConvertOptions},
@@ -17,7 +18,7 @@ macro_rules! try_get_mapping_table {
     ($mapping_path:ident) => {
         match $mapping_path {
             Some(ref table_path) => {
-                let mapping = match read_mapping_table(table_path) {
+                let mapping = match read_mapping_table(table_path).await {
                     Ok(table) => table,
                     Err(err) => bail!(err),
                 };
@@ -30,7 +31,7 @@ macro_rules! try_get_mapping_table {
 
 #[allow(clippy::too_many_arguments)]
 #[tauri::command]
-pub(crate) fn convert_dar2oar(
+pub(crate) async fn convert_dar2oar(
     dar_dir: &str,
     oar_dir: Option<&str>,
     mod_name: Option<&str>,
@@ -70,6 +71,7 @@ pub(crate) fn convert_dar2oar(
     log::debug!("run parallel: {:?}", run_parallel);
     log::debug!("to hidden dar: {:?}", hide_dar);
 
+    change_log_level(log_level).map_err(|err| err.to_string())?;
     match run_parallel {
         Some(true) => match parallel::convert_dar_to_oar(ConvertOptions {
             dar_dir,
@@ -79,7 +81,9 @@ pub(crate) fn convert_dar2oar(
             section_table: table,
             section_1person_table: table_1person,
             hide_dar: hide_dar.unwrap_or(false),
-        }) {
+        })
+        .await
+        {
             Ok(complete_msg) => Ok(complete_msg),
             Err(err) => bail!(err),
         },
@@ -91,7 +95,9 @@ pub(crate) fn convert_dar2oar(
             section_table: table,
             section_1person_table: table_1person,
             hide_dar: hide_dar.unwrap_or(false),
-        }) {
+        })
+        .await
+        {
             Ok(complete_msg) => Ok(complete_msg),
             Err(err) => bail!(err),
         },
@@ -99,16 +105,16 @@ pub(crate) fn convert_dar2oar(
 }
 
 #[tauri::command]
-pub(crate) fn restore_dar_dir(dar_dir: &str) -> Result<String, String> {
-    match restore_dar(dar_dir) {
+pub(crate) async fn restore_dar_dir(dar_dir: &str) -> Result<String, String> {
+    match restore_dar(dar_dir).await {
         Ok(res) => Ok(res),
         Err(err) => Err(err.to_string()),
     }
 }
 
 #[tauri::command]
-pub(crate) fn remove_oar_dir(path: &str) -> Result<(), String> {
-    match remove_oar(path) {
+pub(crate) async fn remove_oar_dir(path: &str) -> Result<(), String> {
+    match remove_oar(path).await {
         Ok(()) => Ok(()),
         Err(err) => Err(err.to_string()),
     }

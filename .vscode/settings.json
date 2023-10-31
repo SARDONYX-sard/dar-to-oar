@@ -3,6 +3,7 @@
     "source.fixAll.sortJSON": false
     // "source.organizeImports": true
   },
+  "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
   "files.exclude": {

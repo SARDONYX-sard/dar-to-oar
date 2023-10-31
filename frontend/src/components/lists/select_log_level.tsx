@@ -9,9 +9,22 @@ interface IFormValues {
   logLevel: LogLevel;
 }
 
+export function selectLogLevel(logLevel: string) {
+  switch (logLevel) {
+    case "trace":
+    case "debug":
+    case "info":
+    case "warn":
+    case "error":
+      return logLevel;
+    default:
+      return "error";
+  }
+}
+
 export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
-  { value: string } & ReturnType<UseFormRegister<IFormValues>>
+  { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
   return (
     <>

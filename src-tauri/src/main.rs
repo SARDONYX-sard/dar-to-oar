@@ -2,16 +2,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod cmd;
+mod logging;
 mod runner;
 
 use crate::runner::run_tauri;
 
 fn main() -> std::io::Result<()> {
-    match run_tauri() {
-        Ok(_) => Ok(()),
-        Err(err) => {
-            eprintln!("Error: {}", err);
-            std::process::exit(1);
-        }
-    }
+    run_tauri().map_err(|err| {
+        log::error!("Error: {}", err);
+        std::process::exit(1);
+    })
 }

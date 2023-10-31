@@ -4,7 +4,9 @@ use dar2oar_core::{
     fs::{parallel, ConvertOptions},
     read_mapping_table,
 };
-use std::path::PathBuf;
+use std::fs::File;
+use std::{path::PathBuf, str::FromStr};
+use tracing::Level;
 
 /// dar2oar --src "DAR path" --dist "OAR path"
 #[derive(Debug, Parser)]
@@ -42,54 +44,38 @@ pub struct Args {
     hide_dar: bool,
 }
 
-pub fn run_cli(args: Args) -> anyhow::Result<()> {
-    let config = simple_log::LogConfigBuilder::builder()
-        .path(args.log_path)
-        .size(100)
-        .roll_count(10)
-        .level(args.log_level)
-        .output_file()
-        .output_console()
-        .build();
-    simple_log::new(config).unwrap();
+pub async fn run_cli(args: Args) -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_ansi(false)
+        .with_writer(File::create(&args.log_path)?)
+        .with_max_level(Level::from_str(&args.log_level).unwrap_or(Level::ERROR))
+        .init();
 
-    let dist: Option<PathBuf> = args.dist.map(|dist| PathBuf::from(&dist));
+    macro_rules! read_table {
+        ($path:expr) => {
+            match $path {
+                Some(table_path) => {
+                    let mapping = read_mapping_table(table_path).await?;
+                    Some(mapping)
+                }
+                None => None,
+            }
+        };
+    }
 
-    let table = match args.mapping_file {
-        Some(table_path) => {
-            let mapping = read_mapping_table(table_path)?;
-            Some(mapping)
-        }
-        None => None,
-    };
-
-    let table_1person = match args.mapping_1person_file {
-        Some(table_path) => {
-            let mapping = read_mapping_table(table_path)?;
-            Some(mapping)
-        }
-        None => None,
+    let config = ConvertOptions {
+        dar_dir: args.src,
+        oar_dir: args.dist.map(|dist| PathBuf::from(&dist)),
+        mod_name: args.name.as_deref(),
+        author: args.author.as_deref(),
+        section_table: read_table!(args.mapping_file),
+        section_1person_table: read_table!(args.mapping_1person_file),
+        hide_dar: args.hide_dar,
     };
 
     let msg = match args.run_parallel {
-        true => parallel::convert_dar_to_oar(ConvertOptions {
-            dar_dir: args.src,
-            oar_dir: dist,
-            mod_name: args.name.as_deref(),
-            author: args.author.as_deref(),
-            section_table: table,
-            section_1person_table: table_1person,
-            hide_dar: args.hide_dar,
-        }),
-        false => convert_dar_to_oar(ConvertOptions {
-            dar_dir: args.src,
-            oar_dir: dist,
-            mod_name: args.name.as_deref(),
-            author: args.author.as_deref(),
-            section_table: table,
-            section_1person_table: table_1person,
-            hide_dar: args.hide_dar,
-        }),
+        true => parallel::convert_dar_to_oar(config).await,
+        false => convert_dar_to_oar(config).await,
     }?;
     log::debug!("{}", msg);
     Ok(())

@@ -3,15 +3,16 @@ use crate::conditions::ConditionsConfig;
 use crate::fs::path_changer::parse_dar_path;
 use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
 use anyhow::{bail, Context as _, Result};
-use std::fs;
+use async_walkdir::WalkDir;
 use std::path::Path;
-use walkdir::WalkDir;
+use tokio::fs;
+use tokio_stream::StreamExt;
 
 /// Single thread converter
 ///
 /// # Return
 /// Complete info
-pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<String> {
+pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -> Result<String> {
     let ConvertOptions {
         dar_dir,
         oar_dir,
@@ -25,15 +26,24 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
     let mut dar_namespace = None; // To need rename to hidden
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
-    for entry in WalkDir::new(dar_dir) {
-        let entry = entry?;
-        let path = entry.path();
+    let t = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len();
+    println!("{t}");
+
+    let mut entries = WalkDir::new(dar_dir);
+    while let Some(entry) = entries.next().await {
+        let path = entry?.path();
+        let path = path.as_path();
 
         let (dar_root, oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain) =
             match parse_dar_path(path, None) {
                 Ok(data) => data,
                 Err(_) => continue, // NOTE: The first search is skipped because it does not yet lead to the DAR file.
             };
+
+        tracing::debug!(
+            "[parsed Path]\ndar_root: {:?}, oar_name_space_path: {:?}, is_1st_person: {:?}, parsed_mod_name: {:?}, priority: {:?}, remain_dir: {:?}",
+            dar_root, oar_name_space_path, is_1st_person, parsed_mod_name, priority, remain
+        );
         let parsed_mod_name = mod_name
             .map(|s| s.to_string())
             .unwrap_or(parsed_mod_name.unwrap_or("Unknown".into()));
@@ -49,9 +59,9 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
             .join(mod_name.unwrap_or(&parsed_mod_name));
 
         if path.is_dir() {
-            log::debug!("Dir: {:?}", path);
+            tracing::debug!("Dir: {:?}", path);
         } else if path.extension().is_some() {
-            log::debug!("File: {:?}", path);
+            tracing::debug!("File: {:?}", path);
             let file_name = path
                 .file_name()
                 .context("Not found file name")?
@@ -72,12 +82,11 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
             .unwrap_or(priority);
 
             let section_root = oar_name_space_path.join(section_name);
-            log::trace!("section root: {:?}", section_root);
-            fs::create_dir_all(&section_root)?;
+            fs::create_dir_all(&section_root).await?;
             if file_name == "_conditions.txt" {
-                match read_file(path) {
+                match read_file(path).await {
                     Ok(content) => {
-                        log::trace!("Content:\n{}", content);
+                        tracing::debug!("_conditions.txt Content:\n{}", content);
 
                         let config_json = ConditionsConfig {
                             name: section_name.into(),
@@ -86,9 +95,9 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                             ..Default::default()
                         };
 
-                        write_section_config(section_root, config_json)?
+                        write_section_config(section_root, config_json).await?
                     }
-                    Err(err) => log::error!("Error reading file {path:?}: {err}"),
+                    Err(err) => tracing::error!("Error reading file {path:?}: {err}"),
                 }
 
                 if is_1st_person {
@@ -101,6 +110,7 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 if !is_converted_once {
                     is_converted_once = true;
                     write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                        .await
                         .with_context(|| {
                             format!(
                                 "Failed to write name space config to: {:?}",
@@ -112,10 +122,15 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 // maybe motion files(.kkx)
                 if let Some(remain) = remain {
                     let non_leaf_dir = section_root.join(remain);
-                    fs::create_dir_all(&non_leaf_dir)?;
-                    fs::copy(path, &non_leaf_dir.join(file_name))?;
+                    let file = &non_leaf_dir.join(file_name);
+                    tracing::debug!("Create dirs: {:?}", &non_leaf_dir);
+                    fs::create_dir_all(&non_leaf_dir).await?;
+                    tracing::debug!("Remain + Copy:\nfrom: {path:?}\nto: {file:?}");
+                    fs::copy(path, file).await?;
                 } else {
-                    fs::copy(path, section_root.join(file_name))?;
+                    let file = section_root.join(file_name);
+                    tracing::debug!("Copy:\nfrom: {path:?}\nto: {file:?}");
+                    fs::copy(path, file).await?;
                 }
             }
         }
@@ -128,17 +143,18 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 if let Some(dar_namespace) = dar_namespace {
                     let mut dist = dar_namespace.clone();
                     dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_namespace, dist)?;
+                    fs::rename(dar_namespace, dist).await?;
                     msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
                 };
 
                 if let Some(dar_1st_namespace) = dar_1st_namespace {
                     let mut dist = dar_1st_namespace.clone();
                     dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_1st_namespace, dist)?;
+                    fs::rename(dar_1st_namespace, dist).await?;
                     msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
                 };
             }
+            tracing::debug!(msg);
             Ok(msg)
         }
         false => bail!("DynamicAnimationReplacer dir was never found"),
@@ -148,30 +164,32 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
 #[cfg(test)]
 mod test {
     use super::*;
+    use tracing::Level;
 
     #[ignore]
-    #[test]
-    fn should_parallel_traverse() -> anyhow::Result<()> {
-        let config = simple_log::LogConfigBuilder::builder()
-            .path("../convert.log")
-            .size(100)
-            .roll_count(10)
-            .level("trace")
-            .output_file()
-            .output_console()
-            .build();
-        simple_log::new(config).unwrap();
+    #[tokio::test]
+    async fn try_convert() -> anyhow::Result<()> {
+        tracing_subscriber::fmt()
+            .with_ansi(false)
+            .with_writer(std::fs::File::create("../convert.log")?)
+            .with_max_level(Level::DEBUG)
+            .init();
 
         // cannot use include_str!
-        let table =
-            crate::read_mapping_table("../test/settings/UnderDog Animations_mapping_table.txt")
-                .unwrap();
+        let table = crate::read_mapping_table(
+            "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt",
+        )
+        .await
+        .unwrap();
+
+        let span = tracing::info_span!("converting");
+        let _guard = span.enter();
         convert_dar_to_oar(ConvertOptions {
             dar_dir: "../test/data/UNDERDOG Animations",
             section_table: Some(table),
-            hide_dar: true,
             ..Default::default()
-        })?;
+        })
+        .await?;
         Ok(())
     }
 }
