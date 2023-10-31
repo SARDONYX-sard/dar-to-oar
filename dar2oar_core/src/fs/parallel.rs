@@ -4,13 +4,13 @@ use crate::fs::path_changer::parse_dar_path;
 use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
 use anyhow::{bail, Context as _, Result};
 use jwalk::WalkDir;
-use std::fs;
 use std::path::Path;
+use tokio::fs;
 
 /// multi thread converter
 /// # Return
 /// Complete info
-pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<String> {
+pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -> Result<String> {
     let ConvertOptions {
         dar_dir,
         oar_dir,
@@ -73,9 +73,9 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
 
             let section_root = oar_name_space_path.join(section_name);
             log::trace!("section root: {:?}", section_root);
-            fs::create_dir_all(&section_root)?;
+            fs::create_dir_all(&section_root).await?;
             if file_name == "_conditions.txt" {
-                match read_file(path) {
+                match read_file(path).await {
                     Ok(content) => {
                         log::trace!("Content:\n{}", content);
 
@@ -86,7 +86,7 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                             ..Default::default()
                         };
 
-                        write_section_config(section_root, config_json)?
+                        write_section_config(section_root, config_json).await?
                     }
                     Err(err) => log::error!("Error reading file {path:?}: {err}"),
                 }
@@ -101,6 +101,7 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 if !is_converted_once {
                     is_converted_once = true;
                     write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
+                        .await
                         .with_context(|| {
                             format!(
                                 "Failed to write name space config to: {:?}",
@@ -112,10 +113,10 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 // maybe motion files(.kkx)
                 if let Some(remain) = remain {
                     let non_leaf_dir = section_root.join(remain);
-                    fs::create_dir_all(&non_leaf_dir)?;
-                    fs::copy(path, &non_leaf_dir.join(file_name))?;
+                    fs::create_dir_all(&non_leaf_dir).await?;
+                    fs::copy(path, &non_leaf_dir.join(file_name)).await?;
                 } else {
-                    fs::copy(path, section_root.join(file_name))?;
+                    fs::copy(path, section_root.join(file_name)).await?;
                 }
             }
         }
@@ -128,14 +129,14 @@ pub fn convert_dar_to_oar(options: ConvertOptions<impl AsRef<Path>>) -> Result<S
                 if let Some(dar_namespace) = dar_namespace {
                     let mut dist = dar_namespace.clone();
                     dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_namespace, dist)?;
+                    fs::rename(dar_namespace, dist).await?;
                     msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
                 };
 
                 if let Some(dar_1st_namespace) = dar_1st_namespace {
                     let mut dist = dar_1st_namespace.clone();
                     dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_1st_namespace, dist)?;
+                    fs::rename(dar_1st_namespace, dist).await?;
                     msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
                 };
             }

@@ -14,11 +14,15 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
-import { LogFileButton } from "./buttons/log_file_btn";
-import { RemoveOarBtn } from "./buttons/remove_oar_btn";
-import { SelectPathButton } from "./buttons/path_selector";
-import { UnhideDarBtn } from "./buttons/unhide_dar_btn";
-import { convertDar2oar } from "../tauri_cmd";
+import { LogFileButton } from "@/components/buttons/log_file_btn";
+import { LogLevel, convertDar2oar } from "@/tauri_cmd";
+import { RemoveOarBtn } from "@/components/buttons/remove_oar_btn";
+import {
+  SelectLogLevel,
+  selectLogLevel,
+} from "@/components/lists/select_log_level";
+import { SelectPathButton } from "@/components/buttons/path_selector";
+import { UnhideDarBtn } from "@/components/buttons/unhide_dar_btn";
 
 type FormProps = {
   src: string;
@@ -28,12 +32,13 @@ type FormProps = {
   mappingPath: string;
   mapping1personPath: string;
   loading: boolean;
+  logLevel: LogLevel;
   runParallel: boolean;
   hideDar: boolean;
 };
 
 export function ConvertForm() {
-  const { handleSubmit, control, setValue, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
     shouldFocusError: false,
@@ -47,6 +52,7 @@ export function ConvertForm() {
       runParallel: localStorage.getItem("runParallel") === "true",
       hideDar: localStorage.getItem("hideDar") === "true",
       loading: false as boolean,
+      logLevel: selectLogLevel(localStorage.getItem("logLevel") ?? "error"),
     } satisfies FormProps,
   });
 
@@ -79,6 +85,7 @@ export function ConvertForm() {
     mapping1personPath,
     runParallel,
     hideDar,
+    logLevel,
   }) => {
     setLoading(true);
 
@@ -92,6 +99,7 @@ export function ConvertForm() {
         mapping1personPath,
         runParallel,
         hideDar,
+        logLevel,
       });
       toast.success(completeInfo);
     } catch (err) {
@@ -426,6 +434,16 @@ export function ConvertForm() {
           </Grid>
         </Grid>
 
+        <Grid xs={3}>
+          <Controller
+            name="logLevel"
+            control={control}
+            render={({ field: { value } }) => (
+              <SelectLogLevel value={value} {...register("logLevel")} />
+            )}
+          />
+        </Grid>
+
         <Controller
           name="loading"
           control={control}
@@ -443,7 +461,7 @@ export function ConvertForm() {
 function MappingHelpBtn() {
   const handleMappingClick = () =>
     open(
-      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file"
+      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file",
     );
 
   return (

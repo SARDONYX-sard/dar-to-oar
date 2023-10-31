@@ -1,13 +1,14 @@
-use anyhow::Context;
-use tauri_plugin_log::LogTarget;
+use crate::logging::{init_logger, INSTANCE};
+use anyhow::Context as _;
 
 pub fn run_tauri() -> anyhow::Result<()> {
     tauri::Builder::default()
-        .plugin(
-            tauri_plugin_log::Builder::default()
-                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
-                .build(),
-        )
+        .setup(|app| {
+            if INSTANCE.set(init_logger(app)?).is_err() {
+                Err(anyhow::anyhow!("Couldn't init logger"))?
+            };
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             crate::cmd::convert_dar2oar,
             crate::cmd::remove_oar_dir,
