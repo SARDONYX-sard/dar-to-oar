@@ -21,16 +21,29 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         section_table,
         section_1person_table,
         hide_dar,
+        sender,
     } = options;
     let mut is_converted_once = false;
     let mut dar_namespace = None; // To need rename to hidden
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
-    let t = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len();
-    println!("{t}");
+    let sender = sender.as_ref(); // Borrowing ownership here prevents move errors in the loop.
+    let mut walk_len = 0;
+    if let Some(sender) = sender {
+        walk_len = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len(); // Lower performance cost when sender is None.
+        log::debug!("Dir & File Counts: {}", walk_len);
+        sender.send(walk_len).await?;
+    }
 
     let mut entries = WalkDir::new(dar_dir);
+    let mut idx = 0usize;
     while let Some(entry) = entries.next().await {
+        if let Some(sender) = sender {
+            log::debug!("Converted: {}/{}", idx, walk_len);
+            sender.send(idx).await?;
+        }
+        idx += 1;
+
         let path = entry?.path();
         let path = path.as_path();
 
@@ -166,12 +179,15 @@ mod test {
     use super::*;
     use tracing::Level;
 
+    /// 14.75s
     #[ignore]
     #[tokio::test]
-    async fn try_convert() -> anyhow::Result<()> {
+    async fn convert_non_mpsc() -> anyhow::Result<()> {
+        let (non_blocking, _guard) =
+            tracing_appender::non_blocking(std::fs::File::create("../convert.log")?);
         tracing_subscriber::fmt()
+            .with_writer(non_blocking)
             .with_ansi(false)
-            .with_writer(std::fs::File::create("../convert.log")?)
             .with_max_level(Level::DEBUG)
             .init();
 
@@ -187,9 +203,52 @@ mod test {
         convert_dar_to_oar(ConvertOptions {
             dar_dir: "../test/data/UNDERDOG Animations",
             section_table: Some(table),
+            // sender: Some(tx),
             ..Default::default()
         })
         .await?;
+        Ok(())
+    }
+
+    #[ignore]
+    #[tokio::test]
+    async fn convert_with_mpsc() -> anyhow::Result<()> {
+        use tokio::sync::mpsc;
+
+        let (non_blocking, _guard) =
+            tracing_appender::non_blocking(std::fs::File::create("../convert.log")?);
+        tracing_subscriber::fmt()
+            .with_writer(non_blocking)
+            .with_ansi(false)
+            .with_max_level(Level::ERROR)
+            .init();
+
+        // cannot use include_str!
+        let table = crate::read_mapping_table(
+            "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt",
+        )
+        .await
+        .unwrap();
+
+        let span = tracing::info_span!("converting");
+        let _guard = span.enter();
+
+        let (tx, mut rx) = mpsc::channel(1500);
+
+        tokio::spawn(convert_dar_to_oar(ConvertOptions {
+            dar_dir: "../test/data/UNDERDOG Animations",
+            section_table: Some(table),
+            sender: Some(tx),
+            ..Default::default()
+        }));
+
+        let mut end = None;
+        while let Some(i) = rx.recv().await {
+            match end {
+                Some(end) => println!("completed {}/{}", i, end),
+                _ => end = Some(i),
+            }
+        }
         Ok(())
     }
 }

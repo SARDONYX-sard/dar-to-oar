@@ -9,7 +9,7 @@ use std::path::Path;
 /// early return with Err() and write log error.
 macro_rules! bail {
     ($err:expr) => {{
-        log::error!("{}", $err);
+        tracing::error!("{}", $err);
         return Err($err.to_string());
     }};
 }
@@ -55,67 +55,51 @@ pub(crate) async fn convert_dar2oar(
         .and_then(|level| match level {
             "trace" | "debug" | "info" | "warn" | "error" => Some(level),
             unknown_level => {
-                log::warn!("unknown log level {}. fallback to error", unknown_level);
+                tracing::warn!("unknown log level {}. fallback to error", unknown_level);
                 None
             }
         })
         .unwrap_or("error");
 
-    log::debug!("src: {}", dar_dir);
-    log::debug!("dist: {:?}", oar_dir);
-    log::debug!("mod_name: {:?}", mod_name);
-    log::debug!("mod_author: {:?}", mod_author);
-    log::debug!("table path: {:?}", mapping_path.as_ref());
-    log::debug!("1st person table path: {:?}", mapping_1person_path.as_ref());
-    log::debug!("log level: {:?}", log_level);
-    log::debug!("run parallel: {:?}", run_parallel);
-    log::debug!("to hidden dar: {:?}", hide_dar);
+    tracing::debug!("src: {}", dar_dir);
+    tracing::debug!("dist: {:?}", oar_dir);
+    tracing::debug!("mod_name: {:?}", mod_name);
+    tracing::debug!("mod_author: {:?}", mod_author);
+    tracing::debug!("table path: {:?}", mapping_path.as_ref());
+    tracing::debug!("1st person table path: {:?}", mapping_1person_path.as_ref());
+    tracing::debug!("log level: {:?}", log_level);
+    tracing::debug!("run parallel: {:?}", run_parallel);
+    tracing::debug!("to hidden dar: {:?}", hide_dar);
 
     change_log_level(log_level).map_err(|err| err.to_string())?;
-    match run_parallel {
-        Some(true) => match parallel::convert_dar_to_oar(ConvertOptions {
-            dar_dir,
-            oar_dir,
-            mod_name,
-            author: mod_author,
-            section_table: table,
-            section_1person_table: table_1person,
-            hide_dar: hide_dar.unwrap_or(false),
-        })
-        .await
-        {
-            Ok(complete_msg) => Ok(complete_msg),
-            Err(err) => bail!(err),
-        },
-        Some(false) | None => match convert_dar_to_oar(ConvertOptions {
-            dar_dir,
-            oar_dir,
-            mod_name,
-            author: mod_author,
-            section_table: table,
-            section_1person_table: table_1person,
-            hide_dar: hide_dar.unwrap_or(false),
-        })
-        .await
-        {
-            Ok(complete_msg) => Ok(complete_msg),
-            Err(err) => bail!(err),
-        },
+
+    let config = ConvertOptions {
+        dar_dir,
+        oar_dir,
+        mod_name,
+        author: mod_author,
+        section_table: table,
+        section_1person_table: table_1person,
+        hide_dar: hide_dar.unwrap_or(false),
+        ..Default::default()
+    };
+    let res = match run_parallel {
+        Some(true) => parallel::convert_dar_to_oar(config).await,
+        Some(false) | None => convert_dar_to_oar(config).await,
+    };
+
+    match res {
+        Ok(complete_msg) => Ok(complete_msg),
+        Err(err) => bail!(err),
     }
 }
 
 #[tauri::command]
 pub(crate) async fn restore_dar_dir(dar_dir: &str) -> Result<String, String> {
-    match restore_dar(dar_dir).await {
-        Ok(res) => Ok(res),
-        Err(err) => Err(err.to_string()),
-    }
+    restore_dar(dar_dir).await.map_err(|err| err.to_string())
 }
 
 #[tauri::command]
 pub(crate) async fn remove_oar_dir(path: &str) -> Result<(), String> {
-    match remove_oar(path).await {
-        Ok(()) => Ok(()),
-        Err(err) => Err(err.to_string()),
-    }
+    remove_oar(path).await.map_err(|err| err.to_string())
 }

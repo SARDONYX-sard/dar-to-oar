@@ -17,7 +17,7 @@ use tracing::trace;
 pub use mapping_table::read_mapping_table;
 pub use sequential::convert_dar_to_oar;
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default)]
 pub struct ConvertOptions<'a, P: AsRef<Path>> {
     /// DAR source dir path
     pub dar_dir: P,
@@ -33,6 +33,8 @@ pub struct ConvertOptions<'a, P: AsRef<Path>> {
     pub section_1person_table: Option<HashMap<String, String>>,
     /// After converting to OAR, add mohidden to the DAR directory before conversion to treat it as a hidden directory. (for MO2 users)
     pub hide_dar: bool,
+
+    pub sender: Option<tokio::sync::mpsc::Sender<usize>>,
 }
 
 async fn read_file<P>(file_path: P) -> io::Result<String>
