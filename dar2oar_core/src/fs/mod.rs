@@ -5,7 +5,7 @@ pub mod parallel;
 pub mod path_changer;
 
 use crate::conditions::{ConditionsConfig, MainConfig};
-use anyhow::Context as _;
+use anyhow::{bail, Context as _};
 use async_walkdir::WalkDir;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -145,14 +145,14 @@ pub async fn restore_dar(dar_dir: impl AsRef<Path>) -> anyhow::Result<String> {
 /// # NOTE
 /// It is currently used only in GUI, but is implemented in Core as an API.
 pub async fn remove_oar(dar_dir: impl AsRef<Path>) -> anyhow::Result<()> {
-    let mut restored_dar = None;
-    let mut restored_1st_dar = None;
+    let mut remove_target = None;
+    let mut removed_target_1st = None;
     let mut entries = WalkDir::new(dar_dir);
     while let Some(entry) = entries.next().await {
         let path = entry?.path();
         let path = path.as_path();
         // NOTE: The OAR root obtained by parse fn is calculated and not guaranteed to exist.
-        let (dar_root, oar_name_space_path, is_1st_person, _, _, _) =
+        let (_, oar_name_space_path, is_1st_person, _, _, _) =
             match path_changer::parse_dar_path(path, Some("DynamicAnimationReplacer.mohidden")) {
                 Ok(data) => data,
                 Err(_) => {
@@ -163,26 +163,31 @@ pub async fn remove_oar(dar_dir: impl AsRef<Path>) -> anyhow::Result<()> {
                 } // NOTE: The first search is skipped because it does not yet lead to the DAR file.
             };
 
-        if restored_dar.is_none() && path.is_dir() {
-            restored_dar = Some((dar_root, oar_name_space_path));
+        if remove_target.is_none() && path.is_dir() && !is_1st_person {
+            remove_target = Some(oar_name_space_path);
             continue;
         }
-        if restored_1st_dar.is_none() && path.is_dir() && is_1st_person {
-            restored_1st_dar = Some((dar_root, oar_name_space_path));
+        if removed_target_1st.is_none() && path.is_dir() && is_1st_person {
+            removed_target_1st = Some(oar_name_space_path);
         }
     }
 
-    if let Some((_, oar_root)) = restored_dar {
-        trace!("{:?}", &oar_root);
+    if remove_target.is_none() && removed_target_1st.is_none() {
+        bail!("Not found OAR directory.")
+    }
+
+    if let Some(oar_root) = remove_target {
         if oar_root.exists() {
+            trace!("Remove oar dir: {:?}", &oar_root);
             fs::remove_dir_all(oar_root).await?;
         }
     }
-    if let Some((_, oar_root)) = restored_1st_dar {
-        trace!("{:?}", &oar_root);
+    if let Some(oar_root) = removed_target_1st {
         if oar_root.exists() {
+            trace!("Remove oar dir: {:?}", &oar_root);
             fs::remove_dir_all(oar_root).await?;
         }
     }
+
     Ok(())
 }
