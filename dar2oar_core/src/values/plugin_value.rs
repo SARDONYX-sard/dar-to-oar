@@ -32,12 +32,12 @@ impl From<&str> for FormID {
 
 macro_rules! from {
     ($($_type:ident),+ $(,)?) => {
-          $(
-      impl From<$_type> for FormID {
-            fn from(value: $_type) -> Self {
-                NumericLiteral::from(value).into()
+        $(
+            impl From<$_type> for FormID {
+                fn from(value: $_type) -> Self {
+                    NumericLiteral::from(value).into()
+                }
             }
-          }
         )+
     };
 }
