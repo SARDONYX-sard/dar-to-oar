@@ -33,20 +33,23 @@ export async function convertDar2oar(props: ConverterArgs): Promise<string> {
   const hideDar = props.hideDar ?? false;
 
   return invoke<string>("convert_dar2oar", {
-    darDir,
-    oarDir,
-    modName,
-    modAuthor,
-    mappingPath,
-    mapping1personPath,
-    logLevel: props.logLevel,
-    runParallel,
-    hideDar,
+    options: {
+      darDir,
+      oarDir,
+      modName,
+      modAuthor,
+      mappingPath,
+      mapping1personPath,
+      logLevel: props.logLevel,
+      runParallel,
+      hideDar,
+    },
   });
 }
 
 /**
  * @param darPath
+ *
  * # Throw Error
  */
 export async function restoreDarDir(darDir: string) {
@@ -58,6 +61,7 @@ export async function restoreDarDir(darDir: string) {
 
 /**
  * @param darPath
+ *
  * # Throw Error
  */
 export async function removeOarDir(path: string) {
@@ -66,12 +70,13 @@ export async function removeOarDir(path: string) {
 
 /**
  * Open a file or Dir
+ *
  * # Throw Error
  */
 export async function openPath(
   path: string,
   setPath: (path: string) => void,
-  isDir: boolean
+  isDir: boolean,
 ) {
   const res = await open({
     defaultPath: path,

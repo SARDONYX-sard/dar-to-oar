@@ -1,16 +1,32 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
+use crate::error::{ConvertError, Result};
 use crate::fs::path_changer::parse_dar_path;
-use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
-use anyhow::{bail, Context as _, Result};
+use crate::fs::{
+    read_file, write_name_space_config, write_section_config, ConvertOptions, ConvertedReport,
+};
+use anyhow::Context as _;
 use jwalk::WalkDir;
+use std::future::Future;
 use std::path::Path;
 use tokio::fs;
 
-/// multi thread converter
+/// Multi thread converter
+///
+/// # Parameters
+/// - `options`: Convert options
+/// - `async_fn`: For progress async callback(1st time: max contents count, 2nd~: index)
+///
 /// # Return
 /// Complete info
-pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -> Result<String> {
+pub async fn convert_dar_to_oar<Fut, O>(
+    options: ConvertOptions<'_, impl AsRef<Path>>,
+    mut async_fn: impl FnMut(usize) -> Fut,
+) -> Result<ConvertedReport>
+where
+    Fut: Future<Output = O> + Send + 'static,
+    O: Send + 'static,
+{
     let ConvertOptions {
         dar_dir,
         oar_dir,
@@ -19,29 +35,21 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         section_table,
         section_1person_table,
         hide_dar,
-        sender,
     } = options;
     let mut is_converted_once = false;
     let mut dar_namespace = None; // To need rename to hidden
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
-    let sender = sender.as_ref(); // Borrowing ownership here prevents move errors in the loop.
     let entires = WalkDir::new(&dar_dir).into_iter();
 
-    let mut walk_len = 0;
-    if let Some(sender) = sender {
-        walk_len = WalkDir::new(dar_dir).into_iter().count(); // Lower performance cost when sender is None
-        log::debug!("Dir & File Counts: {}", walk_len);
-        sender.send(walk_len).await?;
-    }
+    let walk_len = WalkDir::new(&dar_dir).into_iter().count();
+    log::debug!("Dir & File Counts: {}", walk_len);
+    async_fn(walk_len).await;
 
     for (idx, entry) in entires.enumerate() {
-        if let Some(sender) = sender {
-            log::debug!("Converted: {}/{}", idx, walk_len);
-            sender.send(idx).await?;
-        }
+        async_fn(idx).await;
 
-        let entry = entry?;
+        let entry = entry.context("Not found path")?;
         let path = entry.path(); // Separate this for binding
         let path = path.as_path();
 
@@ -70,9 +78,9 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
             log::debug!("File: {:?}", path);
             let file_name = path
                 .file_name()
-                .context("Not found file name")?
+                .ok_or_else(|| ConvertError::NotFoundFileName)?
                 .to_str()
-                .context("This file isn't valid utf8")?;
+                .ok_or_else(|| ConvertError::InvalidUtf8)?;
 
             // Files that do not have a priority dir, i.e., files on the same level as the priority dir,
             // are copied to the name space folder location.
@@ -138,26 +146,32 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         }
     }
 
+    async fn rename_dir(dir: Option<&std::path::PathBuf>) -> Result<()> {
+        if let Some(dar_namespace) = dir {
+            let mut dist = dar_namespace.clone();
+            dist.as_mut_os_string().push(".mohidden");
+            fs::rename(dar_namespace, dist).await?;
+        }
+        Ok(())
+    }
+
     match is_converted_once {
         true => {
-            let mut msg = "Conversion Completed.".to_string();
+            tracing::debug!("Conversion Completed.");
             if hide_dar {
-                if let Some(dar_namespace) = dar_namespace {
-                    let mut dist = dar_namespace.clone();
-                    dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_namespace, dist).await?;
-                    msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
-                };
+                rename_dir(dar_namespace.as_ref()).await?;
+                rename_dir(dar_1st_namespace.as_ref()).await?;
 
-                if let Some(dar_1st_namespace) = dar_1st_namespace {
-                    let mut dist = dar_1st_namespace.clone();
-                    dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_1st_namespace, dist).await?;
-                    msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
-                };
+                match (dar_namespace, dar_1st_namespace) {
+                    (Some(_), Some(_)) => Ok(ConvertedReport::Renamed1rdAnd3rdPersonDar),
+                    (Some(_), None) => Ok(ConvertedReport::Renamed3rdPersonDar),
+                    (None, Some(_)) => Ok(ConvertedReport::Renamed1rdPersonDar),
+                    _ => Err(ConvertError::NotFoundDarDir),
+                }
+            } else {
+                Ok(ConvertedReport::Complete)
             }
-            Ok(msg)
         }
-        false => bail!("DynamicAnimationReplacer dir was never found"),
+        false => Err(ConvertError::NotFoundDarDir),
     }
 }

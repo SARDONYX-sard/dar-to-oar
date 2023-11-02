@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 
 /// name space config.json
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct MainConfig {
+pub struct MainConfig<'a> {
     #[serde(default)]
-    pub name: String,
+    pub name: &'a str,
     #[serde(default)]
-    pub description: String,
+    pub description: &'a str,
     #[serde(default)]
-    pub author: String,
+    pub author: &'a str,
 }

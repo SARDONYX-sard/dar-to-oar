@@ -1,5 +1,6 @@
 use criterion::async_executor::FuturesExecutor;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use dar2oar_core::fs::async_closure::AsyncClosure;
 use dar2oar_core::{
     convert_dar_to_oar,
     fs::{parallel, ConvertOptions},
@@ -24,11 +25,14 @@ fn criterion_benchmark(c: &mut Criterion) {
             }
             let mapping = read_mapping_table(TABLE_PATH).await.unwrap();
 
-            parallel::convert_dar_to_oar(black_box(ConvertOptions {
-                dar_dir: TARGET,
-                section_table: Some(mapping),
-                ..Default::default()
-            }))
+            parallel::convert_dar_to_oar(
+                black_box(ConvertOptions {
+                    dar_dir: TARGET,
+                    section_table: Some(mapping),
+                    ..Default::default()
+                }),
+                AsyncClosure::default,
+            )
             .await
         })
     });
@@ -40,11 +44,14 @@ fn criterion_benchmark(c: &mut Criterion) {
             }
             let mapping = read_mapping_table(TABLE_PATH).await.unwrap();
 
-            convert_dar_to_oar(black_box(ConvertOptions {
-                dar_dir: TARGET,
-                section_table: Some(mapping),
-                ..Default::default()
-            }))
+            convert_dar_to_oar(
+                black_box(ConvertOptions {
+                    dar_dir: TARGET,
+                    section_table: Some(mapping),
+                    ..Default::default()
+                }),
+                AsyncClosure::default,
+            )
             .await
         })
     });
