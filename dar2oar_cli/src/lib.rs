@@ -54,10 +54,7 @@ pub async fn run_cli(args: Args) -> anyhow::Result<()> {
     macro_rules! read_table {
         ($path:expr) => {
             match $path {
-                Some(table_path) => {
-                    let mapping = read_mapping_table(table_path).await?;
-                    Some(mapping)
-                }
+                Some(table_path) => read_mapping_table(table_path).await.ok(),
                 None => None,
             }
         };
