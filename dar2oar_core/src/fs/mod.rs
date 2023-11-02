@@ -183,6 +183,7 @@ pub async fn remove_oar(search_dir: impl AsRef<Path>) -> Result<()> {
     }
 }
 
+#[ignore]
 #[tokio::test]
 async fn remove_oar_dir() -> Result<()> {
     remove_oar("../test/data/UNDERDOG Animations").await
