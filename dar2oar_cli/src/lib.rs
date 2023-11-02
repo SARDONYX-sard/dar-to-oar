@@ -1,7 +1,7 @@
 use clap::{arg, Parser};
 use dar2oar_core::{
     convert_dar_to_oar,
-    fs::{parallel, ConvertOptions},
+    fs::{async_closure::AsyncClosure, parallel, ConvertOptions},
     read_mapping_table,
 };
 use std::fs::File;
@@ -71,13 +71,21 @@ pub async fn run_cli(args: Args) -> anyhow::Result<()> {
         section_table: read_table!(args.mapping_file),
         section_1person_table: read_table!(args.mapping_1person_file),
         hide_dar: args.hide_dar,
-        ..Default::default()
     };
 
-    let msg = match args.run_parallel {
-        true => parallel::convert_dar_to_oar(config).await,
-        false => convert_dar_to_oar(config).await,
-    }?;
-    log::debug!("{}", msg);
-    Ok(())
+    let res = match args.run_parallel {
+        true => parallel::convert_dar_to_oar(config, AsyncClosure::default).await,
+        false => convert_dar_to_oar(config, AsyncClosure::default).await,
+    };
+
+    match res {
+        Ok(msg) => {
+            tracing::info!("{}", msg);
+            Ok(())
+        }
+        Err(err) => {
+            tracing::error!("{}", err);
+            anyhow::bail!("{}", err)
+        }
+    }
 }

@@ -1,18 +1,32 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
+use crate::error::{ConvertError, Result};
 use crate::fs::path_changer::parse_dar_path;
-use crate::fs::{read_file, write_name_space_config, write_section_config, ConvertOptions};
-use anyhow::{bail, Context as _, Result};
+use crate::fs::{
+    read_file, write_name_space_config, write_section_config, ConvertOptions, ConvertedReport,
+};
 use async_walkdir::WalkDir;
+use core::future::Future;
 use std::path::Path;
 use tokio::fs;
 use tokio_stream::StreamExt;
 
 /// Single thread converter
 ///
+/// # Parameters
+/// - `options`: Convert options
+/// - `async_fn`: For progress async callback(1st time: max contents count, 2nd~: index)
+///
 /// # Return
 /// Complete info
-pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -> Result<String> {
+pub async fn convert_dar_to_oar<Fut, O>(
+    options: ConvertOptions<'_, impl AsRef<Path>>,
+    mut async_fn: impl FnMut(usize) -> Fut,
+) -> Result<ConvertedReport>
+where
+    Fut: Future<Output = O> + Send + 'static,
+    O: Send + 'static,
+{
     let ConvertOptions {
         dar_dir,
         oar_dir,
@@ -21,27 +35,19 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         section_table,
         section_1person_table,
         hide_dar,
-        sender,
     } = options;
     let mut is_converted_once = false;
     let mut dar_namespace = None; // To need rename to hidden
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
-    let sender = sender.as_ref(); // Borrowing ownership here prevents move errors in the loop.
-    let mut walk_len = 0;
-    if let Some(sender) = sender {
-        walk_len = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len(); // Lower performance cost when sender is None.
-        log::debug!("Dir & File Counts: {}", walk_len);
-        sender.send(walk_len).await?;
-    }
+    let walk_len = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len(); // Lower performance cost when sender is None.
+    log::debug!("Dir & File Counts: {}", walk_len);
+    tokio::spawn(async_fn(walk_len));
 
     let mut entries = WalkDir::new(dar_dir);
     let mut idx = 0usize;
     while let Some(entry) = entries.next().await {
-        if let Some(sender) = sender {
-            log::debug!("Converted: {}/{}", idx, walk_len);
-            sender.send(idx).await?;
-        }
+        tokio::spawn(async_fn(idx));
         idx += 1;
 
         let path = entry?.path();
@@ -77,13 +83,13 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
             tracing::debug!("File: {:?}", path);
             let file_name = path
                 .file_name()
-                .context("Not found file name")?
+                .ok_or_else(|| ConvertError::NotFoundFileName)?
                 .to_str()
-                .context("This file isn't valid utf8")?;
+                .ok_or_else(|| ConvertError::InvalidUtf8)?;
 
-            // Files that do not have a priority dir, i.e., files on the same level as the priority dir,
+            // files that do not have a priority dir, i.e., files on the same level as the priority dir,
             // are copied to the name space folder location.
-            // For this reason, an empty string should be put in the name space folder.
+            // for this reason, an empty string should be put in the name space folder.
             let priority = &priority.unwrap_or_default();
 
             let section_name = match is_1st_person {
@@ -122,14 +128,7 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
                 }
                 if !is_converted_once {
                     is_converted_once = true;
-                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author)
-                        .await
-                        .with_context(|| {
-                            format!(
-                                "Failed to write name space config to: {:?}",
-                                oar_name_space_path
-                            )
-                        })?;
+                    write_name_space_config(&oar_name_space_path, &parsed_mod_name, author).await?;
                 }
             } else {
                 // maybe motion files(.kkx)
@@ -149,105 +148,104 @@ pub async fn convert_dar_to_oar(options: ConvertOptions<'_, impl AsRef<Path>>) -
         }
     }
 
+    async fn rename_dir(dir: Option<&std::path::PathBuf>) -> Result<()> {
+        if let Some(dar_namespace) = dir {
+            let mut dist = dar_namespace.clone();
+            dist.as_mut_os_string().push(".mohidden");
+            fs::rename(dar_namespace, dist).await?;
+        }
+        Ok(())
+    }
+
     match is_converted_once {
         true => {
-            let mut msg = "Conversion Completed.".to_string();
             if hide_dar {
-                if let Some(dar_namespace) = dar_namespace {
-                    let mut dist = dar_namespace.clone();
-                    dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_namespace, dist).await?;
-                    msg = format!("{}\n- 3rdPerson DAR dir was renamed", msg);
-                };
+                rename_dir(dar_namespace.as_ref()).await?;
+                rename_dir(dar_1st_namespace.as_ref()).await?;
 
-                if let Some(dar_1st_namespace) = dar_1st_namespace {
-                    let mut dist = dar_1st_namespace.clone();
-                    dist.as_mut_os_string().push(".mohidden");
-                    fs::rename(dar_1st_namespace, dist).await?;
-                    msg = format!("{}\n- 1stPerson DAR dir was renamed", msg);
-                };
+                match (dar_namespace, dar_1st_namespace) {
+                    (Some(_), Some(_)) => Ok(ConvertedReport::Renamed1rdAnd3rdPersonDar),
+                    (Some(_), None) => Ok(ConvertedReport::Renamed3rdPersonDar),
+                    (None, Some(_)) => Ok(ConvertedReport::Renamed1rdPersonDar),
+                    _ => Err(ConvertError::NotFoundDarDir),
+                }
+            } else {
+                Ok(ConvertedReport::Complete)
             }
-            tracing::debug!(msg);
-            Ok(msg)
         }
-        false => bail!("DynamicAnimationReplacer dir was never found"),
+        false => Err(ConvertError::NotFoundDarDir),
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use tracing::Level;
+    use anyhow::Result;
+
+    const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
+    const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
+    const LOG_PATH: &str = "../convert.log";
+
+    /// NOTE: It is a macro because it must be called at the root of a function to function.
+    macro_rules! logger_init {
+        () => {
+            let (non_blocking, _guard) =
+                tracing_appender::non_blocking(std::fs::File::create(LOG_PATH)?);
+            tracing_subscriber::fmt()
+                .with_writer(non_blocking)
+                .with_ansi(false)
+                .with_max_level(tracing::Level::DEBUG)
+                .init();
+        };
+    }
+
+    async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
+        Ok(ConvertOptions {
+            dar_dir: DAR_DIR,
+            // cannot use include_str!
+            section_table: Some(crate::read_mapping_table(TABLE_PATH).await?),
+            ..Default::default()
+        })
+    }
 
     /// 14.75s
     #[ignore]
     #[tokio::test]
-    async fn convert_non_mpsc() -> anyhow::Result<()> {
-        let (non_blocking, _guard) =
-            tracing_appender::non_blocking(std::fs::File::create("../convert.log")?);
-        tracing_subscriber::fmt()
-            .with_writer(non_blocking)
-            .with_ansi(false)
-            .with_max_level(Level::DEBUG)
-            .init();
-
-        // cannot use include_str!
-        let table = crate::read_mapping_table(
-            "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt",
-        )
-        .await
-        .unwrap();
-
-        let span = tracing::info_span!("converting");
-        let _guard = span.enter();
-        convert_dar_to_oar(ConvertOptions {
-            dar_dir: "../test/data/UNDERDOG Animations",
-            section_table: Some(table),
-            // sender: Some(tx),
-            ..Default::default()
-        })
-        .await?;
+    async fn convert_non_mpsc() -> Result<()> {
+        logger_init!();
+        convert_dar_to_oar(create_options().await?, |_| async {}).await?;
         Ok(())
     }
 
     #[ignore]
     #[tokio::test]
-    async fn convert_with_mpsc() -> anyhow::Result<()> {
-        use tokio::sync::mpsc;
+    async fn convert_with_mpsc() -> Result<()> {
+        use once_cell::sync::Lazy;
+        use std::sync::atomic::AtomicUsize;
+        use std::sync::atomic::Ordering;
 
-        let (non_blocking, _guard) =
-            tracing_appender::non_blocking(std::fs::File::create("../convert.log")?);
-        tracing_subscriber::fmt()
-            .with_writer(non_blocking)
-            .with_ansi(false)
-            .with_max_level(Level::ERROR)
-            .init();
+        logger_init!();
+        let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
-        // cannot use include_str!
-        let table = crate::read_mapping_table(
-            "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt",
-        )
-        .await
-        .unwrap();
-
-        let span = tracing::info_span!("converting");
-        let _guard = span.enter();
-
-        let (tx, mut rx) = mpsc::channel(1500);
-
-        tokio::spawn(convert_dar_to_oar(ConvertOptions {
-            dar_dir: "../test/data/UNDERDOG Animations",
-            section_table: Some(table),
-            sender: Some(tx),
-            ..Default::default()
-        }));
-
-        let mut end = None;
-        while let Some(i) = rx.recv().await {
-            match end {
-                Some(end) => println!("completed {}/{}", i, end),
-                _ => end = Some(i),
+        //? NOTE: Since recv does not seem to be possible until io is finished, send is used to see the output.
+        let sender = move |idx: usize| {
+            let tx = tx.clone();
+            async move {
+                static NUM: Lazy<AtomicUsize> = Lazy::new(AtomicUsize::default);
+                let num = NUM.load(Ordering::Acquire);
+                if num != 0 {
+                    println!("[sender] Converted: {}/{}", idx, num);
+                } else {
+                    NUM.store(idx, Ordering::Release);
+                    println!("[sender] Converted: {}", idx);
+                }
+                tx.send(idx).await.unwrap_or_default();
             }
+        };
+
+        let _ = tokio::spawn(convert_dar_to_oar(create_options().await?, sender)).await?;
+        while let Some(i) = rx.recv().await {
+            println!("[recv] Converted: {}", i);
         }
         Ok(())
     }

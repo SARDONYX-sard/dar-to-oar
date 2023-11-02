@@ -18,14 +18,13 @@ path = "./src/main.rs"
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 clap = { version = "4.4.4", features = ["derive"] } # For CLI
 dar2oar_core = { path = "../dar2oar_core" }
-log = "0.4.20" # Logger
 tokio = { version = "1.33.0", features = [
   "fs",
   "rt",
   "rt-multi-thread",
   "macros",
 ] }
-tracing = "0.1.40"
+tracing = "0.1.40" # Logger
 tracing-subscriber = "0.3.17"
 
 [dev-dependencies]

@@ -1,4 +1,3 @@
-use anyhow::bail;
 use std::collections::HashMap;
 use std::path::Path;
 use tokio::{fs::File, io::AsyncReadExt};
@@ -7,13 +6,11 @@ pub async fn read_mapping_table(
     table_path: impl AsRef<Path>,
 ) -> anyhow::Result<HashMap<String, String>> {
     let mut file_contents = String::new();
-    match File::open(table_path).await {
-        Ok(mut file) => match file.read_to_string(&mut file_contents).await {
-            Ok(_) => Ok(parse_mapping_table(&file_contents)),
-            Err(e) => bail!("Error reading file: {}", e),
-        },
-        Err(e) => bail!("Error opening file: {}", e),
-    }
+    File::open(table_path)
+        .await?
+        .read_to_string(&mut file_contents)
+        .await?;
+    Ok(parse_mapping_table(&file_contents))
 }
 
 fn parse_mapping_table(table: &str) -> HashMap<String, String> {

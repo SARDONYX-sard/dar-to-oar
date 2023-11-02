@@ -158,6 +158,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4eb2cdb97421e01129ccb49169d8279ed21e829929144f4a22a6e54ac549ca1"
 
 [[package]]
+name = "async-trait"
+version = "0.1.74"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a66537f1bb974b254c98ed142ff995236e81b9d0fe4db0575f46612cb15eb0f9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.37",
+]
+
+[[package]]
 name = "async-walkdir"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -783,7 +794,6 @@ dependencies = [
  "anyhow",
  "clap",
  "dar2oar_core",
- "log",
  "pretty_assertions",
  "tokio",
  "tracing",
@@ -800,6 +810,7 @@ dependencies = [
  "jwalk",
  "log",
  "nom",
+ "once_cell",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -1213,9 +1224,11 @@ name = "g_dar2oar"
 version = "0.1.6"
 dependencies = [
  "anyhow",
+ "async-trait",
  "dar2oar_core",
  "once_cell",
  "pretty_assertions",
+ "serde",
  "tauri",
  "tauri-build",
  "tracing",
