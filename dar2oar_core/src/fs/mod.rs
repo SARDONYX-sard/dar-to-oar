@@ -168,7 +168,7 @@ pub async fn remove_oar(search_dir: impl AsRef<Path>) -> Result<()> {
         if path.is_dir() {
             let path = path.to_str();
             if let Some(path) = path {
-                if path.ends_with("OpenAnimationReplacer/") {
+                if path.ends_with("OpenAnimationReplacer") {
                     trace!("Try to remove oar dir: {:?}", &path);
                     fs::remove_dir_all(path).await?;
                     removed_once = true;
@@ -177,8 +177,13 @@ pub async fn remove_oar(search_dir: impl AsRef<Path>) -> Result<()> {
         }
     }
 
-    if removed_once {
-        return Err(ConvertError::NotFoundOarDir);
+    match removed_once {
+        true => Ok(()),
+        false => Err(ConvertError::NotFoundOarDir),
     }
-    Ok(())
+}
+
+#[tokio::test]
+async fn remove_oar_dir() -> Result<()> {
+    remove_oar("../test/data/UNDERDOG Animations").await
 }
