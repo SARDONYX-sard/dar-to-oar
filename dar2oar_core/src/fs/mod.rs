@@ -107,8 +107,6 @@ where
     write_json_to(target_file, &config_json).await
 }
 
-
-
 /// # Returns
 /// Report which dirs have been shown
 ///
