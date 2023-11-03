@@ -40,7 +40,7 @@ where
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
     let walk_len = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len(); // Lower performance cost when sender is None.
-    log::debug!("Dir & File Counts: {}", walk_len);
+    log::trace!("Dir & File Counts: {}", walk_len);
     tokio::spawn(async_fn(walk_len));
 
     let mut entries = WalkDir::new(dar_dir);
@@ -77,9 +77,9 @@ where
             .join(mod_name.unwrap_or(&parsed_mod_name));
 
         if path.is_dir() {
-            tracing::debug!("Dir: {:?}", path);
+            tracing::trace!("Dir: {:?}", path);
         } else if path.extension().is_some() {
-            tracing::debug!("File: {:?}", path);
+            tracing::trace!("File: {:?}", path);
             let file_name = path
                 .file_name()
                 .ok_or_else(|| ConvertError::NotFoundFileName)?

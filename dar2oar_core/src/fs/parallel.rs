@@ -72,9 +72,9 @@ where
             .join(mod_name.unwrap_or(&parsed_mod_name));
 
         if path.is_dir() {
-            log::debug!("Dir: {:?}", path);
+            log::trace!("Dir: {:?}", path);
         } else if path.extension().is_some() {
-            log::debug!("File: {:?}", path);
+            log::trace!("File: {:?}", path);
             let file_name = path
                 .file_name()
                 .ok_or_else(|| ConvertError::NotFoundFileName)?
@@ -156,7 +156,6 @@ where
 
     match is_converted_once {
         true => {
-            tracing::debug!("Conversion Completed.");
             if hide_dar {
                 rename_dir(dar_namespace.as_ref()).await?;
                 rename_dir(dar_1st_namespace.as_ref()).await?;
