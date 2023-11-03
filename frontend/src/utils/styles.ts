@@ -52,6 +52,10 @@ label.Mui-focused {
 
 .MuiLoadingButton-root:hover {
   background-color: var(--hover-convert-btn-color);
+}
+
+.MuiLinearProgress-bar {
+  background-color: var(--theme-color);
 }`;
 }
 
