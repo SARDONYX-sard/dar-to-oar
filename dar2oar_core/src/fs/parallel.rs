@@ -42,7 +42,7 @@ where
     let entires = WalkDir::new(&dar_dir).into_iter();
 
     let walk_len = WalkDir::new(&dar_dir).into_iter().count();
-    log::debug!("Dir & File Counts: {}", walk_len);
+    tracing::debug!("Dir & File Counts: {}", walk_len);
     async_fn(walk_len).await;
 
     for (idx, entry) in entires.enumerate() {
@@ -72,9 +72,9 @@ where
             .join(mod_name.unwrap_or(&parsed_mod_name));
 
         if path.is_dir() {
-            log::trace!("Dir: {:?}", path);
+            tracing::debug!("Dir: {:?}", path);
         } else if path.extension().is_some() {
-            log::trace!("File: {:?}", path);
+            tracing::debug!("File: {:?}", path);
             let file_name = path
                 .file_name()
                 .ok_or_else(|| ConvertError::NotFoundFileName)?
@@ -95,12 +95,12 @@ where
             .unwrap_or(priority);
 
             let section_root = oar_name_space_path.join(section_name);
-            log::trace!("section root: {:?}", section_root);
+            tracing::debug!("section root: {:?}", section_root);
             fs::create_dir_all(&section_root).await?;
             if file_name == "_conditions.txt" {
                 match read_file(path).await {
                     Ok(content) => {
-                        log::trace!("Content:\n{}", content);
+                        tracing::debug!("Content:\n{}", content);
 
                         let config_json = ConditionsConfig {
                             name: section_name.into(),
@@ -111,7 +111,7 @@ where
 
                         write_section_config(section_root, config_json).await?
                     }
-                    Err(err) => log::error!("Error reading file {path:?}: {err}"),
+                    Err(err) => tracing::error!("Error reading file {path:?}: {err}"),
                 }
 
                 if is_1st_person {
