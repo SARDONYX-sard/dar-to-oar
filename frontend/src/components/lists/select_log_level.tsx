@@ -1,15 +1,16 @@
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { forwardRef } from "react";
+import toast from "react-hot-toast";
 import { UseFormRegister } from "react-hook-form";
-import type { LogLevel } from "@/tauri_cmd";
+import { changeLogLevel, type LogLevel } from "@/tauri_cmd";
+import { forwardRef } from "react";
 
 interface IFormValues {
   logLevel: LogLevel;
 }
 
-export function selectLogLevel(logLevel: string) {
+export function selectLogLevel(logLevel: string): LogLevel {
   switch (logLevel) {
     case "trace":
     case "debug":
@@ -32,9 +33,14 @@ export const SelectLogLevel = forwardRef<
       <Select
         name={name}
         ref={ref}
-        onChange={(e) => {
+        onChange={async (e) => {
           localStorage.setItem(name, e.target.value);
           onChange(e);
+          try {
+            await changeLogLevel(selectLogLevel(e.target.value));
+          } catch (err) {
+            toast.error(`${err}`);
+          }
         }}
         onBlur={onBlur}
         labelId="log-level-select-label"

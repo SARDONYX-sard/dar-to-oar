@@ -10,6 +10,7 @@ pub fn run_tauri() -> anyhow::Result<()> {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            crate::cmd::change_log_level,
             crate::cmd::convert_dar2oar,
             crate::cmd::remove_oar_dir,
             crate::cmd::restore_dar_dir,

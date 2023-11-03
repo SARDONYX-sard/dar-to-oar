@@ -12,7 +12,6 @@ type ConverterArgs = {
   modAuthor?: string;
   mappingPath?: string;
   mapping1personPath?: string;
-  logLevel?: LogLevel;
   runParallel?: boolean;
   hideDar?: boolean;
 };
@@ -40,11 +39,14 @@ export async function convertDar2oar(props: ConverterArgs): Promise<string> {
       modAuthor,
       mappingPath,
       mapping1personPath,
-      logLevel: props.logLevel,
       runParallel,
       hideDar,
     },
   });
+}
+
+export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
+  return invoke("change_log_level", { logLevel });
 }
 
 /**

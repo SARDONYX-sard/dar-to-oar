@@ -85,7 +85,6 @@ export function ConvertForm() {
     mapping1personPath,
     runParallel,
     hideDar,
-    logLevel,
   }) => {
     setLoading(true);
 
@@ -99,7 +98,6 @@ export function ConvertForm() {
         mapping1personPath,
         runParallel,
         hideDar,
-        logLevel,
       });
       toast.success(completeInfo);
     } catch (err) {
@@ -405,7 +403,6 @@ export function ConvertForm() {
                       <Checkbox
                         onClick={() => {
                           localStorage.setItem("hideDar", `${!value}`);
-                          setValue("hideDar", !value);
                         }}
                         checked={value}
                         aria-label="Hide DAR"
@@ -472,6 +469,7 @@ function MappingHelpBtn() {
       <a
         style={{ cursor: "pointer", color: "#00c2ff" }}
         onClick={handleMappingClick}
+        onKeyDown={handleMappingClick}
       >
         [What is the mapping file?]
       </a>

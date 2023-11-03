@@ -1,7 +1,4 @@
-use crate::{
-    convert_option::{AsyncFrom, GuiConverterOptions},
-    logging::change_log_level,
-};
+use crate::convert_option::{AsyncFrom, GuiConverterOptions};
 use dar2oar_core::{
     convert_dar_to_oar,
     fs::{async_closure::AsyncClosure, parallel, remove_oar, unhide_dar, ConvertOptions},
@@ -19,16 +16,6 @@ macro_rules! bail {
 pub(crate) async fn convert_dar2oar(options: GuiConverterOptions<'_>) -> Result<String, String> {
     tracing::debug!("options: {:?}", &options);
     let run_parallel = options.run_parallel.unwrap_or_default();
-    let log_level = options.log_level.as_deref().unwrap_or("error");
-
-    let log_level = match log_level {
-        "trace" | "debug" | "info" | "warn" | "error" => log_level,
-        unknown_level => {
-            tracing::warn!("Unknown log level {}. Fallback to error", unknown_level);
-            "error"
-        }
-    };
-    change_log_level(log_level).map_err(|err| err.to_string())?;
 
     let config = ConvertOptions::async_from(options).await;
     let res = match run_parallel {
@@ -42,6 +29,20 @@ pub(crate) async fn convert_dar2oar(options: GuiConverterOptions<'_>) -> Result<
         }
         Err(err) => bail!(err),
     }
+}
+
+#[tauri::command]
+pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), String> {
+    tracing::debug!("Selected log level: {:?}", log_level);
+    let log_level = log_level.unwrap_or("error");
+    let log_level = match log_level {
+        "trace" | "debug" | "info" | "warn" | "error" => log_level,
+        unknown_level => {
+            tracing::warn!("Unknown log level {}. Fallback to error", unknown_level);
+            "error"
+        }
+    };
+    crate::logging::change_log_level(log_level).map_err(|err| err.to_string())
 }
 
 #[tauri::command]

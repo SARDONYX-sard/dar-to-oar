@@ -11,7 +11,6 @@ pub(crate) struct GuiConverterOptions<'a> {
     pub(crate) mod_author: Option<&'a str>,
     pub(crate) mapping_path: Option<&'a str>,
     pub(crate) mapping_1person_path: Option<&'a str>,
-    pub(crate) log_level: Option<String>,
     pub(crate) run_parallel: Option<bool>,
     pub(crate) hide_dar: Option<bool>,
 }
@@ -31,7 +30,6 @@ impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
             mod_author: author,
             mapping_path,
             mapping_1person_path,
-            log_level: _,
             run_parallel: _,
             hide_dar,
         } = options;
