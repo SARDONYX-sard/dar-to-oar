@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { appLogDir } from "@tauri-apps/api/path";
 import { open as openShell } from "@tauri-apps/api/shell";
+import { selectLogLevel } from "@/components/lists/select_log_level";
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -14,6 +15,7 @@ type ConverterArgs = {
   mapping1personPath?: string;
   runParallel?: boolean;
   hideDar?: boolean;
+  showProgress?: boolean;
 };
 
 /**
@@ -21,28 +23,29 @@ type ConverterArgs = {
  * # Throw Error
  */
 export async function convertDar2oar(props: ConverterArgs): Promise<string> {
-  const darDir = props.src === "" ? undefined : props.src;
-  const oarDir = props.dist === "" ? undefined : props.dist;
-  const modName = props.modName === "" ? undefined : props.modName;
-  const modAuthor = props.modAuthor === "" ? undefined : props.modAuthor;
-  const mapping1personPath =
-    props.mapping1personPath === "" ? undefined : props.mapping1personPath;
-  const mappingPath = props.mappingPath === "" ? undefined : props.mappingPath;
-  const runParallel = props.runParallel ?? false;
-  const hideDar = props.hideDar ?? false;
-
-  return invoke<string>("convert_dar2oar", {
+  const args = {
     options: {
-      darDir,
-      oarDir,
-      modName,
-      modAuthor,
-      mappingPath,
-      mapping1personPath,
-      runParallel,
-      hideDar,
+      darDir: props.src === "" ? undefined : props.src,
+      oarDir: props.dist === "" ? undefined : props.dist,
+      modName: props.modName === "" ? undefined : props.modName,
+      modAuthor: props.modAuthor === "" ? undefined : props.modAuthor,
+      mappingPath: props.mappingPath === "" ? undefined : props.mappingPath,
+      mapping1personPath:
+        props.mapping1personPath === "" ? undefined : props.mapping1personPath,
+      runParallel: props.runParallel ?? false,
+      hideDar: props.hideDar ?? false,
     },
-  });
+  };
+
+  let logLevel = selectLogLevel(localStorage.getItem("logLevel") ?? "");
+  changeLogLevel(logLevel);
+
+  const showProgress = props.showProgress ?? false;
+  if (showProgress) {
+    return invoke<string>("convert_dar2oar_with_progress", args);
+  } else {
+    return invoke<string>("convert_dar2oar", args);
+  }
 }
 
 export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {

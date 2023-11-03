@@ -10,6 +10,7 @@ import Checkbox from "@mui/material/Checkbox";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ConvertButton from "./buttons/convert_btn";
 import Grid from "@mui/material/Unstable_Grid2";
+import SlideshowIcon from "@mui/icons-material/Slideshow";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 import type { SubmitHandler } from "react-hook-form";
@@ -23,6 +24,8 @@ import {
 } from "@/components/lists/select_log_level";
 import { SelectPathButton } from "@/components/buttons/path_selector";
 import { UnhideDarBtn } from "@/components/buttons/unhide_dar_btn";
+import { listen } from "@tauri-apps/api/event";
+import LinearWithValueLabel from "./progress_bar";
 
 type FormProps = {
   src: string;
@@ -35,6 +38,8 @@ type FormProps = {
   logLevel: LogLevel;
   runParallel: boolean;
   hideDar: boolean;
+  showProgress: boolean;
+  progress: number;
 };
 
 export function ConvertForm() {
@@ -49,10 +54,12 @@ export function ConvertForm() {
       modAuthor: localStorage.getItem("modAuthor") ?? "",
       mappingPath: localStorage.getItem("mappingPath") ?? "",
       mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
-      runParallel: localStorage.getItem("runParallel") === "true",
-      hideDar: localStorage.getItem("hideDar") === "true",
       loading: false as boolean,
       logLevel: selectLogLevel(localStorage.getItem("logLevel") ?? "error"),
+      runParallel: localStorage.getItem("runParallel") === "true",
+      hideDar: localStorage.getItem("hideDar") === "true",
+      showProgress: localStorage.getItem("showProgress") === "true",
+      progress: 0,
     } satisfies FormProps,
   });
 
@@ -85,10 +92,25 @@ export function ConvertForm() {
     mapping1personPath,
     runParallel,
     hideDar,
+    showProgress,
   }) => {
     setLoading(true);
 
+    let unlisten: (() => void) | null = null;
     try {
+      setValue("progress", 0);
+      let maxNum = 0;
+      let prog = 0;
+
+      unlisten = await listen<{ index: number }>("show-progress", (event) => {
+        if (maxNum === 0) {
+          maxNum = event.payload.index;
+        } else {
+          prog = event.payload.index;
+        }
+        setValue("progress", (prog * 100) / maxNum);
+      });
+
       const completeInfo = await convertDar2oar({
         src,
         dist,
@@ -98,11 +120,16 @@ export function ConvertForm() {
         mapping1personPath,
         runParallel,
         hideDar,
+        showProgress,
       });
       toast.success(completeInfo);
+      setValue("progress", 100);
     } catch (err) {
       toast.error(`${err}`);
     } finally {
+      if (unlisten) {
+        unlisten();
+      }
       setLoading(false);
     }
   };
@@ -349,6 +376,96 @@ export function ConvertForm() {
         <Grid container spacing={2}>
           <Grid xs={3}>
             <Controller
+              name="showProgress"
+              control={control}
+              render={({ field: { value } }) => (
+                <Tooltip
+                  title={
+                    <>
+                      <p>Display detail progress</p>
+                      <p>
+                        However, conversion may be delayed by 5~10 seconds or
+                        more.
+                      </p>
+                    </>
+                  }
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onClick={() => {
+                          setValue("showProgress", !value);
+                          localStorage.setItem("showProgress", `${!value}`);
+                        }}
+                        checked={value}
+                        aria-label="Show Progress"
+                      />
+                    }
+                    label={
+                      <Box component="div" sx={{ display: "flex" }}>
+                        <SlideshowIcon />
+                        ProgressBar
+                      </Box>
+                    }
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+
+          <Grid xs={3}>
+            <Controller
+              name="hideDar"
+              control={control}
+              render={({ field: { value } }) => (
+                <Tooltip
+                  title={
+                    <p>
+                      After conversion, append &quot;.mohidden&quot; to the DAR
+                      dirname in &quot;DAR(src) Directory*&quot; to make it a
+                      hidden directory(For MO2 users)
+                      <br />
+                      NOTE: Failure to cross the drive or No permission.
+                    </p>
+                  }
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onClick={() => {
+                          localStorage.setItem("hideDar", `${!value}`);
+                          setValue("hideDar", !value);
+                        }}
+                        checked={value}
+                        aria-label="Hide DAR"
+                      />
+                    }
+                    label={
+                      <Box component="div" sx={{ display: "flex" }}>
+                        <VisibilityOffIcon />
+                        Hide DAR
+                      </Box>
+                    }
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+
+          <Grid xs={3}>
+            <UnhideDarBtn path={getValues("src")} />
+          </Grid>
+          <Grid xs={3}>
+            <RemoveOarBtn
+              darPath={getValues("src")}
+              oarPath={getValues("dist")}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid xs={3}>
+            <Controller
               name="runParallel"
               control={control}
               render={({ field: { value } }) => (
@@ -384,61 +501,13 @@ export function ConvertForm() {
 
           <Grid xs={3}>
             <Controller
-              name="hideDar"
+              name="logLevel"
               control={control}
               render={({ field: { value } }) => (
-                <Tooltip
-                  title={
-                    <p>
-                      After conversion, append &quot;.mohidden&quot; to the DAR
-                      dirname in &quot;DAR(src) Directory*&quot; to make it a
-                      hidden directory(For MO2 users)
-                      <br />
-                      NOTE: Failure to cross the drive or No permission.
-                    </p>
-                  }
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onClick={() => {
-                          localStorage.setItem("hideDar", `${!value}`);
-                        }}
-                        checked={value}
-                        aria-label="Hide DAR"
-                      />
-                    }
-                    label={
-                      <Box component="div" sx={{ display: "flex" }}>
-                        <VisibilityOffIcon />
-                        Hide DAR
-                      </Box>
-                    }
-                  />
-                </Tooltip>
+                <SelectLogLevel value={value} {...register("logLevel")} />
               )}
             />
           </Grid>
-
-          <Grid xs={3}>
-            <UnhideDarBtn path={getValues("src")} />
-          </Grid>
-          <Grid xs={3}>
-            <RemoveOarBtn
-              darPath={getValues("src")}
-              oarPath={getValues("dist")}
-            />
-          </Grid>
-        </Grid>
-
-        <Grid xs={3}>
-          <Controller
-            name="logLevel"
-            control={control}
-            render={({ field: { value } }) => (
-              <SelectLogLevel value={value} {...register("logLevel")} />
-            )}
-          />
         </Grid>
 
         <Controller
@@ -448,6 +517,14 @@ export function ConvertForm() {
             <Box sx={{ width: "100%", paddingTop: "30px" }}>
               <ConvertButton loading={value} setLoading={setLoading} />
             </Box>
+          )}
+        />
+
+        <Controller
+          name="progress"
+          control={control}
+          render={({ field: { value } }) => (
+            <LinearWithValueLabel progress={value} />
           )}
         />
       </FormGroup>
