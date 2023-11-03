@@ -1,6 +1,6 @@
 mod mapping_table;
-mod sequential;
 mod section_writer;
+mod sequential;
 
 pub mod async_closure;
 pub mod parallel;
