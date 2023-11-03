@@ -1,21 +1,20 @@
 mod mapping_table;
 mod sequential;
+mod section_writer;
 
 pub mod async_closure;
 pub mod parallel;
 pub mod path_changer;
 
-use crate::conditions::{ConditionsConfig, MainConfig};
 use crate::error::{ConvertError, Result};
 use async_walkdir::WalkDir;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use tokio::fs;
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio_stream::StreamExt;
 use tracing::trace;
 
-pub use mapping_table::read_mapping_table;
+pub use mapping_table::{get_mapping_table, read_mapping_table};
 pub use sequential::convert_dar_to_oar;
 
 #[derive(Debug, Default)]
@@ -54,57 +53,6 @@ pub enum ConvertedReport {
     Unhide1rdPerson,
     #[error("Unhide 3rd person")]
     Unhide3rdPerson,
-}
-
-async fn read_file<P>(file_path: P) -> io::Result<String>
-where
-    P: AsRef<Path>,
-{
-    let mut file = fs::File::open(file_path).await?;
-    let mut content = String::new();
-    file.read_to_string(&mut content).await?;
-    Ok(content)
-}
-
-async fn write_json_to<T>(target_path: impl AsRef<Path>, value: &T) -> Result<()>
-where
-    T: ?Sized + serde::Serialize,
-{
-    let mut config_file = fs::File::create(target_path).await?;
-    let json = serde_json::to_string_pretty(value)?;
-    config_file.write_all(json.as_bytes()).await?;
-    Ok(())
-}
-
-async fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> Result<()>
-where
-    P: AsRef<Path>,
-{
-    write_json_to(oar_dir.as_ref().join("config.json"), &config_json).await
-}
-
-/// If it exists, do nothing. (This behavior is intended to facilitate the creation of config files
-/// for 1st_person and 3rd_person.)
-async fn write_name_space_config<P>(
-    oar_name_space_path: P,
-    mod_name: &str,
-    author: Option<&str>,
-) -> Result<()>
-where
-    P: AsRef<Path>,
-{
-    let target_file = oar_name_space_path.as_ref().join("config.json");
-    if target_file.exists() {
-        return Ok(());
-    }
-
-    let config_json = MainConfig {
-        name: mod_name,
-        author: author.unwrap_or_default(),
-        ..Default::default()
-    };
-    fs::create_dir_all(&oar_name_space_path).await?;
-    write_json_to(target_file, &config_json).await
 }
 
 /// # Returns

@@ -2,7 +2,7 @@ use clap::{arg, Parser};
 use dar2oar_core::{
     convert_dar_to_oar,
     fs::{async_closure::AsyncClosure, parallel, ConvertOptions},
-    read_mapping_table,
+    get_mapping_table,
 };
 use std::fs::File;
 use std::{path::PathBuf, str::FromStr};
@@ -51,22 +51,13 @@ pub async fn run_cli(args: Args) -> anyhow::Result<()> {
         .with_max_level(Level::from_str(&args.log_level).unwrap_or(Level::ERROR))
         .init();
 
-    macro_rules! read_table {
-        ($path:expr) => {
-            match $path {
-                Some(table_path) => read_mapping_table(table_path).await.ok(),
-                None => None,
-            }
-        };
-    }
-
     let config = ConvertOptions {
         dar_dir: args.src,
         oar_dir: args.dist.map(|dist| PathBuf::from(&dist)),
         mod_name: args.name.as_deref(),
         author: args.author.as_deref(),
-        section_table: read_table!(args.mapping_file),
-        section_1person_table: read_table!(args.mapping_1person_file),
+        section_table: get_mapping_table(args.mapping_file).await,
+        section_1person_table: get_mapping_table(args.mapping_1person_file).await,
         hide_dar: args.hide_dar,
     };
 

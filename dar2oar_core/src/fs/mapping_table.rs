@@ -2,6 +2,17 @@ use std::collections::HashMap;
 use std::path::Path;
 use tokio::{fs::File, io::AsyncReadExt};
 
+/// Get mapping table from path
+pub async fn get_mapping_table(
+    mapping_path: Option<impl AsRef<Path>>,
+) -> Option<HashMap<String, String>> {
+    match mapping_path {
+        Some(table_path) => read_mapping_table(table_path).await.ok(),
+        None => None,
+    }
+}
+
+/// Try to read mapping table from path
 pub async fn read_mapping_table(
     table_path: impl AsRef<Path>,
 ) -> anyhow::Result<HashMap<String, String>> {

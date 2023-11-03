@@ -2,9 +2,8 @@ use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::error::{ConvertError, Result};
 use crate::fs::path_changer::parse_dar_path;
-use crate::fs::{
-    read_file, write_name_space_config, write_section_config, ConvertOptions, ConvertedReport,
-};
+use crate::fs::section_writer::{read_file, write_name_space_config, write_section_config};
+use crate::fs::{ConvertOptions, ConvertedReport};
 use anyhow::Context as _;
 use jwalk::WalkDir;
 use std::future::Future;

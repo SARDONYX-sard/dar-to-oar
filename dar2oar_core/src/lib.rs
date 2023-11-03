@@ -6,4 +6,4 @@ mod values;
 pub mod error;
 pub mod fs;
 
-pub use crate::fs::{convert_dar_to_oar, read_mapping_table};
+pub use crate::fs::{convert_dar_to_oar, get_mapping_table, read_mapping_table};

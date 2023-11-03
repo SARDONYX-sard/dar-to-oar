@@ -1,7 +1,6 @@
-use std::{collections::HashMap, path::Path};
-
-use dar2oar_core::{fs::ConvertOptions, read_mapping_table};
+use dar2oar_core::{fs::ConvertOptions, get_mapping_table};
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -10,18 +9,11 @@ pub(crate) struct GuiConverterOptions<'a> {
     pub(crate) oar_dir: Option<&'a str>,
     pub(crate) mod_name: Option<&'a str>,
     pub(crate) mod_author: Option<&'a str>,
-    pub(crate) mapping_path: Option<String>,
-    pub(crate) mapping_1person_path: Option<String>,
+    pub(crate) mapping_path: Option<&'a str>,
+    pub(crate) mapping_1person_path: Option<&'a str>,
     pub(crate) log_level: Option<String>,
     pub(crate) run_parallel: Option<bool>,
     pub(crate) hide_dar: Option<bool>,
-}
-
-async fn try_get_mapping_table(mapping_path: Option<&str>) -> Option<HashMap<String, String>> {
-    match mapping_path {
-        Some(table_path) => read_mapping_table(table_path).await.ok(),
-        None => None,
-    }
 }
 
 #[async_trait::async_trait]
@@ -49,16 +41,13 @@ impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
             false => Some(Path::new(dist).to_path_buf()),
         });
 
-        let section_table = try_get_mapping_table(mapping_path.as_deref()).await;
-        let section_1person_table = try_get_mapping_table(mapping_1person_path.as_deref()).await;
-
         Self {
             dar_dir,
             oar_dir,
             mod_name,
             author,
-            section_table,
-            section_1person_table,
+            section_table: get_mapping_table(mapping_path).await,
+            section_1person_table: get_mapping_table(mapping_1person_path).await,
             hide_dar: hide_dar.unwrap_or(false),
         }
     }
