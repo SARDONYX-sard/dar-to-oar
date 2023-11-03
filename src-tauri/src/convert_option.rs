@@ -13,7 +13,6 @@ pub(crate) struct GuiConverterOptions<'a> {
     pub(crate) mapping_1person_path: Option<&'a str>,
     pub(crate) run_parallel: Option<bool>,
     pub(crate) hide_dar: Option<bool>,
-    pub(crate) show_progress: Option<bool>,
 }
 
 #[async_trait::async_trait]
@@ -33,7 +32,6 @@ impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
             mapping_1person_path,
             run_parallel: _,
             hide_dar,
-            show_progress: _,
         } = options;
 
         let oar_dir = oar_dir.and_then(|dist| match dist.is_empty() {
