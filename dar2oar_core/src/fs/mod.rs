@@ -88,7 +88,7 @@ pub async fn unhide_dar(dar_dir: impl AsRef<Path>) -> Result<ConvertedReport> {
                 .as_os_str()
                 .to_string_lossy()
                 .replace(".mohidden", "");
-            fs::rename(dar_root.clone(), dist).await?;
+            fs::rename(dar_root, dist).await?;
         }
         Ok(())
     }
