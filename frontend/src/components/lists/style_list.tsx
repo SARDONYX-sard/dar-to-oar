@@ -1,7 +1,7 @@
 import { FormControl, Tooltip, InputLabel } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { selectPreset, presetStyles } from "../../utils/styles";
+import Select, { type SelectChangeEvent } from "@mui/material/Select";
+import { selectPreset, presetStyles } from "@/utils/styles";
 
 type Props = {
   setStyle: (value: string) => void;
@@ -9,7 +9,17 @@ type Props = {
   preset: string;
 };
 
-export const SelectStyleList = ({ preset, setPreset, setStyle }: Props) => {
+export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
+  const handleChange = (e: SelectChangeEvent<string>) => {
+    const presetNumber = selectPreset(e.target.value);
+    setPreset(presetNumber);
+    if (presetNumber === "0") {
+      setStyle(localStorage.getItem("customCSS") ?? "");
+      return;
+    }
+    setStyle(presetStyles[presetNumber]);
+  };
+
   return (
     <Tooltip
       title="You can choose a CSS preset. NOTE: The moment you edit the preset, Yourself CSS will be overwritten."
@@ -19,15 +29,7 @@ export const SelectStyleList = ({ preset, setPreset, setStyle }: Props) => {
         <InputLabel htmlFor="style-select">CSS preset</InputLabel>
         <Select
           name={preset}
-          onChange={(e) => {
-            const presetNumber = selectPreset(e.target.value);
-            setPreset(presetNumber);
-            if (presetNumber === "0") {
-              setStyle(localStorage.getItem("customCSS") ?? "");
-              return;
-            }
-            setStyle(presetStyles[presetNumber]);
-          }}
+          onChange={handleChange}
           label="CSS Presets"
           labelId="style-select-label"
           id="style-select"
