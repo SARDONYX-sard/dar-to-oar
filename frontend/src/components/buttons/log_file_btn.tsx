@@ -2,8 +2,11 @@ import toast from "react-hot-toast";
 import { Button } from "@mui/material";
 import { FileOpen } from "@mui/icons-material";
 import { openLogFile } from "@/tauri_cmd";
+import { useTranslation } from "react-i18next";
 
 export const LogFileButton = () => {
+  const { t } = useTranslation();
+
   return (
     <Button
       sx={{
@@ -16,7 +19,7 @@ export const LogFileButton = () => {
       type="button"
       variant="outlined"
     >
-      Open log
+      {t("open-log-btn")}
     </Button>
   );
 };

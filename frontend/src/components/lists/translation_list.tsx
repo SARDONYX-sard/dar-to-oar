@@ -5,7 +5,8 @@ import { changeLanguage } from "i18next";
 import { useStorageState } from "@/hooks";
 
 export const TranslationList = () => {
-  const [lang, setLang] = useStorageState("locale", "es-US");
+  const [lang, setLang] = useStorageState("locale", "auto");
+
   const locale = "Locale";
   const handleChange = (e: SelectChangeEvent<string>) => {
     const newLocale = e.target.value;

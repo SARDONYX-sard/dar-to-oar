@@ -26,6 +26,7 @@ import { SelectPathButton } from "@/components/buttons/path_selector";
 import { UnhideDarBtn } from "@/components/buttons/unhide_dar_btn";
 import { listen } from "@tauri-apps/api/event";
 import LinearWithValueLabel from "./progress_bar";
+import { useTranslation } from "react-i18next";
 
 type FormProps = {
   src: string;
@@ -43,6 +44,7 @@ type FormProps = {
 };
 
 export function ConvertForm() {
+  const { t } = useTranslation();
   const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
@@ -147,8 +149,7 @@ export function ConvertForm() {
         startIcon={<ClearAllIcon />}
         variant="outlined"
       >
-        {" "}
-        All Clear{" "}
+        {t("all-clear-btn")}
       </Button>
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
         <Controller
@@ -165,7 +166,7 @@ export function ConvertForm() {
               <Grid xs={10}>
                 <TextField
                   sx={{ width: "100%" }}
-                  label="DAR(src) Directory"
+                  label={t("convert-form-dar-label")}
                   placeholder="[...]/<MOD NAME>"
                   required
                   value={value}
@@ -179,14 +180,9 @@ export function ConvertForm() {
                   error={Boolean(error)}
                   helperText={
                     <>
-                      [Required] Path of dir containing
-                      &quot;DynamicAnimationReplacer&quot;.
-                      <br />
-                      &quot;C:\\[...]/Mod Name/&quot; -&gt; Convert 1st & 3rd
-                      person
-                      <br />
-                      &quot;[...]/animations/DynamicAnimationReplacer/&quot;
-                      -&gt; Convert 3rd person
+                      {t("convert-form-dar-helper")} <br />
+                      {t("convert-form-dar-helper2")} <br />
+                      {t("convert-form-dar-helper3")}
                     </>
                   }
                 />
@@ -214,7 +210,7 @@ export function ConvertForm() {
               <Grid xs={10}>
                 <TextField
                   sx={{ width: "100%" }}
-                  label="OAR(dist) Directory"
+                  label={t("convert-form-oar-label")}
                   placeholder="<MOD NAME>"
                   value={value}
                   variant="outlined"
@@ -225,9 +221,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={
-                    '[Optional] Creates a OAR path in specified directory.(e.g. "NewMod" -> "NewMod/meshes/[...])'
-                  }
+                  helperText={t("convert-form-oar-helper")}
                 />
               </Grid>
               <Grid xs={2}>
@@ -252,7 +246,7 @@ export function ConvertForm() {
               <Grid xs={10}>
                 <TextField
                   sx={{ width: "100%" }}
-                  label="Mapping Table Path"
+                  label={t("convert-form-mapping-label")}
                   placeholder="./mapping_table.txt"
                   value={value}
                   variant="outlined"
@@ -288,7 +282,7 @@ export function ConvertForm() {
               <Grid xs={10}>
                 <TextField
                   sx={{ minWidth: "100%" }}
-                  label="Mapping Table Path(For _1st_person)"
+                  label={t("")}
                   placeholder="./mapping_table_for_1st_person.txt"
                   value={value}
                   variant="outlined"
@@ -299,9 +293,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={
-                    "[Optional] File path that helps map priority number to a section name."
-                  }
+                  helperText={t("convert-form-mapping-helper")}
                 />
               </Grid>
 
@@ -325,8 +317,8 @@ export function ConvertForm() {
                 fieldState: { error },
               }) => (
                 <TextField
-                  label="Mod Name"
-                  placeholder="Mod Name"
+                  label={t("convert-form-mod-name")}
+                  placeholder={t("convert-form-mod-name")}
                   value={value}
                   variant="outlined"
                   margin="dense"
@@ -336,7 +328,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={"[Optional]"}
+                  helperText={t("convert-form-mod-name-helper")}
                 />
               )}
             />
@@ -351,8 +343,8 @@ export function ConvertForm() {
                 fieldState: { error },
               }) => (
                 <TextField
-                  label="Mod Author Name"
-                  placeholder="Name"
+                  label={t("convert-form-author-name")}
+                  placeholder={t("convert-form-author-placeholder")}
                   value={value}
                   variant="outlined"
                   margin="dense"
@@ -362,7 +354,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={"[Optional]"}
+                  helperText={t("")}
                 />
               )}
             />
@@ -390,11 +382,8 @@ export function ConvertForm() {
                 <Tooltip
                   title={
                     <p>
-                      After conversion, append &quot;.mohidden&quot; to the DAR
-                      dirname in &quot;DAR(src) Directory*&quot; to make it a
-                      hidden directory(For MO2 users)
-                      <br />
-                      NOTE: Failure to cross the drive or No permission.
+                      {t("hide-dar-btn-tooltip")} <br />
+                      {t("hide-dar-btn-tooltip2")}
                     </p>
                   }
                 >
@@ -412,7 +401,7 @@ export function ConvertForm() {
                     label={
                       <Box component="div" sx={{ display: "flex" }}>
                         <VisibilityOffIcon />
-                        Hide DAR
+                        {t("hide-dar-btn")}
                       </Box>
                     }
                   />
@@ -429,11 +418,8 @@ export function ConvertForm() {
                 <Tooltip
                   title={
                     <>
-                      <p>Display detail progress</p>
-                      <p>
-                        However, conversion may be delayed by 5~10 seconds or
-                        more.
-                      </p>
+                      {t("progress-btn-tooltip")} <br />
+                      {t("progress-btn-tooltip2")}
                     </>
                   }
                 >
@@ -451,7 +437,7 @@ export function ConvertForm() {
                     label={
                       <Box component="div" sx={{ display: "flex" }}>
                         <SlideshowIcon />
-                        ProgressBar
+                        {t("progress-btn")}
                       </Box>
                     }
                   />
@@ -468,12 +454,8 @@ export function ConvertForm() {
                 <Tooltip
                   title={
                     <p>
-                      Use multi-threading.
-                      <br />
-                      In most cases, it slows down by tens of ms, but may be
-                      effective when there is more weight on CPU processing with
-                      fewer files to copy and more logic parsing of
-                      &quot;_condition.txt&quot;
+                      {t("run-parallel-btn-tooltip")} <br />
+                      {t("run-parallel-btn-tooltip2")}
                     </p>
                   }
                 >
@@ -488,7 +470,7 @@ export function ConvertForm() {
                         aria-label="Run Parallel"
                       />
                     }
-                    label="Run Parallel"
+                    label={t("run-parallel-label")}
                   />
                 </Tooltip>
               )}
@@ -531,24 +513,22 @@ export function ConvertForm() {
 }
 
 function MappingHelpBtn() {
+  const { t } = useTranslation();
   const handleMappingClick = () =>
-    open(
-      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file"
-    );
+    open(`https://github.com/SARDONYX-sard/dar-to-oar/${t("wiki")}`);
 
   return (
     <>
-      [Optional] File path that helps map priority number to a section name.
-      <br />
-      See{" "}
+      {t("convert-form-mapping-helper")} <br />
+      {t("convert-form-mapping-helper2")}
       <a
         style={{ cursor: "pointer", color: "#00c2ff" }}
         onClick={handleMappingClick}
         onKeyDown={handleMappingClick}
       >
-        [What is the mapping file?]
+        [{t("convert-form-mapping-helper3")}]
       </a>
-      (Jump to wiki)
+      {t("convert-form-mapping-helper4")}
     </>
   );
 }

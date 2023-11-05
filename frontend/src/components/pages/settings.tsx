@@ -9,7 +9,12 @@ import { StyleList } from "@/components/lists/style_list";
 import { Toaster } from "react-hot-toast";
 import { TranslationList } from "@/components/lists/translation_list";
 import { selectEditorMode, type EditorMode } from "@/utils/editor";
-import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
+import {
+  useDynStyle,
+  useInjectScript,
+  useLocale,
+  useStorageState,
+} from "@/hooks";
 
 // NOTE: These extensions must be loaded after importing AceEditor or they will error
 import "ace-builds/src-noconflict/ext-code_lens";
@@ -25,6 +30,7 @@ export default function Settings() {
   const [editorMode, setEditorMode] = useStorageState("editorMode", "default");
   const [preset, setPreset] = useStorageState("presetNumber", "0");
   const [style, setStyle] = useDynStyle();
+  useLocale();
 
   const setEditorKeyMode = (editorMode: EditorMode) => {
     setEditorMode(editorMode ?? "");
@@ -168,7 +174,7 @@ const Help = () => {
         display: "flex",
         justifyContent: "space-around",
         marginTop: "10px",
-        width: "55%"
+        width: "55%",
       }}
     >
       <div>Version: {packageJson.version}</div>
@@ -181,7 +187,7 @@ const Help = () => {
         >
           GitHub
         </a>
-        </div>
+      </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { UseFormRegister } from "react-hook-form";
 import { changeLogLevel, type LogLevel } from "@/tauri_cmd";
 import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface IFormValues {
   logLevel: LogLevel;
@@ -25,9 +26,13 @@ export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
   { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
+  const { t } = useTranslation();
+
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-      <InputLabel id="log-level-select-label">Log Level</InputLabel>
+      <InputLabel id="log-level-select-label">
+        {t("log-level-list-label")}
+      </InputLabel>
       <Select
         name={name}
         ref={ref}

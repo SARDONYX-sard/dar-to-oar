@@ -17,6 +17,9 @@ i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
+    // NOTE:
+    // Since it seems that `window.navigator.language` cannot automatically detect the language,
+    // I have created a hook called useLocale as a substitute.
     lng: localStorage.getItem("locale") ?? "en-US",
     fallbackLng: "en-US",
     interpolation: {

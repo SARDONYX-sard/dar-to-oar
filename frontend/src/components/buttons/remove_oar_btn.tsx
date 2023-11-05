@@ -1,8 +1,9 @@
-import { removeOarDir } from "@/tauri_cmd";
-import toast from "react-hot-toast";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Tooltip from "@mui/material/Tooltip";
+import toast from "react-hot-toast";
+import { removeOarDir } from "@/tauri_cmd";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   darPath: string;
@@ -10,15 +11,9 @@ type Props = {
 };
 
 export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
+  const { t } = useTranslation();
   return (
-    <Tooltip
-      title={
-        <p>
-          Find and delete OAR dir from &quot;DAR(src) Directory*&quot; or
-          &quot;OAR(dist) Directory&quot;.
-        </p>
-      }
-    >
+    <Tooltip title={<p>{t("remove-oar-tooltip")}</p>}>
       <Button
         type="button"
         sx={{
@@ -30,11 +25,11 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
         onClick={async () => {
           try {
             await removeOarDir(darPath);
-            toast.success("Removed OAR directory.");
+            toast.success(t("remove-oar-success"));
           } catch (_) {
             try {
               await removeOarDir(oarPath);
-              toast.success("Removed OAR directory.");
+              toast.success(t("remove-oar-success"));
             } catch (e) {
               toast.error(`${e}`);
             }
@@ -42,7 +37,7 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
         }}
         startIcon={<DeleteIcon />}
       >
-        Remove OAR
+        {t("remove-oar-btn")}
       </Button>
     </Tooltip>
   );

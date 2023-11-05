@@ -9,9 +9,8 @@ type Props = {
   path: string;
 };
 
-
-  export const UnhideDarBtn = ({ path }: Props) => {
-    const { t } = useTranslation();
+export const UnhideDarBtn = ({ path }: Props) => {
+  const { t } = useTranslation();
 
   return (
     <Tooltip title={<p>{t("unhide-dar-btn-tooltip")}</p>}>
@@ -32,7 +31,7 @@ type Props = {
         }}
         startIcon={<VisibilityIcon />}
       >
-        {t("unhide-dar-btn-name")}
+        {t("unhide-dar-btn")}
       </Button>
     </Tooltip>
   );

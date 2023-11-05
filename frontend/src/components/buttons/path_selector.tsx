@@ -2,14 +2,16 @@ import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import toast from "react-hot-toast";
 import { Button } from "@mui/material";
 import { openPath } from "../../tauri_cmd";
+import { useTranslation } from "react-i18next";
 
-type Props = {
+type Props = Readonly<{
   path: string;
   isDir?: boolean;
   setValue: (value: string) => void;
-};
+}>;
 
 export function SelectPathButton({ path, isDir = false, setValue }: Props) {
+  const { t } = useTranslation();
   const handleClick = async () => {
     openPath(path, setValue, isDir).catch((e) => toast.error(`${e}`));
   };
@@ -26,7 +28,7 @@ export function SelectPathButton({ path, isDir = false, setValue }: Props) {
       type="button"
       variant="outlined"
     >
-      Select
+      {t("select-btn")}
     </Button>
   );
 }
