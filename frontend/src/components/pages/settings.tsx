@@ -44,6 +44,7 @@ export default function Settings() {
         alignItems: "center",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
         minHeight: "calc(100vh - 56px)",
         width: "100%",
       }}
