@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2023-11-05
+### :bug: Bug Fixes
+- [`6e38434`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6e38434bd88705932de9a0234ff96aa79919d54d) - **front**: fix trans key *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`f4e622f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/f4e622fdcbb6c327e809d4493a1b5eafeaa7b944) - **front**: add default *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a5333b4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a5333b405ebf2f74af0c50a7ed338828aef5a349) - **front**: fix display error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.2.0] - 2023-11-05
 ### :sparkles: New Features
 - [`84cdfb2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/84cdfb21136671f8aa49cbd8f6e2d479ea783485) - **front**: support miniSize monitor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -123,3 +130,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.6]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.5...0.1.6
 [0.2.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.6...0.2.0
+[0.2.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.0...0.2.1
