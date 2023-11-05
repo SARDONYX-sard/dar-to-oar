@@ -1,4 +1,4 @@
-import Converter from "../components/pages/converter";
+import Converter from "@/components/pages/converter";
 
 /**
  * # Root page (URL: /).

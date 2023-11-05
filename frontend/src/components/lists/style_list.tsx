@@ -25,7 +25,7 @@ export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
       title="You can choose a CSS preset. NOTE: The moment you edit the preset, Yourself CSS will be overwritten."
       placement="top"
     >
-      <FormControl>
+      <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
         <InputLabel htmlFor="style-select">CSS preset</InputLabel>
         <Select
           name={preset}

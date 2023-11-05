@@ -11,7 +11,7 @@ type Props = {
 
 export const SelectEditorMode = ({ editorMode, setEditorMode }: Props) => {
   return (
-    <FormControl>
+    <FormControl variant="filled" sx={{ m: 1, minWidth: 100 }}>
       <InputLabel htmlFor="editor-select">Editor Mode</InputLabel>
       <Select
         name={editorMode ?? "default"}

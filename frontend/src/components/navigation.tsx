@@ -31,6 +31,7 @@ export default function MenuNavigation() {
     } else if (pathname === "/settings") {
       setValue(1);
     }
+    console.log(pathname)
   }, [setValue, pathname]);
 
   return (

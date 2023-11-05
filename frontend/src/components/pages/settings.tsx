@@ -1,5 +1,17 @@
 "use client";
 
+import AceEditor from "react-ace";
+import InputLabel from "@mui/material/InputLabel";
+import packageJson from "@/../../package.json";
+import { Box } from "@mui/material";
+import { SelectEditorMode } from "@/components/lists/editor_list";
+import { StyleList } from "@/components/lists/style_list";
+import { Toaster } from "react-hot-toast";
+import { TranslationList } from "@/components/lists/translation_list";
+import { selectEditorMode, type EditorMode } from "@/utils/editor";
+import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
+
+// NOTE: These extensions must be loaded after importing AceEditor or they will error
 import "ace-builds/src-noconflict/ext-code_lens";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim";
@@ -8,15 +20,6 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/snippets/css";
 import "ace-builds/src-noconflict/snippets/javascript";
 import "ace-builds/src-noconflict/theme-one_dark";
-import AceEditor from "react-ace";
-import InputLabel from "@mui/material/InputLabel";
-import packageJson from "@/../../package.json";
-import { Box } from "@mui/material";
-import { SelectEditorMode } from "@/components/lists/editor_list";
-import { StyleList } from "@/components/lists/style_list";
-import { Toaster } from "react-hot-toast";
-import { selectEditorMode, type EditorMode } from "@/utils/editor";
-import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
 
 export default function Settings() {
   const [editorMode, setEditorMode] = useStorageState("editorMode", "default");
@@ -31,10 +34,10 @@ export default function Settings() {
     <Box
       component="main"
       sx={{
-        display: "flex",
-        marginBottom: "1rem",
-        flexDirection: "column",
         alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "calc(100vh - 56px)",
         width: "100%",
       }}
     >
@@ -46,24 +49,23 @@ export default function Settings() {
         style={style}
       />
 
+      <JSEditor editorMode={editorMode} />
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          width: "40%",
-          marginTop: "30px",
+          marginTop: "10px",
+          overflowX: "auto",
+          width: "95%",
         }}
       >
         <SelectEditorMode
           editorMode={selectEditorMode(editorMode)}
           setEditorMode={setEditorKeyMode}
         />
-
         <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
+        <TranslationList />
       </div>
-
-      <JSEditor editorMode={editorMode} />
-
       <Help />
     </Box>
   );
@@ -160,12 +162,18 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
 
 const Help = () => {
   const handleClick = () => open(packageJson.homepage);
-
   return (
-    <div>
-      <p>Version: {packageJson.version}</p>
-      <p>
-        Source Code:{" "}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-around",
+        marginTop: "10px",
+        width: "55%"
+      }}
+    >
+      <div>Version: {packageJson.version}</div>
+      <div>
+        Source:{" "}
         <a
           style={{ cursor: "pointer", color: "#00c2ff" }}
           onClick={handleClick}
@@ -173,7 +181,7 @@ const Help = () => {
         >
           GitHub
         </a>
-      </p>
+        </div>
     </div>
   );
 };

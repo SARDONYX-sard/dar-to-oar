@@ -141,16 +141,16 @@ export function ConvertForm() {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <Button
+        sx={{ width: "100%", marginBottom: "15px" }}
+        onClick={handleAllClear}
+        startIcon={<ClearAllIcon />}
+        variant="outlined"
+      >
+        {" "}
+        All Clear{" "}
+      </Button>
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
-        <Button
-          sx={{ width: "100%", marginBottom: "35px" }}
-          onClick={handleAllClear}
-          startIcon={<ClearAllIcon />}
-          variant="outlined"
-        >
-          <span>All Clear</span>
-        </Button>
-
         <Controller
           name="src"
           control={control}
@@ -316,7 +316,7 @@ export function ConvertForm() {
         />
 
         <Grid container spacing={2}>
-          <Grid xs={4}>
+          <Grid xs={3}>
             <Controller
               name="modName"
               control={control}
@@ -342,7 +342,7 @@ export function ConvertForm() {
             />
           </Grid>
 
-          <Grid xs={4}>
+          <Grid xs={3}>
             <Controller
               name="modAuthor"
               control={control}
@@ -367,13 +367,60 @@ export function ConvertForm() {
               )}
             />
           </Grid>
-
-          <Grid xs={4}>
+          <Grid xs={3}>
+            <Controller
+              name="logLevel"
+              control={control}
+              render={({ field: { value } }) => (
+                <SelectLogLevel value={value} {...register("logLevel")} />
+              )}
+            />
+          </Grid>
+          <Grid xs={3}>
             <LogFileButton />
           </Grid>
         </Grid>
 
         <Grid container spacing={2}>
+          <Grid xs={3}>
+            <Controller
+              name="hideDar"
+              control={control}
+              render={({ field: { value } }) => (
+                <Tooltip
+                  title={
+                    <p>
+                      After conversion, append &quot;.mohidden&quot; to the DAR
+                      dirname in &quot;DAR(src) Directory*&quot; to make it a
+                      hidden directory(For MO2 users)
+                      <br />
+                      NOTE: Failure to cross the drive or No permission.
+                    </p>
+                  }
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onClick={() => {
+                          localStorage.setItem("hideDar", `${!value}`);
+                          setValue("hideDar", !value);
+                        }}
+                        checked={value}
+                        aria-label="Hide DAR"
+                      />
+                    }
+                    label={
+                      <Box component="div" sx={{ display: "flex" }}>
+                        <VisibilityOffIcon />
+                        Hide DAR
+                      </Box>
+                    }
+                  />
+                </Tooltip>
+              )}
+            />
+          </Grid>
+
           <Grid xs={3}>
             <Controller
               name="showProgress"
@@ -415,57 +462,6 @@ export function ConvertForm() {
 
           <Grid xs={3}>
             <Controller
-              name="hideDar"
-              control={control}
-              render={({ field: { value } }) => (
-                <Tooltip
-                  title={
-                    <p>
-                      After conversion, append &quot;.mohidden&quot; to the DAR
-                      dirname in &quot;DAR(src) Directory*&quot; to make it a
-                      hidden directory(For MO2 users)
-                      <br />
-                      NOTE: Failure to cross the drive or No permission.
-                    </p>
-                  }
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onClick={() => {
-                          localStorage.setItem("hideDar", `${!value}`);
-                          setValue("hideDar", !value);
-                        }}
-                        checked={value}
-                        aria-label="Hide DAR"
-                      />
-                    }
-                    label={
-                      <Box component="div" sx={{ display: "flex" }}>
-                        <VisibilityOffIcon />
-                        Hide DAR
-                      </Box>
-                    }
-                  />
-                </Tooltip>
-              )}
-            />
-          </Grid>
-
-          <Grid xs={3}>
-            <UnhideDarBtn path={getValues("src")} />
-          </Grid>
-          <Grid xs={3}>
-            <RemoveOarBtn
-              darPath={getValues("src")}
-              oarPath={getValues("dist")}
-            />
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2}>
-          <Grid xs={3}>
-            <Controller
               name="runParallel"
               control={control}
               render={({ field: { value } }) => (
@@ -498,14 +494,16 @@ export function ConvertForm() {
               )}
             />
           </Grid>
+        </Grid>
 
+        <Grid container spacing={2}>
           <Grid xs={3}>
-            <Controller
-              name="logLevel"
-              control={control}
-              render={({ field: { value } }) => (
-                <SelectLogLevel value={value} {...register("logLevel")} />
-              )}
+            <UnhideDarBtn path={getValues("src")} />
+          </Grid>
+          <Grid xs={3}>
+            <RemoveOarBtn
+              darPath={getValues("src")}
+              oarPath={getValues("dist")}
             />
           </Grid>
         </Grid>
@@ -514,7 +512,7 @@ export function ConvertForm() {
           name="loading"
           control={control}
           render={({ field: { value } }) => (
-            <Box sx={{ width: "100%", paddingTop: "30px" }}>
+            <Box sx={{ width: "100%", paddingTop: "10px" }}>
               <ConvertButton loading={value} setLoading={setLoading} />
             </Box>
           )}
@@ -535,7 +533,7 @@ export function ConvertForm() {
 function MappingHelpBtn() {
   const handleMappingClick = () =>
     open(
-      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file",
+      "https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file"
     );
 
   return (

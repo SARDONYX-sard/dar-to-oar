@@ -1,7 +1,5 @@
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import toast from "react-hot-toast";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { UseFormRegister } from "react-hook-form";
 import { changeLogLevel, type LogLevel } from "@/tauri_cmd";
 import { forwardRef } from "react";
@@ -28,7 +26,7 @@ export const SelectLogLevel = forwardRef<
   { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
   return (
-    <>
+    <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
       <InputLabel id="log-level-select-label">Log Level</InputLabel>
       <Select
         name={name}
@@ -54,6 +52,6 @@ export const SelectLogLevel = forwardRef<
         <MenuItem value={"warn"}>Warning</MenuItem>
         <MenuItem value={"error"}>Error</MenuItem>
       </Select>
-    </>
+    </FormControl>
   );
 });
