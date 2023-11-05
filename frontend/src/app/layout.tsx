@@ -1,19 +1,18 @@
-import "./globals.css";
+import "@/app/globals.css";
+import Loading from "@/components/pages/loading";
+import React from "react";
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import dynamic from "next/dynamic";
-import Loading from "../components/pages/loading";
-import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const Menu = dynamic(() => import("../components/navigation"), {
+const Menu = dynamic(() => import("@/components/navigation"), {
   loading: () => <Loading />,
   ssr: false,
 });
-const ThemeProvider = dynamic(() => import("../components/providers/theme"), {
+const ThemeProvider = dynamic(() => import("@/components/providers/theme"), {
   loading: () => <Loading />,
-
   ssr: false,
 });
 
@@ -22,11 +21,10 @@ export const metadata: Metadata = {
   description: "Convert from DAR to OAR.",
 };
 
-export default function RootLayout({
-  children,
-}: {
+type Props = Readonly<{
   children: React.ReactNode;
-}) {
+}>;
+export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <body className={inter.className}>
