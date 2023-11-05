@@ -13,12 +13,14 @@ pub(super) fn parse_has(
     Ok(match condition_name {
         "HasKeyword" => ConditionSet::HasKeyword(HasKeyword {
             keyword: get_into!(args[0], "keyword in HasKeyword"),
+            negated,
             ..Default::default()
         }),
         "HasPerk" => gen_cond!(HasPerk(perk, negated), args, "PluginValue in HasPerk"),
         "HasSpell" => gen_cond!(HasSpell(spell, negated), args, "PluginValue in HasSpell"),
         "HasMagicEffect" => ConditionSet::HasMagicEffect(HasMagicEffect {
             magic_effect: get_try_into!(args[0], "PluginValue in HasMagicEffect")?,
+            negated,
             ..Default::default()
         }),
         "HasMagicEffectWithKeyword" => gen_cond!(
