@@ -39,7 +39,7 @@ permissions:
 on:
   push:
     tags:
-      - ".*development.*"
+      - "development"
   pull_request:
 
 jobs:
