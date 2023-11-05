@@ -33,7 +33,7 @@ export default function Settings() {
   useLocale();
 
   const setEditorKeyMode = (editorMode: EditorMode) => {
-    setEditorMode(editorMode ?? "");
+    setEditorMode(editorMode ?? "default");
   };
 
   return (
