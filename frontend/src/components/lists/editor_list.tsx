@@ -1,8 +1,9 @@
-import { InputLabel, FormControl } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { selectEditorMode } from "@/utils/editor";
+import Select, { type SelectChangeEvent } from "@mui/material/Select";
 import type { EditorMode } from "@/utils/editor";
+import { InputLabel, FormControl } from "@mui/material";
+import { selectEditorMode } from "@/utils/editor";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   setEditorMode: (value: EditorMode) => void;
@@ -10,19 +11,22 @@ type Props = {
 };
 
 export const SelectEditorMode = ({ editorMode, setEditorMode }: Props) => {
+  const { t } = useTranslation();
+  const handleChange = (e: SelectChangeEvent<string>) => {
+    const presetEditor = selectEditorMode(e.target.value);
+    setEditorMode(presetEditor);
+  };
+
   return (
-    <FormControl>
-      <InputLabel htmlFor="editor-select">Editor Mode</InputLabel>
+    <FormControl variant="filled" sx={{ m: 1, minWidth: 100 }}>
+      <InputLabel htmlFor="editor-select">{t("editor-mode-label")}</InputLabel>
       <Select
-        name={editorMode ?? "default"}
-        onChange={(e) => {
-          const presetEditor = selectEditorMode(e.target.value);
-          setEditorMode(presetEditor);
-        }}
+        name={editorMode}
+        onChange={handleChange}
         label="Editor Mode"
         labelId="editor-select-label"
         id="editor-select"
-        value={editorMode ?? "default"}
+        value={editorMode}
       >
         <MenuItem value={"default"}>Default</MenuItem>
         <MenuItem value={"vim"}>Vim</MenuItem>

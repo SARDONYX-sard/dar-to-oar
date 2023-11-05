@@ -81,7 +81,7 @@ export async function removeOarDir(path: string) {
 export async function openPath(
   path: string,
   setPath: (path: string) => void,
-  isDir: boolean,
+  isDir: boolean
 ) {
   const res = await open({
     defaultPath: path,
@@ -99,6 +99,5 @@ export async function openPath(
 export async function openLogFile() {
   const logDir = await appLogDir();
   const logFile = `${logDir}g_dar2oar.log`;
-  console.log(logFile);
   await openShell(logFile);
 }

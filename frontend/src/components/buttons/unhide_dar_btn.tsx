@@ -3,20 +3,17 @@ import Button from "@mui/material/Button";
 import { restoreDarDir } from "@/tauri_cmd";
 import toast from "react-hot-toast";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   path: string;
 };
 
 export const UnhideDarBtn = ({ path }: Props) => {
+  const { t } = useTranslation();
+
   return (
-    <Tooltip
-      title={
-        <p>
-          Unhide the directory hidden by &quot;Hide DAR&quot;.(For MO2 user)
-        </p>
-      }
-    >
+    <Tooltip title={<p>{t("unhide-dar-btn-tooltip")}</p>}>
       <Button
         type="button"
         sx={{
@@ -34,7 +31,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
         }}
         startIcon={<VisibilityIcon />}
       >
-        Unhide DAR
+        {t("unhide-dar-btn")}
       </Button>
     </Tooltip>
   );

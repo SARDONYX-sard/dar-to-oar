@@ -33,6 +33,9 @@ export function useDynStyle(initialState = getStyle()) {
   return [style, setStyle] as const;
 }
 
+/**
+ * Inject JavaScript
+ */
 export function useInjectScript(
   initialState = (() => localStorage.getItem("customJS") ?? "")()
 ) {

@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import "@/utils/translation";
 import Loading from "@/components/pages/loading";
 import React from "react";
 import dynamic from "next/dynamic";
