@@ -1,16 +1,5 @@
 "use client";
 
-import AceEditor from "react-ace";
-import InputLabel from "@mui/material/InputLabel";
-import packageJson from "@/../../package.json";
-import type { EditorMode } from "@/utils/editor";
-import { Box } from "@mui/material";
-import { SelectEditorMode } from "@/components/lists/editor_list";
-import { SelectStyleList } from "@/components/lists/style_list";
-import { Toaster } from "react-hot-toast";
-import { selectEditorMode } from "@/utils/editor";
-import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
-
 import "ace-builds/src-noconflict/ext-code_lens";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim";
@@ -19,12 +8,20 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/snippets/css";
 import "ace-builds/src-noconflict/snippets/javascript";
 import "ace-builds/src-noconflict/theme-one_dark";
+import AceEditor from "react-ace";
+import InputLabel from "@mui/material/InputLabel";
+import packageJson from "@/../../package.json";
+import { Box } from "@mui/material";
+import { SelectEditorMode } from "@/components/lists/editor_list";
+import { StyleList } from "@/components/lists/style_list";
+import { Toaster } from "react-hot-toast";
+import { selectEditorMode, type EditorMode } from "@/utils/editor";
+import { useDynStyle, useInjectScript, useStorageState } from "@/hooks";
 
 export default function Settings() {
-  const [style, setStyle] = useDynStyle();
-  const [script, setScript] = useInjectScript();
-  const [preset, setPreset] = useStorageState("presetNumber", "0");
   const [editorMode, setEditorMode] = useStorageState("editorMode", "default");
+  const [preset, setPreset] = useStorageState("presetNumber", "0");
+  const [style, setStyle] = useDynStyle();
 
   const setEditorKeyMode = (editorMode: EditorMode) => {
     setEditorMode(editorMode ?? "");
@@ -42,6 +39,50 @@ export default function Settings() {
       }}
     >
       <Toaster position="bottom-right" reverseOrder={false} />
+      <CSSEditor
+        editorMode={editorMode}
+        setPreset={setPreset}
+        setStyle={setStyle}
+        style={style}
+      />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "40%",
+          marginTop: "30px",
+        }}
+      >
+        <SelectEditorMode
+          editorMode={selectEditorMode(editorMode)}
+          setEditorMode={setEditorKeyMode}
+        />
+
+        <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
+      </div>
+
+      <JSEditor editorMode={editorMode} />
+
+      <Help />
+    </Box>
+  );
+}
+
+type CSSEditorProps = {
+  editorMode: string;
+  setPreset: (script: string) => void;
+  setStyle: (style: string) => void;
+  style: string;
+};
+const CSSEditor = ({
+  editorMode,
+  setPreset,
+  setStyle,
+  style,
+}: CSSEditorProps) => {
+  return (
+    <>
       <InputLabel sx={{ marginTop: "20px" }}>Custom CSS</InputLabel>
       <AceEditor
         style={{
@@ -69,27 +110,18 @@ export default function Settings() {
         tabSize={2}
         editorProps={{ $blockScrolling: true }}
       />
+    </>
+  );
+};
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "40%",
-          marginTop: "30px",
-        }}
-      >
-        <SelectEditorMode
-          editorMode={selectEditorMode(editorMode)}
-          setEditorMode={setEditorKeyMode}
-        />
+type JSEditorProps = {
+  editorMode: string;
+};
+const JSEditor = ({ editorMode }: JSEditorProps) => {
+  const [script, setScript] = useInjectScript();
 
-        <SelectStyleList
-          preset={preset}
-          setPreset={setPreset}
-          setStyle={setStyle}
-        />
-      </div>
-
+  return (
+    <>
       <InputLabel error sx={{ marginTop: "20px" }}>
         Custom JavaScript(Please do not execute untrusted scripts)
       </InputLabel>
@@ -102,11 +134,11 @@ export default function Settings() {
           localStorage.setItem("customJS", value);
           setScript(value);
         }}
-        placeholder="(()=> {
+        placeholder={`(()=> {
     const p = document.createElement('p');
     p.innerText = 'Hello';
     document.body.appendChild(p);
-)()"
+)()`}
         editorProps={{ $blockScrolling: true }}
         enableBasicAutocompletion
         enableLiveAutocompletion
@@ -122,19 +154,26 @@ export default function Settings() {
         theme="one_dark"
         value={script}
       />
-
-      <div>
-        <p>Version: {packageJson.version}</p>
-        <p>
-          Source Code:{" "}
-          <a
-            style={{ cursor: "pointer", color: "#00c2ff" }}
-            onClick={() => open(packageJson.homepage)}
-          >
-            GitHub
-          </a>
-        </p>
-      </div>
-    </Box>
+    </>
   );
-}
+};
+
+const Help = () => {
+  const handleClick = () => open(packageJson.homepage);
+
+  return (
+    <div>
+      <p>Version: {packageJson.version}</p>
+      <p>
+        Source Code:{" "}
+        <a
+          style={{ cursor: "pointer", color: "#00c2ff" }}
+          onClick={handleClick}
+          onKeyDown={handleClick}
+        >
+          GitHub
+        </a>
+      </p>
+    </div>
+  );
+};
