@@ -515,7 +515,11 @@ export function ConvertForm() {
 function MappingHelpBtn() {
   const { t } = useTranslation();
   const handleMappingClick = () =>
-    open(`https://github.com/SARDONYX-sard/dar-to-oar/${t("wiki")}`);
+    open(
+      `https://github.com/SARDONYX-sard/dar-to-oar/${t(
+        "mapping-wiki-url-leaf"
+      )}`
+    );
 
   return (
     <>
