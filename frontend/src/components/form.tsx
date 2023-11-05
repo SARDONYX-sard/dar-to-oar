@@ -284,7 +284,7 @@ export function ConvertForm() {
               <Grid xs={10}>
                 <TextField
                   sx={{ minWidth: "100%" }}
-                  label={t("")}
+                  label={t("convert-form-mapping-1st-label")}
                   placeholder="./mapping_table_for_1st_person.txt"
                   value={value}
                   variant="outlined"
