@@ -25,8 +25,8 @@
 
 Click g_dar2oar.exe
 
-![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/3aa72784-5980-4e26-87fc-a480e18ea103)
-![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/db67903b-a71e-450c-948d-b422b961df95)
+![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/336cef29-9810-4bbb-b893-0086ff113b75)
+![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/6dd655d7-db34-471b-8df9-defa5fca3445)
 
 ### CLI
 
