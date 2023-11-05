@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2023-11-05
+### :sparkles: New Features
+- [`84cdfb2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/84cdfb21136671f8aa49cbd8f6e2d479ea783485) - **front**: support miniSize monitor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`4f8c71e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/4f8c71e5677b712abb6089534002ffb40d6bbc64) - **core**: accept non-numeric PRIORITY dir names *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c7ded3d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c7ded3dcbf89125a46674506366787aac85ab1e7) - add mpsc channel mode *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`20d645a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/20d645a9159cf871e9c6c2ad887877e85ced625e) - change sender to async fn *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5ed6322`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5ed63229968b3784e4a071c3ed5f8aa64dcb2733) - **tauri**: separate logLevel  fn *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1b23e2c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1b23e2caf0ae6ee68f6a1d6ba98bef70a1d6268e) - **gui**: implement progress-bar *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8ccbc8f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8ccbc8f1fc89f575c4afe1669a29f13552f82342) - **tauri**: implement rotation gui logger *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`7e0cd6f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7e0cd6fdb9221e670b7a0585c559dd1f27a1d137) - **front**: implement i18n system *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`fe897c7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/fe897c7298c96ddecdec2f18a68a0bd97aa79101) - **front**: add i18n data *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`09ef816`](https://github.com/SARDONYX-sard/dar-to-oar/commit/09ef816ead2e51245e4598612489d28b85938001) - **core**: fix remover condition *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`844d8d7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/844d8d73786ae86e15bae7f0598743fb2abe74be) - **core**: fix test path *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :zap: Performance Improvements
+- [`1bd6d24`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1bd6d242df4d016741904899f16fc5fd4244ae2b) - use async *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`9917ebd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9917ebdb51e9c276e113fb4683c7a24812dcafcd) - **cli**: refactor macro *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b7e0461`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b7e046185fb1f9c916acd0bba218ff1138488085) - **backend**: refactor imports *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3a429f0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3a429f03429e08ccd75c645f23eaf97d41ca8c69) - **core**: remove unnecessary `clone` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`edd2a4d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/edd2a4d60e528cc04005f3bf2eab99baa36c2da9) - **tauri**: remove unnecessary field `show_progress` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bb25909`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bb259099e0294b8f324ba0811363b5ee7db66b91) - **core**: change log level *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`d20c03a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d20c03a9e3e130b3a0f8473a3f82ef21cba29710) - **core**: change log level *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`9e6edb7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9e6edb74738e194e5c3650a6c49092d8dcf52475) - **front**: refactor `StyleList` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1651d43`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1651d43663b9e716bfcb638692e112d6546f5ba3) - **front**: refactor path *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1535e9c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1535e9cf66c237527dd4996d17d82995175a7f7d) - **front**: separate component *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`77f216b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/77f216b4a713d7e55960e352d0683b956142aae7) - **core**: add ignore *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.1.6] - 2023-10-27
 ### :sparkles: New Features
 - [`b42d5ed`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b42d5ed9c4bc297e180f6fe88139bb1268d8e107) - **front**: add icon & change msg *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -88,3 +122,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.5]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.4...0.1.5
 
 [0.1.6]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.5...0.1.6
+[0.2.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.6...0.2.0
