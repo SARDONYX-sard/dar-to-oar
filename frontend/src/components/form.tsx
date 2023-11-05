@@ -43,26 +43,28 @@ type FormProps = {
   progress: number;
 };
 
+const getInitialFormValues = (): FormProps => ({
+  src: localStorage.getItem("src") ?? "",
+  dist: localStorage.getItem("dist") ?? "",
+  modName: localStorage.getItem("modName") ?? "",
+  modAuthor: localStorage.getItem("modAuthor") ?? "",
+  mappingPath: localStorage.getItem("mappingPath") ?? "",
+  mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
+  loading: false as boolean,
+  logLevel: selectLogLevel(localStorage.getItem("logLevel") ?? "error"),
+  runParallel: localStorage.getItem("runParallel") === "true",
+  hideDar: localStorage.getItem("hideDar") === "true",
+  showProgress: localStorage.getItem("showProgress") === "true",
+  progress: 0,
+});
+
 export function ConvertForm() {
   const { t } = useTranslation();
   const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
     shouldFocusError: false,
-    defaultValues: {
-      src: localStorage.getItem("src") ?? "",
-      dist: localStorage.getItem("dist") ?? "",
-      modName: localStorage.getItem("modName") ?? "",
-      modAuthor: localStorage.getItem("modAuthor") ?? "",
-      mappingPath: localStorage.getItem("mappingPath") ?? "",
-      mapping1personPath: localStorage.getItem("mapping1personPath") ?? "",
-      loading: false as boolean,
-      logLevel: selectLogLevel(localStorage.getItem("logLevel") ?? "error"),
-      runParallel: localStorage.getItem("runParallel") === "true",
-      hideDar: localStorage.getItem("hideDar") === "true",
-      showProgress: localStorage.getItem("showProgress") === "true",
-      progress: 0,
-    } satisfies FormProps,
+    defaultValues: getInitialFormValues(),
   });
 
   const setStorage = (key: keyof FormProps) => {
@@ -72,17 +74,17 @@ export function ConvertForm() {
     };
   };
 
-  const setLoading = (loading: boolean) => {
-    setValue("loading", loading);
-  };
-
+  const setLoading = (loading: boolean) => setValue("loading", loading);
   const handleAllClear = () => {
-    setStorage("dist")("");
-    setStorage("mapping1personPath")("");
-    setStorage("mappingPath")("");
-    setStorage("modAuthor")("");
-    setStorage("modName")("");
-    setStorage("src")("");
+    const formValues = [
+      "src",
+      "dist",
+      "mapping1personPath",
+      "mappingPath",
+      "modAuthor",
+      "modName",
+    ] as const;
+    formValues.forEach((key) => setStorage(key)(""));
   };
 
   const onSubmit: SubmitHandler<FormProps> = async ({
