@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2023-11-05
+### :bug: Bug Fixes
+- [`9fb7259`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9fb7259e793e247fd2c250f5eb09969329e09933) - **front**: fix trans key *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`765fa8f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/765fa8f7bf4046e4b7358ab5c0dec15d725f7852) - **front**: fix trans `convert-form-mapping-1st-label` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5f6f04a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5f6f04a5463818dd8c114464b0dada09b3addc07) - **front**: fix localization *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`460eaa2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/460eaa21d7cbe9a5b86605e7139e62a1bbaf976b) - **core**: correct the forgetting to add `negated` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`0957ea1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0957ea1db0f07de56a898c43e0dfab698fc0d81a) - **front-form**: separate code *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`58be2dd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/58be2dd8c9826fa80056fa46291e469c131f6c13) - **locale**: rename by BCP-47 standard *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.2.1] - 2023-11-05
 ### :bug: Bug Fixes
 - [`6e38434`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6e38434bd88705932de9a0234ff96aa79919d54d) - **front**: fix trans key *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -131,3 +143,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.6]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.5...0.1.6
 [0.2.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.1.6...0.2.0
 [0.2.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.0...0.2.1
+[0.2.2]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.1...0.2.2
