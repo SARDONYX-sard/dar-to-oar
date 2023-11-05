@@ -1,15 +1,17 @@
 "use client";
 import i18n, { type Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
-import translation_en from "@/../../locales/en.json";
-import translation_ja from "@/../../locales/ja.json";
+import dictEnUS from "@/../../locales/en-US.json";
+import dictJaJP from "@/../../locales/ja-JP.json";
 
+// The keys in RESOURCE are language tags according to the BCP-47 standard.
+// See: https://partnerhub.warnermediagroup.com/metadata/languages
 const resources = {
   "en-US": {
-    translation: translation_en,
+    translation: dictEnUS,
   },
   "ja-JP": {
-    translation: translation_ja,
+    translation: dictJaJP,
   },
 } as const satisfies Resource;
 
