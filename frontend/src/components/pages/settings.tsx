@@ -25,12 +25,13 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/snippets/css";
 import "ace-builds/src-noconflict/snippets/javascript";
 import "ace-builds/src-noconflict/theme-one_dark";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
+  useLocale();
   const [editorMode, setEditorMode] = useStorageState("editorMode", "default");
   const [preset, setPreset] = useStorageState("presetNumber", "0");
   const [style, setStyle] = useDynStyle();
-  useLocale();
 
   const setEditorKeyMode = (editorMode: EditorMode) => {
     setEditorMode(editorMode ?? "default");
@@ -89,9 +90,13 @@ const CSSEditor = ({
   setStyle,
   style,
 }: CSSEditorProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
-      <InputLabel sx={{ marginTop: "20px" }}>Custom CSS</InputLabel>
+      <InputLabel sx={{ marginTop: "20px" }}>
+        {t("custom-css-label")}
+      </InputLabel>
       <AceEditor
         style={{
           width: "95%",
@@ -126,12 +131,13 @@ type JSEditorProps = {
   editorMode: string;
 };
 const JSEditor = ({ editorMode }: JSEditorProps) => {
+  const { t } = useTranslation();
   const [script, setScript] = useInjectScript();
 
   return (
     <>
       <InputLabel error sx={{ marginTop: "20px" }}>
-        Custom JavaScript(Please do not execute untrusted scripts)
+        {t("custom-js-label")}
       </InputLabel>
       <AceEditor
         style={{

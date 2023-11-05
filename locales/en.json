@@ -26,6 +26,8 @@
   "css-preset-list-label": "CSS Preset",
   "css-preset-list-tooltip": "You can choose a CSS preset.",
   "css-preset-list-tooltip2": "NOTE: The moment you edit the preset, Yourself CSS will be overwritten.",
+  "custom-css-label": "Custom CSS",
+  "custom-js-label": "Custom JavaScript(Please do not execute untrusted scripts)",
   "editor-mode-list-label": "Editor Mode",
   "hide-dar-btn": "Hide DAR",
   "hide-dar-btn-tooltip": "After conversion, append \".mohidden\" to the DAR dirname in \"DAR(src) Directory*\" to make it a hidden directory(For MO2 users)",

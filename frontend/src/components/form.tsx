@@ -356,7 +356,7 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={t("")}
+                  helperText={t("convert-form-author-name-helper")}
                 />
               )}
             />
