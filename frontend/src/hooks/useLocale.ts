@@ -6,10 +6,7 @@ import { useEffect } from "react";
  */
 export function useLocale() {
   useEffect(() => {
-    changeLanguage(
-      localStorage.getItem("locale") === "auto"
-        ? window.navigator.language
-        : "es-US"
-    );
+    const locale = localStorage.getItem("locale") ?? "es-US";
+    changeLanguage(locale === "auto" ? window.navigator.language : locale);
   }, []);
 }
