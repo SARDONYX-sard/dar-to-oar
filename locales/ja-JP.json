@@ -46,5 +46,5 @@
   "run-parallel-label": "並列実行",
   "select-btn": "選択",
   "unhide-dar-btn": "DAR再表示",
-  "unhide-dar-btn-tooltip": "\"Hide DAR\"による非表示化の解除(MO2ユーザ向け)"
+  "unhide-dar-btn-tooltip": "\"DARを非表示\"による非表示化の解除(MO2ユーザ向け)"
 }
