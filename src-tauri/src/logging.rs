@@ -106,7 +106,7 @@ fn create_rotate_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize
         fs::rename(&log_file, old_file)?;
     };
 
-    let f= File::create(log_file)?;
+    let f = File::create(log_file)?;
     debug!("-- End log count: {} --", log_count + 1);
     Ok(f)
 }
