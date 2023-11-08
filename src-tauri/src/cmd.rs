@@ -5,6 +5,19 @@ use dar2oar_core::{
 };
 use tauri::Window;
 
+/// logger hook or bail!
+macro_rules! response {
+    ($res:expr) => {
+        match $res {
+            Ok(msg) => {
+                tracing::info!("{}", msg);
+                Ok(msg.to_string())
+            }
+            Err(err) => bail!(err),
+        }
+    };
+}
+
 /// early return with Err() and write log error.
 macro_rules! bail {
     ($err:expr) => {{
@@ -17,19 +30,13 @@ macro_rules! bail {
 pub(crate) async fn convert_dar2oar(options: GuiConverterOptions<'_>) -> Result<String, String> {
     tracing::debug!("options: {:?}", &options);
     let run_parallel = options.run_parallel.unwrap_or_default();
-
     let config = ConvertOptions::async_from(options).await;
+
     let res = match run_parallel {
         true => parallel::convert_dar_to_oar(config, AsyncClosure::default).await,
         false => convert_dar_to_oar(config, AsyncClosure::default).await,
     };
-    match res {
-        Ok(complete_msg) => {
-            tracing::info!("{}", complete_msg);
-            Ok(complete_msg.to_string())
-        }
-        Err(err) => bail!(err),
-    }
+    response!(res)
 }
 
 #[tauri::command]
@@ -50,19 +57,13 @@ pub(crate) async fn convert_dar2oar_with_progress(
         };
         async move {}
     };
-
     let config = ConvertOptions::async_from(options).await;
+
     let res = match run_parallel {
         true => parallel::convert_dar_to_oar(config, sender).await,
         false => convert_dar_to_oar(config, sender).await,
     };
-    match res {
-        Ok(complete_msg) => {
-            tracing::info!("{}", complete_msg);
-            Ok(complete_msg.to_string())
-        }
-        Err(err) => bail!(err),
-    }
+    response!(res)
 }
 
 #[tauri::command]
@@ -76,15 +77,12 @@ pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), Stri
             "error"
         }
     };
-    crate::logging::change_log_level(log_level).map_err(|err| err.to_string())
+    crate::logging::change_log_level(log_level).or_else(|err| bail!(err))
 }
 
 #[tauri::command]
 pub(crate) async fn restore_dar_dir(dar_dir: &str) -> Result<String, String> {
-    match unhide_dar(dar_dir).await {
-        Ok(complete_msg) => Ok(complete_msg.to_string()),
-        Err(err) => bail!(err),
-    }
+    response!(unhide_dar(dar_dir).await)
 }
 
 #[tauri::command]
