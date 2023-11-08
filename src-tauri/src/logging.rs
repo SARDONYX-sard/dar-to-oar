@@ -4,7 +4,7 @@ use once_cell::sync::OnceCell;
 use std::fs::{self, File};
 use std::path::Path;
 use std::str::FromStr;
-use tracing::debug;
+use tracing::{debug, info};
 use tracing_subscriber::{
     filter::{self, LevelFilter},
     fmt,
@@ -13,16 +13,20 @@ use tracing_subscriber::{
     Registry,
 };
 
-pub static INSTANCE: OnceCell<Handle<LevelFilter, Registry>> = OnceCell::new();
+static INSTANCE: OnceCell<Handle<LevelFilter, Registry>> = OnceCell::new();
 
-pub(crate) fn init_logger(app: &tauri::App) -> Result<Handle<LevelFilter, Registry>> {
+/// Initializes logger.
+///
+/// # Errors
+/// Double init
+pub(crate) fn init_logger(app: &tauri::App) -> Result<()> {
     let resolver = app.path_resolver();
     let log_dir = &resolver.app_log_dir().context("Not found log dir")?;
     let log_name = format!("{}.log", app.package_info().name);
 
     let fmt_layer = fmt::layer()
         .with_ansi(false)
-        .with_writer(create_log(log_dir, &log_name, 4)?);
+        .with_writer(create_rotate_log(log_dir, &log_name, 4)?);
 
     let (filter, reload_handle) = reload::Layer::new(filter::LevelFilter::ERROR);
     tracing_subscriber::registry()
@@ -30,7 +34,10 @@ pub(crate) fn init_logger(app: &tauri::App) -> Result<Handle<LevelFilter, Regist
         .with(fmt_layer)
         .init();
     tracing::debug!("logger file path: {:?}", log_name);
-    Ok(reload_handle)
+    if INSTANCE.set(reload_handle).is_err() {
+        Err(anyhow::anyhow!("Couldn't init logger"))?
+    };
+    Ok(())
 }
 
 pub(crate) fn change_log_level(log_level: &str) -> Result<()> {
@@ -47,7 +54,11 @@ pub(crate) fn change_log_level(log_level: &str) -> Result<()> {
 
 /// Rotation Logger File Creator.
 /// - When the maximum count is reached, delete the descending ones first and create a new log file.
-fn create_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize) -> Result<File> {
+///
+/// # Why did you make this?
+/// Because `tracing_appender` must be executed in the **root function** to work.
+/// In this case where the log location is obtained with tauri, the logger cannot be initialized with the root function.
+fn create_rotate_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize) -> Result<File> {
     fs::create_dir_all(&log_dir)?;
 
     let mut log_files = fs::read_dir(&log_dir)?
@@ -61,9 +72,10 @@ fn create_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize) -> Re
         })
         .collect::<Vec<_>>();
 
-    debug!("existed log files: {:?}", &log_files);
+    let mut log_count = log_files.len();
+    debug!("-- Start log count: {} --", log_count);
     let log_file = log_dir.as_ref().join(log_name);
-    if log_files.len() > max_files {
+    if log_files.len() >= max_files {
         log_files.sort_by(|a, b| {
             // NOTE: Error in OS that can't be modified, but not considered here.
             a.metadata()
@@ -73,23 +85,29 @@ fn create_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize) -> Re
                 .cmp(&b.metadata().unwrap().modified().unwrap())
         });
         if let Some(oldest_file) = log_files.first() {
-            debug!("Remove old log {:?}", &oldest_file);
+            info!("Remove old log {:?}", &oldest_file);
+            log_count -= 1;
             fs::remove_file(oldest_file.path())?;
         }
-    } else {
-        let old_file = log_dir.as_ref().join(format!(
-            "{}_{}.log",
-            log_name,
-            Local::now().format("%F__%H_%M_%S")
-        ));
-
-        if log_file.exists() {
-            debug!("From log_file: {:?}", &log_file);
-            debug!("To old_file: {:?}", &old_file);
-            fs::rename(&log_file, old_file)?;
-        }
     };
-    let f = File::create(log_file)?;
+
+    let old_file = log_dir.as_ref().join(format!(
+        "{}_{}.log",
+        log_name,
+        Local::now().format("%F__%H_%M_%S")
+    ));
+
+    if log_file.exists() {
+        info!(
+            "Rename: {:?} => {:?}",
+            &log_file.file_name(),
+            &old_file.file_name()
+        );
+        fs::rename(&log_file, old_file)?;
+    };
+
+    let f= File::create(log_file)?;
+    debug!("-- End log count: {} --", log_count + 1);
     Ok(f)
 }
 
@@ -98,24 +116,26 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
+    /// tracing initializer
     macro_rules! logger_init {
-        () => {
+        ($level:ident) => {
             let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
             tracing_subscriber::fmt()
                 .with_writer(non_blocking)
                 .with_ansi(false)
-                .with_max_level(tracing::Level::DEBUG)
+                .with_max_level(tracing::Level::$level)
                 .init();
         };
     }
 
     #[test]
-    fn test() -> Result<()> {
-        logger_init!();
+    fn should_rotate_log() -> Result<()> {
+        logger_init!(DEBUG);
+
         let log_dir = temp_dir::TempDir::new()?;
         let log_dir = log_dir.path();
         for _ in 0..5 {
-            create_log(log_dir, "g_dar2oar.log", 3)?;
+            create_rotate_log(log_dir, "g_dar2oar.log", 3)?;
             std::thread::sleep(std::time::Duration::from_secs(1));
         }
 
