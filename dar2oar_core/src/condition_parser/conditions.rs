@@ -119,11 +119,10 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             ..Default::default()
         }),
         _ => {
-            log::debug!("Condition({fn_name}) has no explicit mapping.");
-
+            tracing::debug!("Condition({fn_name}) has no explicit mapping.");
             ConditionSet::Condition(Condition {
+                condition: fn_name.into(),
                 negated,
-                condition: fn_name.to_string(),
                 ..Default::default()
             })
         }

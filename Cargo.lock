@@ -810,7 +810,6 @@ dependencies = [
  "async-walkdir",
  "criterion",
  "jwalk",
- "log",
  "nom",
  "once_cell",
  "pretty_assertions",

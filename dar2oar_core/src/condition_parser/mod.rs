@@ -14,7 +14,10 @@ use anyhow::bail;
 
 pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
     let (_, dar_syn) = match parse_condition(input) {
-        Ok(syn) => syn,
+        Ok(syn) => {
+            tracing::debug!("Input => Parsed DAR:\n{:?}", syn);
+            syn
+        }
         Err(err) => {
             let err = match err {
                 nom::Err::Incomplete(_) => bail!("Error Incomplete"),
@@ -24,5 +27,8 @@ pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
             bail!(convert_error(input, err));
         }
     };
-    Ok(parse_conditions(dar_syn)?.try_into()?)
+
+    let oar = parse_conditions(dar_syn)?;
+    tracing::debug!("Parsed DAR => Serializable OAR:\n{:?}", oar);
+    Ok(oar.try_into()?)
 }

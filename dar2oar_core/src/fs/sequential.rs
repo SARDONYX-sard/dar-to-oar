@@ -40,12 +40,13 @@ where
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
 
     let walk_len = WalkDir::new(&dar_dir).collect::<Vec<_>>().await.len(); // Lower performance cost when sender is None.
-    log::debug!("Dir & File Counts: {}", walk_len);
+    tracing::trace!("Send all dirs & files counts: {}", walk_len);
     tokio::spawn(async_fn(walk_len));
 
     let mut entries = WalkDir::new(dar_dir);
     let mut idx = 0usize;
     while let Some(entry) = entries.next().await {
+        tracing::trace!("Send Dir or file index: {}", idx);
         tokio::spawn(async_fn(idx));
         idx += 1;
 
