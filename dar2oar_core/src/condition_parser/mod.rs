@@ -13,7 +13,7 @@ use crate::dar_syntax::{convert_error, syntax::parse_condition};
 use anyhow::bail;
 
 pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
-    let (_, dar_syn) = match parse_condition(input) {
+    let (remain, dar_syn) = match parse_condition(input) {
         Ok(syn) => {
             tracing::debug!("Input => Parsed DAR:\n{:?}", syn);
             syn
@@ -27,6 +27,10 @@ pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
             bail!(convert_error(input, err));
         }
     };
+
+    if !remain.is_empty() {
+        bail!("DAR syntax error. Unconverted this.:\n{}", remain);
+    }
 
     let oar = parse_conditions(dar_syn)?;
     tracing::debug!("Parsed DAR => Serializable OAR:\n{:?}", oar);
