@@ -12,6 +12,14 @@ pub enum ConvertError {
     NotFoundFileName,
     #[error("This is not valid utf8")]
     InvalidUtf8,
+    #[error("Incomplete conversion")]
+    IncompleteConversion,
+    #[error("DAR syntax error.:\n{0}")]
+    InvalidDarSyntax(String),
+    #[error(transparent)]
+    ConditionError(#[from] crate::conditions::ConditionError),
+    #[error(transparent)]
+    ParseError(#[from] crate::condition_parser::ParseError),
     #[error(transparent)]
     AnyhowError(#[from] anyhow::Error),
     /// Convert json error.

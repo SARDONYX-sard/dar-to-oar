@@ -8,11 +8,12 @@ mod has;
 mod macros;
 
 use self::conditions::parse_conditions;
+pub use self::dar_interface::ParseError;
 use crate::conditions::ConditionSet;
 use crate::dar_syntax::{convert_error, syntax::parse_condition};
-use anyhow::bail;
+use crate::error::{ConvertError, Result};
 
-pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
+pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
     let (remain, dar_syn) = match parse_condition(input) {
         Ok(syn) => {
             tracing::debug!("Input => Parsed DAR:\n{:?}", syn);
@@ -20,19 +21,20 @@ pub fn parse_dar2oar(input: &str) -> anyhow::Result<Vec<ConditionSet>> {
         }
         Err(err) => {
             let err = match err {
-                nom::Err::Incomplete(_) => bail!("Error Incomplete"),
+                nom::Err::Incomplete(_) => return Err(ConvertError::IncompleteConversion),
                 nom::Err::Error(err) => err,
                 nom::Err::Failure(err) => err,
             };
-            bail!(convert_error(input, err));
+            return Err(ConvertError::InvalidDarSyntax(convert_error(input, err)));
         }
     };
 
-    if !remain.is_empty() {
-        bail!("DAR syntax error. Unconverted this.:\n{}", remain);
+    match remain.is_empty() {
+        true => {
+            let oar = parse_conditions(dar_syn)?;
+            tracing::debug!("Parsed DAR => Serialized OAR:\n{:?}", &oar);
+            Ok(oar.try_into()?)
+        }
+        false => Err(ConvertError::InvalidDarSyntax(remain.into())),
     }
-
-    let oar = parse_conditions(dar_syn)?;
-    tracing::debug!("Parsed DAR => Serializable OAR:\n{:?}", oar);
-    Ok(oar.try_into()?)
 }
