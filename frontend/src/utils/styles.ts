@@ -56,7 +56,7 @@ label.Mui-focused {
 
 .MuiLinearProgress-bar {
   background-color: var(--theme-color);
-}`;
+}` as const;
 }
 
 const preset1 = `:root {
@@ -68,7 +68,7 @@ const preset1 = `:root {
   --image-url: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229")
 }
 
-${createPreset()}`;
+${createPreset()}` as const;
 
 const preset2 = `:root {
   --image-url: url("https://images.pexels.com/photos/2817421/pexels-photo-2817421.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750& dpr=1");
@@ -110,7 +110,7 @@ const preset3 = `:root {
   --image-url: url("https://images.pexels.com/photos/6162265/pexels-photo-6162265.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
 }
 
-${createPreset()}`;
+${createPreset()}` as const;
 
 export const presetStyles = {
   "1": preset1,
