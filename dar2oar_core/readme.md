@@ -85,8 +85,8 @@ async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
     })
 }
 
-/// Asynchronous test function for non-multi-threaded conversion.
-async fn convert_non_mpsc() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     logger_init!();
     convert_dar_to_oar(create_options().await?, |_| {}).await?;
     Ok(())
@@ -126,7 +126,8 @@ async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
     })
 }
 
-async fn convert_with_mpsc() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     use once_cell::sync::Lazy;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
