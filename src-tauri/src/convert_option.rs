@@ -1,6 +1,5 @@
-use dar2oar_core::{fs::ConvertOptions, get_mapping_table};
+use dar2oar_core::{get_mapping_table, ConvertOptions};
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -30,14 +29,9 @@ impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
             mod_author: author,
             mapping_path,
             mapping_1person_path,
-            run_parallel: _,
+            run_parallel,
             hide_dar,
         } = options;
-
-        let oar_dir = oar_dir.and_then(|dist| match dist.is_empty() {
-            true => None,
-            false => Some(Path::new(dist).to_path_buf()),
-        });
 
         Self {
             dar_dir,
@@ -46,6 +40,7 @@ impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
             author,
             section_table: get_mapping_table(mapping_path).await,
             section_1person_table: get_mapping_table(mapping_1person_path).await,
+            run_parallel: run_parallel.unwrap_or(false),
             hide_dar: hide_dar.unwrap_or(false),
         }
     }

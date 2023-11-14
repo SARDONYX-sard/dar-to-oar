@@ -1,36 +1,34 @@
-use anyhow::{Context as _, Result};
+use crate::error::{ConvertError, Result};
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-/// - Ok: oar root path, is_1st_person_dir, mod name, priority, non leaf remain(Path excluding file from priority to the end)
-/// - Err: anyhow Error
-type DarPathsResult = Result<(
-    PathBuf,
-    PathBuf,
-    bool,
-    Option<String>,
-    Option<String>,
-    Option<PathBuf>,
-)>;
+#[derive(Debug, Clone)]
+pub struct ParsedPath {
+    pub dar_root: PathBuf,
+    pub oar_root: PathBuf,
+    pub is_1st_person: bool,
+    pub mod_name: Option<String>,
+    pub priority: Option<String>,
+    pub remain_dir: Option<PathBuf>,
+}
 
-/// # Returns
-/// oar root path, is_1st_person_dir, mod name, priority, non leaf remain(Path excluding file from priority to the end)
+/// Parses the DAR path and returns the information necessary for conversion.
 ///
 /// # Errors
 /// - If `DynamicAnimationReplacer` is not found in path
 ///
 /// # When does the return value return None?
 /// Each of the following will be None if not found in path
-/// - mod_name: if `meshes` is not found
-/// - priority: if `_CustomConditions` is not found
+/// - `mod_name`: if `meshes` is not found
+/// - `priority`: if `_CustomConditions` is not found
 ///
-/// ## Format
-/// # OAR:([]: optional, <>: variable)
+/// # Format
+/// ### OAR:([]: optional, <>: variable)
 /// - "\<ABS or related ParentDir\>/\<ModName\>/meshes/actors/character/\[_1stperson\]/animations/OptionAnimationReplacer/\<NameSpace\>/\<EachSectionName\>"
 ///
-/// # DAR:
+/// ### DAR: (Only priority order assignment is taken into account. In other words, actor-based allocation is not considered.)
 /// - "\<ABS or related ParentDir\>/\<ModName\>/_1stperson/character/animations/DynamicAnimationReplacer/_CustomConditions/\<priority\>/_conditions.txt"
-pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarPathsResult {
+pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> Result<ParsedPath> {
     let path = path.as_ref();
     let paths: Vec<&OsStr> = path.iter().collect();
 
@@ -49,12 +47,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarP
                 (Path::new(&dar).to_path_buf(), Path::new(&oar).to_path_buf())
             })
         })
-        .with_context(|| {
-            format!(
-                "Not found DynamicAnimationReplacer dir. got path: {:?}",
-                path
-            )
-        })?;
+        .ok_or(ConvertError::NotFoundDarDir)?;
 
     let mod_name = path
         .iter()
@@ -89,7 +82,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarP
                 })
         });
 
-    let non_leaf_remain = path
+    let remain_dir = path
         .iter()
         .position(|os_str| os_str == OsStr::new("_CustomConditions"))
         .and_then(|idx| {
@@ -102,14 +95,14 @@ pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> DarP
             })
         });
 
-    Ok((
+    Ok(ParsedPath {
         dar_root,
         oar_root,
         is_1st_person,
         mod_name,
         priority,
-        non_leaf_remain,
-    ))
+        remain_dir,
+    })
 }
 
 #[cfg(test)]
@@ -124,7 +117,14 @@ mod test {
         let result = parse_dar_path(path, None);
 
         assert!(result.is_ok());
-        let (dar_root, oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
+        let ParsedPath {
+            dar_root,
+            oar_root,
+            is_1st_person,
+            mod_name,
+            priority,
+            remain_dir,
+        } = result.unwrap();
 
         assert_eq!(
             dar_root,
@@ -141,7 +141,7 @@ mod test {
         assert_eq!(is_1st_person, true);
         assert_eq!(mod_name, Some("ModName".to_string()));
         assert_eq!(priority, Some("8107000".to_string()));
-        assert_eq!(remain, None);
+        assert_eq!(remain_dir, None);
     }
 
     #[test]
@@ -150,7 +150,14 @@ mod test {
         let result = parse_dar_path(path, Some("DynamicAnimationReplacer.mohidden"));
 
         assert!(result.is_ok());
-        let (dar_root, oar_root, is_1st_person, mod_name, priority, remain) = result.unwrap();
+        let ParsedPath {
+            dar_root,
+            oar_root,
+            is_1st_person,
+            mod_name,
+            priority,
+            remain_dir,
+        } = result.unwrap();
 
         assert_eq!(
             dar_root,
@@ -165,7 +172,7 @@ mod test {
         assert_eq!(is_1st_person, false);
         assert_eq!(mod_name, Some("ModName".to_string()));
         assert_eq!(priority, Some("8107000".to_string()));
-        assert_eq!(remain, Some(Path::new("InnerDir").to_path_buf()));
+        assert_eq!(remain_dir, Some(Path::new("InnerDir").to_path_buf()));
     }
 
     #[test]

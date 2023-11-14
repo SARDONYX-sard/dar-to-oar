@@ -41,6 +41,13 @@ pub(crate) fn init_logger(app: &tauri::App) -> Result<()> {
 }
 
 pub(crate) fn change_log_level(log_level: &str) -> Result<()> {
+    let log_level = match log_level {
+        "trace" | "debug" | "info" | "warn" | "error" => log_level,
+        unknown_level => {
+            tracing::warn!("Unknown log level {}. Fallback to error", unknown_level);
+            "error"
+        }
+    };
     match INSTANCE.get() {
         Some(log) => log
             .modify(|filter| {
@@ -130,7 +137,7 @@ mod tests {
 
     #[test]
     fn should_rotate_log() -> Result<()> {
-        logger_init!(DEBUG);
+        logger_init!(ERROR);
 
         let log_dir = temp_dir::TempDir::new()?;
         let log_dir = log_dir.path();
