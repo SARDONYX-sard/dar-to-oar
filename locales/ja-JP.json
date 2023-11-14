@@ -39,6 +39,7 @@
   "progress-btn-tooltip": "詳細な進捗状況を表示します",
   "progress-btn-tooltip2": "注意: 変換時間が5~10秒以上増加する可能性があります",
   "remove-oar-btn": "OARを削除",
+  "remove-oar-failed": "DARまたはOARが入力されていません",
   "remove-oar-success": "OARディレクトリを削除しました",
   "remove-oar-tooltip": "OAR(dist)(なければDAR(src))からOARディレクトリを捜索して削除します",
   "run-parallel-btn-tooltip": "マルチスレッドを使用します",
@@ -46,5 +47,6 @@
   "run-parallel-label": "並列実行",
   "select-btn": "選択",
   "unhide-dar-btn": "DAR再表示",
-  "unhide-dar-btn-tooltip": "\"DARを非表示\"による非表示化の解除(MO2ユーザ向け)"
+  "unhide-dar-btn-tooltip": "\"DARを非表示\"による非表示化の解除(MO2ユーザ向け)",
+  "unhide-dar-failed": "DAR(src)を指定してください"
 }

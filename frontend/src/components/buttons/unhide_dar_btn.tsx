@@ -24,7 +24,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
         variant="outlined"
         onClick={async () => {
           try {
-            toast.success(await restoreDarDir(path));
+            toast.success(await restoreDarDir(path, t("unhide-dar-failed")));
           } catch (err) {
             toast.error(`${err}`);
           }

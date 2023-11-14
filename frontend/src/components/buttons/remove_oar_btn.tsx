@@ -12,6 +12,8 @@ type Props = {
 
 export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
   const { t } = useTranslation();
+  const errMsg = t("remove-oar-failed");
+
   return (
     <Tooltip title={<p>{t("remove-oar-tooltip")}</p>}>
       <Button
@@ -24,15 +26,14 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
         variant="outlined"
         onClick={async () => {
           try {
-            await removeOarDir(darPath);
-            toast.success(t("remove-oar-success"));
-          } catch (_) {
-            try {
-              await removeOarDir(oarPath);
-              toast.success(t("remove-oar-success"));
-            } catch (e) {
-              toast.error(`${e}`);
+            if (oarPath === "") {
+              await removeOarDir(darPath, errMsg);
+            } else {
+              await removeOarDir(oarPath, errMsg);
             }
+            toast.success(t("remove-oar-success"));
+          } catch (e) {
+            toast.error(`${e}`);
           }
         }}
         startIcon={<DeleteIcon />}

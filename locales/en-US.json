@@ -39,6 +39,7 @@
   "progress-btn-tooltip": "Display detail progress",
   "progress-btn-tooltip2": "However, conversion may be delayed by 5~10 seconds or more.",
   "remove-oar-btn": "Remove OAR",
+  "remove-oar-failed": "DAR or OAR dir must be specified.",
   "remove-oar-success": "Removed OAR directory.",
   "remove-oar-tooltip": "Find and delete OAR dir from \"DAR(src) Directory*\" or \"OAR(dist) Directory\".",
   "run-parallel-btn-tooltip": "Use multi-threading.",
@@ -46,5 +47,6 @@
   "run-parallel-label": "Run Parallel",
   "select-btn": "Select",
   "unhide-dar-btn": "Unhide DAR",
-  "unhide-dar-btn-tooltip": "Unhide the directory hidden by \"Hide DAR\".(For MO2 user)"
+  "unhide-dar-btn-tooltip": "Unhide the directory hidden by \"Hide DAR\".(For MO2 user)",
+  "unhide-dar-failed": "DAR dir must be specified."
 }

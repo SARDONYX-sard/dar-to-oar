@@ -57,9 +57,12 @@ export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
  *
  * # Throw Error
  */
-export async function restoreDarDir(darDir: string) {
+export async function restoreDarDir(
+  darDir: string,
+  errMsg = "DAR dir must be specified."
+) {
   if (darDir === "") {
-    throw new Error("DAR dir must be specified.");
+    throw new Error(errMsg);
   }
   return invoke<string>("restore_dar_dir", { darDir });
 }
@@ -69,7 +72,13 @@ export async function restoreDarDir(darDir: string) {
  *
  * # Throw Error
  */
-export async function removeOarDir(path: string) {
+export async function removeOarDir(
+  path: string,
+  errMsg = "DAR or OAR dir must be specified."
+) {
+  if (path === "") {
+    throw new Error(errMsg);
+  }
   await invoke("remove_oar_dir", { path });
 }
 
