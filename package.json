@@ -11,12 +11,13 @@
     "build:front": "next build frontend",
     "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
     "test": "cargo test --workspace",
+    "fmt": "cargo fmt --all",
     "lint:front": "next lint frontend",
     "lint:back": "cargo clippy --workspace",
     "lint": "npm run lint:front && npm run lint:back",
     "lint-fix:back": "cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "lint-fix:front": "next lint frontend --fix",
-    "lint:fix": "npm run lint-fix:front && npm run lint-fix:back",
+    "lint:fix": "npm run fmt && npm run lint-fix:front && npm run lint-fix:back",
     "tauri": "tauri"
   },
   "dependencies": {

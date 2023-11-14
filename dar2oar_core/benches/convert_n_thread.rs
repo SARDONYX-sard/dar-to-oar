@@ -1,11 +1,7 @@
 use criterion::async_executor::FuturesExecutor;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use dar2oar_core::fs::async_closure::AsyncClosure;
-use dar2oar_core::{
-    convert_dar_to_oar,
-    fs::{parallel, ConvertOptions},
-    read_mapping_table,
-};
+use dar2oar_core::fs::converter::{parallel, sequential};
+use dar2oar_core::{read_mapping_table, Closure, ConvertOptions};
 use std::time::Duration;
 use tokio::fs;
 
@@ -31,7 +27,7 @@ fn criterion_benchmark(c: &mut Criterion) {
                     section_table: Some(mapping),
                     ..Default::default()
                 }),
-                AsyncClosure::default,
+                Closure::default,
             )
             .await
         })
@@ -44,13 +40,13 @@ fn criterion_benchmark(c: &mut Criterion) {
             }
             let mapping = read_mapping_table(TABLE_PATH).await.unwrap();
 
-            convert_dar_to_oar(
+            sequential::convert_dar_to_oar(
                 black_box(ConvertOptions {
                     dar_dir: TARGET,
                     section_table: Some(mapping),
                     ..Default::default()
                 }),
-                AsyncClosure::default,
+                Closure::default,
             )
             .await
         })
