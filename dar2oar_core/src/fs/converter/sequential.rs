@@ -64,10 +64,17 @@ pub async fn convert_dar_to_oar(
 
 async fn get_dar_files(root: impl AsRef<Path>) -> WalkDir {
     WalkDir::new(root).filter(move |entry| async move {
-        if entry.file_type().await.unwrap().is_dir() {
-            Filtering::Ignore
+        if let Ok(file_type) = entry.file_type().await {
+            match file_type.is_dir() {
+                true => Filtering::Ignore,
+                false => Filtering::Continue,
+            }
         } else {
-            Filtering::Continue
+            // NOTE: Non-existent, non-authoritative, and I/O errors will ignore.
+            // Reason
+            // - Because if there is no entry in a higher-level function, it will cause an error.
+            // - In async closure, Result and ? operators cannot be used.
+            Filtering::Ignore
         }
     })
 }
