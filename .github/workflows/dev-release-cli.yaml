@@ -38,9 +38,9 @@ permissions:
 # will be marked as a prerelease.
 on:
   push:
-    tags:
+    branches:
       - "development"
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   # Run 'cargo dist plan' to determine what tasks we need to do
