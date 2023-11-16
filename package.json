@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tauri dev",
     "dev:front": "next frontend",
-    "build": "rimraf ./out && cargo tauri build",
+    "build": "rimraf ./out && tauri build",
     "build:front": "next build frontend",
     "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
     "test:backend": "cargo test --workspace",
