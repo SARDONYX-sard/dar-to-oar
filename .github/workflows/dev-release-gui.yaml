@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: Setup cache
+      - name: Node.js cache
         uses: actions/cache@v3
         with:
           path: |
