@@ -2,7 +2,7 @@ name: Development Release GUI
 on:
   push:
     branches:
-      - "development"
+      - 'development'
   workflow_dispatch:
 
 jobs:
@@ -43,12 +43,9 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 'lts/*'
 
-      - name: Install frontend dependencies
-        run: npm install
-
-      - name: Sync node version and setup cache
+      - name: Setup cache
         uses: actions/cache@v3
         with:
           path: |
@@ -59,6 +56,8 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Install frontend dependencies
+        run: npm install
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
@@ -66,6 +65,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          releaseName: "DAR to OAR Converter Development-${{ github.sha }}" # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'DAR to OAR Converter Development-${{ github.sha }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           tagName: development
           prerelease: true
