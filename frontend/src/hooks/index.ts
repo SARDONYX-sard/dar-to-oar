@@ -1,4 +1,5 @@
-export { useStorageState } from "./storage_state";
-export { useLocale } from "./useLocale";
-export { useInjectScript, useDynStyle } from "./dyn_style";
-export { useToastLimit } from "./toasts_limit";
+// @index('./*', f => `export * from '${f.path}'`)
+export * from './dyn_style';
+export * from './storage_state';
+export * from './toasts_limit';
+export * from './useLocale';

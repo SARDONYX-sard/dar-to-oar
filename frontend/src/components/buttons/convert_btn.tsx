@@ -1,6 +1,7 @@
-import ConvertIcon from "@mui/icons-material/Transform";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { useTranslation } from "react-i18next";
+import ConvertIcon from '@mui/icons-material/Transform';
+import LoadingButton from '@mui/lab/LoadingButton';
+
+import { useTranslation } from '@/hooks';
 
 type Props = Readonly<{
   loading: boolean;
@@ -12,20 +13,20 @@ type Props = Readonly<{
  * Icon ref
  * - https://mui.com/material-ui/material-icons/
  */
-export default function ConvertButton({ loading, setLoading }: Props) {
+export function ConvertButton({ loading, setLoading }: Props) {
   const { t } = useTranslation();
 
   return (
     <LoadingButton
       type="submit"
-      sx={{ width: "100%" }}
+      sx={{ width: '100%' }}
       endIcon={<ConvertIcon />}
       loading={loading}
       loadingPosition="end"
       variant="contained"
       onChange={() => setLoading(true)}
     >
-      <span>{loading ? t("converting-btn") : t("convert-btn")}</span>
+      <span>{loading ? t('converting-btn') : t('convert-btn')}</span>
     </LoadingButton>
   );
 }

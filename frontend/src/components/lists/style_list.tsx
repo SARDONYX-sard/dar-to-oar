@@ -1,8 +1,9 @@
-import { FormControl, Tooltip, InputLabel } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
-import Select, { type SelectChangeEvent } from "@mui/material/Select";
-import { selectPreset, presetStyles } from "@/utils/styles";
-import { useTranslation } from "react-i18next";
+import { FormControl, Tooltip, InputLabel } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+
+import { useTranslation } from '@/hooks';
+import { selectPreset, presetStyles } from '@/utils/styles';
 
 type Props = {
   setStyle: (value: string) => void;
@@ -15,8 +16,8 @@ export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
   const handleChange = (e: SelectChangeEvent<string>) => {
     const presetNumber = selectPreset(e.target.value);
     setPreset(presetNumber);
-    if (presetNumber === "0") {
-      setStyle(localStorage.getItem("customCSS") ?? "");
+    if (presetNumber === '0') {
+      setStyle(localStorage.getItem('customCSS') ?? '');
       return;
     }
     setStyle(presetStyles[presetNumber]);
@@ -26,16 +27,14 @@ export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
     <Tooltip
       title={
         <>
-          <p>{t("css-preset-list-tooltip")}</p>
-          <p>{t("css-preset-list-tooltip2")}</p>
+          <p>{t('css-preset-list-tooltip')}</p>
+          <p>{t('css-preset-list-tooltip2')}</p>
         </>
       }
       placement="top"
     >
       <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-        <InputLabel htmlFor="style-select">
-          {t("css-preset-list-label")}
-        </InputLabel>
+        <InputLabel htmlFor="style-select">{t('css-preset-list-label')}</InputLabel>
         <Select
           name={preset}
           onChange={handleChange}
@@ -44,10 +43,10 @@ export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
           id="style-select"
           value={preset}
         >
-          <MenuItem value={"0"}>{t("css-preset-list-item0")}</MenuItem>
-          <MenuItem value={"1"}>{t("css-preset-list-item1")}</MenuItem>
-          <MenuItem value={"2"}>{t("css-preset-list-item2")}</MenuItem>
-          <MenuItem value={"3"}>{t("css-preset-list-item3")}</MenuItem>
+          <MenuItem value={'0'}>{t('css-preset-list-item0')}</MenuItem>
+          <MenuItem value={'1'}>{t('css-preset-list-item1')}</MenuItem>
+          <MenuItem value={'2'}>{t('css-preset-list-item2')}</MenuItem>
+          <MenuItem value={'3'}>{t('css-preset-list-item3')}</MenuItem>
         </Select>
       </FormControl>
     </Tooltip>

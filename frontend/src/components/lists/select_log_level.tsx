@@ -1,25 +1,14 @@
-import toast from "react-hot-toast";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { UseFormRegister } from "react-hook-form";
-import { changeLogLevel, type LogLevel } from "@/tauri_cmd";
-import { forwardRef } from "react";
-import { useTranslation } from "react-i18next";
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { forwardRef } from 'react';
+import { UseFormRegister } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+
+import { useTranslation } from '@/hooks';
+import { changeLogLevel, type LogLevel } from '@/tauri_cmd';
+import { selectLogLevel } from '@/utils/selector';
 
 interface IFormValues {
   logLevel: LogLevel;
-}
-
-export function selectLogLevel(logLevel: string): LogLevel {
-  switch (logLevel) {
-    case "trace":
-    case "debug":
-    case "info":
-    case "warn":
-    case "error":
-      return logLevel;
-    default:
-      return "error";
-  }
 }
 
 export const SelectLogLevel = forwardRef<
@@ -30,9 +19,7 @@ export const SelectLogLevel = forwardRef<
 
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-      <InputLabel id="log-level-select-label">
-        {t("log-level-list-label")}
-      </InputLabel>
+      <InputLabel id="log-level-select-label">{t('log-level-list-label')}</InputLabel>
       <Select
         name={name}
         ref={ref}
@@ -51,11 +38,11 @@ export const SelectLogLevel = forwardRef<
         value={value}
         label="log level"
       >
-        <MenuItem value={"trace"}>Trace</MenuItem>
-        <MenuItem value={"debug"}>Debug</MenuItem>
-        <MenuItem value={"info"}>Info</MenuItem>
-        <MenuItem value={"warn"}>Warning</MenuItem>
-        <MenuItem value={"error"}>Error</MenuItem>
+        <MenuItem value={'trace'}>Trace</MenuItem>
+        <MenuItem value={'debug'}>Debug</MenuItem>
+        <MenuItem value={'info'}>Info</MenuItem>
+        <MenuItem value={'warn'}>Warning</MenuItem>
+        <MenuItem value={'error'}>Error</MenuItem>
       </Select>
     </FormControl>
   );

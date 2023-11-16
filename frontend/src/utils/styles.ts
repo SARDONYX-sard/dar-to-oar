@@ -113,18 +113,18 @@ const preset3 = `:root {
 ${createPreset()}` as const;
 
 export const presetStyles = {
-  "1": preset1,
-  "2": preset2,
-  "3": preset3,
+  '1': preset1,
+  '2': preset2,
+  '3': preset3,
 } as const;
 
 export function selectPreset(select: string) {
   switch (select) {
-    case "1":
-    case "2":
-    case "3":
+    case '1':
+    case '2':
+    case '3':
       return select;
     default:
-      return "0";
+      return '0';
   }
 }

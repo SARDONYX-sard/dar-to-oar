@@ -1,19 +1,18 @@
-import MenuItem from "@mui/material/MenuItem";
-import Select, { type SelectChangeEvent } from "@mui/material/Select";
-import { FormControl, Tooltip, InputLabel } from "@mui/material";
-import { changeLanguage } from "i18next";
-import { useStorageState } from "@/hooks";
+import { FormControl, Tooltip, InputLabel } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import { changeLanguage } from 'i18next';
+
+import { useStorageState } from '@/hooks';
 
 export const TranslationList = () => {
-  const [lang, setLang] = useStorageState("locale", "auto");
+  const [lang, setLang] = useStorageState('locale', 'auto');
 
-  const locale = "Locale";
+  const locale = 'Locale';
   const handleChange = (e: SelectChangeEvent<string>) => {
     const newLocale = e.target.value;
     setLang(newLocale);
-    changeLanguage(
-      newLocale === "auto" ? window.navigator.language : newLocale
-    );
+    changeLanguage(newLocale === 'auto' ? window.navigator.language : newLocale);
   };
 
   return (
@@ -28,9 +27,9 @@ export const TranslationList = () => {
           onChange={handleChange}
           value={lang}
         >
-          <MenuItem value={"auto"}>Auto</MenuItem>
-          <MenuItem value={"en-US"}>English(US)</MenuItem>
-          <MenuItem value={"ja-JP"}>Japanese</MenuItem>
+          <MenuItem value={'auto'}>Auto</MenuItem>
+          <MenuItem value={'en-US'}>English(US)</MenuItem>
+          <MenuItem value={'ja-JP'}>Japanese</MenuItem>
         </Select>
       </FormControl>
     </Tooltip>

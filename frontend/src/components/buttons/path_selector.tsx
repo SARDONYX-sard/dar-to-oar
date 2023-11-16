@@ -1,8 +1,9 @@
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import toast from "react-hot-toast";
-import { Button } from "@mui/material";
-import { openPath } from "../../tauri_cmd";
-import { useTranslation } from "react-i18next";
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import { Button } from '@mui/material';
+import { toast } from 'react-hot-toast';
+
+import { useTranslation } from '@/hooks';
+import { openPath } from '@/tauri_cmd';
 
 type Props = Readonly<{
   path: string;
@@ -19,16 +20,16 @@ export function SelectPathButton({ path, isDir = false, setValue }: Props) {
   return (
     <Button
       sx={{
-        marginTop: "9px",
-        width: "100%",
-        height: "55px",
+        marginTop: '9px',
+        width: '100%',
+        height: '55px',
       }}
       onClick={handleClick}
       startIcon={<FolderOpenIcon />}
       type="button"
       variant="outlined"
     >
-      {t("select-btn")}
+      {t('select-btn')}
     </Button>
   );
 }

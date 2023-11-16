@@ -1,76 +1,59 @@
-"use client";
+'use client';
 
-import AceEditor from "react-ace";
-import InputLabel from "@mui/material/InputLabel";
-import packageJson from "@/../../package.json";
-import { Box } from "@mui/material";
-import { SelectEditorMode } from "@/components/lists/editor_list";
-import { StyleList } from "@/components/lists/style_list";
-import { Toaster } from "react-hot-toast";
-import { TranslationList } from "@/components/lists/translation_list";
-import { selectEditorMode, type EditorMode } from "@/utils/editor";
-import {
-  useDynStyle,
-  useInjectScript,
-  useLocale,
-  useStorageState,
-} from "@/hooks";
+import { Box } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import AceEditor from 'react-ace';
+import { Toaster } from 'react-hot-toast';
+
+import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
+import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
+import { selectEditorMode, type EditorMode } from '@/utils/selector';
+
+import packageJson from '@/../../package.json';
 
 // NOTE: These extensions must be loaded after importing AceEditor or they will error
-import "ace-builds/src-noconflict/ext-code_lens";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/keybinding-vim";
-import "ace-builds/src-noconflict/mode-css";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/snippets/css";
-import "ace-builds/src-noconflict/snippets/javascript";
-import "ace-builds/src-noconflict/theme-one_dark";
-import { useTranslation } from "react-i18next";
+import 'ace-builds/src-noconflict/ext-code_lens';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/keybinding-vim';
+import 'ace-builds/src-noconflict/mode-css';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/snippets/css';
+import 'ace-builds/src-noconflict/snippets/javascript';
+import 'ace-builds/src-noconflict/theme-one_dark';
 
 export default function Settings() {
   useLocale();
-  const [editorMode, setEditorMode] = useStorageState("editorMode", "default");
-  const [preset, setPreset] = useStorageState("presetNumber", "0");
+  const [editorMode, setEditorMode] = useStorageState('editorMode', 'default');
+  const [preset, setPreset] = useStorageState('presetNumber', '0');
   const [style, setStyle] = useDynStyle();
 
-  const setEditorKeyMode = (editorMode: EditorMode) => {
-    setEditorMode(editorMode ?? "default");
-  };
-
+  const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode ?? 'default');
   return (
     <Box
       component="main"
       sx={{
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        minHeight: "calc(100vh - 56px)",
-        width: "100%",
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: 'calc(100vh - 56px)',
+        width: '100%',
       }}
     >
       <Toaster position="bottom-right" reverseOrder={false} />
-      <CSSEditor
-        editorMode={editorMode}
-        setPreset={setPreset}
-        setStyle={setStyle}
-        style={style}
-      />
+      <CSSEditor editorMode={editorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
 
       <JSEditor editorMode={editorMode} />
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: "10px",
-          overflowX: "auto",
-          width: "95%",
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '10px',
+          overflowX: 'auto',
+          width: '95%',
         }}
       >
-        <SelectEditorMode
-          editorMode={selectEditorMode(editorMode)}
-          setEditorMode={setEditorKeyMode}
-        />
+        <SelectEditorMode editorMode={selectEditorMode(editorMode)} setEditorMode={setEditorKeyMode} />
         <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
         <TranslationList />
       </div>
@@ -85,30 +68,23 @@ type CSSEditorProps = {
   setStyle: (style: string) => void;
   style: string;
 };
-const CSSEditor = ({
-  editorMode,
-  setPreset,
-  setStyle,
-  style,
-}: CSSEditorProps) => {
+const CSSEditor = ({ editorMode, setPreset, setStyle, style }: CSSEditorProps) => {
   const { t } = useTranslation();
 
   return (
     <>
-      <InputLabel sx={{ marginTop: "20px" }}>
-        {t("custom-css-label")}
-      </InputLabel>
+      <InputLabel sx={{ marginTop: '20px' }}>{t('custom-css-label')}</InputLabel>
       <AceEditor
         style={{
-          width: "95%",
-          backgroundColor: "#2424248c",
+          width: '95%',
+          backgroundColor: '#2424248c',
         }}
         onChange={(value) => {
           setStyle(value);
-          localStorage.setItem("customCSS", value);
-          setPreset("0");
+          localStorage.setItem('customCSS', value);
+          setPreset('0');
         }}
-        fontSize={"1rem"}
+        fontSize={'1rem'}
         height="300px"
         mode="css"
         theme="one_dark"
@@ -137,16 +113,16 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
 
   return (
     <>
-      <InputLabel error sx={{ marginTop: "20px" }}>
-        {t("custom-js-label")}
+      <InputLabel error sx={{ marginTop: '20px' }}>
+        {t('custom-js-label')}
       </InputLabel>
       <AceEditor
         style={{
-          width: "95%",
-          backgroundColor: "#2424248c",
+          width: '95%',
+          backgroundColor: '#2424248c',
         }}
         onChange={(value) => {
-          localStorage.setItem("customJS", value);
+          localStorage.setItem('customJS', value);
           setScript(value);
         }}
         placeholder={`(()=> {
@@ -158,7 +134,7 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
         enableBasicAutocompletion
         enableLiveAutocompletion
         enableSnippets
-        fontSize={"1rem"}
+        fontSize={'1rem'}
         height="250px"
         highlightActiveLine
         keyboardHandler={selectEditorMode(editorMode)}
@@ -178,20 +154,16 @@ const Help = () => {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-around",
-        marginTop: "10px",
-        width: "55%",
+        display: 'flex',
+        justifyContent: 'space-around',
+        marginTop: '10px',
+        width: '55%',
       }}
     >
       <div>Version: {packageJson.version}</div>
       <div>
-        Source:{" "}
-        <a
-          style={{ cursor: "pointer", color: "#00c2ff" }}
-          onClick={handleClick}
-          onKeyDown={handleClick}
-        >
+        Source:{' '}
+        <a style={{ cursor: 'pointer', color: '#00c2ff' }} onClick={handleClick} onKeyDown={handleClick}>
           GitHub
         </a>
       </div>

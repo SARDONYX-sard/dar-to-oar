@@ -1,25 +1,26 @@
-import "@/app/globals.css";
-import "@/utils/translation";
-import Loading from "@/components/pages/loading";
-import React from "react";
-import dynamic from "next/dynamic";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import dynamic from 'next/dynamic';
+import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ["latin"] });
+import Loading from '@/components/pages/loading';
+import '@/utils/translation';
 
-const Menu = dynamic(() => import("@/components/navigation"), {
+import type { Metadata } from 'next';
+import '@/app/globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
+
+const Menu = dynamic(() => import('@/components/navigation'), {
   loading: () => <Loading />,
   ssr: false,
 });
-const ThemeProvider = dynamic(() => import("@/components/providers/theme"), {
+const ThemeProvider = dynamic(() => import('@/components/providers/theme'), {
   loading: () => <Loading />,
   ssr: false,
 });
 
 export const metadata: Metadata = {
-  title: "DAR to OAR converter",
-  description: "Convert from DAR to OAR.",
+  title: 'DAR to OAR converter',
+  description: 'Convert from DAR to OAR.',
 };
 
 type Props = Readonly<{
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: Props) {
         <ThemeProvider>
           {children}
           {/* To prevents the conversion button from being hidden because the menu is fixed. */}
-          <div style={{ height: "56px" }}></div>
+          <div style={{ height: '56px' }}></div>
           <Menu />
         </ThemeProvider>
       </body>

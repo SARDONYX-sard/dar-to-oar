@@ -1,10 +1,9 @@
-import { invoke } from "@tauri-apps/api";
-import { open } from "@tauri-apps/api/dialog";
-import { appLogDir } from "@tauri-apps/api/path";
-import { open as openShell } from "@tauri-apps/api/shell";
-import { selectLogLevel } from "@/components/lists/select_log_level";
+import { invoke } from '@tauri-apps/api';
+import { open } from '@tauri-apps/api/dialog';
+import { appLogDir } from '@tauri-apps/api/path';
+import { open as openShell } from '@tauri-apps/api/shell';
 
-export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
+import { selectLogLevel } from '@/utils/selector';
 
 type ConverterArgs = {
   src: string;
@@ -25,31 +24,31 @@ type ConverterArgs = {
 export async function convertDar2oar(props: ConverterArgs): Promise<string> {
   const args = {
     options: {
-      darDir: props.src === "" ? undefined : props.src,
-      oarDir: props.dist === "" ? undefined : props.dist,
-      modName: props.modName === "" ? undefined : props.modName,
-      modAuthor: props.modAuthor === "" ? undefined : props.modAuthor,
-      mappingPath: props.mappingPath === "" ? undefined : props.mappingPath,
-      mapping1personPath:
-        props.mapping1personPath === "" ? undefined : props.mapping1personPath,
+      darDir: props.src === '' ? undefined : props.src,
+      oarDir: props.dist === '' ? undefined : props.dist,
+      modName: props.modName === '' ? undefined : props.modName,
+      modAuthor: props.modAuthor === '' ? undefined : props.modAuthor,
+      mappingPath: props.mappingPath === '' ? undefined : props.mappingPath,
+      mapping1personPath: props.mapping1personPath === '' ? undefined : props.mapping1personPath,
       runParallel: props.runParallel ?? false,
       hideDar: props.hideDar ?? false,
     },
   };
 
-  let logLevel = selectLogLevel(localStorage.getItem("logLevel") ?? "");
+  let logLevel = selectLogLevel(localStorage.getItem('logLevel') ?? '');
   changeLogLevel(logLevel);
 
   const showProgress = props.showProgress ?? false;
   if (showProgress) {
-    return invoke<string>("convert_dar2oar_with_progress", args);
+    return invoke<string>('convert_dar2oar_with_progress', args);
   } else {
-    return invoke<string>("convert_dar2oar", args);
+    return invoke<string>('convert_dar2oar', args);
   }
 }
 
+export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
 export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
-  return invoke("change_log_level", { logLevel });
+  return invoke('change_log_level', { logLevel });
 }
 
 /**
@@ -57,14 +56,11 @@ export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
  *
  * # Throw Error
  */
-export async function restoreDarDir(
-  darDir: string,
-  errMsg = "DAR dir must be specified."
-) {
-  if (darDir === "") {
+export async function restoreDarDir(darDir: string, errMsg = 'DAR dir must be specified.') {
+  if (darDir === '') {
     throw new Error(errMsg);
   }
-  return invoke<string>("restore_dar_dir", { darDir });
+  return invoke<string>('restore_dar_dir', { darDir });
 }
 
 /**
@@ -72,14 +68,11 @@ export async function restoreDarDir(
  *
  * # Throw Error
  */
-export async function removeOarDir(
-  path: string,
-  errMsg = "DAR or OAR dir must be specified."
-) {
-  if (path === "") {
+export async function removeOarDir(path: string, errMsg = 'DAR or OAR dir must be specified.') {
+  if (path === '') {
     throw new Error(errMsg);
   }
-  await invoke("remove_oar_dir", { path });
+  await invoke('remove_oar_dir', { path });
 }
 
 /**
@@ -87,17 +80,13 @@ export async function removeOarDir(
  *
  * # Throw Error
  */
-export async function openPath(
-  path: string,
-  setPath: (path: string) => void,
-  isDir: boolean
-) {
+export async function openPath(path: string, setPath: (path: string) => void, isDir: boolean) {
   const res = await open({
     defaultPath: path,
     directory: isDir,
   });
 
-  if (typeof res === "string") {
+  if (typeof res === 'string') {
     //! NOTE:
     //! It is important to use setter here!
     //! If we don't get the result within this function, somehow the previous value comes in.

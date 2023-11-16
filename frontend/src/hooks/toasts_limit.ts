@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import toast, { useToasterStore } from "react-hot-toast";
+import { useEffect } from 'react';
+import { toast, useToasterStore } from 'react-hot-toast';
 
 /**
  * Avoid endless toast notices.
