@@ -90,7 +90,7 @@ jobs:
         run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/g_dar2oar ./target/release/dar2oar
       - name: Compress outputs(Unix)
         shell: bash
-        if: runner.os == 'linux'
+        if: runner.os == 'Linux'
         # NOTE: Linux was excluded because the location of the GUI could not be identified.
         run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/dar2oar
 
