@@ -46,7 +46,7 @@ tokio = { version = "1.33.0", features = [
   "io-util",
   "macros",
   "rt",
-  "rt-multi-thread", ,#[tokio::main] default setting is to parallelize the number of CPU cores.
+  "rt-multi-thread", #[tokio::main] default setting is to parallelize the number of CPU cores.
 ] } # Async Executor
 once_cell = "1.18.0"
 pretty_assertions = "1.4.0"
