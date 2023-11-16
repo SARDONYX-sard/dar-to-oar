@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Build Test(CLI)
-        run: cargo build
+        run: cargo build --release
 
       - name: Setup cache
         uses: actions/cache@v3
@@ -79,7 +79,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $compress = @{
-          LiteralPath= "./target/debug/g_dar2oar.exe", "/target/debug/dar2oar.exe"
+          LiteralPath= "./target/release/g_dar2oar.exe", "/target/release/dar2oar.exe"
           CompressionLevel = "Fastest"
           DestinationPath = "./gui/g_dar2oar-${{ runner.os}}.zip"
           }
@@ -87,7 +87,7 @@ jobs:
       - name: Compress outputs(Unix)
         shell: bash
         if: runner.os != 'windows'
-        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/debug/g_dar2oar ${{ github.workspace}}/target/debug/dar2oar
+        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/release/g_dar2oar ${{ github.workspace}}/target/release/dar2oar
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.3
