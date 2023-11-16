@@ -76,7 +76,7 @@ jobs:
         run: mkdir -p ./gui
       - name: Compress outputs(Windows)
         shell: pwsh
-        if: ${{ matrix.platform }} == 'windows-latest'
+        if: runner.os == 'Windows'
         run: |
           $compress = @{
           LiteralPath= "./target/debug/g_dar2oar.exe", "/target/debug/dar2oar.exe"
@@ -86,7 +86,7 @@ jobs:
           Compress-Archive @compress
       - name: Compress outputs(Unix)
         shell: bash
-        if: ${{ matrix.platform }} != 'windows-latest'
+        if: runner.os != 'windows'
         run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/debug/g_dar2oar ${{ github.workspace}}/target/debug/dar2oar
 
       - name: Upload a Build Artifact
