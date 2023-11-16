@@ -162,3 +162,18 @@ async fn main() -> Result<()> {
     Ok(())
 }
 ```
+
+## How to run bench
+
+Requirements
+
+- test mod: "../test/data/UNDERDOG Animations"
+- mapping_table: "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt"
+
+```shell
+cargo bench
+# dar2oar sequential vs parallel/dar2oar multi thread
+#                         time:   [1.5880 s 1.6398 s 1.6992 s]
+# dar2oar sequential vs parallel/dar2oar single thread
+#                         time:   [1.9711 s 2.0215 s 2.0908 s]
+```
