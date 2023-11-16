@@ -10,11 +10,10 @@ import { toast } from 'react-hot-toast';
 
 import { ConvertButton, UnhideDarBtn, SelectPathButton, RemoveOarBtn, LogFileButton } from '@/components/buttons';
 import { SelectLogLevel } from '@/components/lists';
+import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { LogLevel, convertDar2oar } from '@/tauri_cmd';
 import { selectLogLevel } from '@/utils/selector';
-
-import LinearWithValueLabel from './progress_bar';
 
 type FormProps = {
   src: string;
