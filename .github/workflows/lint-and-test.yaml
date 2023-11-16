@@ -50,6 +50,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
+      - name: Build Test(CLI)
+        run: cargo build
 
       - name: Setup cache
         uses: actions/cache@v3
@@ -70,14 +72,14 @@ jobs:
       - name: Build Test(GUI)
         run: npm run build
 
-      - name: Compress output(Windows)
+      - name: Compress outputs(Windows)
         shell: pwsh
         if: ${{ runner.os }} == 'Windows'
-        run: Compress-Archive ${{ github.workspace}}/target/debug/g_dar2oar.exe ./gui/g_dar2oar-${{ runner.os}}.zip
-      - name: Compress output(Unix)
+        run: Compress-Archive ${{ github.workspace}}/target/debug/g_dar2oar.exe ${{ github.workspace}}/target/debug/dar2oar.exe ./gui/g_dar2oar-${{ runner.os}}.zip
+      - name: Compress outputs(Unix)
         shell: bash
         if: ${{ runner.os }} != 'Windows'
-        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/debug/g_dar2oar
+        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/debug/g_dar2oar ${{ github.workspace}}/target/debug/dar2oar
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.3
