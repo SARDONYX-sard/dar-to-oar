@@ -53,7 +53,7 @@ jobs:
       - name: Build Test(CLI)
         run: cargo build --release
 
-      - name: Setup cache
+      - name: Node.js cache
         uses: actions/cache@v3
         with:
           path: |
@@ -79,19 +79,24 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $compress = @{
-          LiteralPath= "./target/release/g_dar2oar.exe", "/target/release/dar2oar.exe"
+          LiteralPath= "./target/release/g_dar2oar.exe", "./target/release/dar2oar.exe"
           CompressionLevel = "Fastest"
           DestinationPath = "./gui/g_dar2oar-${{ runner.os}}.zip"
           }
           Compress-Archive @compress
+      - name: Compress outputs(MacOS)
+        shell: bash
+        if: runner.os == 'macOS'
+        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/g_dar2oar ./target/release/dar2oar
       - name: Compress outputs(Unix)
         shell: bash
-        if: runner.os != 'windows'
-        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ${{ github.workspace}}/target/release/g_dar2oar ${{ github.workspace}}/target/release/dar2oar
+        if: runner.os == 'linux'
+        # NOTE: Linux was excluded because the location of the GUI could not be identified.
+        run: tar -czvf ./gui/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/dar2oar
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.3
         with:
-          name: DAR to OAR Converter(GUI)-${{runner.os}}
+          name: DAR to OAR Converter-${{runner.os}}
           path: |
-            ${{ github.workspace}}/gui/
+            ./gui/
