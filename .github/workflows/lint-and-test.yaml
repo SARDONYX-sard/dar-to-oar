@@ -58,7 +58,7 @@ jobs:
         with:
           path: |
             ~/.npm
-            ${{ github.workspace }}/.next/cache
+            ${{ github.workspace }}/frontend/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
@@ -88,7 +88,7 @@ jobs:
         shell: bash
         if: runner.os == 'macOS'
         run: tar -czvf ./build/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/g_dar2oar ./target/release/dar2oar
-      - name: Compress outputs(Unix)
+      - name: Compress outputs(Linux)
         shell: bash
         if: runner.os == 'Linux'
         # NOTE: Linux was excluded because the location of the GUI could not be identified.
