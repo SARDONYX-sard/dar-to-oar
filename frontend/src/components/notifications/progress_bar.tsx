@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
   return (
@@ -20,7 +19,7 @@ type Props = {
   progress: number;
 };
 
-export default function LinearWithValueLabel({ progress }: Readonly<Props>) {
+export function LinearWithValueLabel({ progress }: Readonly<Props>) {
   return (
     <Box sx={{ width: '100%' }}>
       <LinearProgressWithLabel value={progress} />

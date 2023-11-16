@@ -3,9 +3,9 @@
 import { Box } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import AceEditor from 'react-ace';
-import { Toaster } from 'react-hot-toast';
 
 import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
+import { Toaster } from '@/components/notifications';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
 
