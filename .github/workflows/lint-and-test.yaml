@@ -72,6 +72,8 @@ jobs:
       - name: Build Test(GUI)
         run: npm run build
 
+      - name: Make outputs dir
+        run: mkdir -p ./gui
       - name: Compress outputs(Windows)
         shell: pwsh
         if: ${{ runner.os }} == 'Windows'
