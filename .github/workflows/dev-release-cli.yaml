@@ -39,7 +39,7 @@ permissions:
 on:
   push:
     branches:
-      - "development"
+      - 'development'
   workflow_dispatch:
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
     outputs:
       val: ${{ steps.plan.outputs.manifest }}
       tag: development
-      tag-flag: ${{ !github.event.pull_request && format('--tag={0}', github.ref_name) || '' }}
+      tag-flag: ${{ format('--tag={0}', github.ref_name) || '' }}
       publishing: true
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,11 +61,11 @@ jobs:
         run: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.3.1/cargo-dist-installer.sh | sh"
       - id: plan
         run: |
-          cargo dist plan ${{ !github.event.pull_request && format('--tag={0}', github.ref_name) || '' }} --output-format=json > dist-manifest.json
+          cargo dist plan ${{ format('--tag={0}', github.ref_name) || '' }} --output-format=json > dist-manifest.json
           echo "cargo dist plan ran successfully"
           cat dist-manifest.json
           echo "manifest=$(jq -c "." dist-manifest.json)" >> "$GITHUB_OUTPUT"
-      - name: "Upload dist-manifest.json"
+      - name: 'Upload dist-manifest.json'
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
@@ -120,7 +120,7 @@ jobs:
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
           jq --raw-output ".artifacts[]?.path | select( . != null )" dist-manifest.json >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
-      - name: "Upload artifacts"
+      - name: 'Upload artifacts'
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
@@ -129,7 +129,7 @@ jobs:
   # Build and package all the platform-agnostic(ish) things
   upload-global-artifacts:
     needs: [plan, upload-local-artifacts]
-    runs-on: "ubuntu-20.04"
+    runs-on: 'ubuntu-20.04'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -154,7 +154,7 @@ jobs:
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
           jq --raw-output ".artifacts[]?.path | select( . != null )" dist-manifest.json >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
-      - name: "Upload artifacts"
+      - name: 'Upload artifacts'
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
@@ -194,7 +194,7 @@ jobs:
         with:
           token: ${{ github.token }}
           tag: development
-      - name: "Download artifacts"
+      - name: 'Download artifacts'
         uses: actions/download-artifact@v3
         with:
           name: artifacts
@@ -207,6 +207,6 @@ jobs:
           body: |
             ${{ steps.changelog.outputs.changes }}
             ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
-          artifacts: "artifacts/*"
+          artifacts: 'artifacts/*'
           prerelease: true
           allowUpdates: true
