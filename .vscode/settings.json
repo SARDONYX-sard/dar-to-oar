@@ -1,5 +1,7 @@
 {
   "editor.codeActionsOnSave": {
+    "source.addMissingImports": true,
+    "source.fixAll.eslint": true,
     "source.fixAll.sortJSON": false
     // "source.organizeImports": true
   },
@@ -7,7 +9,8 @@
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
   "files.exclude": {
-    "**/node_modules": true // optional
+    "**/node_modules": true, // optional
+    ".swc": true
   },
   "files.trimTrailingWhitespace": true,
   "files.watcherExclude": {
