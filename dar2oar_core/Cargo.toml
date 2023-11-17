@@ -4,7 +4,7 @@ version.workspace = true
 description = "DAR to OAR Converter Core"
 authors = ["SARDONYX-sard"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/SARDONYX-sard/dar2oar"
+repository.workspace = true
 edition = "2021"
 rust-version = "1.60"
 
