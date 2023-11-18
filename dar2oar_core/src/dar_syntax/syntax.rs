@@ -40,11 +40,11 @@
 
 use nom::{
     branch::alt,
-    bytes::complete::{escaped, tag, take_until, take_while1},
+    bytes::complete::{escaped, tag, take_while, take_while1},
     character::complete::{char, digit1, hex_digit1, multispace0, one_of, space0},
     combinator::{map, opt},
     error::context,
-    multi::separated_list1,
+    multi::{many0, separated_list1},
     sequence::{delimited, preceded, separated_pair},
 };
 use std::fmt;
@@ -297,8 +297,13 @@ fn parse_expression(input: &str) -> IResult<&str, Expression> {
 }
 
 /// Comments starting with ';'
+/// - The '\r' is included in the comment, but as long as the comment is ignored, it's not a problem.
 fn comment(input: &str) -> IResult<&str, &str> {
-    preceded(char(';'), alt((take_until("\n"), take_until("\r\n"))))(input)
+    let (input, _) = multispace0(input)?;
+    // NOTE: I use this because it is impossible to pick up trailing comments without using `take_while`
+    let (input, comment) = preceded(char(';'), take_while(|c| c != '\n'))(input)?;
+    let (input, _) = multispace0(input)?;
+    Ok((input, comment))
 }
 
 pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
@@ -322,7 +327,7 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
         let (input, expr) = parse_expression(input)?;
         let (input, _) = space0(input)?;
         let (input, operator) = opt(parse_operator)(input)?;
-        let (input, _) = multispace0(input)?;
+        let (input, _) = many0(comment)(input)?;
 
         if let Some(operator) = operator {
             match operator {
@@ -449,6 +454,9 @@ NOT IsActorValueLessThan(30, 60)
 
             ; This is a line comment.
             IsEquippedRightType(4)
+
+            ; This is end of line comment.
+
 "#;
 
         let actor = Expression {

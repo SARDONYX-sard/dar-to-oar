@@ -29,17 +29,12 @@ pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
         }
     };
 
-    if !remain.is_empty() {
-        tracing::warn!(
-            r#"The analysis of the DAR is incomplete.
-If row starts with ";" => Ignore this warning because it is a comment.
-                Other => Probably a syntax error.
-Remain: {}"#,
-            remain
-        );
+    match remain.is_empty() {
+        true => {
+            let oar = parse_conditions(dar_syn)?;
+            tracing::debug!("Parsed DAR => Serialized OAR:\n{:?}", &oar);
+            Ok(oar.try_into()?)
+        }
+        false => Err(ConvertError::InvalidDarSyntax(remain.into())),
     }
-
-    let oar = parse_conditions(dar_syn)?;
-    tracing::debug!("Parsed DAR => Serialized OAR:\n{:?}", &oar);
-    Ok(oar.try_into()?)
 }
