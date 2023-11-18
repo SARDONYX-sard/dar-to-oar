@@ -328,6 +328,7 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
         let (input, _) = space0(input)?;
         let (input, operator) = opt(parse_operator)(input)?;
         let (input, _) = many0(comment)(input)?;
+        let (input, _) = multispace0(input)?;
 
         if let Some(operator) = operator {
             match operator {
