@@ -16,6 +16,8 @@ pub enum ConvertError {
     InvalidUtf8,
     #[error("Incomplete conversion")]
     IncompleteConversion,
+    #[error("Incomplete parse DAR. Remain:\n{0}")]
+    IncompleteParseDar(String),
     #[error("DAR syntax error.:\n{0}")]
     InvalidDarSyntax(String),
     #[error(transparent)]

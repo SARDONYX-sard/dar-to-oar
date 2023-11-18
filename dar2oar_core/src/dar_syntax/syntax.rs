@@ -315,6 +315,7 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
         }
         // Skip line comment.
         if let Ok((input, _)) = comment(input) {
+            let (input, _) = multispace0(input)?;
             input_tmp = input;
             continue;
         };
@@ -356,13 +357,11 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
             match is_in_or_stmt {
                 true => {
                     or_vec.push(Condition::Exp(expr));
-                    top_conditions.push(Condition::Or(or_vec));
+                    top_conditions.push(Condition::Or(or_vec.clone()));
                 }
                 false => top_conditions.push(Condition::Exp(expr)),
             }
-            input_tmp = input;
-            break;
-        }
+        };
         input_tmp = input;
     }
 
@@ -449,6 +448,9 @@ NOT IsActorValueLessThan(30, 60)
 
             ; This is a line comment.
             IsEquippedRightType(4)
+
+            ; This is a end line comment.
+
 "#;
 
         let actor = Expression {

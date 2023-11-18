@@ -35,6 +35,6 @@ pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
             tracing::debug!("Parsed DAR => Serialized OAR:\n{:?}", &oar);
             Ok(oar.try_into()?)
         }
-        false => Err(ConvertError::InvalidDarSyntax(remain.into())),
+        false => Err(ConvertError::IncompleteParseDar(remain.into())),
     }
 }
