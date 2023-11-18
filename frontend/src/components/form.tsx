@@ -109,13 +109,13 @@ export function ConvertForm() {
       toast.success(completeInfo);
       setValue('progress', 100);
     } catch (err) {
+      setValue('progress', 0); // To avoid NaN
       toast.error(`${err}`);
     } finally {
       if (unlisten) {
         unlisten();
       }
       setLoading(false);
-      setValue('progress', 0); // To avoid NaN
     }
   };
 
