@@ -115,6 +115,7 @@ export function ConvertForm() {
         unlisten();
       }
       setLoading(false);
+      setValue('progress', 0); // To avoid NaN
     }
   };
 
