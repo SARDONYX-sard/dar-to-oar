@@ -1,6 +1,23 @@
 use crate::convert_option::{AsyncFrom, GuiConverterOptions};
 use dar2oar_core::{convert_dar_to_oar, remove_oar, unhide_dar, Closure, ConvertOptions};
+use std::time::Instant;
 use tauri::Window;
+
+macro_rules! dar2oar {
+    ($options:ident, $closure:expr) => {{
+        let start = Instant::now();
+        tracing::debug!("options: {:?}", &$options);
+        let config = ConvertOptions::async_from($options).await;
+        let res = response!(convert_dar_to_oar(config, $closure).await);
+        let elapsed = start.elapsed();
+        tracing::info!(
+            "Conversion time: {}.{}secs.",
+            elapsed.as_secs(),
+            elapsed.subsec_millis()
+        );
+        res
+    }};
+}
 
 /// logger hook or bail!
 macro_rules! response {
@@ -25,9 +42,7 @@ macro_rules! bail {
 
 #[tauri::command]
 pub(crate) async fn convert_dar2oar(options: GuiConverterOptions<'_>) -> Result<String, String> {
-    tracing::debug!("options: {:?}", &options);
-    let config = ConvertOptions::async_from(options).await;
-    response!(convert_dar_to_oar(config, Closure::default).await)
+    dar2oar!(options, Closure::default)
 }
 
 #[tauri::command]
@@ -35,8 +50,6 @@ pub(crate) async fn convert_dar2oar_with_progress(
     window: Window,
     options: GuiConverterOptions<'_>,
 ) -> Result<String, String> {
-    tracing::debug!("options: {:?}", &options);
-
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
     struct Payload {
         index: usize,
@@ -46,9 +59,8 @@ pub(crate) async fn convert_dar2oar_with_progress(
             tracing::error!("{}", err);
         };
     };
-    let config = ConvertOptions::async_from(options).await;
 
-    response!(convert_dar_to_oar(config, sender).await)
+    dar2oar!(options, sender)
 }
 
 #[tauri::command]
