@@ -43,7 +43,7 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Lint Check
         run: cargo clippy --workspace -- -D warnings
-      - name: Core Test
+      - name: Test(Rust)
         run: cargo test --workspace
 
       - name: Sync node version
@@ -67,7 +67,7 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Test(GUI)
+      - name: Test(Node.js)
         run: npm test
       - name: Build Test(GUI)
         run: npm run build
