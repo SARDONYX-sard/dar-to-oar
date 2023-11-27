@@ -172,34 +172,27 @@ mod test {
     #[ignore]
     #[tokio::test]
     async fn convert_with_mpsc() -> Result<()> {
-        use once_cell::sync::Lazy;
-        use std::sync::atomic::AtomicUsize;
-        use std::sync::atomic::Ordering;
-
         logger_init!();
         let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
-        //? NOTE: Since recv does not seem to be possible until io is finished, send is used to see the output.
         let sender = move |idx: usize| {
             let tx = tx.clone();
             tokio::spawn(async move {
-                tx.send(idx).await.unwrap_or_default();
+                tx.send(idx).await.unwrap();
             });
         };
 
         let handle = tokio::spawn(convert_dar_to_oar(create_options().await?, sender));
+
+        let mut walk_len = 0usize;
         while let Some(idx) = rx.recv().await {
-            static NUM: Lazy<AtomicUsize> = Lazy::new(AtomicUsize::default);
-            let num = NUM.load(Ordering::Acquire);
-            if num != 0 {
-                println!("[recv] Converted: {}/{}", idx, num);
-            } else {
-                NUM.store(idx, Ordering::Release);
-                println!("[recv] Converted: {}", idx);
+            match walk_len == 0 {
+                true => walk_len = idx, // NOTE: 1st received index is length.
+                false => println!("[recv] Converted: {}/{}", idx + 1, walk_len),
             }
         }
 
-        let _ = handle.await.unwrap();
+        let _guard = handle.await.unwrap();
         Ok(())
     }
 }
