@@ -6,19 +6,26 @@ pub struct PluginValue {
     #[serde(rename = "pluginName")]
     #[serde(default)]
     pub plugin_name: String,
-    /// hexadecimal representation except prefix(0x)
-    /// - NOTE:
-    /// OAR seems to only allow input of hexadecimal numbers, but also supports decimal numbers for DAR.
-    /// But convert to hexadecimal when holding
+    /// - OAR: Non prefix(0x) hexadecimal
+    /// - DAR: Decimal or Hex
     ///
-    /// TODO: Support \u0000 pattern
-    /// "formID": "0\u0000\u0000\u0000\u0000\u0000"
-    /// "formID": "0A\u0000\u0000\u0000\u0000"
+    /// Therefore, convert to hexadecimal all DAR number for ID.
+    ///
+    /// # NOTE:
+    /// The actual OAR GUI input hex would look like this.
+    /// ```json
+    /// { "formID": "0\u0000\u0000\u0000\u0000\u0000" }, // If input 0
+    /// { "formID": "0A\u0000\u0000\u0000\u0000" } // If input a
+    /// ```
+    /// However, this converter does not take it into account. The reasons are as follows.
+    /// - Some DAR mods allow values larger than the allowed 6 digits to be entered.
+    /// - OAR can read hexes that are not filled with zeros.
     #[serde(rename = "formID")]
     #[serde(default)]
     pub form_id: FormID,
 }
 
+/// Non prefix(0x) hexadecimal ID
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct FormID(String);
 
@@ -76,7 +83,7 @@ mod tests {
             form_id: NumericLiteral::Decimal(12345).into(),
         };
 
-        // NOTE: formID: 3039 is hex(12345)
+        // NOTE: 0x3039 == 12345
         let expected = r#"{
   "pluginName": "MyPlugin",
   "formID": "3039"
@@ -89,13 +96,13 @@ mod tests {
     fn should_deserialize_plugin_value() {
         let json_str = r#"{
   "pluginName": "AnotherPlugin",
-  "formID": "0xfff"
+  "formID": "fff"
 }"#;
 
         let deserialized: PluginValue = serde_json::from_str(json_str).unwrap();
         let expected = PluginValue {
             plugin_name: "AnotherPlugin".into(),
-            form_id: "0xfff".into(),
+            form_id: "fff".into(),
         };
 
         assert_eq!(deserialized, expected);
