@@ -2,6 +2,7 @@ use clap::{arg, Parser};
 use dar2oar_core::{convert_dar_to_oar, get_mapping_table, Closure, ConvertOptions};
 use std::fs::File;
 use std::str::FromStr;
+use tokio::time::Instant;
 use tracing::Level;
 
 /// dar2oar --src "DAR path" --dist "OAR path"
@@ -9,10 +10,10 @@ use tracing::Level;
 #[command(version, about)]
 pub struct Args {
     /// DAR source dir path
-    #[clap(long, value_parser)]
+    #[arg(long)]
     src: String,
     /// OAR destination dir path(If not, it is inferred from src)
-    #[clap(long, value_parser)]
+    #[arg(long)]
     dist: Option<String>,
     /// mod name in config.json & directory name(If not, it is inferred from src)
     #[arg(long)]
@@ -42,6 +43,7 @@ pub struct Args {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let start = Instant::now();
     let args = Args::parse();
     tracing_subscriber::fmt()
         .with_ansi(false)
@@ -63,6 +65,12 @@ async fn main() -> anyhow::Result<()> {
     match convert_dar_to_oar(config, Closure::default).await {
         Ok(msg) => {
             tracing::info!("{}", msg);
+            let elapsed = start.elapsed();
+            tracing::info!(
+                "Conversion time: {}.{}secs.",
+                elapsed.as_secs(),
+                elapsed.subsec_millis()
+            );
             Ok(())
         }
         Err(err) => {
