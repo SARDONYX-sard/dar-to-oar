@@ -255,17 +255,22 @@ fn parse_ident(input: &str) -> IResult<&str, &str> {
 }
 
 fn parse_fn_call(input: &str) -> IResult<&str, (&str, Vec<FnArg<'_>>)> {
+    fn with_args(input: &str) -> IResult<&str, Option<Vec<FnArg<'_>>>> {
+        let (input, _) = tag("(")(input)?;
+        let (input, args) =
+            opt(separated_list1(tag(","), preceded(space0, parse_argument)))(input)?;
+        let (input, _) = multispace0(input)?;
+        let (input, _) = tag(")")(input)?;
+        Ok((input, args))
+    }
+
     let (input, fn_name) = parse_ident(input)?;
     let (input, _) = multispace0(input)?;
-    let (input, _) = tag("(")(input)?;
-    let (input, args) = opt(separated_list1(tag(","), preceded(space0, parse_argument)))(input)?;
-    let (input, _) = multispace0(input)?;
-    let (input, _) = tag(")")(input)?;
-    let args = match args {
-        Some(args) => args,
-        None => Vec::new(),
-    };
+    let (input, args) = opt(with_args)(input)?;
 
+    let args = args
+        .map(|args| args.unwrap_or_default())
+        .unwrap_or(Vec::new());
     Ok((input, (fn_name, args)))
 }
 
@@ -447,7 +452,8 @@ NOT IsActorValueLessThan(30, 60)
     fn test_parse_conditions_with_comments() {
         let input = r#"
             IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
-            IsPlayerTeammate() AND
+            ; Parse test only indent function call.
+            IsPlayerTeammate AND
             ; This is a line comment.
             ; This is a line comment.
 

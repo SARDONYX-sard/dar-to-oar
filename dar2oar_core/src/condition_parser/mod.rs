@@ -16,7 +16,7 @@ use crate::error::{ConvertError, Result};
 pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
     let (remain, dar_syn) = match parse_condition(input) {
         Ok(syn) => {
-            tracing::debug!("Input => Parsed DAR:\n{:?}", syn);
+            tracing::debug!("Input => Parsed DAR:\n{:#?}", syn);
             syn
         }
         Err(err) => {
@@ -32,7 +32,7 @@ pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
     match remain.is_empty() {
         true => {
             let oar = parse_conditions(dar_syn)?;
-            tracing::debug!("Parsed DAR => Serialized OAR:\n{:?}", &oar);
+            tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar);
             Ok(oar.try_into()?)
         }
         false => Err(ConvertError::IncompleteParseDar(remain.into())),
