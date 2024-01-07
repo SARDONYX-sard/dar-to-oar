@@ -39,7 +39,7 @@ use std::collections::HashMap;
 /// #[tokio::main]
 /// async fn main() {
 ///     let options = ConvertOptions {
-///         dar_dir: "path/to/dar_directory",
+///         dar_dir: "path/to/dar_directory".into(),
 ///         // Specify other options as needed
 ///         ..Default::default()
 ///     };
@@ -60,7 +60,7 @@ use std::collections::HashMap;
 /// #[tokio::main]
 /// async fn main() {
 ///     let options = ConvertOptions {
-///         dar_dir: "path/to/dar_directory",
+///         dar_dir: "path/to/dar_directory".into(),
 ///         run_parallel: true,
 ///         // Specify other options as needed
 ///         ..Default::default()
