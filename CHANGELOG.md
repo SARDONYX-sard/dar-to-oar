@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-01-07
+### :sparkles: New Features
+- [`3f9fcb4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3f9fcb4a3970218ba81bc67f540bef0b2078f74f) - **core-converter**: change error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ad640b7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ad640b793852ecc3292dc6cc5dfce22d9e18994b) - **cli**: add elapsed time *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a48c613`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a48c6130806ab7d18ba48853081c90af1885ce60) - **core**: support ident only function call DAR syntax *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`646e9d8`](https://github.com/SARDONYX-sard/dar-to-oar/commit/646e9d8076d713769014eda7396d161e898ddcf1) - **front**: fix to show NaN *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`abf37d4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/abf37d45f383df668d04e96c896c4af4e6559f4d) - **core**: fix non parsed remain comments *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a6bfc90`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a6bfc90a49908e49c4ea86133010b80d141a8bc2) - **core**: ignore remain but set warn *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ae73f9a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ae73f9a73fd47795251c5e8ef231ee9f63d90a62) - **core**: support for the tail comment is complete *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`83a81fb`](https://github.com/SARDONYX-sard/dar-to-oar/commit/83a81fb3e6ac4527a09fe0769d86a9a9be35d2e0) - **core**: fix multi \n *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3cf6cf5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3cf6cf57435e7b4fb44984388f3a28f254ee6029) - **front**: fix progress *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3417ddb`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3417ddbff452ccfc1b5e3d7d663e3cb3744244e6) - **backend**: fix false multithread mode *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`3eef3ab`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3eef3ab6daeccd640cb2859e911a328623aeae5a) - **tauri**: into macros *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`47c5ab6`](https://github.com/SARDONYX-sard/dar-to-oar/commit/47c5ab67326973c0fde0b3cf5da80ceddbbd6754) - **core-test**: remove unnecessary atomic *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`3350239`](https://github.com/SARDONYX-sard/dar-to-oar/commit/335023922f731e06eb8534fc1426b49986a0bd08) - change test movement *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5ed18aa`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5ed18aacba5874adccd65b090ad56e968acf44b1) - **core**: Change to `FormID` for non prefix hex *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`ca5306d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ca5306dee9e6adec66e48044e3060ec243b88c95) - **release-ci**: rename to `Node.js cache` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8f3ea14`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8f3ea140f85b04ca67447f3cdba116bbe3a11701) - try debug style *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.2.3] - 2023-11-17
 ### :sparkles: New Features
 - [`8a3ffd4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8a3ffd47b6218f490f3e9435fe4fb32fcf4c108e) - **front-settings**: change to centering *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -192,3 +220,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.0...0.2.1
 [0.2.2]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.1...0.2.2
 [0.2.3]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.2...0.2.3
+[0.3.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.3...0.3.0
