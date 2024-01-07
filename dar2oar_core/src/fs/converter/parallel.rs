@@ -4,6 +4,8 @@ use crate::fs::converter::{ConvertOptions, ConvertedReport};
 use crate::fs::path_changer::parse_dar_path;
 use jwalk::WalkDirGeneric;
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 /// Multi thread converter
 ///
@@ -18,10 +20,10 @@ use std::path::Path;
 /// For library reasons, you get the number of DAR dirs and files, not the number of DAR files only
 /// (i.e., the count is different from the Sequential version)
 pub async fn convert_dar_to_oar(
-    options: ConvertOptions<'_, impl AsRef<Path>>,
+    options: ConvertOptions,
     mut progress_fn: impl FnMut(usize),
 ) -> Result<ConvertedReport> {
-    let dar_dir = options.dar_dir.as_ref();
+    let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_files(dar_dir).into_iter().count();
     tracing::debug!("Parallel Converter/DAR dir & file counts: {}", walk_len);
@@ -29,32 +31,56 @@ pub async fn convert_dar_to_oar(
 
     let entires = get_dar_files(dar_dir).into_iter();
     let hide_dar = options.hide_dar;
+    let options = Arc::new(options);
+
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
     let mut dar_namespace = None; // To need rename to hidden
-    let mut is_converted_once = false;
+    let is_converted_once = Arc::new(AtomicBool::new(false));
+    let mut task_handles: Vec<tokio::task::JoinHandle<Result<()>>> = Vec::new();
 
     for (idx, entry) in entires.enumerate() {
         let path = entry.map_err(|_| ConvertError::NotFoundEntry)?.path();
-        let path = path.as_path();
-        let parsed_path = match parse_dar_path(path, None) {
+        let parsed_path = Arc::new(match parse_dar_path(&path, None) {
             Ok(p) => p,
             Err(_) => continue,
-        };
-        tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
+        });
+        let path = Arc::new(path);
+
         if dar_1st_namespace.is_none() && parsed_path.is_1st_person {
             dar_1st_namespace = Some(parsed_path.dar_root.clone());
         } else if dar_namespace.is_none() {
             dar_namespace = Some(parsed_path.dar_root.clone());
         }
-        convert_inner(&options, path, parsed_path, &mut is_converted_once).await?;
-        progress_fn(idx);
-        tracing::debug!("[End {}th conversion]\n\n", idx);
+
+        task_handles.push(tokio::spawn({
+            let path = Arc::clone(&path);
+            let parsed_path = Arc::clone(&parsed_path);
+            let options = Arc::clone(&options);
+            let is_converted_once = Arc::clone(&is_converted_once);
+            async move {
+                tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
+                convert_inner(
+                    &options,
+                    &path,
+                    parsed_path.as_ref(),
+                    is_converted_once.as_ref(),
+                )
+                .await?;
+                tracing::debug!("[End {}th conversion]\n\n", idx);
+                Ok(())
+            }
+        }));
     }
 
-    if is_converted_once {
+    for (idx, task_handle) in task_handles.into_iter().enumerate() {
+        task_handle.await??;
+        progress_fn(idx);
+    }
+
+    if is_converted_once.load(Ordering::Acquire) {
         handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await
     } else {
-        Err(ConvertError::NotFoundDarDir)
+        Err(ConvertError::NeverConverted)
     }
 }
 

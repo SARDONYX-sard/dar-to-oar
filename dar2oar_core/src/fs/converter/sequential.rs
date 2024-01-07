@@ -4,6 +4,7 @@ use crate::fs::converter::{ConvertOptions, ConvertedReport};
 use crate::fs::path_changer::parse_dar_path;
 use async_walkdir::{Filtering, WalkDir};
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio_stream::StreamExt;
 
 /// Single thread converter
@@ -15,10 +16,10 @@ use tokio_stream::StreamExt;
 /// # Return
 /// Complete info
 pub async fn convert_dar_to_oar(
-    options: ConvertOptions<'_, impl AsRef<Path>>,
+    options: ConvertOptions,
     mut progress_fn: impl FnMut(usize),
 ) -> Result<ConvertedReport> {
-    let dar_dir = options.dar_dir.as_ref();
+    let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_file_count(dar_dir).await?;
     tracing::debug!("Sequential Converter/DAR file counts: {}", walk_len);
@@ -28,7 +29,7 @@ pub async fn convert_dar_to_oar(
     let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
     let mut dar_namespace = None; // To need rename to hidden
     let mut entries = get_dar_files(dar_dir).await;
-    let mut is_converted_once = false;
+    let is_converted_once = AtomicBool::new(false);
 
     let mut idx = 0usize;
     while let Some(entry) = entries.next().await {
@@ -48,17 +49,17 @@ pub async fn convert_dar_to_oar(
         } else if dar_namespace.is_none() {
             dar_namespace = Some(parsed_path.dar_root.clone());
         }
-        convert_inner(&options, path, parsed_path, &mut is_converted_once).await?;
+        convert_inner(&options, path, &parsed_path, &is_converted_once).await?;
 
         progress_fn(idx);
         tracing::debug!("[End {}th conversion]\n\n", idx);
         idx += 1;
     }
 
-    if is_converted_once {
+    if is_converted_once.load(Ordering::Acquire) {
         handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await
     } else {
-        Err(ConvertError::NotFoundDarDir)
+        Err(ConvertError::NeverConverted)
     }
 }
 

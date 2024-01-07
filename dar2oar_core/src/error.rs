@@ -10,6 +10,8 @@ pub enum ConvertError {
     NotFoundOarDir,
     #[error("Not found \"DynamicAnimationReplacer\" directory")]
     NotFoundDarDir,
+    #[error("Never converted.")]
+    NeverConverted,
     #[error("Not found file name")]
     NotFoundFileName,
     #[error("This is not valid utf8")]
@@ -32,6 +34,9 @@ pub enum ConvertError {
     /// Represents all other cases of `std::io::Error`.
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+    /// Thread join error.
+    #[error(transparent)]
+    JoinError(#[from] tokio::task::JoinError),
 }
 
 //? Implemented to facilitate testing with the `assert_eq!` macro.

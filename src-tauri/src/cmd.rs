@@ -41,14 +41,14 @@ macro_rules! bail {
 }
 
 #[tauri::command]
-pub(crate) async fn convert_dar2oar(options: GuiConverterOptions<'_>) -> Result<String, String> {
+pub(crate) async fn convert_dar2oar(options: GuiConverterOptions) -> Result<String, String> {
     dar2oar!(options, Closure::default)
 }
 
 #[tauri::command]
 pub(crate) async fn convert_dar2oar_with_progress(
     window: Window,
-    options: GuiConverterOptions<'_>,
+    options: GuiConverterOptions,
 ) -> Result<String, String> {
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
     struct Payload {

@@ -51,9 +51,9 @@
 //! }
 //!
 //! /// Asynchronous function to create conversion options.
-//! async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
+//! async fn create_options() -> Result<ConvertOptions> {
 //!     Ok(ConvertOptions {
-//!         dar_dir: DAR_DIR,
+//!         dar_dir: DAR_DIR.into(),
 //!         section_table: get_mapping_table(Some(TABLE_PATH)).await,
 //!         ..Default::default()
 //!     })
@@ -91,9 +91,9 @@
 //! }
 //!
 //! /// Asynchronous function to create conversion options.
-//! async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
+//! async fn create_options() -> Result<ConvertOptions> {
 //!     Ok(ConvertOptions {
-//!         dar_dir: DAR_DIR,
+//!         dar_dir: DAR_DIR.into(),
 //!         section_table: get_mapping_table(Some(TABLE_PATH)).await,
 //!         run_parallel: true,
 //!         ..Default::default()
@@ -102,10 +102,6 @@
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<()> {
-//!     use once_cell::sync::Lazy;
-//!     use std::sync::atomic::AtomicUsize;
-//!     use std::sync::atomic::Ordering;
-//!
 //!     logger_init!();
 //!     let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 //!
@@ -120,17 +116,13 @@
 //!     // Spawn conversion process with progress reporting.
 //!     tokio::spawn(convert_dar_to_oar(create_options().await?, sender));
 //!
+//!     let mut walk_len = 0usize;
 //!     // Receive progress updates and print messages.
 //!     while let Some(idx) = rx.recv().await {
-//!         static NUM: Lazy<AtomicUsize> = Lazy::new(AtomicUsize::default);
-//!         let num = NUM.load(Ordering::Acquire);
-//!
-//!         if num != 0 {
-//!             println!("[recv] Converted: {}/{}", idx, num);
-//!         } else {
-//!             NUM.store(idx, Ordering::Release);
-//!             println!("[recv] Converted: {}", idx);
-//!         }
+//!          match walk_len == 0 {
+//!             true => walk_len = idx, // NOTE: 1st received index is length.
+//!             false => println!("[recv] Converted: {}/{}", idx + 1, walk_len),
+//!          }
 //!     }
 //!
 //!     Ok(())
