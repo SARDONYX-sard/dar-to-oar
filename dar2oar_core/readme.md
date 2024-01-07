@@ -40,6 +40,7 @@ managing values, and dealing with file systems.
 
 ```toml
 [dev-dependencies]
+dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.3.0" }
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 tokio = { version = "1.33.0", features = [
   "fs",
@@ -52,46 +53,6 @@ once_cell = "1.18.0"
 pretty_assertions = "1.4.0"
 tracing-appender = "0.2"
 tracing-subscriber = "0.3.17"
-```
-
-### Async with non Progress report
-
-```rust
-use anyhow::Result;
-use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
-
-const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
-const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
-const LOG_PATH: &str = "../convert.log";
-
-/// Initialization macro for setting up logging.
-macro_rules! logger_init {
-    () => {
-        let (non_blocking, _guard) =
-            tracing_appender::non_blocking(std::fs::File::create(LOG_PATH).unwrap());
-        tracing_subscriber::fmt()
-            .with_writer(non_blocking)
-            .with_ansi(false)
-            .with_max_level(tracing::Level::DEBUG)
-            .init();
-    };
-}
-
-/// Asynchronous function to create conversion options.
-async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
-    Ok(ConvertOptions {
-        dar_dir: DAR_DIR,
-        section_table: get_mapping_table(Some(TABLE_PATH)).await,
-        ..Default::default()
-    })
-}
-
-#[tokio::main]
-async fn main() -> Result<()> {
-    logger_init!();
-    convert_dar_to_oar(create_options().await?, |_| {}).await?;
-    Ok(())
-}
 ```
 
 ### Parallel Async with Progress report
@@ -118,9 +79,9 @@ macro_rules! logger_init {
 }
 
 /// Asynchronous function to create conversion options.
-async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
+async fn create_options() -> Result<ConvertOptions> {
     Ok(ConvertOptions {
-        dar_dir: DAR_DIR,
+        dar_dir: DAR_DIR.into(),
         section_table: get_mapping_table(Some(TABLE_PATH)).await,
         run_parallel: true,
         ..Default::default()
@@ -129,10 +90,6 @@ async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    use once_cell::sync::Lazy;
-    use std::sync::atomic::AtomicUsize;
-    use std::sync::atomic::Ordering;
-
     logger_init!();
     let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
@@ -147,17 +104,13 @@ async fn main() -> Result<()> {
     // Spawn conversion process with progress reporting.
     tokio::spawn(convert_dar_to_oar(create_options().await?, sender));
 
+    let mut walk_len = 0usize;
     // Receive progress updates and print messages.
     while let Some(idx) = rx.recv().await {
-        static NUM: Lazy<AtomicUsize> = Lazy::new(AtomicUsize::default);
-        let num = NUM.load(Ordering::Acquire);
-
-        if num != 0 {
-            println!("[recv] Converted: {}/{}", idx, num);
-        } else {
-            NUM.store(idx, Ordering::Release);
-            println!("[recv] Converted: {}", idx);
-        }
+         match walk_len == 0 {
+            true => walk_len = idx, // NOTE: 1st received index is length.
+            false => println!("[recv] Converted: {}/{}", idx + 1, walk_len),
+         }
     }
 
     Ok(())
