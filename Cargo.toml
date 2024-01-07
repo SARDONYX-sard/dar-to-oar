@@ -1,5 +1,5 @@
 [workspace.package]
-version = "0.2.3"
+version = "0.3.0"
 description = "DAR to OAR Converter"
 repository = "https://github.com/SARDONYX-sard/dar-to-oar"
 
