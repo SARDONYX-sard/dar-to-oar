@@ -54,8 +54,8 @@ async fn main() -> anyhow::Result<()> {
     let config = ConvertOptions {
         dar_dir: args.src,
         oar_dir: args.dist,
-        mod_name: args.name.as_deref(),
-        author: args.author.as_deref(),
+        mod_name: args.name,
+        author: args.author,
         section_table: get_mapping_table(args.mapping_file).await,
         section_1person_table: get_mapping_table(args.mapping_1person_file).await,
         run_parallel: args.run_parallel,

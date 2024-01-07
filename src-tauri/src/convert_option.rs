@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct GuiConverterOptions<'a> {
-    pub(crate) dar_dir: &'a str,
-    pub(crate) oar_dir: Option<&'a str>,
-    pub(crate) mod_name: Option<&'a str>,
-    pub(crate) mod_author: Option<&'a str>,
-    pub(crate) mapping_path: Option<&'a str>,
-    pub(crate) mapping_1person_path: Option<&'a str>,
+pub(crate) struct GuiConverterOptions {
+    pub(crate) dar_dir: String,
+    pub(crate) oar_dir: Option<String>,
+    pub(crate) mod_name: Option<String>,
+    pub(crate) mod_author: Option<String>,
+    pub(crate) mapping_path: Option<String>,
+    pub(crate) mapping_1person_path: Option<String>,
     pub(crate) run_parallel: Option<bool>,
     pub(crate) hide_dar: Option<bool>,
 }
@@ -20,8 +20,8 @@ pub(crate) trait AsyncFrom<T> {
 }
 
 #[async_trait::async_trait]
-impl<'a> AsyncFrom<GuiConverterOptions<'a>> for ConvertOptions<'a, &'a str> {
-    async fn async_from(options: GuiConverterOptions<'a>) -> Self {
+impl AsyncFrom<GuiConverterOptions> for ConvertOptions {
+    async fn async_from(options: GuiConverterOptions) -> Self {
         let GuiConverterOptions {
             dar_dir,
             oar_dir,

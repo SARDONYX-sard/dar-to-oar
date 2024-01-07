@@ -6,7 +6,6 @@ pub mod support_cmd;
 
 use crate::error::Result;
 use std::collections::HashMap;
-use std::path::Path;
 
 /// # Convert DAR to OAR
 ///
@@ -75,7 +74,7 @@ use std::path::Path;
 /// }
 /// ```
 pub async fn convert_dar_to_oar(
-    options: ConvertOptions<'_, impl AsRef<Path>>,
+    options: ConvertOptions,
     progress_fn: impl FnMut(usize),
 ) -> Result<ConvertedReport> {
     match options.run_parallel {
@@ -90,15 +89,15 @@ impl Closure {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct ConvertOptions<'a, P: AsRef<Path>> {
+pub struct ConvertOptions {
     /// DAR source dir path
-    pub dar_dir: P,
+    pub dar_dir: String,
     /// OAR destination dir path(If not, it is inferred from src)
-    pub oar_dir: Option<P>,
+    pub oar_dir: Option<String>,
     /// mod name in config.json & directory name(If not, it is inferred from src)
-    pub mod_name: Option<&'a str>,
+    pub mod_name: Option<String>,
     /// mod author in config.json
-    pub author: Option<&'a str>,
+    pub author: Option<String>,
     /// path to section name table
     pub section_table: Option<HashMap<String, String>>,
     /// path to section name table(For _1st_person)
@@ -151,12 +150,12 @@ mod test {
         };
     }
 
-    async fn create_options<'a>() -> Result<ConvertOptions<'a, &'a str>> {
+    async fn create_options() -> Result<ConvertOptions> {
         Ok(ConvertOptions {
-            dar_dir: DAR_DIR,
+            dar_dir: DAR_DIR.into(),
             // cannot use include_str!
             section_table: Some(crate::read_mapping_table(TABLE_PATH).await?),
-            // run_parallel: true,
+            run_parallel: true,
             ..Default::default()
         })
     }

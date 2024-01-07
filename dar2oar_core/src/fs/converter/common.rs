@@ -5,16 +5,17 @@ use crate::fs::converter::{ConvertOptions, ConvertedReport};
 use crate::fs::path_changer::ParsedPath;
 use crate::fs::section_writer::{read_file, write_name_space_config, write_section_config};
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::fs;
 
 /// Common parts of multi-threaded and single-threaded loop processing.
 /// # Performance
 /// - Since dir is created when a file is discovered, performance is improved if path.is_dir() is not put in path.
 pub async fn convert_inner(
-    options: &ConvertOptions<'_, impl AsRef<Path>>,
+    options: &ConvertOptions,
     path: &Path,
-    parsed_path: ParsedPath,
-    is_converted_once: &mut bool,
+    parsed_path: &ParsedPath,
+    is_converted_once: &AtomicBool,
 ) -> Result<()> {
     let ConvertOptions {
         dar_dir: _,
@@ -29,20 +30,19 @@ pub async fn convert_inner(
 
     let is_1st_person = parsed_path.is_1st_person;
     let parsed_mod_name = mod_name
-        .map(|s| s.to_string())
+        .clone()
         .unwrap_or(parsed_path.mod_name.clone().unwrap_or("Unknown".into()));
     let oar_name_space_path = oar_dir
         .as_ref()
         .map(|path| match is_1st_person {
-            true => path
-                .as_ref()
+            true => Path::new(path)
                 .join("meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"),
-            false => path
-                .as_ref()
-                .join("meshes/actors/character/animations/OpenAnimationReplacer"),
+            false => {
+                Path::new(path).join("meshes/actors/character/animations/OpenAnimationReplacer")
+            }
         })
         .unwrap_or(parsed_path.oar_root.clone())
-        .join(mod_name.unwrap_or(&parsed_mod_name));
+        .join(&parsed_mod_name);
 
     if path.extension().is_some() {
         tracing::debug!("File: {:?}", path);
@@ -79,9 +79,12 @@ pub async fn convert_inner(
             };
             write_section_config(section_root, config_json).await?;
 
-            if !*is_converted_once {
-                write_name_space_config(&oar_name_space_path, &parsed_mod_name, *author).await?;
-                *is_converted_once = true;
+            if is_converted_once
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
+                .is_ok()
+            {
+                write_name_space_config(&oar_name_space_path, &parsed_mod_name, author.as_deref())
+                    .await?;
             }
         } else {
             // maybe motion files(.hkx), gender dir

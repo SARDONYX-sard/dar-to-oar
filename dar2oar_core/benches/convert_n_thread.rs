@@ -25,7 +25,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 
             parallel::convert_dar_to_oar(
                 black_box(ConvertOptions {
-                    dar_dir: TARGET,
+                    dar_dir: TARGET.into(),
                     section_table: Some(mapping),
                     ..Default::default()
                 }),
@@ -45,7 +45,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 
             sequential::convert_dar_to_oar(
                 black_box(ConvertOptions {
-                    dar_dir: TARGET,
+                    dar_dir: TARGET.into(),
                     section_table: Some(mapping),
                     ..Default::default()
                 }),
