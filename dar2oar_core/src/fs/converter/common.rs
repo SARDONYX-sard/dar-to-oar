@@ -79,6 +79,10 @@ pub async fn convert_inner(
             };
             write_section_config(section_root, config_json).await?;
 
+            // # Ordering validity:
+            // Use `AcqRel` to happened before relationship(form a memory read/write order between threads) of cas(compare_and_swap),
+            // so that other threads read after writing true to memory to prevent unnecessary file writing.
+            // - In case of cas failure, use "Relaxed" because the order is unimportant.
             if is_converted_once
                 .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
                 .is_ok()
