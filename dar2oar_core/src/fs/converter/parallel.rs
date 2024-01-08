@@ -77,10 +77,12 @@ pub async fn convert_dar_to_oar(
         progress_fn(idx);
     }
 
-    if is_converted_once.load(Ordering::Acquire) {
-        handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await
-    } else {
-        Err(ConvertError::NeverConverted)
+    // # Ordering validity:
+    // Since all processing threads are loaded after they have finished, ordering relationships are not a concern.
+    // Therefore, there is no problem in using `Relaxed`.
+    match is_converted_once.load(Ordering::Relaxed) {
+        true => handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await,
+        false => Err(ConvertError::NeverConverted),
     }
 }
 

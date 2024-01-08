@@ -56,10 +56,12 @@ pub async fn convert_dar_to_oar(
         idx += 1;
     }
 
-    if is_converted_once.load(Ordering::Acquire) {
-        handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await
-    } else {
-        Err(ConvertError::NeverConverted)
+    // # Ordering validity:
+    // The order is irrelevant because `tokio::spawn` is not used in the while loop.
+    // Therefore, there is no problem in using `Relaxed`.
+    match is_converted_once.load(Ordering::Relaxed) {
+        true => handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await,
+        false => Err(ConvertError::NeverConverted),
     }
 }
 
