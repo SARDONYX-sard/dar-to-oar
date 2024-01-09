@@ -1,9 +1,8 @@
 {
   "editor.codeActionsOnSave": {
-    "source.addMissingImports": true,
-    "source.fixAll.eslint": true,
-    "source.fixAll.sortJSON": false
-    // "source.organizeImports": true
+    "source.addMissingImports": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.sortJSON": "never"
   },
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
