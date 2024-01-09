@@ -1,7 +1,7 @@
 # dar2oar_core
 
 `dar2oar_core` is a Rust crate that provides functionality for converting
-Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR)
+DynamicAnimationReplacer (DAR) files to OpenAnimationReplacer (OAR)
 files. The crate includes modules for parsing conditions, handling DAR syntax,
 managing values, and dealing with file systems.
 

@@ -33,11 +33,12 @@ pub struct Args {
     /// Output path of log file
     #[arg(long, default_value = "./convert.log")]
     log_path: String,
-    /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
+    /// use multi thread(More than twice the processing speed can be expected, but the logs are difficult to read and may fail due to unexpected bugs.)
     #[arg(long)]
     run_parallel: bool,
     #[arg(long)]
     /// After converting to OAR, add mohidden to the DAR directory before conversion to treat it as a hidden directory. (for MO2 users)
+    /// NOTE: It appears to work on the MO2 Tree view, but it is doubtful that it works in the author's actual experience.
     hide_dar: bool,
 }
 
