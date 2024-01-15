@@ -4,7 +4,7 @@ pub enum ConvertError {
     NotFoundEntry,
     #[error("Failed to write section config target: {0}")]
     FailedWriteSectionConfig(String),
-    #[error("Neither 1st or 3rd person \"DynamicAnimationReplacer.mohidden\" found")]
+    #[error("Could not find files with \".mohidden\" extension")]
     NotFoundUnhideTarget,
     #[error("Not found \"OpenAnimationReplacer\" directory")]
     NotFoundOarDir,

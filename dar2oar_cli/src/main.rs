@@ -64,8 +64,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     match convert_dar_to_oar(config, Closure::default).await {
-        Ok(msg) => {
-            tracing::info!("{}", msg);
+        Ok(()) => {
             let elapsed = start.elapsed();
             tracing::info!(
                 "Conversion time: {}.{}secs.",
