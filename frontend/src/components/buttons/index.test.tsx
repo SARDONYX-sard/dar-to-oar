@@ -76,7 +76,7 @@ describe('RemoveOarBtn component', () => {
     fireEvent.click(screen.getByText('Remove OAR'));
 
     // Check if removeOarDir is called with the correct arguments
-    expect(removeOarDirMock).toHaveBeenCalledWith('/test-oar', expect.any(String));
+    expect(removeOarDirMock).toHaveBeenCalledWith('/test-oar');
   });
 
   it('should call removeOarDir on click with darPath if oarPath is empty', async () => {
@@ -92,7 +92,7 @@ describe('RemoveOarBtn component', () => {
     fireEvent.click(screen.getByText('Remove OAR'));
 
     // Check if removeOarDir is called with the correct arguments
-    expect(removeOarDirMock).toHaveBeenCalledWith('/test-dar', expect.any(String));
+    expect(removeOarDirMock).toHaveBeenCalledWith('/test-dar');
   });
 
   it('should show error toast on failure', async () => {
