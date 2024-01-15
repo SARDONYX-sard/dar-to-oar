@@ -1,6 +1,7 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::error::{ConvertError, Result};
+use crate::fs::converter::parallel::is_contain_oar;
 use crate::fs::converter::ConvertOptions;
 use crate::fs::path_changer::ParsedPath;
 use crate::fs::section_writer::{read_file, write_name_space_config, write_section_config};
@@ -112,7 +113,7 @@ pub async fn convert_inner(
             }
         }
 
-        if *hide_dar && path.is_file() {
+        if *hide_dar && path.is_file() && is_contain_oar(path).is_none() {
             hide_path(path).await?;
         }
     }
