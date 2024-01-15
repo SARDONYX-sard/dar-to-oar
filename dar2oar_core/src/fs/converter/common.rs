@@ -1,7 +1,8 @@
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::error::{ConvertError, Result};
-use crate::fs::converter::{ConvertOptions, ConvertedReport};
+use crate::fs::converter::parallel::is_contain_oar;
+use crate::fs::converter::ConvertOptions;
 use crate::fs::path_changer::ParsedPath;
 use crate::fs::section_writer::{read_file, write_name_space_config, write_section_config};
 use std::path::Path;
@@ -25,13 +26,17 @@ pub async fn convert_inner(
         section_table,
         section_1person_table,
         run_parallel: _,
-        hide_dar: _,
+        hide_dar,
     } = options;
 
     let is_1st_person = parsed_path.is_1st_person;
-    let parsed_mod_name = mod_name
+    let mut parsed_mod_name = mod_name
         .clone()
         .unwrap_or(parsed_path.mod_name.clone().unwrap_or("Unknown".into()));
+    if is_1st_person {
+        parsed_mod_name.push_str("_1st_person");
+    };
+
     let oar_name_space_path = oar_dir
         .as_ref()
         .map(|path| match is_1st_person {
@@ -69,7 +74,7 @@ pub async fn convert_inner(
         fs::create_dir_all(&section_root).await?;
         if file_name == "_conditions.txt" {
             let content = read_file(path).await?;
-            tracing::debug!("_conditions.txt Content:\n{}", content);
+            tracing::debug!("{path:?} Content:\n{}", content);
 
             let config_json = ConditionsConfig {
                 name: section_name.into(),
@@ -83,13 +88,14 @@ pub async fn convert_inner(
             // Use `AcqRel` to happened before relationship(form a memory read/write order between threads) of cas(compare_and_swap),
             // so that other threads read after writing true to memory to prevent unnecessary file writing.
             // - In case of cas failure, use "Relaxed" because the order is unimportant.
-            if is_converted_once
-                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
-                .is_ok()
-            {
-                write_name_space_config(&oar_name_space_path, &parsed_mod_name, author.as_deref())
-                    .await?;
-            }
+            let _ = is_converted_once.compare_exchange(
+                false,
+                true,
+                Ordering::AcqRel,
+                Ordering::Relaxed,
+            );
+            write_name_space_config(&oar_name_space_path, &parsed_mod_name, author.as_deref())
+                .await?;
         } else {
             // maybe motion files(.hkx), gender dir
             if let Some(remain) = &parsed_path.remain_dir {
@@ -106,36 +112,36 @@ pub async fn convert_inner(
                 fs::copy(path, file).await?;
             }
         }
+
+        if *hide_dar && path.is_file() && is_contain_oar(path).is_none() {
+            hide_path(path).await?;
+        }
     }
 
     Ok(())
 }
 
-pub async fn handle_conversion_results<P: AsRef<Path>>(
-    hide_dar: bool,
-    dar_namespace: &Option<P>,
-    dar_1st_namespace: &Option<P>,
-) -> Result<ConvertedReport> {
-    async fn hide_dar_dir(dir: &Option<impl AsRef<Path>>) -> Result<()> {
-        if let Some(dar_dir) = dir {
-            let mut hidden_dar = dar_dir.as_ref().to_path_buf();
-            hidden_dar.set_extension(".mohidden");
-            fs::rename(dar_dir, hidden_dar).await?;
-        }
-        Ok(())
-    }
+async fn hide_path(path: impl AsRef<Path>) -> Result<()> {
+    let path = path.as_ref();
+    // NOTE: Do not use `set_extension` as it overwrites rather than adds.
+    let mut hidden_path = path.display().to_string();
+    if path
+        .extension()
+        .map(|ext| ext.eq_ignore_ascii_case("mohidden"))
+        != Some(true)
+    {
+        hidden_path.push_str(".mohidden");
+    };
 
-    if hide_dar {
-        hide_dar_dir(dar_namespace).await?;
-        hide_dar_dir(dar_1st_namespace).await?;
+    tracing::debug!("Rename:\nfrom: {path:?}\nto: {hidden_path:?}");
+    fs::rename(path, &hidden_path).await?;
+    Ok(())
+}
 
-        match (dar_namespace, dar_1st_namespace) {
-            (Some(_), Some(_)) => Ok(ConvertedReport::Renamed1rdAnd3rdPersonDar),
-            (Some(_), None) => Ok(ConvertedReport::Renamed3rdPersonDar),
-            (None, Some(_)) => Ok(ConvertedReport::Renamed1rdPersonDar),
-            _ => Err(ConvertError::NotFoundDarDir),
-        }
-    } else {
-        Ok(ConvertedReport::Complete)
+#[inline]
+pub(super) fn handle_conversion_results(is_converted_once: bool) -> Result<()> {
+    match is_converted_once {
+        true => Ok(()),
+        false => Err(ConvertError::NeverConverted),
     }
 }

@@ -134,9 +134,12 @@ mod conditions;
 mod dar_syntax;
 mod values;
 
+#[cfg(test)]
+mod test_helper;
+
 pub mod error;
 pub mod fs;
 
 pub use crate::fs::converter::support_cmd::{remove_oar, unhide_dar};
-pub use crate::fs::converter::{convert_dar_to_oar, Closure, ConvertOptions, ConvertedReport};
+pub use crate::fs::converter::{convert_dar_to_oar, Closure, ConvertOptions};
 pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};

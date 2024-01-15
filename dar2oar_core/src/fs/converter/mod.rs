@@ -76,7 +76,7 @@ use std::collections::HashMap;
 pub async fn convert_dar_to_oar(
     options: ConvertOptions,
     progress_fn: impl FnMut(usize),
-) -> Result<ConvertedReport> {
+) -> Result<()> {
     match options.run_parallel {
         true => crate::fs::converter::parallel::convert_dar_to_oar(options, progress_fn).await,
         false => crate::fs::converter::sequential::convert_dar_to_oar(options, progress_fn).await,
@@ -108,47 +108,15 @@ pub struct ConvertOptions {
     pub hide_dar: bool,
 }
 
-#[derive(Debug, Clone, thiserror::Error)]
-pub enum ConvertedReport {
-    #[error("Conversion Completed.")]
-    Complete,
-
-    #[error("Converted & Renamed 1st, 3rd person DAR")]
-    Renamed1rdAnd3rdPersonDar,
-    #[error("Converted & Renamed 1rd person DAR")]
-    Renamed1rdPersonDar,
-    #[error("Converted & Renamed 3rd person DAR")]
-    Renamed3rdPersonDar,
-
-    #[error("Unhide 1st & 3rd person")]
-    Unhide1rdAnd3rdPerson,
-    #[error("Unhide 1rd person")]
-    Unhide1rdPerson,
-    #[error("Unhide 3rd person")]
-    Unhide3rdPerson,
-}
-
 #[cfg(test)]
 mod test {
+    use crate::test_helper::init_tracing;
+
     use super::*;
     use anyhow::Result;
 
     const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
     const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
-    const LOG_PATH: &str = "../convert.log";
-
-    /// NOTE: It is a macro because it must be called at the root of a function to function.
-    macro_rules! logger_init {
-        () => {
-            let (non_blocking, _guard) =
-                tracing_appender::non_blocking(std::fs::File::create(LOG_PATH)?);
-            tracing_subscriber::fmt()
-                .with_writer(non_blocking)
-                .with_ansi(false)
-                .with_max_level(tracing::Level::DEBUG)
-                .init();
-        };
-    }
 
     async fn create_options() -> Result<ConvertOptions> {
         Ok(ConvertOptions {
@@ -163,7 +131,7 @@ mod test {
     #[ignore]
     #[tokio::test]
     async fn convert_non_mpsc() -> Result<()> {
-        logger_init!();
+        let _guard = init_tracing("convert_non_mpsc", tracing::Level::DEBUG)?;
         convert_dar_to_oar(create_options().await?, |_| {}).await?;
         Ok(())
     }
@@ -171,7 +139,7 @@ mod test {
     #[ignore]
     #[tokio::test]
     async fn convert_with_mpsc() -> Result<()> {
-        logger_init!();
+        let _guard = init_tracing("convert_non_mpsc", tracing::Level::DEBUG)?;
         let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
         let sender = move |idx: usize| {

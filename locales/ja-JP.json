@@ -1,5 +1,6 @@
 {
   "all-clear-btn": "全入力をクリア",
+  "conversion-complete": "変換が完了しました",
   "convert-btn": "変換",
   "convert-form-author-name": "Mod作者名",
   "convert-form-author-name-helper": "[任意]",
@@ -30,8 +31,8 @@
   "custom-js-label": "カスタムJavaScript(信用できないスクリプトは実行しないでください)",
   "editor-mode-list-label": "編集モード",
   "hide-dar-btn": "DARを非表示",
-  "hide-dar-btn-tooltip": "変換後に\"DAR(src) Directory*\"に\".mohidden\"を追加して隠しディレクトリ化します",
-  "hide-dar-btn-tooltip2": "注意: MO2のTree view上では機能しているように見えますが作者の実体験では機能しているか怪しいです。",
+  "hide-dar-btn-tooltip": "変換後、DARの全ファイルに\".mohidden\"を追加して非表示化します",
+  "hide-dar-btn-tooltip2": "",
   "log-level-list-label": "ログレベル",
   "mapping-wiki-url-leaf": "wiki#what-is-the-mapping-file",
   "open-log-btn": "ログを開く",
@@ -39,7 +40,8 @@
   "progress-btn-tooltip": "詳細な進捗状況を表示します",
   "progress-btn-tooltip2": "注意: 変換時間が5~10秒以上増加する可能性があります",
   "remove-oar-btn": "OARを削除",
-  "remove-oar-failed": "DARまたはOARが入力されていません",
+  "remove-oar-failed": "\"OpenAnimationReplacer\" ディレクトリが見つかりません",
+  "remove-oar-specify-error": "DARまたはOARが入力されていません",
   "remove-oar-success": "OARディレクトリを削除しました",
   "remove-oar-tooltip": "OAR(dist)(なければDAR(src))からOARディレクトリを捜索して削除します",
   "run-parallel-btn-tooltip": "マルチスレッドを使用します",
@@ -48,5 +50,7 @@
   "select-btn": "選択",
   "unhide-dar-btn": "DAR再表示",
   "unhide-dar-btn-tooltip": "\"DARを非表示\"による非表示化の解除(MO2ユーザ向け)",
-  "unhide-dar-failed": "DAR(src)を指定してください"
+  "unhide-dar-failed": "拡張子「.mohidden」のついたファイルが見つかりません",
+  "unhide-dar-specify-error": "DAR(src)を指定してください",
+  "unhide-dar-success": "DARの非表示化が解除されました"
 }

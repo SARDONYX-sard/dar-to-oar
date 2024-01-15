@@ -95,7 +95,7 @@ export function ConvertForm() {
         setValue('progress', (prog * 100) / maxNum);
       });
 
-      const completeInfo = await convertDar2oar({
+      await convertDar2oar({
         src,
         dist,
         modName,
@@ -106,7 +106,7 @@ export function ConvertForm() {
         hideDar,
         showProgress,
       });
-      toast.success(completeInfo);
+      toast.success(t('conversion-complete'));
       setValue('progress', 100);
     } catch (err) {
       setValue('progress', 0); // To avoid NaN

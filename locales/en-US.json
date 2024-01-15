@@ -1,5 +1,6 @@
 {
   "all-clear-btn": "All Clear",
+  "conversion-complete": "Conversion Complete.",
   "convert-btn": "Convert",
   "convert-form-author-name": "Mod Author Name",
   "convert-form-author-name-helper": "[Optional]",
@@ -30,8 +31,8 @@
   "custom-js-label": "Custom JavaScript(Please do not execute untrusted scripts)",
   "editor-mode-list-label": "Editor Mode",
   "hide-dar-btn": "Hide DAR",
-  "hide-dar-btn-tooltip": "After conversion, append \".mohidden\" to the DAR dirname in \"DAR(src) Directory*\" to make it a hidden directory.",
-  "hide-dar-btn-tooltip2": "NOTE: It appears to work on the MO2 Tree view, but it is doubtful that it works in the author's actual experience.",
+  "hide-dar-btn-tooltip": "After conversion, add \".mohidden\" to all DAR files to hide them.",
+  "hide-dar-btn-tooltip2": "",
   "log-level-list-label": "Log Level",
   "mapping-wiki-url-leaf": "wiki#what-is-the-mapping-file",
   "open-log-btn": "Open log",
@@ -39,7 +40,8 @@
   "progress-btn-tooltip": "Display detail progress",
   "progress-btn-tooltip2": "However, conversion may be delayed by 5~10 seconds or more.",
   "remove-oar-btn": "Remove OAR",
-  "remove-oar-failed": "DAR or OAR dir must be specified.",
+  "remove-oar-failed": "Not found \"OpenAnimationReplacer\" directory",
+  "remove-oar-specify-error": "DAR or OAR dir must be specified.",
   "remove-oar-success": "Removed OAR directory.",
   "remove-oar-tooltip": "Find and delete OAR dir from \"DAR(src) Directory*\" or \"OAR(dist) Directory\".",
   "run-parallel-btn-tooltip": "Use multi-threading.",
@@ -48,5 +50,7 @@
   "select-btn": "Select",
   "unhide-dar-btn": "Unhide DAR",
   "unhide-dar-btn-tooltip": "Unhide the directory hidden by \"Hide DAR\".(For MO2 user)",
-  "unhide-dar-failed": "DAR dir must be specified."
+  "unhide-dar-failed": "Could not find files with \".mohidden\" extension",
+  "unhide-dar-specify-error": "DAR dir must be specified.",
+  "unhide-dar-success": "Redisplay of DAR directory."
 }

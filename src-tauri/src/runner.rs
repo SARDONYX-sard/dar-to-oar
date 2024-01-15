@@ -9,7 +9,7 @@ pub fn run_tauri() -> anyhow::Result<()> {
             crate::cmd::convert_dar2oar,
             crate::cmd::convert_dar2oar_with_progress,
             crate::cmd::remove_oar_dir,
-            crate::cmd::restore_dar_dir,
+            crate::cmd::unhide_dar_dir,
         ])
         .run(tauri::generate_context!())
         .context("Failed to execute tauri")

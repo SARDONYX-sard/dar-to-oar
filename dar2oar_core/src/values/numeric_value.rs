@@ -1,6 +1,4 @@
-use super::{
-    actor_value::ActorValue, graph_value::GraphValue, static_value::StaticValue, FormValue,
-};
+use super::{actor_value::ActorValue, static_value::StaticValue, FormValue, GraphValue};
 use crate::deserialize_json;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

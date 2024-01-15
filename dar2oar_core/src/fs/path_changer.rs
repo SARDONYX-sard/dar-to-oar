@@ -51,7 +51,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>, dar_dirname: Option<&str>) -> Resu
 
     let mod_name = path
         .iter()
-        .position(|os_str| os_str == OsStr::new("meshes"))
+        .position(|os_str| os_str.eq_ignore_ascii_case(OsStr::new("meshes")))
         .and_then(|idx| {
             paths
                 .get(idx - 1)
@@ -113,7 +113,7 @@ mod test {
 
     #[test]
     fn test_parse_dar_path_1st_person() {
-        let path = Path::new("../ModName/meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer/_CustomConditions/8107000/_conditions.txt");
+        let path = Path::new("../ModName/Meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer/_CustomConditions/8107000/_conditions.txt");
         let result = parse_dar_path(path, None);
 
         assert!(result.is_ok());
@@ -129,13 +129,13 @@ mod test {
         assert_eq!(
             dar_root,
             PathBuf::from(
-                "../ModName/meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer"
+                "../ModName/Meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer"
             )
         );
         assert_eq!(
             oar_root,
             PathBuf::from(
-                "../ModName/meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"
+                "../ModName/Meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"
             )
         );
         assert_eq!(is_1st_person, true);

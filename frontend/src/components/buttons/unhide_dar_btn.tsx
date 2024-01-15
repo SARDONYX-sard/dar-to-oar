@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { toast } from 'react-hot-toast';
 
 import { useTranslation } from '@/hooks';
-import { restoreDarDir } from '@/tauri_cmd';
+import { unhideDarDir } from '@/tauri_cmd';
 
 type Props = {
   path: string;
@@ -25,9 +25,15 @@ export const UnhideDarBtn = ({ path }: Props) => {
         variant="outlined"
         onClick={async () => {
           try {
-            toast.success(await restoreDarDir(path, t('unhide-dar-failed')));
-          } catch (err) {
-            toast.error(`${err}`);
+            if (path === '') {
+              toast.error(t('unhide-dar-specify-error'));
+              return;
+            }
+
+            await unhideDarDir(path);
+            toast.success(t('unhide-dar-success'));
+          } catch (_e) {
+            toast.error(t('unhide-dar-failed'));
           }
         }}
         startIcon={<VisibilityIcon />}

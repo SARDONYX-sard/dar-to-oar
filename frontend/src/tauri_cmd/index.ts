@@ -56,11 +56,11 @@ export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
  *
  * # Throw Error
  */
-export async function restoreDarDir(darDir: string, errMsg = 'DAR dir must be specified.') {
+export async function unhideDarDir(darDir: string, errMsg = 'DAR dir must be specified.') {
   if (darDir === '') {
     throw new Error(errMsg);
   }
-  return invoke<string>('restore_dar_dir', { darDir });
+  await invoke('unhide_dar_dir', { darDir });
 }
 
 /**

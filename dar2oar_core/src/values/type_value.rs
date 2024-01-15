@@ -160,8 +160,9 @@ impl From<WeaponType> for f64 {
 }
 
 impl WeaponType {
+    #[inline]
     fn as_f64(&self) -> f64 {
-        f64::try_from(self.clone()).unwrap()
+        self.clone().into()
     }
 }
 

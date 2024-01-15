@@ -1,6 +1,6 @@
-use crate::error::{ConvertError, Result};
+use crate::error::Result;
 use crate::fs::converter::common::{convert_inner, handle_conversion_results};
-use crate::fs::converter::{ConvertOptions, ConvertedReport};
+use crate::fs::converter::ConvertOptions;
 use crate::fs::path_changer::parse_dar_path;
 use async_walkdir::{Filtering, WalkDir};
 use std::path::Path;
@@ -18,19 +18,15 @@ use tokio_stream::StreamExt;
 pub async fn convert_dar_to_oar(
     options: ConvertOptions,
     mut progress_fn: impl FnMut(usize),
-) -> Result<ConvertedReport> {
+) -> Result<()> {
     let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_file_count(dar_dir).await?;
     tracing::debug!("Sequential Converter/DAR file counts: {}", walk_len);
     progress_fn(walk_len);
 
-    let hide_dar = options.hide_dar;
-    let mut dar_1st_namespace = None; // To need rename to hidden(For _1stperson)
-    let mut dar_namespace = None; // To need rename to hidden
-    let mut entries = get_dar_files(dar_dir).await;
     let is_converted_once = AtomicBool::new(false);
-
+    let mut entries = get_dar_files(dar_dir).await;
     let mut idx = 0usize;
     while let Some(entry) = entries.next().await {
         let path = entry?.path();
@@ -43,12 +39,8 @@ pub async fn convert_dar_to_oar(
             Ok(p) => p,
             Err(_) => continue,
         };
+
         tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
-        if dar_1st_namespace.is_none() && parsed_path.is_1st_person {
-            dar_1st_namespace = Some(parsed_path.dar_root.clone());
-        } else if dar_namespace.is_none() {
-            dar_namespace = Some(parsed_path.dar_root.clone());
-        }
         convert_inner(&options, path, &parsed_path, &is_converted_once).await?;
 
         progress_fn(idx);
@@ -59,10 +51,7 @@ pub async fn convert_dar_to_oar(
     // # Ordering validity:
     // The order is irrelevant because `tokio::spawn` is not used in the while loop.
     // Therefore, there is no problem in using `Relaxed`.
-    match is_converted_once.load(Ordering::Relaxed) {
-        true => handle_conversion_results(hide_dar, &dar_namespace, &dar_1st_namespace).await,
-        false => Err(ConvertError::NeverConverted),
-    }
+    handle_conversion_results(is_converted_once.load(Ordering::Relaxed))
 }
 
 async fn get_dar_files(root: impl AsRef<Path>) -> WalkDir {
