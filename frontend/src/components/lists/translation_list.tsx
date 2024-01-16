@@ -30,6 +30,7 @@ export const TranslationList = () => {
           <MenuItem value={'auto'}>Auto</MenuItem>
           <MenuItem value={'en-US'}>English(US)</MenuItem>
           <MenuItem value={'ja-JP'}>Japanese</MenuItem>
+          <MenuItem value={'custom'}>Custom</MenuItem>
         </Select>
       </FormControl>
     </Tooltip>

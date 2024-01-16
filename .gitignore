@@ -12,7 +12,8 @@ build
 # misc
 .DS_Store
 *.pem
-test/
+test/data/*
+!test/data/*.md
 *.log
 
 # Rust build cache

@@ -116,7 +116,7 @@ mod test {
     use anyhow::Result;
 
     const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
-    const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
+    const TABLE_PATH: &str = "../test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt";
 
     async fn create_options() -> Result<ConvertOptions> {
         Ok(ConvertOptions {

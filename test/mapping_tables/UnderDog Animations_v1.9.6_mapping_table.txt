@@ -1,0 +1,85 @@
+2000000026 ConfidentWalk
+2000000007 CrouchIdleLookingAround
+2000000008 CrouchIdleLookingOver
+2000000043 Death Animations DeathAnimations
+2000000044 DefaultDeath
+2000000050 Dying (4)
+2000000063 Dying(4)
+90046070 exterior stool override
+2000000034 Falling Falling
+2000000024 FasterSprintStamina150
+2000000011 FastRunSpeed
+2000000083 FlipKickJump
+2000000068 Flying Back Death
+2000000081 FlyingKick
+2000000062 InCombatNoWeaponsFrwDeath
+2000000018 Injured Idles InjuredIdles
+2000000080 InjuredJump
+2000000031 InjuredLegMedium60
+2000000032 InjuredLegMedium60Random
+2000000030 InjuredLegMinor80
+2000000021 InjuredLegSevere
+2000000033 InjuredLegSevere40
+2000000028 Injured Movement InjuredMovement
+2000000019 InjuredStandard
+2000000020 InjuredStumble
+2000000082 InsideCrescentKick
+2000000078 Jump Jump
+2000000016 LowCrawlNotWpnDrawn
+2000000017 LowCrawlWpnDrawn
+2000000012 MediumRunSneak
+2000000029 MinorInjuredHand
+2000000022 Movement Movement
+2000000038 NinjaIdle
+2000000039 NinjaIdleLookingAround
+2000000037 NINJA Idles NinjaIdles
+2000000040 NinjaIdleStretch
+2000000041 NINJA Movement NinjaSprint
+2000000042 NinjaSprintForward
+2000000023 NormalRunWalkSprint
+2000000014 SlowWalkSneak
+2000000000 sneak right att intro VANILA ANIMATION
+2000000002 Sneak right att var1
+2000000001 Sneak right att var2
+2000000003 Sneak right att var3
+2000000004 Sneak right power att
+1999999999 Sneak attacks SneakAttacks
+2000000005 Sneak Idles SneakIdles
+2000000010 Sneak Movement SneakMovement
+2000000013 SneakRunForBOW
+2000000015 SneakWalkForBOW VANILLA ANIMATIONS
+2000000027 SneakyWalkSneak50
+2000000052 Standing Death Backward 01
+2000000053 Standing Death Backward 02
+2000000055 Standing Death Forward 01
+2000000056 Standing Death Forward 02
+2000000061 Standing Death Left 01
+2000000054 Standing Death Left 02
+2000000051 Standing Death Right 01
+2000000050 Standing Death Right 02
+2000000060 Standing React Death Backward
+2000000057 Standing React Death Forward
+2000000059 Standing React Death Left
+2000000058 Standing React Death Right
+2000000070 StandingTorchIdle 01
+2000000071 StandingTorchIdle 02
+2000000072 StandingTorchIdle 03
+2000000073 StandingTorchIdle 04
+2000000077 StandingTorchInspectDownward
+2000000075 StandingTorchInspectForward
+2000000076 StandingTorchInspectUpward
+2000000067 Sword And Shield Death (1)
+2000000066 Sword And Shield Death
+2000000025 Tired Run
+2000000006 TorchIdles
+2000000074 Torch Idles Indoors Only TorchIdlesIndoorsOnly
+2000000069 Torch Idles Universal TorchIdlesUniversal
+2000000065 Two Handed Sword Death
+2000000009 UnarmedNinjaIdle
+2000000048 UniversalStandingDeathBwrd
+2000000047 UniversalStandingDeathFrw
+2000000046 UniversalStandingDeathLeft
+2000000045 UniversalStandingDeathNoCombat
+2000000049 UniversalStandingDeathRight
+2000000079 WaterDive
+2000000064 Zombie Death

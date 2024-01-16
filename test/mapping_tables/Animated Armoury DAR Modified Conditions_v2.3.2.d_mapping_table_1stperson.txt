@@ -1,0 +1,12 @@
+10 Rapier
+11 Pikes
+12 Halberds
+13 QuarterStaffs
+14 Claw
+15 Cestus
+18 Whips
+19 Katanas
+
+29 Claw-in-Left-hand
+30 Claws-in-both-hands
+31 Whip-in-Left-hand

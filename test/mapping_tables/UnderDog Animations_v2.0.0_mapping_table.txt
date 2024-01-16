@@ -1,0 +1,237 @@
+2000000456 Angry Female
+2000000457 Angry Frown
+2000000409 Bashful
+2000000103 Battle Taunts NPC Battle Taunts NPC
+2000000455 Being Cocky
+2000000171 Belly Dance
+2000000172 Bellydancing
+2000000384 Big Body Blow
+2000000254 Catwalk Walk Forward 02 Market Female
+2000000252 Catwalk Walk Forward Wenches
+2000000160 Cheer Male Hopping
+2000000161 Cheer Rally
+2000000155 Cheer Cheer
+2000000158 Cheering Male
+2000000192 Cheering While Sitting 2
+2000000191 Cheering While Sitting
+2000000090 Combat Idle Combat Idle
+2000000170 Dance Drunk Dance Drunk
+2000000173 Dancing Unisex
+2000000330 Death Animations Death Animations
+2000000340 Death From Back Headshot
+2000000342 Death From Front Headshot
+2000000390 Death From Front Riffle Death
+2000000343 Death From Left
+2000000344 Death From Right
+2000000339 Death From The Back
+2000000341 Death From The Front
+2000000391 Death Hit High
+2000000458 Dismissing Gesture
+2000000178 Drunk Idle Variation 1
+2000000179 Drunk Idle Variation 2
+2000000177 Drunk Idle
+2000000358 Dying Backwards Faster Folded Hands
+2000000359 Dying Backwards Slow Folded Hands
+2000000360 Dying Front Both Knees Both hands face down
+2000000361 Dying Front Walk Back Both Knees
+2000000362 Dying Front Walk Both knees
+2000000363 Dying Hanging a bit
+2000000364 Dying Looking at wound
+2000000357 Dying
+2000000392 Electrocuted
+2000000380 Fall Flat
+2000000377 Falling Back Death
+2000000378 Falling Forward Death
+2000000071 Falling Idle
+2000000072 Falling In Style
+2000000070 Falling Falling
+2000000078 FlipKickJump
+2000000356 Flying Back Death
+2000000076 FlyingKick
+2000000414 Forsworn Ritual var 1
+2000000415 Forsworn Ritual var 2
+2000000385 Getting Hit Backwards
+2000000450 Greet Greet
+2000000468 Greeting Female 10 Drinking
+2000000468 Greeting Female 10 Sitting Drinking
+2000000468 Greeting Female 10 Sitting
+2000000468 Greeting Female 10
+2000000469 Greeting Female 50 Drinking
+2000000469 Greeting Female 50
+2000000470 Greeting Male 0 Drinking
+2000000470 Greeting Male 0 Sitting Drinking
+2000000470 Greeting Male 0
+2000000471 Greeting Male 2 Drinking
+2000000471 Greeting Male 2
+2000000264 Happy Walk Child
+2000000255 Happy Walking Bar Young
+2000000365 Hit To Head
+2000000368 Hit To Side Of Body Mirror
+2000000367 Hit To Side Of Body
+2000000366 Hit To The Legs
+2000000461 I kill you Gesture
+2000000098 I kill you Gesture
+2000000111 I kill you Gesture
+2000000400 Idles Idles
+2000000423 Injured Idle Hurting Severe
+2000000421 Injured Idle Standard Minor
+2000000422 Injured Idle Stumble Medium
+2000000272 Injured Jog Leg
+2000000420 Injured Idles InjuredIdles
+2000000075 InjuredJump
+2000000273 InjuredLegMedium var
+2000000272 InjuredLegMedium
+2000000271 InjuredLegMinor
+2000000274 InjuredLegSevere
+2000000077 InsideCrescentKick 
+2000000387 Jump Away Mirror
+2000000386 Jump Away
+2000000073 Jump Jump
+2000000379 Kick To The Groin
+2000000373 Knocked Out Back Flail 100
+2000000375 Knocked Out Front Flail 0 Impact 50
+2000000374 Knocked Out Front Flail 100 Impact 100
+2000000376 Knocked Out Side Flail 50 Impact 20
+2000000270 MinorInjuredHand
+2000000454 My Man Pointing Gesture
+2000000174 Northern Soul Floor Combo
+2000000175 Northern Soul Spin Combo
+2000000411 OhYes 100 Dead Enemy
+2000000410 OhYes 65 Dead enemy
+2000000162 OhYes 65
+2000000260 Old Man Idle Grelod Calixto
+2000000260 Old Man Walk Special
+2000000253 Orc Idle Female
+2000000253 Orc Idle Male
+2000000416 Peeing
+2000000462 Pointing Kids
+2000000262 Run Forward Courier
+2000000261 Running CICERO RUN
+2000000263 Running Coward
+2000000257 Sad Idle Main
+2000000258 Sad Idle Var 1
+2000000257 Sad Walk Sad
+2000000465 SaluteImperial
+2000000464 SaluteSonsOfSkyrim
+2000000417 Scratch Idle Dirty 0
+2000000419 Scratch Idle Dirty 100
+2000000418 Scratch Idle Dirty 50
+2000000381 Shoulder Hit And Fall
+2000000205 Sit to Stand Scared 0 50
+2000000207 Sit to Stand Scared 100 50 front exit Faster
+2000000207 Sit to Stand Scared 100 50 minimal
+2000000206 Sit to Stand Scared 100 50
+2000000202 Sit to Stand Scared 50 0 front exit
+2000000202 Sit to Stand Scared 50 0 minimal
+2000000201 Sit to Stand Scared 50 0
+2000000204 Sit to Stand Scared 50 50 minimal
+2000000203 Sit to Stand Scared 50 50
+2000000194 Sit to Standing Clap 2
+2000000193 Sit to Standing Clap
+2000000180 Sit Sit
+2000000196 Sitting Clap 1
+2000000197 Sitting Clap 2
+2000000198 Sitting Clap 3
+2000000199 Sitting Clap 4
+2000000200 Sitting Clap 5
+2000000195 Sitting Clap
+2000000463 Sitting Dodges
+2000000181 Sitting Elder
+2000000184 Sitting Fidget 50
+2000000185 Sitting Fidget 80
+2000000188 Sitting Laughing 100
+2000000187 Sitting Laughing 50
+2000000182 Sitting Looking around
+2000000183 Sitting Rubbing Arm
+2000000186 Sitting Talking
+2000000451 Sitting Thumbs Up 0 Left
+2000000451 Sitting Thumbs Up 0
+2000000453 Sitting Thumbs Up 100 Left
+2000000453 Sitting Thumbs Up 100
+2000000452 Sitting Thumbs Up 50 Left
+2000000452 Sitting Thumbs Up 50
+2000000382 Slipping
+2000000259 Slow Run Old People
+2000000176 Snake Hip Hop Dance
+2000000000 Sneak Idles SneakIdles
+2000000261 SneakyWalkSneak50 CICERO
+2000000370 Soccer Tackle Mirror
+2000000372 Soccer Tackle Running Mirror
+2000000371 Soccer Tackle Running
+2000000369 Soccer Tackle
+2000000250 Special Walks Runs Sprints Special Walks Runs Sprints
+2000000331 Standing Death Backward 01
+2000000332 Standing Death Backward 02
+2000000333 Standing Death Forward 01
+2000000334 Standing Death Forward 02
+2000000335 Standing Death Left 01
+2000000336 Standing Death Left 02
+2000000337 Standing Death Right 01
+2000000338 Standing Death Right 02
+2000000463 Standing Dodges
+2000000345 Standing React Death Backward
+2000000346 Standing React Death Forward
+2000000347 Standing React Death Left
+2000000348 Standing React Death Right
+2000000451 Standing Thumbs Up 0 Left Drinking
+2000000451 Standing Thumbs Up 0 Left
+2000000453 Standing Thumbs Up 100 Left Drinking
+2000000453 Standing Thumbs Up 100 Left
+2000000452 Standing Thumbs Up 50 Left Drinking
+2000000452 Standing Thumbs Up 50 Left
+2000000051 StandingTorchIdle 01
+2000000052 StandingTorchIdle 02
+2000000053 StandingTorchIdle 03
+2000000054 StandingTorchIdle 04
+2000000058 StandingTorchInspectDownward
+2000000056 StandingTorchInspectForward
+2000000057 StandingTorchInspectUpward
+2000000388 Stunned
+2000000251 Swagger Walk Var 1 Male
+2000000251 Swagger Walk Var 2 Female
+2000000383 Sweep Fall
+2000000352 Sword And Shield Death var 2
+2000000351 Sword And Shield Death
+2000000091 Taunt Battlecry
+2000000104 Taunt Battlecry
+2000000102 TauntBootySpank
+2000000115 TauntBootySpank
+2000000092 TauntChestPount
+2000000105 TauntChestPount
+2000000096 TauntClockBack
+2000000109 TauntClockBack
+2000000097 TauntClockFrwrd
+2000000110 TauntClockFrwrd
+2000000093 TauntComeOn
+2000000106 TauntComeOn
+2000000107 TauntFlexHigh
+2000000094 TauntFlexHigh
+2000000095 TauntFlexLow
+2000000108 TauntFlexLow
+2000000112 TauntInsult
+2000000099 TauntInsult
+2000000459 TauntInsult
+2000000101 TauntLooser
+2000000114 TauntLooser
+2000000100 TauntThreatening
+2000000113 TauntThreatening
+2000000190 Telling A Secret Left Sitting
+2000000413 Telling A Secret Left
+2000000189 Telling A Secret Right Sitting
+2000000412 Telling A Secret Right
+2000000460 Threatening
+2000000001 Torch Idles
+2000000055 Torch Idles Indoors Only TorchIdlesIndoorsOnly
+2000000050 Torch Idles Universal TorchIdlesUniversal
+2000000350 Two Handed Sword Death var 2
+2000000349 Two Handed Sword Death
+2000000259 Unarmed Walk Forward Old
+2000000254 Walking Market Male
+2000000253 Walking Orc Female
+2000000253 Walking Orc Male
+2000000256 Walking Strut
+2000000074 WaterDive
+2000000353 Zombie Death
+2000000389 Zombie Forw Death
+2000000355 Zombie Stumbling Mirror
+2000000354 Zombie Stumbling
