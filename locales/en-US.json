@@ -56,7 +56,7 @@
   "run-parallel-label": "Run Parallel",
   "select-btn": "Select",
   "unhide-dar-btn": "Unhide DAR",
-  "unhide-dar-btn-tooltip": "Unhide the directory hidden by \"Hide DAR\".(For MO2 user)",
+  "unhide-dar-btn-tooltip": "Unhide DAR files hidden by \"Hide DAR\".(For MO2 user)",
   "unhide-dar-failed": "Could not find files with \".mohidden\" extension",
   "unhide-dar-specify-error": "DAR dir must be specified.",
   "unhide-dar-success": "Redisplay of DAR directory."
