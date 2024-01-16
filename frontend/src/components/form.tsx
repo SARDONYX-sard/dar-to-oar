@@ -12,7 +12,7 @@ import { ConvertButton, UnhideDarBtn, SelectPathButton, RemoveOarBtn, LogFileBut
 import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { LogLevel, convertDar2oar } from '@/tauri_cmd';
+import { LogLevel, convertDar2oar, openShell } from '@/tauri_cmd';
 import { selectLogLevel } from '@/utils/selector';
 
 type FormProps = {
@@ -189,7 +189,12 @@ export function ConvertForm() {
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
-                  helperText={t('convert-form-oar-helper')}
+                  helperText={
+                    <>
+                      {t('convert-form-oar-helper')} <br />
+                      {t('convert-form-oar-helper2')}
+                    </>
+                  }
                 />
               </Grid>
               <Grid xs={2}>
@@ -317,7 +322,7 @@ export function ConvertForm() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2}>
+        <Grid container sx={{ alignItems: 'center' }}>
           <Grid xs={3}>
             <Controller
               name="hideDar"
@@ -453,16 +458,17 @@ export function ConvertForm() {
 
 function MappingHelpBtn() {
   const { t } = useTranslation();
-  const handleMappingClick = () => open(`https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`);
+  const handleMappingClick = () =>
+    openShell(`https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`);
 
   return (
     <>
-      {t('convert-form-mapping-helper')} <br />
+      {t('convert-form-mapping-helper')}
+      <br />
       {t('convert-form-mapping-helper2')}
-      <a style={{ cursor: 'pointer', color: '#00c2ff' }} onClick={handleMappingClick} onKeyDown={handleMappingClick}>
-        [{t('convert-form-mapping-helper3')}]
-      </a>
-      {t('convert-form-mapping-helper4')}
+      <Button onClick={handleMappingClick} style={{ fontSize: 'small' }} type="button">
+        [{t('convert-form-mapping-help-link-name')}]
+      </Button>
     </>
   );
 }

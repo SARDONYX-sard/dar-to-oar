@@ -5,6 +5,8 @@ import { open as openShell } from '@tauri-apps/api/shell';
 
 import { selectLogLevel } from '@/utils/selector';
 
+export { open as openShell } from '@tauri-apps/api/shell';
+
 type ConverterArgs = {
   src: string;
   dist?: string;
