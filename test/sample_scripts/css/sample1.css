@@ -1,0 +1,72 @@
+:root {
+  --theme-color: rgb(185, 185, 90);
+  --hover-btn-color: #cefb518b;
+  --convert-btn-color: #94ce7c6e;
+  --hover-convert-btn-color: #81c462a3;
+  --image-url: url('https://images.pexels.com/photos/973324/pexels-photo-973324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+}
+
+body {
+  background-attachment: fixed;
+  background-image: var(--image-url);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+  background-color: #000;
+}
+
+main {
+  background-color: #2229;
+}
+
+.ace_gutter,
+.MuiOutlinedInput-root {
+  background-color: #2424248c !important;
+}
+
+p.Mui-error {
+  color: var(--error-color);
+  background-color: #2f2e2eba;
+}
+
+main:has(.ace_editor) > .MuiInputLabel-animated {
+  padding-right: 1rem !important;
+  padding-left: 1rem !important;
+  background-color: #2f2e2eba;
+}
+
+a,
+span.Mui-checked > svg,
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.Mui-focused > fieldset,
+.Mui-selected, /* Bottom Navigation */
+.MuiButton-outlined {
+  color: var(--theme-color) !important;
+  border-color: var(--theme-color);
+}
+
+label.Mui-focused,
+.MuiButton-root.MuiButton-text {
+  color: var(--theme-color) !important;
+}
+
+.MuiButton-outlined {
+  background-color: #2424248c;
+}
+
+.MuiButton-outlined:hover {
+  color: #fff !important;
+  background-color: var(--hover-btn-color);
+}
+
+.MuiLoadingButton-root {
+  color: #fff;
+  background-color: var(--convert-btn-color);
+}
+
+.MuiLoadingButton-root:hover {
+  background-color: var(--hover-convert-btn-color);
+}
+
+.MuiLinearProgress-bar {
+  background-color: var(--theme-color);
+}

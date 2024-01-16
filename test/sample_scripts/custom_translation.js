@@ -1,5 +1,5 @@
 (() => {
-  // https://github.com/SARDONYX-sard/dar-to-oar/blob/main/locales/en-US.json
+  // Origin: https://github.com/SARDONYX-sard/dar-to-oar/blob/main/locales/en-US.json
   const i18n = {
     'all-clear-btn': '清除全部输入',
     'conversion-complete': '转换完成',
