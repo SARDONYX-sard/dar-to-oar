@@ -26,6 +26,7 @@
     'css-preset-list-item1': '预设1',
     'css-preset-list-item2': '预设2',
     'css-preset-list-item3': '预设3',
+    'css-preset-list-item4': '预设4',
     'css-preset-list-label': '预设',
     'css-preset-list-tooltip': '选择CSS预设',
     'css-preset-list-tooltip2': '注意: 编辑"预设"将覆盖"自定义"',
