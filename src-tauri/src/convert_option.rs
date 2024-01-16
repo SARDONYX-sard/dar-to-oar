@@ -1,4 +1,5 @@
-use dar2oar_core::{get_mapping_table, ConvertOptions};
+use dar2oar_core::error::Result;
+use dar2oar_core::{read_mapping_table, ConvertOptions};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14,15 +15,10 @@ pub(crate) struct GuiConverterOptions {
     pub(crate) hide_dar: Option<bool>,
 }
 
-#[async_trait::async_trait]
-pub(crate) trait AsyncFrom<T> {
-    async fn async_from(options: T) -> Self;
-}
-
-#[async_trait::async_trait]
-impl AsyncFrom<GuiConverterOptions> for ConvertOptions {
-    async fn async_from(options: GuiConverterOptions) -> Self {
-        let GuiConverterOptions {
+impl GuiConverterOptions {
+    /// Cast to [`ConvertOptions`]
+    pub(crate) async fn to_convert_options(options: Self) -> Result<ConvertOptions> {
+        let Self {
             dar_dir,
             oar_dir,
             mod_name,
@@ -33,15 +29,24 @@ impl AsyncFrom<GuiConverterOptions> for ConvertOptions {
             hide_dar,
         } = options;
 
-        Self {
+        let section_table = match mapping_path {
+            Some(path) => Some(read_mapping_table(path).await?),
+            None => None,
+        };
+        let section_1person_table = match mapping_1person_path {
+            Some(path) => Some(read_mapping_table(path).await?),
+            None => None,
+        };
+
+        Ok(ConvertOptions {
             dar_dir,
             oar_dir,
             mod_name,
             author,
-            section_table: get_mapping_table(mapping_path).await,
-            section_1person_table: get_mapping_table(mapping_1person_path).await,
+            section_table,
+            section_1person_table,
             run_parallel: run_parallel.unwrap_or(false),
             hide_dar: hide_dar.unwrap_or(false),
-        }
+        })
     }
 }

@@ -17,7 +17,6 @@ dist = false # To run CI and build separately from CLI (cargo dist)
 tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
-async-trait = "0.1.74"
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 chrono = "0.4.31"
 dar2oar_core = { path = "../dar2oar_core" }
