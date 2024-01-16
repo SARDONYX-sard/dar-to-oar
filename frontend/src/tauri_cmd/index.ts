@@ -7,7 +7,7 @@ import { selectLogLevel } from '@/utils/selector';
 
 export { open as openShell } from '@tauri-apps/api/shell';
 
-type ConverterArgs = {
+type ConverterOptions = {
   src: string;
   dist?: string;
   modName?: string;
@@ -20,10 +20,16 @@ type ConverterArgs = {
 };
 
 /**
- * Convert DAR to OAR
- * # Throw Error
+ * Converts DAR to OAR.
+ *
+ * This function converts a DAR (DynamicAnimationReplacer) to an OAR (OpenAnimationReplacer).
+ * It takes the specified properties as arguments and invokes the appropriate conversion command.
+ *
+ * @param {ConverterOptions} props - Converter Options.
+ * @returns {Promise<void>} A promise that resolves when converted.
+ * @throws
  */
-export async function convertDar2oar(props: ConverterArgs): Promise<string> {
+export async function convertDar2oar(props: ConverterOptions): Promise<void> {
   const args = {
     options: {
       darDir: props.src === '' ? undefined : props.src,
@@ -42,13 +48,22 @@ export async function convertDar2oar(props: ConverterArgs): Promise<string> {
 
   const showProgress = props.showProgress ?? false;
   if (showProgress) {
-    return invoke<string>('convert_dar2oar_with_progress', args);
+    return invoke('convert_dar2oar_with_progress', args);
   } else {
-    return invoke<string>('convert_dar2oar', args);
+    return invoke('convert_dar2oar', args);
   }
 }
 
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
+
+/**
+ * Changes the log level.
+ *
+ * This function invokes the 'change_log_level' command with the specified log level.
+ *
+ * @param {LogLevel} [logLevel] - The log level to set. If not provided, the default log level will be used.
+ * @returns {Promise<void>} A promise that resolves when the log level is changed.
+ */
 export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
   return invoke('change_log_level', { logLevel });
 }
@@ -58,21 +73,30 @@ export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
  *
  * # Throw Error
  */
-export async function unhideDarDir(darDir: string, errMsg = 'DAR dir must be specified.') {
+/**
+ * Add '.mohidden' to DAR's files.
+ * @param {string} darDir - A string representing the directory path of the DAR directory that needs to be
+ * unhidden.
+ *
+ * @throws
+ */
+export async function unhideDarDir(darDir: string) {
   if (darDir === '') {
-    throw new Error(errMsg);
+    throw new Error('darDir is empty string.');
   }
   await invoke('unhide_dar_dir', { darDir });
 }
 
 /**
- * @param darPath
- *
- * # Throw Error
+ * The function `removeOarDir` is an asynchronous function that removes a specified directory and throws an error if the
+ * path is empty.
+ * @param {string} path - The `path` parameter is a string that specifies the directory path of the DAR or OAR directory
+ * that needs to be removed.
+ * @throws
  */
-export async function removeOarDir(path: string, errMsg = 'DAR or OAR dir must be specified.') {
+export async function removeOarDir(path: string) {
   if (path === '') {
-    throw new Error(errMsg);
+    throw new Error('Specified path is empty string.');
   }
   await invoke('remove_oar_dir', { path });
 }
@@ -80,7 +104,7 @@ export async function removeOarDir(path: string, errMsg = 'DAR or OAR dir must b
 /**
  * Open a file or Dir
  *
- * # Throw Error
+ * @throws
  */
 export async function openPath(path: string, setPath: (path: string) => void, isDir: boolean) {
   const res = await open({
@@ -96,8 +120,27 @@ export async function openPath(path: string, setPath: (path: string) => void, is
   }
 }
 
+/**
+ * Opens the log file.
+ *
+ * This function retrieves the log directory using the appLogDir function,
+ * constructs the path to the log file, and opens the shell with the log file path.
+ *
+ * @throws - if not found path
+ */
 export async function openLogFile() {
   const logDir = await appLogDir();
   const logFile = `${logDir}g_dar2oar.log`;
   await openShell(logFile);
+}
+
+/**
+ * Opens the log directory.
+ *
+ * This function opens the shell and awaits the result of the appLogDir function.
+ *
+ * @throws - if not found path
+ */
+export async function openLogDir() {
+  await openShell(await appLogDir());
 }
