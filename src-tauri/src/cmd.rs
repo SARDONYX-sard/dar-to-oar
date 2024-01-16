@@ -1,5 +1,5 @@
-use crate::convert_option::{AsyncFrom, GuiConverterOptions};
-use dar2oar_core::{convert_dar_to_oar, remove_oar, unhide_dar, Closure, ConvertOptions};
+use crate::convert_option::GuiConverterOptions;
+use dar2oar_core::{convert_dar_to_oar, remove_oar, unhide_dar, Closure};
 use std::time::Instant;
 use tauri::Window;
 
@@ -27,6 +27,18 @@ macro_rules! time {
     }};
 }
 
+/// Cast the conversion options in the GUI and perform the conversion.
+macro_rules! dar_to_oar {
+    ($options:ident, $sender:expr) => {
+        convert_dar_to_oar(
+            GuiConverterOptions::to_convert_options($options)
+                .await
+                .or_else(|err| bail!(err))?,
+            $sender,
+        )
+    };
+}
+
 /// # Progress report for progress bar
 ///
 /// - First: number of files/dirs explored
@@ -51,8 +63,7 @@ macro_rules! sender {
 
 #[tauri::command]
 pub(crate) async fn convert_dar2oar(options: GuiConverterOptions) -> Result<(), String> {
-    let config = ConvertOptions::async_from(options).await;
-    time!("Conversion", convert_dar_to_oar(config, Closure::default))
+    time!("Conversion", dar_to_oar!(options, Closure::default))
 }
 
 #[tauri::command]
@@ -60,11 +71,8 @@ pub(crate) async fn convert_dar2oar_with_progress(
     window: Window,
     options: GuiConverterOptions,
 ) -> Result<(), String> {
-    let config = ConvertOptions::async_from(options).await;
-    time!(
-        "Conversion with progress",
-        convert_dar_to_oar(config, sender!(window))
-    )
+    let sender = sender!(window);
+    time!("Conversion with progress", dar_to_oar!(options, sender))
 }
 
 #[tauri::command]

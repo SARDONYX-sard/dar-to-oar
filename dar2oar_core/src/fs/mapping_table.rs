@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::error::{ConvertError, Result};
 use std::collections::HashMap;
 use std::path::Path;
 use tokio::{fs::File, io::AsyncReadExt};
@@ -15,6 +15,13 @@ pub async fn get_mapping_table(
 
 /// Try to read mapping table from path
 pub async fn read_mapping_table(table_path: impl AsRef<Path>) -> Result<HashMap<String, String>> {
+    if !table_path.as_ref().exists() {
+        return Err(ConvertError::NotFoundSpecifiedMappingTable(format!(
+            "{:?}",
+            table_path.as_ref()
+        )));
+    };
+
     let mut file_contents = String::new();
     File::open(table_path)
         .await?

@@ -14,6 +14,8 @@ pub enum ConvertError {
     NeverConverted,
     #[error("Not found file name")]
     NotFoundFileName,
+    #[error("Could not find the mapping table file \"{0}\".")]
+    NotFoundSpecifiedMappingTable(String),
     #[error("This is not valid utf8")]
     InvalidUtf8,
     #[error("Incomplete conversion")]
