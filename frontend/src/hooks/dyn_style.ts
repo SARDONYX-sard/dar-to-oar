@@ -45,7 +45,8 @@ export function useInjectScript(initialState = (() => localStorage.getItem('cust
     const scriptElement = document.createElement('script');
     if (pathname !== window.location.pathname) {
       try {
-        scriptElement.innerText = script;
+        // comment remove script
+        scriptElement.innerHTML = script;
         scriptElement.id = 'custom-script';
         if (!document.getElementById('custom-script')) {
           document.body.appendChild(scriptElement);
