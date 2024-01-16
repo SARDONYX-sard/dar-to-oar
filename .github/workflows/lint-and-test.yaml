@@ -78,24 +78,25 @@ jobs:
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
-          $compress = @{
-          LiteralPath= "./target/release/g_dar2oar.exe", "./target/release/dar2oar.exe"
-          CompressionLevel = "Fastest"
-          DestinationPath = "./build/g_dar2oar-${{ runner.os}}.zip"
-          }
-          Compress-Archive @compress
+          Move-Item -Path ./target/release/g_dar2oar.exe -Destination './build'
+          Move-Item -Path ./target/release/dar2oar.exe -Destination './build'
+
       - name: Compress outputs(MacOS)
         shell: bash
         if: runner.os == 'macOS'
-        run: tar -czvf ./build/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/g_dar2oar ./target/release/dar2oar
+        run: |
+          mv ./target/release/g_dar2oar ./build
+          mv ./target/release/dar2oar ./build
       - name: Compress outputs(Linux)
         shell: bash
         if: runner.os == 'Linux'
-        run: tar -czvf ./build/g_dar2oar-${{ runner.os}}.tar.gz ./target/release/g-dar2oar ./target/release/dar2oar
+        run: |
+          mv ./target/release/g-dar2oar ./build
+          mv ./target/release/dar2oar ./build
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.3
         with:
-          name: DAR to OAR Converter-${{runner.os}}
+          name: DAR to OAR Converter-${{runner.os}}-Portable
           path: |
             ./build/
