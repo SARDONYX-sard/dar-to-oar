@@ -32,7 +32,8 @@ span.Mui-checked > svg,
   border-color: var(--theme-color);
 }
 
-label.Mui-focused {
+label.Mui-focused,
+.MuiButton-root.MuiButton-text {
   color: var(--theme-color) !important;
 }
 
@@ -106,7 +107,7 @@ const preset3 = `:root {
   --theme-color: #9644f1;
   --hover-btn-color: #8b51fb8b;
   --convert-btn-color: #ab2b7e6e;
-  --hover-convert-btn-color: #fd3b3b6e;
+  --hover-convert-btn-color: #7d00c9a3;
   --image-url: url("https://images.pexels.com/photos/6162265/pexels-photo-6162265.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
 }
 

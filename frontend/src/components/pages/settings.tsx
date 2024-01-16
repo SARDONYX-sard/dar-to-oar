@@ -1,12 +1,13 @@
 'use client';
 
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import AceEditor from 'react-ace';
 
 import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
 import { Toaster } from '@/components/notifications';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
+import { openShell } from '@/tauri_cmd';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
 
 import packageJson from '@/../../package.json';
@@ -150,11 +151,12 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
 };
 
 const Help = () => {
-  const handleClick = () => open(packageJson.homepage);
+  const handleClick = () => openShell(packageJson.homepage);
   return (
     <div
       style={{
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-around',
         marginTop: '10px',
         width: '55%',
@@ -163,9 +165,9 @@ const Help = () => {
       <div>Version: {packageJson.version}</div>
       <div>
         Source:{' '}
-        <a style={{ cursor: 'pointer', color: '#00c2ff' }} onClick={handleClick} onKeyDown={handleClick}>
+        <Button onClick={handleClick} sx={{ fontSize: 'large' }} type="button" variant="text">
           GitHub
-        </a>
+        </Button>
       </div>
     </div>
   );
