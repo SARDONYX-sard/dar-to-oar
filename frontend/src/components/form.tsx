@@ -8,7 +8,14 @@ import { listen } from '@tauri-apps/api/event';
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 
-import { ConvertButton, UnhideDarBtn, SelectPathButton, RemoveOarBtn, LogFileButton } from '@/components/buttons';
+import {
+  ConvertButton,
+  UnhideDarBtn,
+  SelectPathButton,
+  RemoveOarBtn,
+  LogFileButton,
+  LogDirButton,
+} from '@/components/buttons';
 import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
@@ -310,15 +317,21 @@ export function ConvertForm() {
               )}
             />
           </Grid>
-          <Grid xs={3}>
+
+          <Grid xs={2}>
             <Controller
               name="logLevel"
               control={control}
               render={({ field: { value } }) => <SelectLogLevel value={value} {...register('logLevel')} />}
             />
           </Grid>
-          <Grid xs={3}>
+
+          <Grid xs={2}>
             <LogFileButton />
+          </Grid>
+
+          <Grid xs={2}>
+            <LogDirButton />
           </Grid>
         </Grid>
 
