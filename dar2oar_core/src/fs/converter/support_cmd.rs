@@ -6,11 +6,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tokio::fs;
 
-/// # Returns
-/// Report which dirs have been shown
-///
-/// # NOTE
-/// It is currently used only in GUI, but is implemented in Core as an API.
+/// A parallel search will find the `DynamicAnimationReplacer` directory in the path passed as the argument
+/// and remove only the `mohidden` extension names from the files in that directory.
 pub async fn unhide_dar(
     dar_dir: impl AsRef<Path>,
     mut progress_fn: impl FnMut(usize),
@@ -58,8 +55,7 @@ pub async fn unhide_dar(
     }
 }
 
-/// # NOTE
-/// It is currently used only in GUI, but is implemented in Core as an API.
+/// A parallel search will find and remove the `OpenAnimationReplacer` directory from the path passed as the argument.
 pub async fn remove_oar(
     search_dir: impl AsRef<Path>,
     mut progress_fn: impl FnMut(usize),
