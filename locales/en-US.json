@@ -24,6 +24,7 @@
   "css-preset-list-item1": "Preset1",
   "css-preset-list-item2": "Preset2",
   "css-preset-list-item3": "Preset3",
+  "css-preset-list-item4": "Preset4",
   "css-preset-list-label": "CSS Preset",
   "css-preset-list-tooltip": "You can choose a CSS preset.",
   "css-preset-list-tooltip2": "Note: Editing \"Preset\" will overwrite \"Custom\".",

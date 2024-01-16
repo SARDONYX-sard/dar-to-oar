@@ -1,10 +1,17 @@
 function createPreset() {
-  return `body {
+  return `
+body {
   background-attachment: fixed;
-  background-image: var(--image-url);
-  background-repeat: no-repeat;
-  background-size: cover;
   background-color: #000;
+  background-image: var(--image-url);
+  background-position-x: var(--image-position-x);
+  background-position-y: var(--image-position-y);
+  background-repeat: no-repeat;
+  background-size: var(--image-size);
+}
+
+main {
+  background-color: var(--main-bg-color);
 }
 
 :-webkit-autofill {
@@ -17,14 +24,14 @@ function createPreset() {
 }
 
 p.Mui-error {
-  color: var(--error-color);
   background-color: #2f2e2eba;
+  color: var(--error-color);
 }
 
 main:has(.ace_editor) > .MuiInputLabel-animated {
-  padding-right: 1rem !important;
-  padding-left: 1rem !important;
   background-color: #2f2e2eba;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
 a,
@@ -65,69 +72,60 @@ label.Mui-focused,
 }
 
 const preset1 = `:root {
-  --theme-color: #ff8e16;
   --autofill-color: #691c3747;
-  --hover-btn-color: #ff89898b;
   --convert-btn-color: #ab2b7e6e;
-  --hover-convert-btn-color: #fd3b3b6e;
   --error-color: #ff1655;
-  --image-url: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229")
+  --hover-btn-color: #ff89898b;
+  --hover-convert-btn-color: #fd3b3b6e;
+  --image-size: cover;
+  --image-url: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229");
+  --main-bg-color: #2226;
+  --theme-color: #ff8e16;
 }
-
 ${createPreset()}` as const;
 
 const preset2 = `:root {
-  --autofill-color: #5eb1ef24
+  --autofill-color: #5eb1ef24;
+  --convert-btn-color: #3369ad7d;
+  --hover-btn-color: #1d5aa58b;
+  --hover-convert-btn-color: #153257cc;
+  --image-size: cover;
   --image-url: url("https://images.pexels.com/photos/2817421/pexels-photo-2817421.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750& dpr=1");
+  --main-bg-color: #2228;
+  --theme-color: #5a9ab9;
 }
-
-body {
-  background-attachment: fixed;
-  background-image: var(--image-url);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: #000;
-}
-
-:-webkit-autofill {
-  box-shadow: var(--autofill-color) 0px 0px 0px 100px inset !important;
-}
-
-.ace_gutter,
-.MuiOutlinedInput-root {
-  background-color: #2424248c !important;
-}
-
-p.Mui-error {
-  color: var(--error-color);
-  background-color: #2f2e2eba;
-}
-
-main:has(.ace_editor) > .MuiInputLabel-animated {
-  padding-right: 1rem !important;
-  padding-left: 1rem !important;
-  background-color: #2f2e2eba;
-}
-
-.MuiButton-outlined {
-  background-color: #2424248c;
-}`;
+${createPreset()}` as const;
 
 const preset3 = `:root {
-  --theme-color: #9644f1;
   --autofill-color: #eb37ff1c;
-  --hover-btn-color: #8b51fb8b;
   --convert-btn-color: #ab2b7e6e;
+  --hover-btn-color: #8b51fb8b;
   --hover-convert-btn-color: #7d00c9a3;
+  --image-size: cover;
   --image-url: url("https://images.pexels.com/photos/6162265/pexels-photo-6162265.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  --main-bg-color: #2227;
+  --theme-color: #9644f1;
 }
+${createPreset()}` as const;
 
+const preset4 = `:root {
+  --autofill-color: #a19c0038;
+  --convert-btn-color: #94ce7c6e;
+  --hover-btn-color: #cefb518b;
+  --hover-convert-btn-color: #81c462a3;
+  --image-position-x: center;
+  --image-position-y: center;
+  --image-url: url('https://images.pexels.com/photos/973324/pexels-photo-973324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+  --main-bg-color: #2229;
+  --theme-color: rgb(185, 185, 90);
+}
 ${createPreset()}` as const;
 
 export const presetStyles = {
   '1': preset1,
   '2': preset2,
   '3': preset3,
+  '4': preset4,
 } as const;
 
 export function selectPreset(select: string) {
@@ -135,6 +133,7 @@ export function selectPreset(select: string) {
     case '1':
     case '2':
     case '3':
+    case '4':
       return select;
     default:
       return '0';
