@@ -7,7 +7,7 @@ use tokio::fs;
 const REMOVE_TARGET: &str =
     "../test/data/UNDERDOG Animations/meshes/actors/character/animations/OpenAnimationReplacer";
 const TARGET: &str = "../test/data/UNDERDOG Animations";
-const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
+const TABLE_PATH: &str = "../test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt";
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("dar2oar sequential vs parallel");
