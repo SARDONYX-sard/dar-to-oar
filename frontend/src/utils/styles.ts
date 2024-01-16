@@ -7,6 +7,10 @@ function createPreset() {
   background-color: #000;
 }
 
+:-webkit-autofill {
+  box-shadow: var(--autofill-color) 0px 0px 0px 100px inset !important;
+}
+
 .ace_gutter,
 .MuiOutlinedInput-root {
   background-color: #2424248c !important;
@@ -62,6 +66,7 @@ label.Mui-focused,
 
 const preset1 = `:root {
   --theme-color: #ff8e16;
+  --autofill-color: #691c3747;
   --hover-btn-color: #ff89898b;
   --convert-btn-color: #ab2b7e6e;
   --hover-convert-btn-color: #fd3b3b6e;
@@ -72,6 +77,7 @@ const preset1 = `:root {
 ${createPreset()}` as const;
 
 const preset2 = `:root {
+  --autofill-color: #5eb1ef24
   --image-url: url("https://images.pexels.com/photos/2817421/pexels-photo-2817421.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750& dpr=1");
 }
 
@@ -81,6 +87,10 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #000;
+}
+
+:-webkit-autofill {
+  box-shadow: var(--autofill-color) 0px 0px 0px 100px inset !important;
 }
 
 .ace_gutter,
@@ -105,6 +115,7 @@ main:has(.ace_editor) > .MuiInputLabel-animated {
 
 const preset3 = `:root {
   --theme-color: #9644f1;
+  --autofill-color: #eb37ff1c;
   --hover-btn-color: #8b51fb8b;
   --convert-btn-color: #ab2b7e6e;
   --hover-convert-btn-color: #7d00c9a3;
