@@ -12,6 +12,14 @@
 - What is OAR?
   [Open Animation Replacer](https://www.nexusmods.com/skyrimspecialedition/mods/92109)
 
+## Features
+
+- [x] DAR to OAR conversion(CLI & GUI applications)
+- [x] Implemented sub commands (Remove OAR dir, Unhide DAR files)
+- [x] Mapping table complements OAR's readability on GUI
+- [x] Localization system(Could be customized)
+- [x] Could edit JavaScript & CSS
+
 ## Getting Started for User
 
 - Download latest version.
@@ -25,47 +33,163 @@
 
 Click g_dar2oar.exe
 
-![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/336cef29-9810-4bbb-b893-0086ff113b75)
-![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/6dd655d7-db34-471b-8df9-defa5fca3445)
+![convert-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/b0074c27-d26b-4ce9-b093-3e8ed20205e4)
+![settings-page](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/d00ab41b-4fd6-4189-bef6-612fdefae384)
 
 ### CLI
 
 Example
 
 ```shell
-./dar2oar --src "./data/Smooth Moveset" --mapping-file "./settings/mapping_table.txt"
+./dar2oar convert "./test/data/UNDERDOG Animations" --mapping-file "./test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt" --run-parallel --stdout
 ```
 
-- options help
+#### CLI Help
 
 ```shell
+dar2oar 0.4.0
 DAR to OAR Converter CLI
 
-Usage: dar2oar.exe [OPTIONS] --src <SRC>
+USAGE:
+    dar2oar.exe <SUBCOMMAND>
 
-Options:
-      --src <SRC>
-          DAR source dir path
-      --dist <DIST>
-          OAR destination dir path(If not, it is inferred from src)
-      --name <NAME>
-          mod name in config.json & folder name(If not, it is inferred from src)
-      --author <AUTHOR>
-          mod author in config.json
-      --mapping-file <MAPPING_FILE>
-          path to section name table
-      --mapping-1person-file <MAPPING_1PERSON_FILE>
-          path to section name table(For _1st_person)
-      --log-level <LOG_LEVEL>
-          log_level trace | debug | info | warn | error [default: error]
-      --log-path <LOG_PATH>
-          Output path of log file [default: ./convert.log]
-      --run-parallel
-          use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
-  -h, --help
-          Print help
-  -V, --version
-          Print version
+OPTIONS:
+    -h, --help       Print help information
+    -V, --version    Print version information
+
+SUBCOMMANDS:
+    convert       Convert DAR to OAR
+    help          Print this message or the help of the given subcommand(s)
+    remove-oar    Find and delete `OpenAnimationReplacer` directory
+    unhide-dar    Unhide all files in the `DynamicAnimationReplacer` directory by removing the
+                      `mohidden` extension
+    Finished release [optimized] target(s) in 0.74s
+     Running `target\release\dar2oar.exe convert --help`
+```
+
+```shell
+dar2oar.exe-convert
+Convert DAR to OAR
+
+USAGE:
+    dar2oar.exe convert [OPTIONS] <SRC>
+
+ARGS:
+    <SRC>
+            DAR source dir path
+
+OPTIONS:
+        --author <AUTHOR>
+            Mod author in config.json
+
+        --dist <DIST>
+            OAR destination dir path(If not, it is inferred from DAR path)
+
+    -h, --help
+            Print help information
+
+        --hide-dar
+            After conversion, add ".mohidden" to all DAR files to hide them(For MO2 user)
+
+        --log-level <LOG_LEVEL>
+            Log level
+
+            trace | debug | info | warn | error
+
+            [default: error]
+
+        --log-path <LOG_PATH>
+            Output path of log file
+
+            [default: ./convert.log]
+
+        --mapping-1person-file <MAPPING_1PERSON_FILE>
+            Path to section name table(For _1st_person)
+
+        --mapping-file <MAPPING_FILE>
+            Path to section name table
+
+            - See more details
+            https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file
+
+        --name <NAME>
+            Mod name in config.json & directory name(If not, it is inferred from DAR path)
+
+        --run-parallel
+            Use multi thread
+
+            [Note] More than twice the processing speed can be expected, but the concurrent
+            processing results in thread termination timings being out of order, so log writes will
+            be out of order as well, greatly reducing readability of the logs.
+
+        --stdout
+            Log output to stdout as well
+    Finished release [optimized] target(s) in 0.72s
+     Running `target\release\dar2oar.exe remove-oar --help`
+```
+
+```shell
+dar2oar.exe-remove-oar
+Find and delete `OpenAnimationReplacer` directory
+
+USAGE:
+    dar2oar.exe remove-oar [OPTIONS] <TARGET_PATH>
+
+ARGS:
+    <TARGET_PATH>
+            Path containing the "OpenAnimationReplacer" directory
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+        --log-level <LOG_LEVEL>
+            Log level
+
+            trace | debug | info | warn | error
+
+            [default: error]
+
+        --log-path <LOG_PATH>
+            Output path of log file
+
+            [default: ./convert.log]
+
+        --stdout
+            Log output to stdout as well
+    Finished release [optimized] target(s) in 0.70s
+     Running `target\release\dar2oar.exe unhide-dar --help`
+```
+
+```shell
+dar2oar.exe-unhide-dar
+Unhide all files in the `DynamicAnimationReplacer` directory by removing the `mohidden` extension
+
+USAGE:
+    dar2oar.exe unhide-dar [OPTIONS] <DAR_DIR>
+
+ARGS:
+    <DAR_DIR>
+            DAR directory containing files with ".mohidden" extension
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+        --log-level <LOG_LEVEL>
+            Log level
+
+            trace | debug | info | warn | error
+
+            [default: error]
+
+        --log-path <LOG_PATH>
+            Output path of log file
+
+            [default: ./convert.log]
+
+        --stdout
+            Log output to stdout as well
 ```
 
 ## License
