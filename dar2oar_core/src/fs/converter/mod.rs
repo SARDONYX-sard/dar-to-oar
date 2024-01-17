@@ -139,7 +139,7 @@ mod test {
     #[ignore]
     #[tokio::test]
     async fn convert_with_mpsc() -> Result<()> {
-        let _guard = init_tracing("convert_non_mpsc", tracing::Level::DEBUG)?;
+        let _guard = init_tracing("convert_with_mpsc", tracing::Level::DEBUG)?;
         let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
         let sender = move |idx: usize| {
