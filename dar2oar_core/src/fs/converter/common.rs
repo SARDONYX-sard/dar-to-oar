@@ -85,15 +85,18 @@ pub async fn convert_inner(
             write_section_config(section_root, config_json).await?;
 
             // # Ordering validity:
-            // Use `AcqRel` to happened before relationship(form a memory read/write order between threads) of cas(compare_and_swap),
+            // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
             // so that other threads read after writing true to memory to prevent unnecessary file writing.
-            // - In case of cas failure, use "Relaxed" because the order is unimportant.
+            // - In case of cas failure, use `Relaxed` because the order is unimportant.
             let _ = is_converted_once.compare_exchange(
                 false,
                 true,
                 Ordering::AcqRel,
                 Ordering::Relaxed,
             );
+
+            // NOTE: If you call the function only once with this is_converted_once flag,
+            // the 1st_person&3person conversion will not work!
             write_name_space_config(&oar_name_space_path, &parsed_mod_name, author.as_deref())
                 .await?;
         } else {

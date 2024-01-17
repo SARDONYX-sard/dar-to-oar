@@ -37,6 +37,10 @@ pub async fn unhide_dar(
                 tracing::debug!("Rename {idx}th:\nfrom: {path:?}\nto: {no_hidden_path:?}");
                 fs::rename(path.as_path(), no_hidden_path).await?;
 
+                // # Ordering validity:
+                // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
+                // so that other threads read after writing true to memory to prevent unnecessary file writing.
+                // - In case of cas failure, use `Relaxed` because the order is unimportant.
                 let _ =
                     rename_once.compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed);
                 Ok(())
@@ -83,6 +87,10 @@ pub async fn remove_oar(
                         async move {
                             tracing::debug!("Try to remove oar dir: {:?}", &oar_dir);
                             fs::remove_dir_all(oar_dir).await?;
+                            // # Ordering validity:
+                            // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
+                            // so that other threads read after writing true to memory to prevent unnecessary file writing.
+                            // - In case of cas failure, use `Relaxed` because the order is unimportant.
                             let _ = found_once.compare_exchange(
                                 false,
                                 true,
