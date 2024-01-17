@@ -8,8 +8,8 @@
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
   "files.exclude": {
-    "**/node_modules": true, // optional
-    ".swc": true
+    ".swc": true,
+    "**/node_modules": true // optional
   },
   "files.trimTrailingWhitespace": true,
   "files.watcherExclude": {
@@ -17,5 +17,6 @@
     "**/node_modules/**": true,
     "**/target/**": true
   },
+  "i18n-ally.defaultNamespace": "en-US",
   "rust-analyzer.check.command": "clippy"
 }
