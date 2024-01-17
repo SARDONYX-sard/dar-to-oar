@@ -11,13 +11,8 @@ pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
         run_parallel: args.run_parallel,
         hide_dar: args.hide_dar,
     };
-    match convert_dar_to_oar(config, Closure::default).await {
-        Ok(()) => Ok(()),
-        Err(err) => {
-            tracing::error!("{}", err);
-            anyhow::bail!("{}", err)
-        }
-    }
+    convert_dar_to_oar(config, Closure::default).await?;
+    Ok(())
 }
 
 #[derive(Debug, clap::Args)]
