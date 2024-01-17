@@ -1,3 +1,8 @@
 {
-  "recommendations": ["jayfong.generate-index"]
+  "recommendations": [
+    "jayfong.generate-index",
+    "lokalise.i18n-ally",
+    "rust-lang.rust-analyzer",
+    "tamasfe.even-better-toml"
+  ]
 }
