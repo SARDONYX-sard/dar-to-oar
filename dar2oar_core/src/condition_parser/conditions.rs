@@ -4,6 +4,7 @@ use super::dar_interface::ParseError;
 use super::equip::parse_equip;
 use super::faction::parse_faction;
 use super::has::parse_has;
+use super::macros::{gen_cond, get_try_into, GetArg as _};
 use crate::conditions::{
     And, Condition, ConditionSet, CurrentGameTime, CurrentWeather, IsClass, IsCombatStyle,
     IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
@@ -11,7 +12,6 @@ use crate::conditions::{
 };
 use crate::dar_syntax::syntax::{self, Expression};
 use crate::values::{Cmp, DirectionValue, NumericValue};
-use crate::{gen_cond, get_into, get_try_into};
 
 pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
     Ok(match input {
@@ -56,7 +56,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "IsLevelLessThan" => ConditionSet::Level(Level {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: get_into!(args[0], "NumericValue"),
+            numeric_value: args.try_get(0, "NumericValue")?.into(),
             ..Default::default()
         }),
         "CurrentWeather" => gen_cond!(
@@ -109,7 +109,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "Random" => ConditionSet::RandomCondition(RandomCondition {
             negated,
             comparison: Cmp::Le,
-            numeric_value: get_into!(args[0], "NumericValue in Random"),
+            numeric_value: args.try_get(0, "NumericValue in Random")?.into(),
             ..Default::default()
         }),
         "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {

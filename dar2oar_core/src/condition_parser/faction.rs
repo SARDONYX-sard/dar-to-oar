@@ -1,8 +1,8 @@
 use super::dar_interface::ParseError;
+use super::macros::{get_try_into, GetArg as _};
 use crate::{
     conditions::{ConditionSet, FactionRank, IsInFaction},
     dar_syntax::syntax::FnArg,
-    get_into, get_try_into,
     values::Cmp,
 };
 
@@ -16,7 +16,7 @@ pub(super) fn parse_faction(
             negated,
             faction: get_try_into!(args[0], "PluginValue")?,
             comparison,
-            numeric_value: get_into!(args[1], "NumericValue"),
+            numeric_value: args.try_get(1, "NumericValue")?.into(),
             ..Default::default()
         }))
     };

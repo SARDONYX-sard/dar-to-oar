@@ -1,59 +1,91 @@
-#[macro_export]
-macro_rules! get_arg {
-    ($args:ident[$index:literal], $expected:literal) => {
-        $args.get($index).ok_or(ParseError::UnexpectedValue(
-            $expected.to_string(),
-            format!("None in args[{}]", $index),
-        ))
-    };
-    ($args:ident[$index:literal], $expected:literal, $actual:literal) => {
-        $args.get($index).ok_or(ParseError::UnexpectedValue(
-            $expected.to_string(),
-            $actual.to_string(),
-        ))
-    };
-}
+use super::ParseError;
+use crate::dar_syntax::syntax::FnArg;
 
-/// get arg & into
+/// A trait for safely accessing elements in a vector without causing runtime panics.
 ///
-/// Return early if \[$index\]th of args cannot be obtained. After that, do into.
-#[macro_export]
-macro_rules! get_into {
-    ($args:ident[$index:literal], $expected:literal) => {
-        $crate::get_arg!($args[$index], $expected)?.into()
-    };
-    ($args:ident[$index:literal], $expected:literal, $actual:literal) => {
-        $crate::get_arg!($args[$index], $expected, $actual)?.into()
-    };
+/// This trait provides methods to access the index of a vector, returning a result
+/// with either the desired element or an error if the index is out of bounds.
+pub(super) trait GetArg {
+    /// The type of the output, which is a result containing a reference to the desired element
+    /// or a error if the index is out of bounds.
+    ///
+    /// Use [Generic Associated Types(GATs)](https://blog.rust-lang.org/2022/10/28/gats-stabilization.html#what-are-gats)
+    /// for the `&T` in [`Vec<T>`] because it has the same lifeTime as [Vec].
+    type Output<'a>
+    where
+        Self: 'a;
+
+    /// Access the element at the specified index of the vector.
+    ///
+    /// # Returns
+    ///
+    /// A result containing a reference to the desired element or a `Error` if the index is out of bounds.
+    fn try_get(&self, index: usize, expected: impl ToString) -> Self::Output<'_>;
+
+    /// Access the element at the specified index of the vector with additional information in case of an error.
+    ///
+    /// # Returns
+    ///
+    /// A result containing a reference to the desired element or a `Error` with detailed information if the index is out of bounds.
+    fn try_get_real<T>(&self, index: usize, expected: T, actual: T) -> Self::Output<'_>
+    where
+        T: ToString;
 }
 
-/// get arg & try_into
-#[macro_export]
+impl GetArg for Vec<FnArg<'_>> {
+    type Output<'a> = Result<&'a FnArg<'a>, ParseError> where Self: 'a;
+
+    fn try_get(&self, index: usize, expected: impl ToString) -> Self::Output<'_> {
+        self.get(index).ok_or(ParseError::UnexpectedValue(
+            expected.to_string(),
+            format!("None in args[{}]", index),
+        ))
+    }
+
+    fn try_get_real<T>(&self, index: usize, expected: T, actual: T) -> Self::Output<'_>
+    where
+        T: ToString,
+    {
+        self.get(index).ok_or(ParseError::UnexpectedValue(
+            expected.to_string(),
+            actual.to_string(),
+        ))
+    }
+}
+
+/// Access [Vec::get](https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.get)(index) & try_into()
 macro_rules! get_try_into {
     ($args:ident[$index:literal], $expected:literal) => {
-        $crate::get_arg!($args[$index], $expected)?.try_into()
+        <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get(
+            &$args, $index, $expected,
+        )?
+        .try_into()
     };
     ($args:ident[$index:literal], $expected:literal, $actual:literal) => {
-        $crate::get_arg!($args[$index], $expected, $actual)?.try_into()
+        <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get_real(
+            &$args, $index, $expected, $actual
+        )?
+        .try_into()
     };
 }
+pub(super) use get_try_into;
 
-// Generate COnditionSet & get arg then try_into(exec `into()` if use into Option)
-/// $id:ident, $field_name:ident, $args:ident $negated:expr, $expected:literal, into(This is Option use into)
-#[macro_export]
+/// Generate `ConditionSet` & [Vec]::get(index) & try_into() (can use `into` if you need)
 macro_rules! gen_cond {
     ($id:ident($field_name:ident, $negated:ident), $args:ident, $expected:literal) => {
         ConditionSet::$id($id {
             negated: $negated,
-            $field_name: $crate::get_try_into!($args[0], $expected)?,
+            $field_name: $crate::condition_parser::macros::get_try_into!($args[0], $expected)?,
             ..Default::default()
         })
     };
     ($id:ident($field_name:ident, $negated:ident), $args:ident, $expected:literal, into) => {
         ConditionSet::$id($id {
-            negated: $negated,
-            $field_name: $crate::get_into!($args[0], $expected),
+          negated: $negated,
+          $field_name:
+          <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get(&$args,0, $expected)?.into(),
             ..Default::default()
         })
     };
 }
+pub(super) use gen_cond;

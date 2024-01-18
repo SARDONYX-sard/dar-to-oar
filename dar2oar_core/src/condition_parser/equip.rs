@@ -1,8 +1,8 @@
-use super::dar_interface::ParseError;
+use super::macros::get_try_into;
+use super::{dar_interface::ParseError, macros::GetArg as _};
 use crate::{
     conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
     dar_syntax::syntax::FnArg,
-    get_into, get_try_into,
     values::{NumericLiteral, TypeValue},
 };
 
@@ -36,7 +36,7 @@ pub(super) fn parse_equip(
             ConditionSet::IsEquippedHasKeyword(IsEquippedHasKeyword {
                 negated,
                 left_hand: condition_name == "IsEquippedLeftHasKeyword",
-                keyword: get_into!(args[0], "Keyword"),
+                keyword: args.try_get(0, "Keyword")?.into(),
                 ..Default::default()
             })
         }

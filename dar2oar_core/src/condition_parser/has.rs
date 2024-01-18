@@ -1,9 +1,10 @@
 use super::dar_interface::ParseError;
+use super::macros::{gen_cond, get_try_into, GetArg as _};
 use crate::conditions::{
     ConditionSet, HasKeyword, HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType,
     HasSpell,
 };
-use crate::{dar_syntax::syntax::FnArg, gen_cond, get_into, get_try_into};
+use crate::dar_syntax::syntax::FnArg;
 
 pub(super) fn parse_has(
     condition_name: &str,
@@ -12,7 +13,7 @@ pub(super) fn parse_has(
 ) -> Result<ConditionSet, ParseError> {
     Ok(match condition_name {
         "HasKeyword" => ConditionSet::HasKeyword(HasKeyword {
-            keyword: get_into!(args[0], "keyword in HasKeyword"),
+            keyword: args.try_get(0, "keyword in HasKeyword")?.into(),
             negated,
             ..Default::default()
         }),
