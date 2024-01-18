@@ -34,7 +34,7 @@ pub async fn unhide_dar(
             async move {
                 let mut no_hidden_path = path.as_path().to_owned();
                 no_hidden_path.set_extension(""); // Remove .mohidden extension
-                tracing::debug!("Rename {idx}th:\nfrom: {path:?}\nto: {no_hidden_path:?}");
+                tracing::debug!("Rename {idx}th:\n- From: {path:?}\n-   To: {no_hidden_path:?}\n");
                 fs::rename(path.as_path(), no_hidden_path).await?;
 
                 // # Ordering validity:
@@ -85,7 +85,7 @@ pub async fn remove_oar(
                         let found_once = Arc::clone(&found_once);
 
                         async move {
-                            tracing::debug!("Try to remove oar dir: {:?}", &oar_dir);
+                            tracing::debug!("Try to remove oar dir: {:?}\n", &oar_dir);
                             fs::remove_dir_all(oar_dir).await?;
                             // # Ordering validity:
                             // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),

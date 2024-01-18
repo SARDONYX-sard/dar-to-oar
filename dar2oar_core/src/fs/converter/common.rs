@@ -106,11 +106,11 @@ pub async fn convert_inner(
                 let file = &non_leaf_dir.join(file_name);
                 tracing::debug!("Create dirs: {:?}", &non_leaf_dir);
                 fs::create_dir_all(&non_leaf_dir).await?;
-                tracing::debug!("Copy with Nest Dir:\nfrom: {path:?}\nto: {file:?}");
+                tracing::debug!("Copy with Nest Dir:\n- From: {path:?}\n-   To: {file:?}");
                 fs::copy(path, file).await?;
             } else {
                 let file = section_root.join(file_name);
-                tracing::debug!("Copy:\nfrom: {path:?}\nto: {file:?}");
+                tracing::debug!("Copy:\n- From: {path:?}\n-   To: {file:?}");
                 fs::create_dir_all(&section_root).await?;
                 fs::copy(path, file).await?;
             }
