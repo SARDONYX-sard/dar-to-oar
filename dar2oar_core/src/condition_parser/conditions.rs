@@ -47,16 +47,10 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
     } = condition;
 
     Ok(match fn_name {
-        "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
-        actor if fn_name.starts_with("IsActor") => parse_actor(actor, args, negated)?,
-        "IsInFaction" | "IsFactionRankEqualTo" | "IsFactionRankLessThan" => {
-            parse_faction(fn_name, args, negated)?
-        }
-        equip if fn_name.starts_with("IsEquipped") => parse_equip(equip, args, negated)?,
-        "IsLevelLessThan" => ConditionSet::Level(Level {
+        "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue")?.into(),
+            numeric_value: NumericValue::StaticValue(args[0].clone().try_into().unwrap()),
             ..Default::default()
         }),
         "CurrentWeather" => gen_cond!(
@@ -64,7 +58,6 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             args,
             "PluginValue for weather"
         ),
-        "IsRace" => gen_cond!(IsRace(race, negated), args, "PluginValue for IsRace"),
         "IsClass" => gen_cond!(IsClass(class, negated), args, "PluginValue for IsClass"),
         "IsCombatStyle" => {
             gen_cond!(
@@ -73,22 +66,22 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
                 "PluginValue for IsCombatStyle"
             )
         }
-        "IsVoiceType" => {
-            gen_cond!(
-                IsVoiceType(voice_type, negated),
-                args,
-                "PluginValue for IsVoiceType"
-            )
+        actor if fn_name.starts_with("IsActor") => parse_actor(actor, args, negated)?,
+        equip if fn_name.starts_with("IsEquipped") => parse_equip(equip, args, negated)?,
+        "IsInFaction" | "IsFactionRankEqualTo" | "IsFactionRankLessThan" => {
+            parse_faction(fn_name, args, negated)?
         }
+        "IsInLocation" => gen_cond!(IsInLocation(location, negated), args, "IsInLocation"),
+        "IsLevelLessThan" => ConditionSet::Level(Level {
+            negated,
+            comparison: Cmp::Lt,
+            numeric_value: args.try_get(0, "NumericValue")?.into(),
+            ..Default::default()
+        }),
         "IsParentCell" => gen_cond!(
             IsParentCell(cell, negated),
             args,
             "PluginValue for IsParentCell"
-        ),
-        "IsWorldSpace" => gen_cond!(
-            IsWorldSpace(world_space, negated),
-            args,
-            "PluginValue for IsWorldSpace"
         ),
         "IsMovementDirection" => ConditionSet::IsDirectionMovement(IsMovementDirection {
             negated,
@@ -97,7 +90,19 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             },
             ..Default::default()
         }),
-        "IsInLocation" => gen_cond!(IsInLocation(location, negated), args, "IsInLocation"),
+        "IsRace" => gen_cond!(IsRace(race, negated), args, "PluginValue for IsRace"),
+        "IsVoiceType" => {
+            gen_cond!(
+                IsVoiceType(voice_type, negated),
+                args,
+                "PluginValue for IsVoiceType"
+            )
+        }
+        "IsWorldSpace" => gen_cond!(
+            IsWorldSpace(world_space, negated),
+            args,
+            "PluginValue for IsWorldSpace"
+        ),
         "IsWorn" => gen_cond!(IsWorn(form, negated), args, "IsWorn"),
         "IsWornHasKeyword" => gen_cond!(
             IsWornHasKeyword(keyword, negated),
@@ -112,19 +117,22 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             numeric_value: args.try_get(0, "NumericValue in Random")?.into(),
             ..Default::default()
         }),
-        "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
+        "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
+
+        // Conditional expressions without any arguments
+        // This enumeration order is the same as the DAR docs.
+        "IsFemale" | "IsChild" | "IsPlayerTeammate" | "IsInInterior" | "IsUnique"
+        | "IsAttacking" | "IsRunning" | "IsSneaking" | "IsSprinting" | "IsInAir" | "IsInCombat"
+        | "IsWeaponDrawn" => ConditionSet::Condition(Condition {
+            condition: fn_name.into(),
             negated,
-            comparison: Cmp::Lt,
-            numeric_value: NumericValue::StaticValue(args[0].clone().try_into().unwrap()),
             ..Default::default()
         }),
-        _ => {
-            tracing::debug!("Condition({fn_name}) has no explicit mapping.");
-            ConditionSet::Condition(Condition {
-                condition: fn_name.into(),
-                negated,
-                ..Default::default()
-            })
+        unknown_condition => {
+            return Err(ParseError::UnexpectedValue(
+                "Unknown condition: ".into(),
+                unknown_condition.into(),
+            ))
         }
     })
 }
