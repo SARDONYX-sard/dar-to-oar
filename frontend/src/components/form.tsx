@@ -171,7 +171,7 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} isDir setValue={setStorage('src')} />
+                <SelectPathButton path={value} isDir setPath={setStorage('src')} />
               </Grid>
             </Grid>
           )}
@@ -205,7 +205,7 @@ export function ConvertForm() {
                 />
               </Grid>
               <Grid xs={2}>
-                <SelectPathButton path={value} isDir setValue={setStorage('dist')} />
+                <SelectPathButton path={value} isDir setPath={setStorage('dist')} />
               </Grid>
             </Grid>
           )}
@@ -235,7 +235,7 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} setValue={setStorage('mappingPath')} />
+                <SelectPathButton path={value} setPath={setStorage('mappingPath')} />
               </Grid>
             </Grid>
           )}
@@ -265,7 +265,7 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} setValue={setStorage('mapping1personPath')} />
+                <SelectPathButton path={value} setPath={setStorage('mapping1personPath')} />
               </Grid>
             </Grid>
           )}

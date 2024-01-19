@@ -10,9 +10,9 @@ export const ImportLangButton = () => {
 
   const handleClick = async () => {
     try {
-      const [isCancelled, contents] = await importLang();
-      JSON.parse(contents); // Parse test
-      if (!isCancelled) {
+      const contents = await importLang();
+      if (contents) {
+        JSON.parse(contents); // Parse test
         localStorage.setItem('custom-translation-dict', contents);
         localStorage.setItem('locale', 'custom');
         window.location.reload(); // To enable

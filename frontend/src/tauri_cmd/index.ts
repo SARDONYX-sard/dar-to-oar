@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api';
-import { open } from '@tauri-apps/api/dialog';
+import { type OpenDialogOptions, open } from '@tauri-apps/api/dialog';
 import { appLogDir } from '@tauri-apps/api/path';
 import { open as openShell } from '@tauri-apps/api/shell';
 
@@ -117,31 +117,39 @@ export async function importLang() {
     localStorage.setItem(langPathKey, path);
   };
 
-  const isCancelled = await openPath(path, setPath, false);
-  const contents = await invoke<string>('read_to_string', { path });
-  return [isCancelled, contents] as const;
+  if (await openPath(path, { setPath })) {
+    return await invoke<string>('read_to_string', { path });
+  }
+  return null;
 }
+
+type OpenOptions = {
+  /**
+   * path setter.
+   * - If we don't get the result within this function, somehow the previous value comes in.(React component)
+   * @param path
+   * @returns
+   */
+  setPath?: (path: string) => void;
+} & OpenDialogOptions;
 
 /**
  * Open a file or Dir
  *
- * @returns {Promise<boolean>} - isCancelled
+ * @returns selected path or cancelled null
  * @throws
  */
-export async function openPath(path: string, setPath: (path: string) => void, isDir: boolean) {
+export async function openPath(path: string, options: OpenOptions) {
   const res = await open({
     defaultPath: path,
-    directory: isDir,
+    ...options,
   });
 
-  if (typeof res === 'string') {
-    //! NOTE:
-    //! It is important to use setter here!
-    //! If we don't get the result within this function, somehow the previous value comes in.
-    setPath(res);
+  if (typeof res === 'string' && options.setPath) {
+    options.setPath(res);
   }
 
-  return res === null;
+  return res;
 }
 
 /**

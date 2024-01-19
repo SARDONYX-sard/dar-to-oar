@@ -7,14 +7,14 @@ import { openPath } from '@/tauri_cmd';
 
 type Props = Readonly<{
   path: string;
+  setPath: (value: string) => void;
   isDir?: boolean;
-  setValue: (value: string) => void;
 }>;
 
-export function SelectPathButton({ path, isDir = false, setValue }: Props) {
+export function SelectPathButton({ path, isDir = false, setPath }: Props) {
   const { t } = useTranslation();
   const handleClick = async () => {
-    openPath(path, setValue, isDir).catch((e) => toast.error(`${e}`));
+    openPath(path, { setPath, directory: isDir }).catch((e) => toast.error(`${e}`));
   };
 
   return (

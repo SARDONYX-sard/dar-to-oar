@@ -46,7 +46,7 @@ describe('SelectPathButton component', () => {
     require('@/tauri_cmd').openPath = openPathMock;
     require('@/hooks').useTranslation = () => ({ t: tMock });
 
-    render(<SelectPathButton path="/test" setValue={jest.fn()} />);
+    render(<SelectPathButton path="/test" setPath={jest.fn()} />);
 
     // Click the button
     fireEvent.click(screen.getByText('Select'));
