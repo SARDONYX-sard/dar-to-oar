@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2024-01-19
+### :sparkles: New Features
+- [`7b3d215`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7b3d215756b11b77c60352c94f5a7306ac047468) - **core**: make logs easier to read *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`6c00e4c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6c00e4ce0a6fe54ae11ea43aa6c81f09bf6d15fa) - **lang**: implement `import language button` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3767e22`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3767e229bb680d813c055178948050ab9f56bbef) - **core**: enable strict checking of conditional statements *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1ea96a2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1ea96a26bc93efc736367367497bdbb5a4295cb0) - **core**: change not to panic *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`b37b29f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b37b29f82d98f59ab42304c0d21c707100d78602) - **cli**: avoid double write error log *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`809dd4c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/809dd4cdfeb876028cf9bf611bcb9fff5022baac) - **front-style**: more clear background color *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`cecbf88`](https://github.com/SARDONYX-sard/dar-to-oar/commit/cecbf885351e7b73f5479377111d3e43a9e8fa44) - **locale-ja**: fix `平行` to `並行` in ja-Jp.json *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`69bd3ae`](https://github.com/SARDONYX-sard/dar-to-oar/commit/69bd3aec6059e6ecae09098b64b4631b1aafbb5d) - **core**: fix `IsEquippedShout` forgetting OAR parse *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`7935810`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7935810fe414016b86302952c18d69d5f0fd3843) - **core-macro**: change macros to private *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`929803a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/929803a07ed9df5887a296697989d968cf61b511) - **core**: fix test name *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`9bdb16a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9bdb16a2a6bb791263f9f0fd506ebddbea1e20de) - **vscode**: add default i18n settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`0df0c79`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0df0c79d101a3ea739ac3b755f89d4bf9ecef5ce) - **vscode**: add recommend extensions *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8542bf6`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8542bf6e9d2afedf433056bcffcd980bfce00c9b) - **sample**: change i18n js sample *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.4.0] - 2024-01-16
 ### :boom: BREAKING CHANGES
 - due to [`026c438`](https://github.com/SARDONYX-sard/dar-to-oar/commit/026c4384992218560dc95c0be160855a8d66df2b) - implement cli sub commands *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*:
@@ -266,3 +291,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.3]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.2...0.2.3
 [0.3.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.3...0.3.0
 [0.4.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.3.0...0.4.0
+[0.4.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.0...0.4.1
