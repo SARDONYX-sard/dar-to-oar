@@ -17,6 +17,5 @@
     "**/node_modules/**": true,
     "**/target/**": true
   },
-  "i18n-ally.defaultNamespace": "en-US",
   "rust-analyzer.check.command": "clippy"
 }
