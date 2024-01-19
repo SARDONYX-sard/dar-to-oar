@@ -4,6 +4,7 @@ import { Box, Button } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import AceEditor from 'react-ace';
 
+import { ImportLangButton } from '@/components/buttons';
 import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
 import { Toaster } from '@/components/notifications';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
@@ -56,6 +57,7 @@ export default function Settings() {
       >
         <SelectEditorMode editorMode={selectEditorMode(editorMode)} setEditorMode={setEditorKeyMode} />
         <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
+        <ImportLangButton />
         <TranslationList />
       </div>
       <Help />

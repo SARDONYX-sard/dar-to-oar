@@ -82,11 +82,16 @@ pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), Stri
 }
 
 #[tauri::command]
-pub(crate) async fn unhide_dar_dir(window: Window, dar_dir: &str) -> Result<(), String> {
-    time!("unhide_dar", unhide_dar(dar_dir, sender!(window)))
+pub(crate) async fn read_to_string(path: &str) -> Result<String, String> {
+    std::fs::read_to_string(path).or_else(|err| bail!(err))
 }
 
 #[tauri::command]
 pub(crate) async fn remove_oar_dir(window: Window, path: &str) -> Result<(), String> {
     time!("remove_oar", remove_oar(path, sender!(window)))
+}
+
+#[tauri::command]
+pub(crate) async fn unhide_dar_dir(window: Window, dar_dir: &str) -> Result<(), String> {
+    time!("unhide_dar", unhide_dar(dar_dir, sender!(window)))
 }

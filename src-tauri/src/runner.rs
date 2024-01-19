@@ -8,6 +8,7 @@ pub fn run_tauri() -> anyhow::Result<()> {
             crate::cmd::change_log_level,
             crate::cmd::convert_dar2oar,
             crate::cmd::convert_dar2oar_with_progress,
+            crate::cmd::read_to_string,
             crate::cmd::remove_oar_dir,
             crate::cmd::unhide_dar_dir,
         ])

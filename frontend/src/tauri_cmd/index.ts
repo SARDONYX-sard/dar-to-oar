@@ -102,8 +102,30 @@ export async function removeOarDir(path: string) {
 }
 
 /**
+ * Read the entire contents of a file into a string.
+ * @param {string} path - target path
+ *
+ * @return [isCancelled, contents]
+ * @throws
+ */
+export async function importLang() {
+  const langPathKey = 'lang-file-path';
+  let path = localStorage.getItem(langPathKey) ?? '';
+
+  const setPath = (newPath: string) => {
+    path = newPath;
+    localStorage.setItem(langPathKey, path);
+  };
+
+  const isCancelled = await openPath(path, setPath, false);
+  const contents = await invoke<string>('read_to_string', { path });
+  return [isCancelled, contents] as const;
+}
+
+/**
  * Open a file or Dir
  *
+ * @returns {Promise<boolean>} - isCancelled
  * @throws
  */
 export async function openPath(path: string, setPath: (path: string) => void, isDir: boolean) {
@@ -118,6 +140,8 @@ export async function openPath(path: string, setPath: (path: string) => void, is
     //! If we don't get the result within this function, somehow the previous value comes in.
     setPath(res);
   }
+
+  return res === null;
 }
 
 /**
