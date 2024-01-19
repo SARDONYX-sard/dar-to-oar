@@ -11,7 +11,7 @@ use crate::conditions::{
     IsWornHasKeyword, Level, Or, RandomCondition,
 };
 use crate::dar_syntax::syntax::{self, Expression};
-use crate::values::{Cmp, DirectionValue, NumericValue};
+use crate::values::{Cmp, DirectionValue};
 
 pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
     Ok(match input {
@@ -50,7 +50,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: NumericValue::StaticValue(args[0].clone().try_into().unwrap()),
+            numeric_value: args.try_get(0, "NumericValue for CurrentGameTime")?.into(),
             ..Default::default()
         }),
         "CurrentWeather" => gen_cond!(
@@ -75,7 +75,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "IsLevelLessThan" => ConditionSet::Level(Level {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue")?.into(),
+            numeric_value: args.try_get(0, "NumericValue for Level")?.into(),
             ..Default::default()
         }),
         "IsParentCell" => gen_cond!(
