@@ -1,7 +1,7 @@
-use super::macros::get_try_into;
+use super::macros::{gen_cond, get_try_into};
 use super::{dar_interface::ParseError, macros::GetArg as _};
 use crate::{
-    conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedType},
+    conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedShout, IsEquippedType},
     dar_syntax::syntax::FnArg,
     values::{NumericLiteral, TypeValue},
 };
@@ -40,6 +40,16 @@ pub(super) fn parse_equip(
                 ..Default::default()
             })
         }
-        _ => unreachable!(),
+        "IsEquippedShout" => gen_cond!(
+            IsEquippedShout(shout, negated),
+            args,
+            "shout(PluginValue) in IsEquippedShout"
+        ),
+        _ => {
+            return Err(ParseError::UnexpectedValue(
+                "IsEquipped prefix condition unexpected to come in: ".to_string(),
+                condition_name.to_string(),
+            ))
+        }
     })
 }
