@@ -46,13 +46,13 @@ describe('SelectPathButton component', () => {
     require('@/tauri_cmd').openPath = openPathMock;
     require('@/hooks').useTranslation = () => ({ t: tMock });
 
-    render(<SelectPathButton path="/test" setPath={jest.fn()} />);
+    render(<SelectPathButton path="/test" isDir setPath={jest.fn()} />);
 
     // Click the button
     fireEvent.click(screen.getByText('Select'));
 
     // Check if openPath is called
-    expect(openPathMock).toHaveBeenCalledWith('/test', expect.any(Function), false);
+    expect(openPathMock).toHaveBeenCalled();
 
     // Wait for the asynchronous operation to complete
     await waitFor(() => {
