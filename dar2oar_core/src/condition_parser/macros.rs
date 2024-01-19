@@ -83,7 +83,7 @@ macro_rules! gen_cond {
         ConditionSet::$id($id {
           negated: $negated,
           $field_name:
-          <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get(&$args,0, $expected)?.into(),
+          <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get(&$args, 0, $expected)?.into(),
             ..Default::default()
         })
     };

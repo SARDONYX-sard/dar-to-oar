@@ -90,11 +90,11 @@ impl TryFrom<NumericLiteral> for WeaponType {
     fn try_from(value: NumericLiteral) -> Result<Self, Self::Error> {
         match value {
             NumericLiteral::Hex(num) => match num {
-                1..=18 => Ok((num as i64).try_into().expect("unreachable")),
+                1..=18 => Ok((num as i64).try_into()?),
                 _ => Err("Got hex, Out of range 1..=18"),
             },
             NumericLiteral::Decimal(num) => match num {
-                -1..=18 => Ok((num as i64).try_into().expect("unreachable")),
+                -1..=18 => Ok((num as i64).try_into()?),
                 _ => Err("Got Decimal, Out of range -1..=18"),
             },
             NumericLiteral::Float(num) => Ok(num.to_string().as_str().try_into()?),
