@@ -82,7 +82,7 @@ OPTIONS:
         --author <AUTHOR>
             Mod author in config.json
 
-        --dist <DIST>
+        --dst <DST>
             OAR destination dir path(If not, it is inferred from DAR path)
 
     -h, --help

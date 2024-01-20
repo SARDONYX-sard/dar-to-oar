@@ -9,7 +9,7 @@ export { open as openShell } from '@tauri-apps/api/shell';
 
 type ConverterOptions = {
   src: string;
-  dist?: string;
+  dst?: string;
   modName?: string;
   modAuthor?: string;
   mappingPath?: string;
@@ -33,7 +33,7 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
   const args = {
     options: {
       darDir: props.src === '' ? undefined : props.src,
-      oarDir: props.dist === '' ? undefined : props.dist,
+      oarDir: props.dst === '' ? undefined : props.dst,
       modName: props.modName === '' ? undefined : props.modName,
       modAuthor: props.modAuthor === '' ? undefined : props.modAuthor,
       mappingPath: props.mappingPath === '' ? undefined : props.mappingPath,

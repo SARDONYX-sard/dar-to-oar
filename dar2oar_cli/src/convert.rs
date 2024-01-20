@@ -3,7 +3,7 @@ use dar2oar_core::{convert_dar_to_oar, get_mapping_table, Closure, ConvertOption
 pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
     let config = ConvertOptions {
         dar_dir: args.src,
-        oar_dir: args.dist,
+        oar_dir: args.dst,
         mod_name: args.name,
         author: args.author,
         section_table: get_mapping_table(args.mapping_file).await,
@@ -22,7 +22,7 @@ pub(crate) struct Convert {
     src: String,
     #[clap(long)]
     /// OAR destination dir path(If not, it is inferred from DAR path)
-    dist: Option<String>,
+    dst: Option<String>,
     #[clap(long)]
     /// Mod name in config.json & directory name(If not, it is inferred from DAR path)
     name: Option<String>,
