@@ -10,6 +10,8 @@ pub enum ConvertError {
     NotFoundOarDir,
     #[error("Not found \"DynamicAnimationReplacer\" directory")]
     NotFoundDarDir,
+    #[error("Not found DAR priority(Number) directory")]
+    NotFoundPriorityDir,
     #[error("Never converted.")]
     NeverConverted,
     #[error("Not found file name")]

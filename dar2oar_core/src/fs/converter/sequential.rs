@@ -35,7 +35,7 @@ pub async fn convert_dar_to_oar(
             tracing::debug!("Dir: {:?}", path);
             continue;
         }
-        let parsed_path = match parse_dar_path(path, None) {
+        let parsed_path = match parse_dar_path(path) {
             Ok(p) => p,
             Err(_) => continue,
         };

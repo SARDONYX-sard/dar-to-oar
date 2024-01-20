@@ -1,20 +1,7 @@
 use crate::conditions::{ConditionsConfig, MainConfig};
 use crate::error::Result;
 use std::path::Path;
-use tokio::{
-    fs,
-    io::{self, AsyncReadExt, AsyncWriteExt},
-};
-
-pub(crate) async fn read_file<P>(file_path: P) -> io::Result<String>
-where
-    P: AsRef<Path>,
-{
-    let mut file = fs::File::open(file_path).await?;
-    let mut content = String::new();
-    file.read_to_string(&mut content).await?;
-    Ok(content)
-}
+use tokio::{fs, io::AsyncWriteExt};
 
 async fn write_json_to<T>(target_path: impl AsRef<Path>, value: &T) -> Result<()>
 where
@@ -26,6 +13,7 @@ where
     Ok(())
 }
 
+/// Write config.json for a dir with each motion file with priority.
 pub(crate) async fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> Result<()>
 where
     P: AsRef<Path>,
@@ -33,6 +21,8 @@ where
     write_json_to(oar_dir.as_ref().join("config.json"), &config_json).await
 }
 
+/// Write root config.json
+///
 /// If it exists, do nothing. (This behavior is intended to facilitate the creation of config files
 /// for 1st_person and 3rd_person.)
 pub(crate) async fn write_name_space_config<P>(
