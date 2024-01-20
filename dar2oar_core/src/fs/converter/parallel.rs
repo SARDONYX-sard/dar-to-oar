@@ -36,7 +36,10 @@ pub async fn convert_dar_to_oar(
 
     for (idx, entry) in entires.enumerate() {
         let path = entry.map_err(|_| ConvertError::NotFoundEntry)?.path();
-        let parsed_path = Arc::new(match parse_dar_path(&path, None) {
+        if !path.is_file() {
+            continue;
+        }
+        let parsed_path = Arc::new(match parse_dar_path(&path) {
             Ok(p) => p,
             Err(_) => continue,
         });
@@ -51,7 +54,7 @@ pub async fn convert_dar_to_oar(
                 tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
                 convert_inner(
                     &options,
-                    &path,
+                    path.as_ref(),
                     parsed_path.as_ref(),
                     is_converted_once.as_ref(),
                 )

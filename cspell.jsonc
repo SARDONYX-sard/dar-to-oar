@@ -16,6 +16,7 @@
     "noconflict",
     "println",
     "rfind",
+    "rustfmt",
     "Rustup",
     "Shippori",
     "Skyrim",
