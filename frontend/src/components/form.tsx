@@ -24,7 +24,7 @@ import { selectLogLevel } from '@/utils/selector';
 
 type FormProps = {
   src: string;
-  dist: string;
+  dst: string;
   modName: string;
   modAuthor: string;
   mappingPath: string;
@@ -39,7 +39,7 @@ type FormProps = {
 
 const getInitialFormValues = (): FormProps => ({
   src: localStorage.getItem('src') ?? '',
-  dist: localStorage.getItem('dist') ?? '',
+  dst: localStorage.getItem('dst') ?? '',
   modName: localStorage.getItem('modName') ?? '',
   modAuthor: localStorage.getItem('modAuthor') ?? '',
   mappingPath: localStorage.getItem('mappingPath') ?? '',
@@ -70,13 +70,13 @@ export function ConvertForm() {
 
   const setLoading = (loading: boolean) => setValue('loading', loading);
   const handleAllClear = () => {
-    const formValues = ['src', 'dist', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
+    const formValues = ['src', 'dst', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
     formValues.forEach((key) => setStorage(key)(''));
   };
 
   const onSubmit: SubmitHandler<FormProps> = async ({
     src,
-    dist,
+    dst,
     modName,
     modAuthor,
     mappingPath,
@@ -104,7 +104,7 @@ export function ConvertForm() {
 
       await convertDar2oar({
         src,
-        dist,
+        dst,
         modName,
         modAuthor,
         mappingPath,
@@ -178,7 +178,7 @@ export function ConvertForm() {
         />
 
         <Controller
-          name="dist"
+          name="dst"
           control={control}
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <Grid container spacing={2}>
@@ -191,7 +191,7 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('dist', e.target.value);
+                    localStorage.setItem('dst', e.target.value);
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -205,7 +205,7 @@ export function ConvertForm() {
                 />
               </Grid>
               <Grid xs={2}>
-                <SelectPathButton path={value} isDir setPath={setStorage('dist')} />
+                <SelectPathButton path={value} isDir setPath={setStorage('dst')} />
               </Grid>
             </Grid>
           )}
@@ -445,7 +445,7 @@ export function ConvertForm() {
             <UnhideDarBtn path={getValues('src')} />
           </Grid>
           <Grid xs={3}>
-            <RemoveOarBtn darPath={getValues('src')} oarPath={getValues('dist')} />
+            <RemoveOarBtn darPath={getValues('src')} oarPath={getValues('dst')} />
           </Grid>
         </Grid>
 

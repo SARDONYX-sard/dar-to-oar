@@ -2,8 +2,8 @@ use dar2oar_core::{convert_dar_to_oar, get_mapping_table, Closure, ConvertOption
 
 pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
     let config = ConvertOptions {
-        dar_dir: args.src,
-        oar_dir: args.dist,
+        dar_dir: args.source,
+        oar_dir: args.destination,
         mod_name: args.name,
         author: args.author,
         section_table: get_mapping_table(args.mapping_file).await,
@@ -18,13 +18,13 @@ pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
 #[derive(Debug, clap::Args)]
 pub(crate) struct Convert {
     #[clap(value_parser)]
-    /// DAR source dir path
-    src: String,
+    /// Path containing the "DynamicAnimationReplacer" directory
+    source: String,
     #[clap(long)]
-    /// OAR destination dir path(If not, it is inferred from DAR path)
-    dist: Option<String>,
+    /// "OpenAnimationReplacer" directory output destination (if none, inferred from DAR path)
+    destination: Option<String>,
     #[clap(long)]
-    /// Mod name in config.json & directory name(If not, it is inferred from DAR path)
+    /// Mod name in config.json & directory name (if none, inferred from DAR path)
     name: Option<String>,
     #[clap(long)]
     /// Mod author in config.json
@@ -52,7 +52,7 @@ pub(crate) struct Convert {
 
     // ---logger
     #[clap(long)]
-    /// Log output to stdout as well
+    /// Log output to standard output as well
     pub stdout: bool,
     #[clap(long, default_value = "error")]
     /// Log level
