@@ -20,7 +20,7 @@
     'convert-form-mod-name-helper': '[可选] 推荐使用ASCII(英文)',
     'convert-form-oar-helper': '[可选] 指定OAR的输出目录(例如: "NewMod" -> "NewMod/meshes/[...])"',
     'convert-form-oar-helper2': '如果未指定，则OAR将在与DAR相同的位置创建',
-    'convert-form-oar-label': 'OAR(dist)目录',
+    'convert-form-oar-label': 'OAR(dst)目录',
     'converting-btn': '转换中...',
     'css-preset-list-item0': '自定义',
     'css-preset-list-item1': '预设1',
@@ -56,7 +56,7 @@
     'remove-oar-failed': '未找到"OpenAnimationReplacer"目录',
     'remove-oar-specify-error': '未输入DAR或OAR',
     'remove-oar-success': '已删除OAR目录',
-    'remove-oar-tooltip': '从OAR(dist)(如果不存在则从DAR(src))中搜索并删除OAR目录',
+    'remove-oar-tooltip': '从OAR(dst)(如果不存在则从DAR(src))中搜索并删除OAR目录',
     'run-parallel-btn-tooltip': '使用多线程',
     'run-parallel-btn-tooltip2':
       '注意: 可以期望2倍以上的处理速度，但由于并行处理，线程的结束时间可能是无序的，因此日志写入也是无序的，降低了日志的可读性。',
