@@ -22,8 +22,6 @@ pub struct ParsedPath {
     pub remain_dir: Option<PathBuf>,
 }
 
-// tracing::debug!("Expected a priority dir name with numbers, but got \"{path:?}\" (perhaps a dir name as a memo).");
-
 /// Parses the DAR path and returns the information necessary for conversion.
 ///
 /// # Errors
