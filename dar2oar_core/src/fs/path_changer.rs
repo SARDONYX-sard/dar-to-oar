@@ -148,9 +148,7 @@ mod test {
 
         assert_eq!(
             dar_root,
-            PathBuf::from(
-                "../ModName/meshes/actors/character/animations/DynamicAnimationReplacer.mohidden"
-            )
+            PathBuf::from("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer")
         );
         assert_eq!(
             oar_root,
