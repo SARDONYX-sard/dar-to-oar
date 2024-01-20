@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2024-01-20
+### :boom: BREAKING CHANGES
+- due to [`1f1433e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1f1433e22b863d490f8eac1842786721f316caf4) - change from `dist` to `dst` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*:
+
+  dist -> dst  
+  dist == distribution  
+  dst == destination
+
+
+### :sparkles: New Features
+- [`3458226`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3458226f5d9fcbb2710bd2171a75751f60a29dd2) - **cli-subcommand**: change `convert` arg name *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ac7b373`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ac7b373c493e79a261a2bcd125243e67cca4b711) - **core**: change behavior when an invalid DAR path is passed *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`df60d47`](https://github.com/SARDONYX-sard/dar-to-oar/commit/df60d47dcfbe373640026760c7e339c6a6fbf4c5) - **front-lang**: fix a path error when canceling *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`deb2ac6`](https://github.com/SARDONYX-sard/dar-to-oar/commit/deb2ac6d6fa03d39b8c93a256ba8d7929c7943ce) - **front**: fix test *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1f1433e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1f1433e22b863d490f8eac1842786721f316caf4) - **word**: change from `dist` to `dst` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`890a71e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/890a71e75c2cf11b6fc4115ee16850f100c1c1d8) - **i18n**: change `dist` word *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`ca532fd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ca532fd93c9865a05ec1ca6bee5f04fdc06773d2) - **core**: remove `.mohidden` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.4.1] - 2024-01-19
 ### :sparkles: New Features
 - [`7b3d215`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7b3d215756b11b77c60352c94f5a7306ac047468) - **core**: make logs easier to read *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -292,3 +315,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.2.3...0.3.0
 [0.4.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.3.0...0.4.0
 [0.4.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.0...0.4.1
+[0.5.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.1...0.5.0
