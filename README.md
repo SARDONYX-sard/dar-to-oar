@@ -47,7 +47,7 @@ Example
 #### CLI Help
 
 ```shell
-dar2oar 0.4.0
+dar2oar 0.5.0
 DAR to OAR Converter CLI
 
 USAGE:
@@ -63,8 +63,6 @@ SUBCOMMANDS:
     remove-oar    Find and delete `OpenAnimationReplacer` directory
     unhide-dar    Unhide all files in the `DynamicAnimationReplacer` directory by removing the
                       `mohidden` extension
-    Finished release [optimized] target(s) in 0.74s
-     Running `target\release\dar2oar.exe convert --help`
 ```
 
 ```shell
@@ -72,18 +70,18 @@ dar2oar.exe-convert
 Convert DAR to OAR
 
 USAGE:
-    dar2oar.exe convert [OPTIONS] <SRC>
+    dar2oar.exe convert [OPTIONS] <SOURCE>
 
 ARGS:
-    <SRC>
-            DAR source dir path
+    <SOURCE>
+            Path containing the "DynamicAnimationReplacer" directory
 
 OPTIONS:
         --author <AUTHOR>
             Mod author in config.json
 
-        --dst <DST>
-            OAR destination dir path(If not, it is inferred from DAR path)
+        --destination <DESTINATION>
+            "OpenAnimationReplacer" directory output destination (if none, inferred from DAR path)
 
     -h, --help
             Print help information
@@ -113,7 +111,7 @@ OPTIONS:
             https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file
 
         --name <NAME>
-            Mod name in config.json & directory name(If not, it is inferred from DAR path)
+            Mod name in config.json & directory name (if none, inferred from DAR path)
 
         --run-parallel
             Use multi thread
@@ -123,9 +121,7 @@ OPTIONS:
             be out of order as well, greatly reducing readability of the logs.
 
         --stdout
-            Log output to stdout as well
-    Finished release [optimized] target(s) in 0.72s
-     Running `target\release\dar2oar.exe remove-oar --help`
+            Log output to standard output as well
 ```
 
 ```shell
@@ -157,8 +153,6 @@ OPTIONS:
 
         --stdout
             Log output to stdout as well
-    Finished release [optimized] target(s) in 0.70s
-     Running `target\release\dar2oar.exe unhide-dar --help`
 ```
 
 ```shell
