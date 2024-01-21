@@ -16,7 +16,8 @@ pub struct ParsedPath {
     pub oar_root: PathBuf,
     pub is_1st_person: bool,
     pub mod_name: Option<String>,
-    /// Number is the expected PRIORITY dir name of the formal DAR, but returns Err for the Mod crater who leaves a note.
+    /// Number is the expected priority dir name of the formal DAR,
+    /// but returns Err for the Mod creator who leaves a note.
     pub priority: Result<i32, String>,
     /// male, female dir
     pub remain_dir: Option<PathBuf>,
