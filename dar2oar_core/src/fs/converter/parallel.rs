@@ -26,7 +26,7 @@ pub async fn convert_dar_to_oar(
     let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_files(dar_dir).into_iter().count();
-    tracing::debug!("Parallel Converter/DAR dir & file counts: {}", walk_len);
+    tracing::info!("Parallel Converter/DAR dir & file counts: {}", walk_len);
     progress_fn(walk_len);
 
     let entires = get_dar_files(dar_dir).into_iter();
@@ -34,7 +34,7 @@ pub async fn convert_dar_to_oar(
     let is_converted_once = Arc::new(AtomicBool::new(false));
     let mut task_handles: Vec<tokio::task::JoinHandle<Result<()>>> = Vec::new();
 
-    for (idx, entry) in entires.enumerate() {
+    for entry in entires {
         let path = entry.map_err(|_| ConvertError::NotFoundEntry)?.path();
         if !path.is_file() {
             continue;
@@ -51,7 +51,6 @@ pub async fn convert_dar_to_oar(
             let options = Arc::clone(&options);
             let is_converted_once = Arc::clone(&is_converted_once);
             async move {
-                tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
                 convert_inner(
                     &options,
                     path.as_ref(),
@@ -59,7 +58,6 @@ pub async fn convert_dar_to_oar(
                     is_converted_once.as_ref(),
                 )
                 .await?;
-                tracing::debug!("[End {}th conversion]\n\n", idx);
                 Ok(())
             }
         }));

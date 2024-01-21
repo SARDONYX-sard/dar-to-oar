@@ -15,11 +15,9 @@ pub async fn get_mapping_table(
 
 /// Try to read mapping table from path
 pub async fn read_mapping_table(table_path: impl AsRef<Path>) -> Result<HashMap<String, String>> {
-    if !table_path.as_ref().exists() {
-        return Err(ConvertError::NotFoundSpecifiedMappingTable(format!(
-            "{:?}",
-            table_path.as_ref()
-        )));
+    let table_path = table_path.as_ref();
+    if !table_path.exists() {
+        return Err(ConvertError::NonExistPath(format!("{table_path:?}")));
     };
 
     let mut file_contents = String::new();

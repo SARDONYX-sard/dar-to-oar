@@ -17,17 +17,32 @@ pub(crate) fn init_tracing(
     match with_stdout {
         true => tracing::subscriber::set_global_default(
             fmt::Subscriber::builder()
+                .compact()
+                .pretty()
+                .with_file(true)
+                .with_line_number(true)
                 .with_max_level(filter)
+                .with_target(false)
+                .with_thread_ids(true)
                 .finish()
                 .with(
                     fmt::Layer::default()
-                        .with_writer(File::create(log_path)?)
+                        .compact()
+                        .with_ansi(false)
+                        .with_file(true)
                         .with_line_number(true)
-                        .with_ansi(false),
+                        .with_target(false)
+                        .with_thread_ids(true)
+                        .with_writer(File::create(log_path)?),
                 ),
         )?,
         false => tracing_subscriber::fmt()
+            .compact()
             .with_ansi(false)
+            .with_file(true)
+            .with_line_number(true)
+            .with_target(false)
+            .with_thread_ids(true)
             .with_writer(File::create(log_path)?)
             .with_max_level(filter)
             .init(),

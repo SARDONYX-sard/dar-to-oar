@@ -24,8 +24,15 @@ pub(crate) fn init_logger(app: &tauri::App) -> Result<()> {
     let log_dir = &resolver.app_log_dir().context("Not found log dir")?;
     let log_name = format!("{}.log", app.package_info().name);
 
+    // Not available yet because ansi(false) is not applied in tracing::instrument under the combination of pretty() and with_ansi(false).
+    // - See https://github.com/tokio-rs/tracing/issues/1310
     let fmt_layer = fmt::layer()
+        .compact()
         .with_ansi(false)
+        .with_file(true)
+        .with_line_number(true)
+        .with_target(false)
+        .with_thread_ids(true)
         .with_writer(create_rotate_log(log_dir, &log_name, 4)?);
 
     let (filter, reload_handle) = reload::Layer::new(filter::LevelFilter::ERROR);
