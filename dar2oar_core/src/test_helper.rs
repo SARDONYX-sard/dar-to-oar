@@ -23,7 +23,6 @@ pub(crate) fn init_tracing(
             .with_line_number(true)
             .with_max_level(filter)
             .with_target(false)
-            .with_thread_ids(true)
             .finish()
             .with(
                 fmt::Layer::default()
@@ -32,7 +31,6 @@ pub(crate) fn init_tracing(
                     .with_file(true)
                     .with_line_number(true)
                     .with_target(false)
-                    .with_thread_ids(true)
                     .with_writer(file_writer),
             ),
     );

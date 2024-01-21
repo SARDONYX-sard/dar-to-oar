@@ -32,7 +32,6 @@ pub(crate) fn init_logger(app: &tauri::App) -> Result<()> {
         .with_file(true)
         .with_line_number(true)
         .with_target(false)
-        .with_thread_ids(true)
         .with_writer(create_rotate_log(log_dir, &log_name, 4)?);
 
     let (filter, reload_handle) = reload::Layer::new(filter::LevelFilter::ERROR);
