@@ -28,11 +28,17 @@ type ConverterOptions = {
  * @param {ConverterOptions} props - Converter Options.
  * @returns {Promise<void>} A promise that resolves when converted.
  * @throws
+ * - `props.src` is '' or non-exist as  path
+ * - Convert is failed.
  */
 export async function convertDar2oar(props: ConverterOptions): Promise<void> {
+  if (props.src === '') {
+    throw new Error('src must be specified.');
+  }
+
   const args = {
     options: {
-      darDir: props.src === '' ? undefined : props.src,
+      darDir: props.src,
       oarDir: props.dst === '' ? undefined : props.dst,
       modName: props.modName === '' ? undefined : props.modName,
       modAuthor: props.modAuthor === '' ? undefined : props.modAuthor,
@@ -48,9 +54,9 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
 
   const showProgress = props.showProgress ?? false;
   if (showProgress) {
-    return invoke('convert_dar2oar_with_progress', args);
+    invoke('convert_dar2oar_with_progress', args);
   } else {
-    return invoke('convert_dar2oar', args);
+    invoke('convert_dar2oar', args);
   }
 }
 
