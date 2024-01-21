@@ -77,6 +77,13 @@ pub async fn convert_dar_to_oar(
     options: ConvertOptions,
     progress_fn: impl FnMut(usize),
 ) -> Result<()> {
+    let dar_dir = std::path::Path::new(&options.dar_dir);
+    if !dar_dir.exists() {
+        return Err(crate::error::ConvertError::NonExistPath(format!(
+            "{dar_dir:?}"
+        )));
+    };
+
     match options.run_parallel {
         true => crate::fs::converter::parallel::convert_dar_to_oar(options, progress_fn).await,
         false => crate::fs::converter::sequential::convert_dar_to_oar(options, progress_fn).await,
@@ -115,15 +122,20 @@ mod test {
     use super::*;
     use anyhow::Result;
 
-    const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
-    const TABLE_PATH: &str = "../test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt";
+    // const DAR_DIR: &str = "../test/data/UNDERDOG - Animations";
+    const DAR_DIR: &str = "../test/data/Delia";
+    // const OAR_DIR: &str =
+    //     "../test/data/Delia/meshes/actors/character/animations\\OpenAnimationReplacer";
+    // const TABLE_PATH: &str = "../test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt";
 
     async fn create_options() -> Result<ConvertOptions> {
         Ok(ConvertOptions {
             dar_dir: DAR_DIR.into(),
+            // oar_dir: Some(OAR_DIR.into()),
             // cannot use include_str!
-            section_table: Some(crate::read_mapping_table(TABLE_PATH).await?),
+            // section_table: Some(crate::read_mapping_table(TABLE_PATH).await?),
             run_parallel: true,
+            // hide_dar: true,
             ..Default::default()
         })
     }

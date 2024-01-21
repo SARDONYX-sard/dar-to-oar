@@ -8,15 +8,18 @@ use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering::AcqRel, Ordering::Relaxed};
 use tokio::fs;
 
-/// Common parts of multi-threaded and single-threaded loop processing.
-/// # Performance
-/// - Since dir is created when a file is discovered, performance is improved if path.is_dir() is not put in path.
-pub async fn convert_inner(
+// NOTE: Variables in fields do not appear in the log if Option::None.
+#[tracing::instrument(level = "debug", skip(options, is_converted_once), fields(specified_output = &options.oar_dir))]
+/// Common parts of parallel & sequential loop processing.
+pub async fn convert_inner<P>(
     options: &ConvertOptions,
-    path: impl AsRef<Path>,
+    path: P,
     parsed_path: &ParsedPath,
     is_converted_once: &AtomicBool,
-) -> Result<()> {
+) -> Result<()>
+where
+    P: AsRef<Path> + std::fmt::Debug,
+{
     let path = path.as_ref();
     let ConvertOptions {
         dar_dir: _,
@@ -57,31 +60,24 @@ pub async fn convert_inner(
         .unwrap_or(oar_root.clone())
         .join(&parsed_mod_name);
 
-    tracing::debug!("File: {:?}", path);
-
     let file_name = path
         .file_name()
-        .ok_or_else(|| ConvertError::NotFoundFileName)?
+        .ok_or(ConvertError::NotFoundFileName)?
         .to_str()
-        .ok_or_else(|| ConvertError::InvalidUtf8)?;
+        .ok_or(ConvertError::InvalidUtf8)?;
 
     /// Copy motion files(.hkx), gender dir or other.
     macro_rules! copy_other_file {
         ($section_root:ident) => {
             if let Some(remain) = remain_dir {
-                let non_leaf_dir = $section_root.join(remain);
-
-                tracing::debug!("Create dirs: {:?}", &non_leaf_dir);
+                tracing::debug!("Copy with Nest Dir: {:?}", remain.join(file_name));
+                let non_leaf_dir = $section_root.join(remain); // e.g. mesh/[...]/male/
                 fs::create_dir_all(&non_leaf_dir).await?;
-
-                let file = &non_leaf_dir.join(file_name);
-                tracing::debug!("Copy with Nest Dir:\n- From: {path:?}\n-   To: {file:?}");
-                fs::copy(path, file).await?;
+                fs::copy(path, &non_leaf_dir.join(file_name)).await?;
             } else {
-                let file = $section_root.join(file_name);
-                tracing::debug!("Copy:\n- From: {path:?}\n-   To: {file:?}");
+                tracing::debug!("Copy: {file_name}");
                 fs::create_dir_all(&$section_root).await?;
-                fs::copy(path, file).await?;
+                fs::copy(path, $section_root.join(file_name)).await?;
             }
         };
     }
@@ -117,7 +113,7 @@ pub async fn convert_inner(
 
                 // # Ordering validity:
                 // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
-                // so that other threads read after writing true to memory to prevent unnecessary file writing.
+                // so that other threads read after writing true to memory.
                 // - In case of cas failure, use `Relaxed` because the order is unimportant.
                 let _ = is_converted_once.compare_exchange(false, true, AcqRel, Relaxed);
 
@@ -131,10 +127,7 @@ pub async fn convert_inner(
         }
         Err(invalid_priority) => {
             tracing::warn!(
-                r#"Got invalid priority: "{}".
-DAR expects a numeric directory name directly under _CustomConditions, but this is invalid because it is not numeric.
-Therefore, just copy it as a memo.
-"#,
+                r#"Got invalid priority: "{}". DAR expects "DynamicAnimationReplacer/_CustomConditions/<numeric directory name>/". Thus, copy it as a memo."#,
                 invalid_priority
             );
             let section_root = oar_name_space.join(invalid_priority);

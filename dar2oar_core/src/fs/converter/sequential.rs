@@ -22,7 +22,7 @@ pub async fn convert_dar_to_oar(
     let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_file_count(dar_dir).await?;
-    tracing::debug!("Sequential Converter/DAR file counts: {}", walk_len);
+    tracing::info!("Sequential Converter/DAR file counts: {}", walk_len);
     progress_fn(walk_len);
 
     let is_converted_once = AtomicBool::new(false);
@@ -31,8 +31,7 @@ pub async fn convert_dar_to_oar(
     while let Some(entry) = entries.next().await {
         let path = entry?.path();
         let path = path.as_path();
-        if path.is_dir() {
-            tracing::debug!("Dir: {:?}", path);
+        if !path.is_file() {
             continue;
         }
         let parsed_path = match parse_dar_path(path) {

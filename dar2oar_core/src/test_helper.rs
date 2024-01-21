@@ -17,13 +17,23 @@ pub(crate) fn init_tracing(
         tracing_appender::non_blocking(std::fs::File::create(format!("../logs/{test_name}.log"))?);
     let thread_guard = tracing::subscriber::set_default(
         fmt::Subscriber::builder()
+            .compact()
+            .pretty()
+            .with_file(true)
+            .with_line_number(true)
             .with_max_level(filter)
+            .with_target(false)
+            .with_thread_ids(true)
             .finish()
             .with(
                 fmt::Layer::default()
-                    .with_writer(file_writer)
+                    .compact()
+                    .with_ansi(false)
+                    .with_file(true)
                     .with_line_number(true)
-                    .with_ansi(false),
+                    .with_target(false)
+                    .with_thread_ids(true)
+                    .with_writer(file_writer),
             ),
     );
     Ok((guard, thread_guard))

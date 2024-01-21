@@ -1,31 +1,31 @@
 #[derive(Debug, thiserror::Error)]
 pub enum ConvertError {
-    #[error("Nothing in the specified path")]
-    NotFoundEntry,
     #[error("Failed to write section config target: {0}")]
     FailedWriteSectionConfig(String),
-    #[error("Could not find files with \".mohidden\" extension")]
-    NotFoundUnhideTarget,
-    #[error("Not found \"OpenAnimationReplacer\" directory")]
-    NotFoundOarDir,
-    #[error("Not found \"DynamicAnimationReplacer\" directory")]
-    NotFoundDarDir,
-    #[error("Not found DAR priority(Number) directory")]
-    NotFoundPriorityDir,
     #[error("Never converted.")]
     NeverConverted,
+    #[error("No such paths exist: \"{0}\"")]
+    NonExistPath(String),
+    #[error("Nothing in the specified path")]
+    NotFoundEntry,
+    #[error("Could not find files with \".mohidden\" extension")]
+    NotFoundUnhideTarget,
+    #[error("Not found \"DynamicAnimationReplacer\" directory")]
+    NotFoundDarDir,
     #[error("Not found file name")]
     NotFoundFileName,
-    #[error("Could not find the mapping table file \"{0}\".")]
-    NotFoundSpecifiedMappingTable(String),
-    #[error("This is not valid utf8")]
-    InvalidUtf8,
+    #[error("Not found \"OpenAnimationReplacer\" directory")]
+    NotFoundOarDir,
+    #[error("Not found DAR priority(Number) directory")]
+    NotFoundPriorityDir,
     #[error("Incomplete conversion")]
     IncompleteConversion,
     #[error("Incomplete parse DAR. Remain:\n{0}")]
     IncompleteParseDar(String),
     #[error("DAR syntax error.:\n{0}")]
     InvalidDarSyntax(String),
+    #[error("This is not valid utf8")]
+    InvalidUtf8,
     #[error(transparent)]
     ConditionError(#[from] crate::conditions::ConditionError),
     #[error(transparent)]
