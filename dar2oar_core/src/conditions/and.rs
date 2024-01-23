@@ -1,4 +1,5 @@
 use super::{condition::default_required_version, is_false, ConditionSet};
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 /// - OAR: AND
@@ -11,10 +12,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct And {
     /// Condition name "AND"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,

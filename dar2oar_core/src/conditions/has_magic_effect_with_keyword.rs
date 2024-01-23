@@ -1,14 +1,20 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::{FormValue, Keyword};
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasMagicEffectWithKeyword {
     /// Condition name "HasMagicEffectWithKeyword"
+    ///
+    /// # NOTE
+    /// This condition name is 25bytes.
+    /// Optimization by [CompactString] is limited to 24bytes, the size of a [String] structure.
+    /// Therefore, this field cannot be SSO (Small String Optimization).
     pub condition: String,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -35,14 +41,14 @@ impl Default for HasMagicEffectWithKeyword {
 
 #[cfg(test)]
 mod tests {
-    use crate::values::PluginValue;
-
     use super::*;
+    use crate::values::PluginValue;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn should_serialize_has_magic_effect() {
         let has_magic_effect = HasMagicEffectWithKeyword::default();
+        let serialized = serde_json::to_string_pretty(&has_magic_effect).unwrap();
 
         let expected = r#"{
   "condition": "HasMagicEffectWithKeyword",
@@ -55,8 +61,8 @@ mod tests {
   },
   "Active effects only": false
 }"#;
-        let serialized = serde_json::to_string_pretty(&has_magic_effect).unwrap();
-        assert_eq!(expected, serialized);
+
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -72,8 +78,8 @@ mod tests {
             },
             "Active effects only": true
         }"#;
-
         let deserialized: HasMagicEffectWithKeyword = serde_json::from_str(json_str).unwrap();
+
         let expected = HasMagicEffectWithKeyword {
             keyword: Keyword::Form(FormValue {
                 form: PluginValue {
@@ -85,6 +91,6 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }

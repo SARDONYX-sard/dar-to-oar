@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CurrentWeather {
     /// Condition name "CurrentWeather"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -37,6 +38,7 @@ mod tests {
     #[test]
     fn should_serialize_current_weather() {
         let current_weather = CurrentWeather::default();
+        let serialized = serde_json::to_string_pretty(&current_weather).unwrap();
 
         let expected = r#"{
   "condition": "CurrentWeather",
@@ -46,8 +48,8 @@ mod tests {
     "formID": ""
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&current_weather).unwrap();
-        assert_eq!(expected, serialized);
+
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -60,9 +62,10 @@ mod tests {
                 "formID": ""
             }
         }"#;
+        let deserialized: CurrentWeather = serde_json::from_str(json_str).unwrap();
 
         let expected = CurrentWeather::default();
-        let deserialized: CurrentWeather = serde_json::from_str(json_str).unwrap();
-        assert_eq!(expected, deserialized);
+
+        assert_eq!(deserialized, expected);
     }
 }

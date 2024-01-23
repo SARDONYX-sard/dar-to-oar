@@ -193,7 +193,7 @@ mod tests {
                         ConditionSet::IsActorBase(IsActorBase {
                             negated: false,
                             actor_base: PluginValue {
-                                plugin_name: "Skyrim.esm".to_string(),
+                                plugin_name: "Skyrim.esm".into(),
                                 form_id: "7".into(),
                             },
                             ..Default::default()

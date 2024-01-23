@@ -1,15 +1,16 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue, PluginValue};
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 /// Tests the ref's faction rank against the specified rank.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FactionRank {
     /// Condition name "FactionRank"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -48,13 +49,14 @@ mod tests {
     fn should_serialize_faction_rank_with_custom_values() {
         let faction_rank = FactionRank {
             faction: PluginValue {
-                plugin_name: "CustomPlugin".to_string(),
+                plugin_name: "CustomPlugin".into(),
                 form_id: "54321".into(),
             },
             comparison: Cmp::Lt,
             numeric_value: NumericValue::StaticValue(StaticValue { value: 75.0 }),
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&faction_rank).unwrap();
 
         let expected = r#"{
   "condition": "FactionRank",
@@ -68,8 +70,8 @@ mod tests {
     "value": 75.0
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&faction_rank).unwrap();
-        assert_eq!(expected, serialized);
+
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -88,11 +90,11 @@ mod tests {
             }
         }
 "#;
-
         let deserialized: FactionRank = serde_json::from_str(json_str).unwrap();
+
         let expected = FactionRank {
             faction: PluginValue {
-                plugin_name: "".to_string(),
+                plugin_name: "".into(),
                 form_id: "".into(),
             },
             comparison: Cmp::Eq,
@@ -100,6 +102,6 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }

@@ -1,4 +1,5 @@
 use super::NumericLiteral;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -27,13 +28,13 @@ pub struct PluginValue {
 
 /// Non prefix(0x) hexadecimal ID
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct FormID(String);
+pub struct FormID(CompactString);
 
 impl From<&str> for FormID {
     /// Clone into
     /// - NOTE: non cast to hex
     fn from(value: &str) -> Self {
-        Self(value.to_owned())
+        Self(value.into())
     }
 }
 
@@ -54,19 +55,15 @@ from!(usize, isize, f32);
 impl From<NumericLiteral> for FormID {
     fn from(value: NumericLiteral) -> Self {
         Self(match value {
-            NumericLiteral::Hex(hex_value) => {
-                format!("{:x}", hex_value)
-            }
+            NumericLiteral::Hex(hex_value) => format!("{:x}", hex_value).into(),
             NumericLiteral::Decimal(decimal_value) => {
                 if decimal_value == 0 {
-                    String::default()
+                    CompactString::default()
                 } else {
-                    format!("{:x}", decimal_value)
+                    format!("{:x}", decimal_value).into()
                 }
             }
-            NumericLiteral::Float(float_value) => {
-                format!("{:x}", float_value as usize)
-            }
+            NumericLiteral::Float(float_value) => format!("{:x}", float_value as usize).into(),
         })
     }
 }

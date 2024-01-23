@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue};
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CompareValues {
     /// Condition name "CompareValues"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -40,12 +41,11 @@ impl Default for CompareValues {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::values::{
         ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericLiteral, NumericValue,
         PluginValue, StaticValue,
     };
-
-    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -55,6 +55,7 @@ mod tests {
             value_b: NumericValue::StaticValue(StaticValue { value: 42.0 }),
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -67,7 +68,7 @@ mod tests {
     "value": 42.0
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -85,6 +86,7 @@ mod tests {
             comparison: Cmp::Ge,
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -99,7 +101,7 @@ mod tests {
     "actorValueType": "Max"
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -118,6 +120,7 @@ mod tests {
             comparison: Cmp::Ne,
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -132,7 +135,7 @@ mod tests {
     "graphVariableType": "Int"
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -141,14 +144,14 @@ mod tests {
         let compare_values = CompareValues {
             value_a: NumericValue::GlobalVariable(
                 PluginValue {
-                    plugin_name: "my_plugin.esm".to_string(),
+                    plugin_name: "my_plugin.esm".into(),
                     form_id: 1usize.into(),
                 }
                 .into(),
             ),
             value_b: NumericValue::GlobalVariable(
                 PluginValue {
-                    plugin_name: "another_plugin.esp".to_string(),
+                    plugin_name: "another_plugin.esp".into(),
                     form_id: "2".into(),
                 }
                 .into(),
@@ -156,6 +159,7 @@ mod tests {
             comparison: Cmp::Gt,
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -174,7 +178,7 @@ mod tests {
     }
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+
         assert_eq!(serialized, expected);
     }
 }

@@ -41,7 +41,6 @@ pub async fn convert_dar_to_oar(
 
         tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
         convert_inner(&options, path, &parsed_path, &is_converted_once).await?;
-
         progress_fn(idx);
         tracing::debug!("[End {}th conversion]\n\n", idx);
         idx += 1;

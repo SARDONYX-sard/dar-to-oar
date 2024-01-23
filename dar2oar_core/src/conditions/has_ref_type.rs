@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasRefType {
     /// Condition name "HasRefType"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -46,6 +47,7 @@ mod tests {
             }),
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&has_ref_type).unwrap();
 
         let expected = r#"{
   "condition": "HasRefType",
@@ -57,7 +59,7 @@ mod tests {
     }
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&has_ref_type).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -71,8 +73,8 @@ mod tests {
                 "editorID": "ExampleLocationTyp"
             }
 }"#;
-
         let deserialized: HasRefType = serde_json::from_str(json_str).unwrap();
+
         let expected = HasRefType {
             negated: true,
             location_ref_type: Keyword::Literal(LiteralValue {

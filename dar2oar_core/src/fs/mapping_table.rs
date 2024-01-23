@@ -1,4 +1,5 @@
 use crate::error::{ConvertError, Result};
+use compact_str::CompactString;
 use std::collections::HashMap;
 use std::path::Path;
 use tokio::{fs::File, io::AsyncReadExt};
@@ -6,7 +7,7 @@ use tokio::{fs::File, io::AsyncReadExt};
 /// Get mapping table from path
 pub async fn get_mapping_table(
     mapping_path: Option<impl AsRef<Path>>,
-) -> Option<HashMap<String, String>> {
+) -> Option<HashMap<CompactString, String>> {
     match mapping_path {
         Some(table_path) => read_mapping_table(table_path).await.ok(),
         None => None,
@@ -14,7 +15,9 @@ pub async fn get_mapping_table(
 }
 
 /// Try to read mapping table from path
-pub async fn read_mapping_table(table_path: impl AsRef<Path>) -> Result<HashMap<String, String>> {
+pub async fn read_mapping_table(
+    table_path: impl AsRef<Path>,
+) -> Result<HashMap<CompactString, String>> {
     let table_path = table_path.as_ref();
     if !table_path.exists() {
         return Err(ConvertError::NonExistPath(format!("{table_path:?}")));
@@ -28,7 +31,9 @@ pub async fn read_mapping_table(table_path: impl AsRef<Path>) -> Result<HashMap<
     Ok(parse_mapping_table(&file_contents))
 }
 
-fn parse_mapping_table(table: &str) -> HashMap<String, String> {
+/// The key can only be up to [f32]::MAX due to DAR specifications.
+/// Therefore, [CompactString] is used to fit into 24 bytes.
+fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
     let mut map = HashMap::new();
 
     // Sequential numbering of duplicate keys when no key is available.
@@ -92,13 +97,13 @@ mod tests {
         let result = parse_mapping_table(input);
 
         let mut expected = HashMap::new();
-        expected.insert("8000000".into(), "Combat".to_string());
-        expected.insert("8000001".into(), "Base".to_string());
-        expected.insert("8000002".into(), "Base_1".to_string());
-        expected.insert("8000005".into(), "Female".to_string());
-        expected.insert("8001000".into(), "Unarmed".to_string());
-        expected.insert("8001010".into(), "Sword".to_string());
-        expected.insert("8001020".into(), "Sword+Shield".to_string());
+        expected.insert("8000000".into(), "Combat".into());
+        expected.insert("8000001".into(), "Base".into());
+        expected.insert("8000002".into(), "Base_1".into());
+        expected.insert("8000005".into(), "Female".into());
+        expected.insert("8001000".into(), "Unarmed".into());
+        expected.insert("8001010".into(), "Sword".into());
+        expected.insert("8001020".into(), "Sword+Shield".into());
 
         assert_eq!(result, expected);
     }

@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasPerk {
     /// Condition name "HasPerk"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -37,6 +38,7 @@ mod tests {
     #[test]
     fn should_serialize_has_perk() {
         let has_perk = HasPerk::default();
+        let serialized = serde_json::to_string_pretty(&has_perk).unwrap();
 
         let expected = r#"{
   "condition": "HasPerk",
@@ -46,7 +48,7 @@ mod tests {
     "formID": ""
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&has_perk).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -61,8 +63,8 @@ mod tests {
     "formID": "12345"
   }
 }"#;
-
         let deserialized: HasPerk = serde_json::from_str(json_str).unwrap();
+
         let expected = HasPerk {
             negated: true,
             perk: PluginValue {

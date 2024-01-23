@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasKeyword {
     /// Condition name "HasKeyword"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -31,14 +32,14 @@ impl Default for HasKeyword {
 
 #[cfg(test)]
 mod tests {
-    use crate::values::LiteralValue;
-
     use super::*;
+    use crate::values::LiteralValue;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn should_serialize_has_keyword() {
         let has_keyword = HasKeyword::default();
+        let serialized = serde_json::to_string_pretty(&has_keyword).unwrap();
 
         let expected = r#"{
   "condition": "HasKeyword",
@@ -47,8 +48,8 @@ mod tests {
     "editorID": ""
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&has_keyword).unwrap();
-        assert_eq!(expected, serialized);
+
+        assert_eq!(serialized, expected);
     }
 
     #[test]
@@ -60,8 +61,8 @@ mod tests {
     "editorID": "SomeKeyword"
   }
 }"#;
-
         let deserialized: HasKeyword = serde_json::from_str(json_str).unwrap();
+
         let expected = HasKeyword {
             keyword: Keyword::Literal(LiteralValue {
                 editor_id: "SomeKeyword".to_string(),
@@ -69,6 +70,6 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(expected, deserialized);
+        assert_eq!(deserialized, expected);
     }
 }
