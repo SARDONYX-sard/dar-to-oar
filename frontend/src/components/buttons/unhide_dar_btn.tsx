@@ -12,6 +12,19 @@ type Props = {
 
 export const UnhideDarBtn = ({ path }: Props) => {
   const { t } = useTranslation();
+  const handleClick = async () => {
+    try {
+      if (path === '') {
+        toast.error(t('unhide-dar-specify-error'));
+        return;
+      }
+
+      await unhideDarDir(path);
+      toast.success(t('unhide-dar-success'));
+    } catch (_e) {
+      toast.error(t('unhide-dar-failed'));
+    }
+  };
 
   return (
     <Tooltip title={<p>{t('unhide-dar-btn-tooltip')}</p>}>
@@ -23,19 +36,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
           height: '60%',
         }}
         variant="outlined"
-        onClick={async () => {
-          try {
-            if (path === '') {
-              toast.error(t('unhide-dar-specify-error'));
-              return;
-            }
-
-            await unhideDarDir(path);
-            toast.success(t('unhide-dar-success'));
-          } catch (_e) {
-            toast.error(t('unhide-dar-failed'));
-          }
-        }}
+        onClick={handleClick}
         startIcon={<VisibilityIcon />}
       >
         {t('unhide-dar-btn')}
