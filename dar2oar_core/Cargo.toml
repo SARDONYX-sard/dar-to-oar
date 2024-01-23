@@ -11,7 +11,8 @@ rust-version = "1.60"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-walkdir = "0.2.0" # To traverse dir recursivly(Single thiread)
+async-walkdir = "1.0.0" # To traverse dir recursivly(Single thiread)
+compact_str = { version = "0.7.1", features = ["serde"] }
 jwalk = "0.8.1" # To parallel traverse dir recursivly
 nom = { version = "7.1.3", features = ["alloc"] } # Syntax
 serde = { version = "1.0", features = ["derive"] } # Implement (De)Serializer
