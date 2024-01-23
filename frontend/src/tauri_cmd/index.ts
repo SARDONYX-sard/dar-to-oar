@@ -53,10 +53,11 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
   changeLogLevel(logLevel);
 
   const showProgress = props.showProgress ?? false;
+  //! Warning! If there is no `return` or `await` in invoke, the progress bar will not work.
   if (showProgress) {
-    invoke('convert_dar2oar_with_progress', args);
+    await invoke('convert_dar2oar_with_progress', args);
   } else {
-    invoke('convert_dar2oar', args);
+    await invoke('convert_dar2oar', args);
   }
 }
 
