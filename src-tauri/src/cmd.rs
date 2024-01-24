@@ -52,9 +52,9 @@ struct Payload {
 
 /// Closure that reports the number of files
 macro_rules! sender {
-    ($window:ident) => {
+    ($window:ident, $emit_name:literal) => {
         move |index: usize| {
-            if let Err(err) = $window.emit("show-progress", Payload { index }) {
+            if let Err(err) = $window.emit($emit_name, Payload { index }) {
                 tracing::error!("{}", err);
             };
         }
@@ -71,7 +71,7 @@ pub(crate) async fn convert_dar2oar_with_progress(
     window: Window,
     options: GuiConverterOptions,
 ) -> Result<(), String> {
-    let sender = sender!(window);
+    let sender = sender!(window, "/dar2oar/progress/converter");
     time!("Conversion with progress", dar_to_oar!(options, sender))
 }
 
@@ -88,10 +88,12 @@ pub(crate) async fn read_to_string(path: &str) -> Result<String, String> {
 
 #[tauri::command]
 pub(crate) async fn remove_oar_dir(window: Window, path: &str) -> Result<(), String> {
-    time!("remove_oar", remove_oar(path, sender!(window)))
+    let sender = sender!(window, "/dar2oar/progress/remove-oar");
+    time!("remove_oar", remove_oar(path, sender))
 }
 
 #[tauri::command]
 pub(crate) async fn unhide_dar_dir(window: Window, dar_dir: &str) -> Result<(), String> {
-    time!("unhide_dar", unhide_dar(dar_dir, sender!(window)))
+    let sender = sender!(window, "/dar2oar/progress/unhide-dar");
+    time!("unhide_dar", unhide_dar(dar_dir, sender))
 }

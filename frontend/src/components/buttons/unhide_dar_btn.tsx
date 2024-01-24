@@ -1,10 +1,12 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { CircularProgressWithLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { unhideDarDir } from '@/tauri_cmd';
+import { progressListener, unhideDarDir } from '@/tauri_cmd';
 
 type Props = {
   path: string;
@@ -12,18 +14,27 @@ type Props = {
 
 export const UnhideDarBtn = ({ path }: Props) => {
   const { t } = useTranslation();
-  const handleClick = async () => {
-    try {
-      if (path === '') {
-        toast.error(t('unhide-dar-specify-error'));
-        return;
-      }
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-      await unhideDarDir(path);
-      toast.success(t('unhide-dar-success'));
-    } catch (_e) {
-      toast.error(t('unhide-dar-failed'));
+  const handleClick = async () => {
+    if (path === '') {
+      toast.error(t('unhide-dar-specify-error'));
+      return;
     }
+
+    await progressListener(
+      '/dar2oar/progress/unhide-dar',
+      async () => {
+        await unhideDarDir(path);
+      },
+      {
+        setLoading,
+        setProgress,
+        success: t('unhide-dar-success'),
+        error: t('unhide-dar-failed'),
+      },
+    );
   };
 
   return (
@@ -37,7 +48,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
         }}
         variant="outlined"
         onClick={handleClick}
-        startIcon={<VisibilityIcon />}
+        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
       >
         {t('unhide-dar-btn')}
       </Button>

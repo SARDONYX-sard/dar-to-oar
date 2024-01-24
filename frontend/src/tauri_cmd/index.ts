@@ -6,6 +6,7 @@ import { open as openShell } from '@tauri-apps/api/shell';
 import { selectLogLevel } from '@/utils/selector';
 
 export { open as openShell } from '@tauri-apps/api/shell';
+export { progressListener } from '@/tauri_cmd/progress_listener';
 
 type ConverterOptions = {
   src: string;
