@@ -1,6 +1,6 @@
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 
-import { SelectPathButton, LogFileButton, RemoveOarBtn } from '.';
+import { SelectPathButton, LogFileButton } from '.';
 
 jest.mock('react-hot-toast', () => ({
   toast: {
@@ -53,59 +53,6 @@ describe('SelectPathButton component', () => {
 
     // Check if openPath is called
     expect(openPathMock).toHaveBeenCalled();
-
-    // Wait for the asynchronous operation to complete
-    await waitFor(() => {
-      // Check if error toast is shown on failure
-      expect(require('react-hot-toast').toast.error).toHaveBeenCalledWith('Error message');
-    });
-  });
-});
-
-describe('RemoveOarBtn component', () => {
-  it('should call removeOarDir on click and show success toast on success', async () => {
-    const removeOarDirMock = jest.fn();
-    const tMock = jest.fn().mockReturnValue('Remove OAR');
-
-    require('@/tauri_cmd').removeOarDir = removeOarDirMock;
-    require('@/hooks').useTranslation = () => ({ t: tMock });
-
-    render(<RemoveOarBtn darPath="/test-dar" oarPath="/test-oar" />);
-
-    // Click the button
-    fireEvent.click(screen.getByText('Remove OAR'));
-
-    // Check if removeOarDir is called with the correct arguments
-    expect(removeOarDirMock).toHaveBeenCalledWith('/test-oar');
-  });
-
-  it('should call removeOarDir on click with darPath if oarPath is empty', async () => {
-    const removeOarDirMock = jest.fn();
-    const tMock = jest.fn().mockReturnValue('Remove OAR');
-
-    require('@/tauri_cmd').removeOarDir = removeOarDirMock;
-    require('@/hooks').useTranslation = () => ({ t: tMock });
-
-    render(<RemoveOarBtn darPath="/test-dar" oarPath="" />);
-
-    // Click the button
-    fireEvent.click(screen.getByText('Remove OAR'));
-
-    // Check if removeOarDir is called with the correct arguments
-    expect(removeOarDirMock).toHaveBeenCalledWith('/test-dar');
-  });
-
-  it('should show error toast on failure', async () => {
-    const removeOarDirMock = jest.fn().mockRejectedValue('Error message');
-    const tMock = jest.fn().mockReturnValue('Remove OAR');
-
-    require('@/tauri_cmd').removeOarDir = removeOarDirMock;
-    require('@/hooks').useTranslation = () => ({ t: tMock });
-
-    render(<RemoveOarBtn darPath="/test-dar" oarPath="/test-oar" />);
-
-    // Click the button
-    fireEvent.click(screen.getByText('Remove OAR'));
 
     // Wait for the asynchronous operation to complete
     await waitFor(() => {
