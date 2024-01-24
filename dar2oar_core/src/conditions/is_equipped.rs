@@ -1,15 +1,16 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 /// - OAR: IsEquipped
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsEquipped {
     /// Condition name "IsEquipped"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -43,12 +44,13 @@ mod tests {
     fn should_serialize_is_equipped() {
         let is_equipped = IsEquipped {
             form: PluginValue {
-                plugin_name: "MyPlugin".to_string(),
+                plugin_name: "MyPlugin".into(),
                 form_id: "12345".into(),
             },
             left_hand: true,
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&is_equipped).unwrap();
 
         let expected = r#"{
   "condition": "IsEquipped",
@@ -59,7 +61,7 @@ mod tests {
   },
   "Left hand": true
 }"#;
-        let serialized = serde_json::to_string_pretty(&is_equipped).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -76,13 +78,13 @@ mod tests {
             },
             "Left hand": false
         }"#;
-
         let deserialized: IsEquipped = serde_json::from_str(json_str).unwrap();
+
         let expected = IsEquipped {
             condition: "IsEquipped".into(),
             negated: true,
             form: PluginValue {
-                plugin_name: "Skyrim.esm".to_string(),
+                plugin_name: "Skyrim.esm".into(),
                 form_id: "7".into(),
             },
             left_hand: false,

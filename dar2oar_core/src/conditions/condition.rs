@@ -1,21 +1,22 @@
 use super::is_false;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 pub const REQUIRED_VERSION: &str = "1.0.0.0";
 
-pub fn default_required_version() -> String {
-    REQUIRED_VERSION.to_string()
+pub fn default_required_version() -> CompactString {
+    REQUIRED_VERSION.into()
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Condition {
     /// Condition name (e.g. IsWornHasKeyword)
     #[serde(default)]
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     /// The required version for this condition.
-    pub required_version: String,
+    pub required_version: CompactString,
     /// condition to **Not** (default is `false`).
     #[serde(default)]
     // NOTE: There is code written under the assumption that it is skipped when false (e.g. IsEquipped).
@@ -26,8 +27,8 @@ pub struct Condition {
 impl Default for Condition {
     fn default() -> Self {
         Self {
-            condition: String::default(),
-            required_version: REQUIRED_VERSION.to_string(),
+            condition: CompactString::default(),
+            required_version: default_required_version(),
             negated: false,
         }
     }
@@ -37,7 +38,7 @@ impl Condition {
     /// Creates a new `Condition` with the specified name.
     pub fn new(condition: &str) -> Self {
         Self {
-            condition: condition.to_string(),
+            condition: condition.into(),
             ..Default::default()
         }
     }
@@ -68,10 +69,11 @@ mod tests {
     #[test]
     fn serialize_condition() {
         let condition = Condition {
-            condition: "SomeCondition".to_string(),
-            required_version: REQUIRED_VERSION.to_string(),
+            condition: "SomeCondition".into(),
+            required_version: REQUIRED_VERSION.into(),
             negated: true,
         };
+        let serialized_json = serde_json::to_string_pretty(&condition).unwrap();
 
         let expected_json = r#"{
   "condition": "SomeCondition",
@@ -79,8 +81,7 @@ mod tests {
   "negated": true
 }"#;
 
-        let serialized_json = serde_json::to_string_pretty(&condition).unwrap();
-        assert_eq!(expected_json, serialized_json);
+        assert_eq!(serialized_json, expected_json);
     }
 
     #[test]
@@ -90,14 +91,14 @@ mod tests {
             "requiredVersion": "1.0.0.0",
             "negated": false
         }"#;
+        let deserialized: Condition = serde_json::from_str(json_str).unwrap();
 
-        let expected_condition = Condition {
-            condition: "AnotherCondition".to_string(),
-            required_version: REQUIRED_VERSION.to_string(),
+        let expected = Condition {
+            condition: "AnotherCondition".into(),
+            required_version: REQUIRED_VERSION.into(),
             negated: false,
         };
 
-        let deserialized_condition: Condition = serde_json::from_str(json_str).unwrap();
-        assert_eq!(expected_condition, deserialized_condition);
+        assert_eq!(deserialized, expected);
     }
 }

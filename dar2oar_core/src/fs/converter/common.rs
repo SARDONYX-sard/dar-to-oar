@@ -88,10 +88,10 @@ where
             let section_name = match is_1st_person {
                 true => section_1person_table
                     .as_ref()
-                    .and_then(|table| table.get(&priority_str)),
+                    .and_then(|table| table.get(priority_str.as_str())),
                 false => section_table
                     .as_ref()
-                    .and_then(|table| table.get(&priority_str)),
+                    .and_then(|table| table.get(priority_str.as_str())),
             }
             .unwrap_or(&priority_str);
 

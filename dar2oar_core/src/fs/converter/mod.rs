@@ -5,6 +5,7 @@ pub mod sequential;
 pub mod support_cmd;
 
 use crate::error::Result;
+use compact_str::CompactString;
 use std::collections::HashMap;
 
 /// # Convert DAR to OAR
@@ -106,9 +107,9 @@ pub struct ConvertOptions {
     /// mod author in config.json
     pub author: Option<String>,
     /// path to section name table
-    pub section_table: Option<HashMap<String, String>>,
+    pub section_table: Option<HashMap<CompactString, String>>,
     /// path to section name table(For _1st_person)
-    pub section_1person_table: Option<HashMap<String, String>>,
+    pub section_1person_table: Option<HashMap<CompactString, String>>,
     /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
     pub run_parallel: bool,
     /// After converting to OAR, add mohidden to the DAR directory before conversion to treat it as a hidden directory. (for MO2 users)
@@ -134,7 +135,7 @@ mod test {
             // oar_dir: Some(OAR_DIR.into()),
             // cannot use include_str!
             // section_table: Some(crate::read_mapping_table(TABLE_PATH).await?),
-            run_parallel: true,
+            // run_parallel: true,
             // hide_dar: true,
             ..Default::default()
         })
@@ -171,7 +172,7 @@ mod test {
             }
         }
 
-        let _guard = handle.await.unwrap();
+        handle.await??;
         Ok(())
     }
 }

@@ -106,7 +106,7 @@ mod tests {
         let deserialized: Keyword = serde_json::from_str(input).unwrap();
         let expected = Keyword::Form(FormValue {
             form: PluginValue {
-                plugin_name: "MyPlugin".to_string(),
+                plugin_name: "MyPlugin".into(),
                 form_id: "12345".into(),
             },
         });

@@ -1,14 +1,15 @@
 use super::{condition::default_required_version, is_false};
 use crate::values::DirectionValue;
+use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsMovementDirection {
     /// Condition name "IsMovementDirection"
-    pub condition: String,
+    pub condition: CompactString,
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: String,
+    pub required_version: CompactString,
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -43,6 +44,7 @@ mod tests {
             },
             ..Default::default()
         };
+        let serialized = serde_json::to_string_pretty(&is_movement_direction).unwrap();
 
         let expected = r#"{
   "condition": "IsMovementDirection",
@@ -51,7 +53,7 @@ mod tests {
     "value": 4.0
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&is_movement_direction).unwrap();
+
         assert_eq!(serialized, expected);
     }
 
@@ -66,8 +68,8 @@ mod tests {
                 "value": 2.0
             }
         }"#;
-
         let deserialized: IsMovementDirection = serde_json::from_str(json_str).unwrap();
+
         let expected = IsMovementDirection {
             negated: true,
             direction: DirectionValue {

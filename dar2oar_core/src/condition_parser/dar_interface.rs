@@ -72,7 +72,7 @@ impl From<&FnArg<'_>> for NumericValue {
                 form_id,
             } => Self::GlobalVariable(
                 PluginValue {
-                    plugin_name: plugin_name.to_string(),
+                    plugin_name: (*plugin_name).into(),
                     form_id: NumericLiteral::from(form_id).into(),
                 }
                 .into(),
@@ -137,7 +137,7 @@ impl TryFrom<FnArg<'_>> for PluginValue {
                 plugin_name,
                 form_id,
             } => Ok(Self {
-                plugin_name: plugin_name.to_string(),
+                plugin_name: (*plugin_name).into(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
             FnArg::Number(num) => Err(ParseError::UnexpectedValue(
@@ -157,7 +157,7 @@ impl TryFrom<&FnArg<'_>> for PluginValue {
                 plugin_name,
                 form_id,
             } => Ok(Self {
-                plugin_name: plugin_name.to_string(),
+                plugin_name: (*plugin_name).into(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
             FnArg::Number(num) => Err(ParseError::UnexpectedValue(
@@ -176,7 +176,7 @@ impl From<&FnArg<'_>> for Keyword {
                 form_id,
             } => Self::Form(FormValue {
                 form: PluginValue {
-                    plugin_name: plugin_name.to_string(),
+                    plugin_name: (*plugin_name).into(),
                     form_id: NumericLiteral::from(form_id).into(),
                 },
             }),
