@@ -4,9 +4,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box, Button, FormControlLabel, FormGroup, TextField, Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Unstable_Grid2';
-import { listen } from '@tauri-apps/api/event';
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
 
 import {
   ConvertButton,
@@ -19,7 +17,8 @@ import {
 import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { LogLevel, convertDar2oar, openShell } from '@/tauri_cmd';
+import { convertDar2oar, LogLevel, openShell, progressListener } from '@/tauri_cmd';
+import { get_parent } from '@/utils/path';
 import { selectLogLevel } from '@/utils/selector';
 
 type FormProps = {
@@ -64,6 +63,9 @@ export function ConvertForm() {
   const setStorage = (key: keyof FormProps) => {
     return (value: string) => {
       localStorage.setItem(key, value);
+      if (value !== '') {
+        localStorage.setItem(`cached-${key}`, value);
+      }
       setValue(key, value);
     };
   };
@@ -74,56 +76,14 @@ export function ConvertForm() {
     formValues.forEach((key) => setStorage(key)(''));
   };
 
-  const onSubmit: SubmitHandler<FormProps> = async ({
-    src,
-    dst,
-    modName,
-    modAuthor,
-    mappingPath,
-    mapping1personPath,
-    runParallel,
-    hideDar,
-    showProgress,
-  }) => {
-    setLoading(true);
-
-    let unlisten: (() => void) | null = null;
-    try {
-      setValue('progress', 0);
-      let maxNum = 0;
-      let prog = 0;
-
-      unlisten = await listen<{ index: number }>('show-progress', (event) => {
-        if (maxNum === 0) {
-          maxNum = event.payload.index;
-        } else {
-          prog = event.payload.index;
-        }
-        setValue('progress', (prog * 100) / maxNum);
-      });
-
-      await convertDar2oar({
-        src,
-        dst,
-        modName,
-        modAuthor,
-        mappingPath,
-        mapping1personPath,
-        runParallel,
-        hideDar,
-        showProgress,
-      });
-      toast.success(t('conversion-complete'));
-      setValue('progress', 100);
-    } catch (err) {
-      setValue('progress', 0); // To avoid NaN
-      toast.error(`${err}`);
-    } finally {
-      if (unlisten) {
-        unlisten();
-      }
-      setLoading(false);
-    }
+  const onSubmit: SubmitHandler<FormProps> = async (formProps) => {
+    await progressListener('/dar2oar/progress/converter', async () => await convertDar2oar(formProps), {
+      setLoading,
+      setProgress(percentage: number) {
+        setValue('progress', percentage);
+      },
+      success: t('conversion-complete'),
+    });
   };
 
   return (
@@ -155,7 +115,11 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('src', e.target.value);
+                    const path = e.target.value;
+                    localStorage.setItem('src', path); // For reload cache
+                    if (path !== '') {
+                      localStorage.setItem('cached-src', path); // For empty string
+                    }
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -171,7 +135,11 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} isDir setPath={setStorage('src')} />
+                <SelectPathButton
+                  path={get_parent(value === '' ? localStorage.getItem('cached-src-parent') ?? '' : value)}
+                  isDir
+                  setPath={setStorage('src')}
+                />
               </Grid>
             </Grid>
           )}
@@ -191,7 +159,11 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('dst', e.target.value);
+                    const path = e.target.value;
+                    localStorage.setItem('dst', path);
+                    if (path !== '') {
+                      localStorage.setItem('cached-dst', path);
+                    }
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -205,7 +177,11 @@ export function ConvertForm() {
                 />
               </Grid>
               <Grid xs={2}>
-                <SelectPathButton path={value} isDir setPath={setStorage('dst')} />
+                <SelectPathButton
+                  path={get_parent(value === '' ? localStorage.getItem('cached-dst') ?? '' : value)}
+                  isDir
+                  setPath={setStorage('dst')}
+                />
               </Grid>
             </Grid>
           )}
@@ -225,7 +201,11 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('mappingPath', e.target.value);
+                    const path = e.target.value;
+                    localStorage.setItem('mappingPath', path);
+                    if (path !== '') {
+                      localStorage.setItem('cached-mappingPath', path);
+                    }
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -235,7 +215,13 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} setPath={setStorage('mappingPath')} />
+                <SelectPathButton
+                  path={value === '' ? localStorage.getItem('cached-mappingPath') ?? '' : value}
+                  setPath={(value) => {
+                    localStorage.setItem('cached-mappingPath', value);
+                    setStorage('mappingPath')(value);
+                  }}
+                />
               </Grid>
             </Grid>
           )}
@@ -255,7 +241,11 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('mapping1personPath', e.target.value);
+                    const path = e.target.value;
+                    localStorage.setItem('mapping1personPath', path);
+                    if (path !== '') {
+                      localStorage.setItem('cached-mapping1personPath', path);
+                    }
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -265,7 +255,10 @@ export function ConvertForm() {
               </Grid>
 
               <Grid xs={2}>
-                <SelectPathButton path={value} setPath={setStorage('mapping1personPath')} />
+                <SelectPathButton
+                  path={value === '' ? localStorage.getItem('cached-mapping1personPath') ?? '' : value}
+                  setPath={setStorage('mapping1personPath')}
+                />
               </Grid>
             </Grid>
           )}
