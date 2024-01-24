@@ -136,7 +136,7 @@ export function ConvertForm() {
 
               <Grid xs={2}>
                 <SelectPathButton
-                  path={get_parent(value === '' ? localStorage.getItem('cached-src-parent') ?? '' : value)}
+                  path={get_parent(value === '' ? localStorage.getItem('cached-src') ?? '' : value)}
                   isDir
                   setPath={setStorage('src')}
                 />
