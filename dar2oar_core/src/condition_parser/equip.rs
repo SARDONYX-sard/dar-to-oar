@@ -47,8 +47,8 @@ pub(super) fn parse_equip(
         ),
         _ => {
             return Err(ParseError::UnexpectedValue(
-                "IsEquipped prefix condition unexpected to come in: ".to_string(),
-                condition_name.to_string(),
+                "IsEquipped prefix condition unexpected to come in: ".into(),
+                condition_name.into(),
             ))
         }
     })

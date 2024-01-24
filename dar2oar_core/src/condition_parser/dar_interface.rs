@@ -19,19 +19,20 @@ pub enum ParseError {
 impl From<NumberLiteral> for NumericLiteral {
     fn from(value: NumberLiteral) -> Self {
         match value {
-            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
             NumberLiteral::Decimal(num) => NumericLiteral::Decimal(num),
             NumberLiteral::Float(num) => NumericLiteral::Float(num),
+            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
         }
     }
 }
 
 impl From<&NumberLiteral> for NumericLiteral {
     fn from(value: &NumberLiteral) -> Self {
+        //! Note: omitting the definition using owned into will result in a circular loop.
         match *value {
-            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
             NumberLiteral::Decimal(num) => NumericLiteral::Decimal(num),
             NumberLiteral::Float(num) => NumericLiteral::Float(num),
+            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
         }
     }
 }
@@ -49,17 +50,11 @@ impl TryFrom<&FnArg<'_>> for NumericLiteral {
 
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Err(ParseError::UnexpectedValue(
-                "Number(e.g. 3.0)".to_string(),
-                format!(
-                    "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
-                    plugin_name, form_id
-                ),
-            )),
             FnArg::Number(num) => Ok(num.into()),
+            other => Err(ParseError::UnexpectedValue(
+                "Number(e.g. 3.0)".into(),
+                format!("{other:?}",),
+            )),
         }
     }
 }
@@ -77,10 +72,10 @@ impl From<&FnArg<'_>> for NumericValue {
                 }
                 .into(),
             ),
-            FnArg::Number(num) => match num {
-                NumberLiteral::Float(value) => Self::StaticValue((*value).into()),
-                NumberLiteral::Decimal(value) => Self::StaticValue((*value as f32).into()),
-                NumberLiteral::Hex(value) => Self::StaticValue((*value as f32).into()),
+            FnArg::Number(num) => match *num {
+                NumberLiteral::Float(value) => Self::StaticValue(value.into()),
+                NumberLiteral::Decimal(value) => Self::StaticValue((value as f32).into()),
+                NumberLiteral::Hex(value) => Self::StaticValue((value as f32).into()),
             },
         }
     }
@@ -113,17 +108,11 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
 
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Err(ParseError::UnexpectedValue(
-                "StaticValue(e.g. 3.0)".to_string(),
-                format!(
-                    "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
-                    plugin_name, form_id
-                ),
-            )),
             FnArg::Number(num) => Ok(num.into()),
+            other => Err(ParseError::UnexpectedValue(
+                "StaticValue(e.g. 3.0)".to_string(),
+                format!("{other:?}",),
+            )),
         }
     }
 }
@@ -137,11 +126,11 @@ impl TryFrom<FnArg<'_>> for PluginValue {
                 plugin_name,
                 form_id,
             } => Ok(Self {
-                plugin_name: (*plugin_name).into(),
+                plugin_name: plugin_name.into(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
             FnArg::Number(num) => Err(ParseError::UnexpectedValue(
-                "plugin_name, form_id (in cast FnArg to PluginValue)".to_string(),
+                "plugin_name, form_id (in cast FnArg to PluginValue)".into(),
                 num.to_string(),
             )),
         }
@@ -161,7 +150,7 @@ impl TryFrom<&FnArg<'_>> for PluginValue {
                 form_id: NumericLiteral::from(form_id).into(),
             }),
             FnArg::Number(num) => Err(ParseError::UnexpectedValue(
-                "plugin_name, form_id (in cast &FnArg to PluginValue)".to_string(),
+                "plugin_name, form_id (in cast &FnArg to PluginValue)".into(),
                 num.to_string(),
             )),
         }
@@ -192,16 +181,6 @@ impl TryFrom<&FnArg<'_>> for Direction {
 
     fn try_from(value: &FnArg<'_>) -> Result<Self, Self::Error> {
         match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Err(ParseError::UnexpectedValue(
-                "1..=4(in Cast &FnArg to Direction)".to_string(),
-                format!(
-                    "\"PluginValue\": {{ plugin_name: \"{}\", form_id: {} }}",
-                    plugin_name, form_id
-                ),
-            )),
             FnArg::Number(num) => Ok(match *num {
                 NumberLiteral::Hex(num) => (num as u64)
                     .try_into()
@@ -213,6 +192,10 @@ impl TryFrom<&FnArg<'_>> for Direction {
                     .try_into()
                     .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
             }),
+            other => Err(ParseError::UnexpectedValue(
+                "1..=4(in Cast &FnArg to Direction)".into(),
+                format!("{other:?}"),
+            )),
         }
     }
 }

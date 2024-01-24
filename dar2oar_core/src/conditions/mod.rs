@@ -127,8 +127,6 @@ gen_one_plugin_struct!(
   IsActorBase, actor_base => "Actor base",
   IsClass, class => "Class",
   IsCombatStyle, combat_style => "Combat style",
-  IsEquippedLeft, form => "Form",  // DAR only function
-  IsEquippedRight, form => "Form", // DAR only function
   IsEquippedShout, shout => "Shout",
   IsInFaction, faction => "Faction",
   IsInLocation, location => "Location",
@@ -159,8 +157,6 @@ pub enum ConditionSet {
     IsCombatStyle(IsCombatStyle),
     IsEquipped(IsEquipped),
     IsEquippedHasKeyword(IsEquippedHasKeyword),
-    IsEquippedLeft(IsEquippedLeft),
-    IsEquippedRight(IsEquippedRight),
     IsEquippedShout(IsEquippedShout),
     IsEquippedType(IsEquippedType),
     IsInFaction(IsInFaction),

@@ -64,7 +64,7 @@ impl fmt::Display for FnArg<'_> {
             FnArg::PluginValue {
                 plugin_name,
                 form_id,
-            } => write!(f, "PluginName: {plugin_name}, formID: {form_id}"),
+            } => write!(f, "\"{plugin_name}\" | {form_id}"),
             FnArg::Number(num) => write!(f, "{num}"),
         }
     }
