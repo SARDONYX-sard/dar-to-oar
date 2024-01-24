@@ -54,7 +54,7 @@
   "remove-oar-failed": "「OpenAnimationReplacer」ディレクトリが見つかりません",
   "remove-oar-specify-error": "DARまたはOARが入力されていません",
   "remove-oar-success": "OARディレクトリを削除しました",
-  "remove-oar-tooltip": "「OAR(出力先)」、なければ「DAR(入力)」からOARディレクトリを探して削除します",
+  "remove-oar-tooltip": "OAR(出力先)」(未指定なら「DAR(入力)」)からOARディレクトリを探して削除します",
   "run-parallel-btn-tooltip": "マルチスレッドを使用します",
   "run-parallel-btn-tooltip2": "注意: 2倍以上の処理速度が期待できますが、並行処理によりスレッドの終了タイミングが順不同になるため、ログの書き込みも同様に順不同になりログの可読性が大幅に低下します。",
   "run-parallel-label": "並列実行",

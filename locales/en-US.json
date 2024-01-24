@@ -54,7 +54,7 @@
   "remove-oar-failed": "Not found \"OpenAnimationReplacer\" directory",
   "remove-oar-specify-error": "DAR or OAR dir must be specified.",
   "remove-oar-success": "Removed OAR directory.",
-  "remove-oar-tooltip": "Find and delete OAR dir from \"DAR(source) Directory*\" or \"OAR(destination) Directory\".",
+  "remove-oar-tooltip": "Find and delete OAR dir from \"OAR(destination) Directory\"(or \"DAR(source) Directory*\" if not specified).",
   "run-parallel-btn-tooltip": "Use multi-threading.",
   "run-parallel-btn-tooltip2": "Note:  More than twice the processing speed can be expected, but the concurrent processing results in thread termination timings being out of order, so log writes will be out of order as well, greatly reducing readability of the logs.",
   "run-parallel-label": "Run Parallel",
