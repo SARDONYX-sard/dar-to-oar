@@ -6,9 +6,8 @@ import AceEditor from 'react-ace';
 
 import { ImportLangButton } from '@/components/buttons';
 import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
-import { Toaster } from '@/components/notifications';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
-import { openShell } from '@/tauri_cmd';
+import { start } from '@/tauri_cmd';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
 
 import packageJson from '@/../../package.json';
@@ -42,7 +41,6 @@ export default function Settings() {
         width: '100%',
       }}
     >
-      <Toaster position="bottom-right" reverseOrder={false} />
       <CSSEditor editorMode={editorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
 
       <JSEditor editorMode={editorMode} />
@@ -153,7 +151,7 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
 };
 
 const Help = () => {
-  const handleClick = () => openShell(packageJson.homepage);
+  const handleClick = () => start(packageJson.homepage);
   return (
     <div
       style={{

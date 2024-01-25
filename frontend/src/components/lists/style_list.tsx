@@ -1,6 +1,7 @@
 import { FormControl, Tooltip, InputLabel } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import { useCallback } from 'react';
 
 import { useTranslation } from '@/hooks';
 import { selectPreset, presetStyles } from '@/utils/styles';
@@ -13,15 +14,18 @@ type Props = {
 
 export const StyleList = ({ preset, setPreset, setStyle }: Props) => {
   const { t } = useTranslation();
-  const handleChange = (e: SelectChangeEvent<string>) => {
-    const presetNumber = selectPreset(e.target.value);
-    setPreset(presetNumber);
-    if (presetNumber === '0') {
-      setStyle(localStorage.getItem('customCSS') ?? '');
-      return;
-    }
-    setStyle(presetStyles[presetNumber]);
-  };
+  const handleChange = useCallback(
+    (e: SelectChangeEvent<string>) => {
+      const presetNumber = selectPreset(e.target.value);
+      setPreset(presetNumber);
+      if (presetNumber === '0') {
+        setStyle(localStorage.getItem('customCSS') ?? '');
+        return;
+      }
+      setStyle(presetStyles[presetNumber]);
+    },
+    [setPreset, setStyle],
+  );
 
   return (
     <Tooltip

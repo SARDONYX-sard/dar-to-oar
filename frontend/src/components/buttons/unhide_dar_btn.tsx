@@ -2,9 +2,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 
-import { CircularProgressWithLabel } from '@/components/notifications';
+import { CircularProgressWithLabel, notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { progressListener, unhideDarDir } from '@/tauri_cmd';
 
@@ -19,7 +18,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
 
   const handleClick = async () => {
     if (path === '') {
-      toast.error(t('unhide-dar-specify-error'));
+      notify.error(t('unhide-dar-specify-error'));
       return;
     }
 

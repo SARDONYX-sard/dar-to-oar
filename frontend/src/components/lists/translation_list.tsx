@@ -2,6 +2,7 @@ import { FormControl, Tooltip, InputLabel } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { changeLanguage } from 'i18next';
+import { useCallback } from 'react';
 
 import { useStorageState } from '@/hooks';
 
@@ -9,11 +10,14 @@ export const TranslationList = () => {
   const [lang, setLang] = useStorageState('locale', 'auto');
 
   const locale = 'Locale';
-  const handleChange = (e: SelectChangeEvent<string>) => {
-    const newLocale = e.target.value;
-    setLang(newLocale);
-    changeLanguage(newLocale === 'auto' ? window.navigator.language : newLocale);
-  };
+  const handleChange = useCallback(
+    (e: SelectChangeEvent<string>) => {
+      const newLocale = e.target.value;
+      setLang(newLocale);
+      changeLanguage(newLocale === 'auto' ? window.navigator.language : newLocale);
+    },
+    [setLang],
+  );
 
   return (
     <Tooltip title="Select Language" placement="top">

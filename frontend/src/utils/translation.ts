@@ -1,7 +1,8 @@
 'use client';
 import { use, type Resource } from 'i18next';
-import { toast } from 'react-hot-toast';
 import { initReactI18next } from 'react-i18next';
+
+import { notify } from '@/components/notifications';
 
 import dictEnUS from '@/../../locales/en-US.json';
 import dictJaJP from '@/../../locales/ja-JP.json';
@@ -10,7 +11,7 @@ function getCustomTranslationDict() {
   try {
     return JSON.parse(localStorage.getItem('custom-translation-dict') ?? '{}');
   } catch (error) {
-    toast.error(`${error}`);
+    notify.error(`${error}`);
   }
 }
 

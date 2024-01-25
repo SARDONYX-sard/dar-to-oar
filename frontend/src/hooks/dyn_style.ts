@@ -1,6 +1,6 @@
 import { useEffect, useInsertionEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 
+import { notify } from '@/components/notifications';
 import { selectPreset, presetStyles } from '@/utils/styles';
 
 const getStyle = () => {
@@ -43,16 +43,16 @@ export function useInjectScript(initialState = (() => localStorage.getItem('cust
 
   useEffect(() => {
     const scriptElement = document.createElement('script');
+    scriptElement.innerHTML = script;
+    scriptElement.id = 'custom-script';
+
     if (pathname !== window.location.pathname) {
       try {
-        // comment remove script
-        scriptElement.innerHTML = script;
-        scriptElement.id = 'custom-script';
         if (!document.getElementById('custom-script')) {
           document.body.appendChild(scriptElement);
         }
       } catch (e) {
-        toast.error(`${e}`);
+        notify.error(`${e}`);
       }
       setPathname(window.location.pathname);
     }
