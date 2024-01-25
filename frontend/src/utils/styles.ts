@@ -54,7 +54,8 @@ span.Mui-checked > svg,
 }
 
 label.Mui-focused,
-.MuiButton-root.MuiButton-text {
+.MuiButton-root.MuiButton-text,
+.MuiCircularProgress-svg {
   color: var(--theme-color) !important;
 }
 
