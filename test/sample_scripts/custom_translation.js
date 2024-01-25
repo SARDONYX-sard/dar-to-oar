@@ -40,6 +40,9 @@
     'import-lang-btn': 'Import Language',
     'import-lang-tooltip': 'Import any language from a Json file. (automatically reloads for validation).',
     'import-lang-tooltip2': 'Note: For invalid Json, fall back to English. (See Wiki for how to write Json)',
+    'lang-preset-auto': 'Auto',
+    'lang-preset-custom': 'Custom',
+    'lang-preset-label': 'Language',
     'log-level-list-label': 'Log Level',
     'log-level-list-tooltip': 'Minor log level encompasses the more critical log levels. (i.e. Error ⊂ Info)',
     'log-level-list-tooltip2': 'Debug: Logs data on the way of the converted condition.',
@@ -57,12 +60,15 @@
     'remove-oar-failed': 'Not found "OpenAnimationReplacer" directory',
     'remove-oar-specify-error': 'DAR or OAR dir must be specified.',
     'remove-oar-success': 'Removed OAR directory.',
-    'remove-oar-tooltip': 'Find and delete OAR dir from "DAR(source) Directory*" or "OAR(destination) Directory".',
+    'remove-oar-tooltip':
+      'Find and delete OAR dir from "OAR(destination) Directory"(or "DAR(source) Directory*" if not specified).',
     'run-parallel-btn-tooltip': 'Use multi-threading.',
     'run-parallel-btn-tooltip2':
       'Note:  More than twice the processing speed can be expected, but the concurrent processing results in thread termination timings being out of order, so log writes will be out of order as well, greatly reducing readability of the logs.',
     'run-parallel-label': 'Run Parallel',
     'select-btn': 'Select',
+    'tab-label-1': 'Editor / Preset',
+    'tab-label-2': 'Language',
     'unhide-dar-btn': 'Unhide DAR',
     'unhide-dar-btn-tooltip': 'Unhide DAR files hidden by "Hide DAR".(For MO2 user)',
     'unhide-dar-failed': 'Could not find files with ".mohidden" extension',
@@ -77,9 +83,8 @@
   const clearCustomTranslation = () => localStorage.removeItem('custom-translation-dict');
 
   // You can turn them on and off by deleting the `//` in these functions.
-  // Perhaps you may have to reload the file twice to apply it.
-  // Key to reload: Ctrl + Shift + r
-  // Comment-out toggle key: Ctrl + /
+  // Apply(press 2 time): Ctrl + Shift + r
+  // Comment ON/OFF: Ctrl + /
   //
   // clearCustomTranslation();
   // setCustomTranslation();

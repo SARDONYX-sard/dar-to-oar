@@ -125,7 +125,7 @@ const preset4 = createPreset(
   --image-position-x: center;
   --image-position-y: center;
   --image-url: url('https://images.pexels.com/photos/973324/pexels-photo-973324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-  --main-bg-color: #2228;
+  --main-bg-color: #222a;
   --theme-color: rgb(185, 185, 90);` as const,
 );
 

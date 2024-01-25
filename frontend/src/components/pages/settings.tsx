@@ -1,11 +1,16 @@
 'use client';
 
-import { Box, Button } from '@mui/material';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import { Box, Button, Grid } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
+import Tab from '@mui/material/Tab';
+import { useState } from 'react';
 import AceEditor from 'react-ace';
 
 import { ImportLangButton } from '@/components/buttons';
-import { SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
+import { SelectEditorMode, SelectEditorProps, StyleList, StyleListProps, TranslationList } from '@/components/lists';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
@@ -44,21 +49,22 @@ export default function Settings() {
       <CSSEditor editorMode={editorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
 
       <JSEditor editorMode={editorMode} />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '10px',
-          overflowX: 'auto',
-          width: '95%',
-        }}
-      >
-        <SelectEditorMode editorMode={selectEditorMode(editorMode)} setEditorMode={setEditorKeyMode} />
-        <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
-        <ImportLangButton />
-        <TranslationList />
-      </div>
-      <Help />
+
+      <Grid container sx={{ width: '95%' }}>
+        <Grid sx={{ overflowX: 'auto' }} xs={8}>
+          <Tabs
+            editorMode={selectEditorMode(editorMode) ?? 'default'}
+            preset={preset}
+            setPreset={setPreset}
+            setStyle={setStyle}
+            style={style}
+            setEditorMode={setEditorKeyMode}
+          />
+        </Grid>
+        <Grid sx={{ overflowX: 'auto' }} xs={4}>
+          <Help />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
@@ -150,16 +156,57 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
   );
 };
 
+function Tabs({
+  editorMode,
+  setEditorMode,
+  preset,
+  setPreset,
+  setStyle,
+}: StyleListProps & SelectEditorProps & CSSEditorProps) {
+  const [value, setValue] = useState('1');
+  const { t } = useTranslation();
+
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
+
+  return (
+    <Box
+      sx={{
+        minWidth: 'max-content',
+        typography: 'body1',
+      }}
+    >
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabList onChange={handleChange} aria-label="Setting tabs">
+            <Tab label={t('tab-label-1')} value="1" />
+            <Tab label={t('tab-label-2')} value="2" />
+          </TabList>
+        </Box>
+        <TabPanel value="1">
+          <SelectEditorMode editorMode={editorMode} setEditorMode={setEditorMode} />
+          <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
+        </TabPanel>
+        <TabPanel value="2">
+          <ImportLangButton />
+          <TranslationList />
+        </TabPanel>
+      </TabContext>
+    </Box>
+  );
+}
+
 const Help = () => {
   const handleClick = () => start(packageJson.homepage);
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around',
-        marginTop: '10px',
-        width: '55%',
+        flexDirection: 'column',
+        height: '100%',
+        justifyContent: 'space-evenly',
       }}
     >
       <div>Version: {packageJson.version}</div>
@@ -169,6 +216,6 @@ const Help = () => {
           GitHub
         </Button>
       </div>
-    </div>
+    </Box>
   );
 };

@@ -53,6 +53,9 @@ export const SelectLogLevel = forwardRef<
           id="log-level-select"
           value={value}
           label="log level"
+          // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
+          // and the design will be broken.
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
         >
           <MenuItem value={'trace'}>Trace</MenuItem>
           <MenuItem value={'debug'}>Debug</MenuItem>
