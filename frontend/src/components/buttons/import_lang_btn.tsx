@@ -1,14 +1,15 @@
 import { FileOpen } from '@mui/icons-material';
 import { Button, Tooltip } from '@mui/material';
-import { toast } from 'react-hot-toast';
+import { useCallback } from 'react';
 
+import { notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { importLang } from '@/tauri_cmd';
 
 export const ImportLangButton = () => {
   const { t } = useTranslation();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     try {
       const contents = await importLang();
       if (contents) {
@@ -18,9 +19,9 @@ export const ImportLangButton = () => {
         window.location.reload(); // To enable
       }
     } catch (e) {
-      toast.error(`${e}`);
+      notify.error(`${e}`);
     }
-  };
+  }, []);
 
   return (
     <Tooltip

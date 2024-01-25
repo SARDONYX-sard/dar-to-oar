@@ -3,9 +3,9 @@ import { type OpenDialogOptions, open } from '@tauri-apps/api/dialog';
 import { appLogDir } from '@tauri-apps/api/path';
 import { open as openShell } from '@tauri-apps/api/shell';
 
+import { notify } from '@/components/notifications';
 import { selectLogLevel } from '@/utils/selector';
 
-export { open as openShell } from '@tauri-apps/api/shell';
 export { progressListener } from '@/tauri_cmd/progress_listener';
 
 type ConverterOptions = {
@@ -21,11 +21,7 @@ type ConverterOptions = {
 };
 
 /**
- * Converts DAR to OAR.
- *
- * This function converts a DAR (DynamicAnimationReplacer) to an OAR (OpenAnimationReplacer).
- * It takes the specified properties as arguments and invokes the appropriate conversion command.
- *
+ * Converts a DAR (DynamicAnimationReplacer) to an OAR (OpenAnimationReplacer).
  * @param {ConverterOptions} props - Converter Options.
  * @returns {Promise<void>} A promise that resolves when converted.
  * @throws
@@ -65,10 +61,7 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
 
 /**
- * Changes the log level.
- *
- * This function invokes the 'change_log_level' command with the specified log level.
- *
+ * Invokes the `change_log_level` command with the specified log level.
  * @param {LogLevel} [logLevel] - The log level to set. If not provided, the default log level will be used.
  * @returns {Promise<void>} A promise that resolves when the log level is changed.
  */
@@ -78,14 +71,12 @@ export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
 
 /**
  * @param darPath
- *
- * # Throw Error
+ * @throws
  */
 /**
- * Add '.mohidden' to DAR's files.
+ * Add `.mohidden` to DAR's files.
  * @param {string} darDir - A string representing the directory path of the DAR directory that needs to be
  * unhidden.
- *
  * @throws
  */
 export async function unhideDarDir(darDir: string) {
@@ -112,7 +103,6 @@ export async function removeOarDir(path: string) {
 /**
  * Read the entire contents of a file into a string.
  * @param {string} path - target path
- *
  * @return [isCancelled, contents]
  * @throws
  */
@@ -125,7 +115,17 @@ export async function importLang() {
     localStorage.setItem(langPathKey, path);
   };
 
-  if (await openPath(path, { setPath })) {
+  if (
+    await openPath(path, {
+      setPath,
+      filters: [
+        {
+          name: 'Custom Language',
+          extensions: ['json'],
+        },
+      ],
+    })
+  ) {
     return await invoke<string>('read_to_string', { path });
   }
   return null;
@@ -143,7 +143,6 @@ type OpenOptions = {
 
 /**
  * Open a file or Dir
- *
  * @returns selected path or cancelled null
  * @throws
  */
@@ -162,25 +161,37 @@ export async function openPath(path: string, options: OpenOptions) {
 
 /**
  * Opens the log file.
- *
- * This function retrieves the log directory using the appLogDir function,
- * constructs the path to the log file, and opens the shell with the log file path.
- *
  * @throws - if not found path
  */
 export async function openLogFile() {
   const logDir = await appLogDir();
   const logFile = `${logDir}g_dar2oar.log`;
+  // NOTE: Using notify wrapper (`start`) here had no effect.
+  // (If there is an error in the `appLogDir` in front of us, we cannot try to catch it.)
   await openShell(logFile);
 }
 
 /**
  * Opens the log directory.
- *
- * This function opens the shell and awaits the result of the appLogDir function.
- *
  * @throws - if not found path
  */
 export async function openLogDir() {
+  // NOTE: Using notify wrapper (`start`) here had no effect.
+  // (If there is an error in the `appLogDir` in front of us, we cannot try to catch it.)
   await openShell(await appLogDir());
+}
+/**
+ * Wrapper tauri's `open` with `notify.error`
+ * @export
+ * @param {string} path
+ * @param {string} [openWith]
+ */
+export async function start(path: string, openWith?: string) {
+  try {
+    await openShell(path, openWith);
+  } catch (error) {
+    if (error instanceof Error) {
+      notify.error(error.message);
+    }
+  }
 }

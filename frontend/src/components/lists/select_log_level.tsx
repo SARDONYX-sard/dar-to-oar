@@ -1,8 +1,8 @@
-import { FormControl, InputLabel, Select, MenuItem, Tooltip } from '@mui/material';
-import { forwardRef } from 'react';
+import { FormControl, InputLabel, Select, MenuItem, Tooltip, SelectChangeEvent } from '@mui/material';
+import { forwardRef, useCallback } from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
 
+import { notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { changeLogLevel, type LogLevel } from '@/tauri_cmd';
 import { selectLogLevel } from '@/utils/selector';
@@ -16,6 +16,19 @@ export const SelectLogLevel = forwardRef<
   { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
   const { t } = useTranslation();
+
+  const handleChange = useCallback(
+    async (event: SelectChangeEvent<LogLevel>) => {
+      localStorage.setItem(name, event.target.value);
+      onChange(event);
+      try {
+        await changeLogLevel(selectLogLevel(event.target.value));
+      } catch (err) {
+        notify.error(`${err}`);
+      }
+    },
+    [name, onChange],
+  );
 
   return (
     <Tooltip
@@ -34,15 +47,7 @@ export const SelectLogLevel = forwardRef<
         <Select
           name={name}
           ref={ref}
-          onChange={async (e) => {
-            localStorage.setItem(name, e.target.value);
-            onChange(e);
-            try {
-              await changeLogLevel(selectLogLevel(e.target.value));
-            } catch (err) {
-              toast.error(`${err}`);
-            }
-          }}
+          onChange={handleChange}
           onBlur={onBlur}
           labelId="log-level-select-label"
           id="log-level-select"

@@ -1,7 +1,7 @@
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Button } from '@mui/material';
-import { toast } from 'react-hot-toast';
 
+import { notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { openPath } from '@/tauri_cmd';
 
@@ -14,7 +14,7 @@ type Props = Readonly<{
 export function SelectPathButton({ path, isDir = false, setPath }: Props) {
   const { t } = useTranslation();
   const handleClick = async () => {
-    openPath(path, { setPath, directory: isDir }).catch((e) => toast.error(`${e}`));
+    openPath(path, { setPath, directory: isDir }).catch((e) => notify.error(`${e}`));
   };
 
   return (

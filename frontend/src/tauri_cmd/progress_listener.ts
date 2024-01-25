@@ -1,12 +1,20 @@
-import { listen } from '@tauri-apps/api/event';
-import { toast } from 'react-hot-toast';
+import { listen, type EventCallback, type EventName } from '@tauri-apps/api/event';
 
-type ListerProps = {
+import { notify } from '@/components/notifications';
+
+type ListenerProps = {
   setLoading: (loading: boolean) => void;
   setProgress: (percentage: number) => void;
   success: string | JSX.Element;
+  /** @default Error */
   error?: string | JSX.Element;
 };
+/**
+ * - Specification decided by backend
+ *   - At 1st => length
+ *   - After that => index
+ */
+type Payload = { index: number };
 
 /**
  * Tauri Progress Event Listener.
@@ -14,7 +22,7 @@ type ListerProps = {
  *
  * # Example
  * ```typescript
- * const promiseFn = async() => {};
+ * const promiseFn = async() => { await invoke('remove_oar_dir', { path: "/"})};
  * const setLoading = (bool:boolean) => {};
  * const setProgress = (per:number) => {};
  *
@@ -38,32 +46,38 @@ type ListerProps = {
  * }
  *  ```
  */
-export async function progressListener(eventName: string, promiseFn: () => Promise<void>, props: ListerProps) {
-  const { setLoading, setProgress, success, error } = props;
-
+export async function progressListener(
+  eventName: EventName,
+  promiseFn: () => Promise<void>,
+  { setLoading, setProgress, success, error }: ListenerProps,
+) {
   setLoading(true);
+  setProgress(0);
+
+  /** All File & dir counts */
+  let maxNum = 0;
   let unlisten: (() => void) | null = null;
+  const eventHandler: EventCallback<Payload> = (event) => {
+    const toPercentage = (num: number) => (num * 100) / maxNum;
+
+    if (maxNum === 0) {
+      maxNum = event.payload.index;
+    } else {
+      setProgress(toPercentage(event.payload.index));
+    }
+  };
 
   try {
-    setProgress(0);
-    let maxNum = 0;
-    let prog = 0;
-
-    unlisten = await listen<{ index: number }>(eventName, (event) => {
-      if (maxNum === 0) {
-        maxNum = event.payload.index;
-      } else {
-        prog = event.payload.index;
-      }
-      setProgress((prog * 100) / maxNum);
-    });
+    // Setup before run Promise(For event hook)
+    unlisten = await listen<Payload>(eventName, eventHandler);
 
     await promiseFn();
-    toast.success(success);
+
+    notify.success(success);
     setProgress(100);
   } catch (err) {
-    setProgress(0); // To avoid NaN
-    toast.error(error ?? `${err}`);
+    setProgress(0); // To avoid display `NaN`
+    notify.error(error ?? `${err}`);
   } finally {
     if (unlisten) {
       unlisten();

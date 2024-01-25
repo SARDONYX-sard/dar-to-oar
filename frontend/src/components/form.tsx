@@ -17,7 +17,7 @@ import {
 import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { convertDar2oar, LogLevel, openShell, progressListener } from '@/tauri_cmd';
+import { convertDar2oar, LogLevel, progressListener, start } from '@/tauri_cmd';
 import { get_parent } from '@/utils/path';
 import { selectLogLevel } from '@/utils/selector';
 
@@ -464,8 +464,7 @@ export function ConvertForm() {
 
 function MappingHelpBtn() {
   const { t } = useTranslation();
-  const handleMappingClick = () =>
-    openShell(`https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`);
+  const handleMappingClick = () => start(`https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`);
 
   return (
     <>

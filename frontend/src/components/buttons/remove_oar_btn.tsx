@@ -2,9 +2,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 
-import { CircularProgressWithLabel } from '@/components/notifications';
+import { CircularProgressWithLabel, notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { progressListener, removeOarDir } from '@/tauri_cmd';
 
@@ -20,7 +19,7 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
 
   const handleClick = async () => {
     if (oarPath === '' && darPath === '') {
-      toast.error(t('remove-oar-specify-error'));
+      notify.error(t('remove-oar-specify-error'));
       return;
     }
 

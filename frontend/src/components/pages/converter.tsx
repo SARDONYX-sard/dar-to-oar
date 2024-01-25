@@ -3,14 +3,12 @@
 import { Box } from '@mui/material';
 
 import { ConvertForm } from '@/components/form';
-import { Toaster } from '@/components/notifications';
-import { useDynStyle, useInjectScript, useLocale, useToastLimit } from '@/hooks';
+import { useDynStyle, useInjectScript, useLocale } from '@/hooks';
 
 export default function Converter() {
   useDynStyle();
   useInjectScript();
   useLocale();
-  useToastLimit(1);
 
   return (
     <>
@@ -26,7 +24,6 @@ export default function Converter() {
       >
         <ConvertForm />
       </Box>
-      <Toaster />
     </>
   );
 }
