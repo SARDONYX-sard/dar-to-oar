@@ -1,13 +1,13 @@
 'use client';
 
 import { CssBaseline } from '@mui/material';
-import { createTheme, ThemeProvider as ThemeProvider_ } from '@mui/material/styles';
+import { createTheme, ThemeProvider as ThemeProviderInner } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useMemo } from 'react';
 
 import type { ReactNode } from 'react';
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
+export default function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(
     () =>
@@ -20,9 +20,9 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ThemeProvider_ theme={theme}>
+    <ThemeProviderInner theme={theme}>
       <CssBaseline />
       {children}
-    </ThemeProvider_>
+    </ThemeProviderInner>
   );
 }
