@@ -1,5 +1,4 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box, Button, FormControlLabel, FormGroup, TextField, Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
@@ -47,7 +46,7 @@ const getInitialFormValues = (): FormProps => ({
   logLevel: selectLogLevel(localStorage.getItem('logLevel') ?? 'error'),
   runParallel: localStorage.getItem('runParallel') === 'true',
   hideDar: localStorage.getItem('hideDar') === 'true',
-  showProgress: localStorage.getItem('showProgress') === 'true',
+  showProgress: true,
   progress: 0,
 });
 
@@ -357,42 +356,6 @@ export function ConvertForm() {
                       <Box component="div" sx={{ display: 'flex' }}>
                         <VisibilityOffIcon />
                         {t('hide-dar-btn')}
-                      </Box>
-                    }
-                  />
-                </Tooltip>
-              )}
-            />
-          </Grid>
-
-          <Grid xs={3}>
-            <Controller
-              name="showProgress"
-              control={control}
-              render={({ field: { value } }) => (
-                <Tooltip
-                  title={
-                    <>
-                      {t('progress-btn-tooltip')} <br />
-                      {t('progress-btn-tooltip2')}
-                    </>
-                  }
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onClick={() => {
-                          setValue('showProgress', !value);
-                          localStorage.setItem('showProgress', `${!value}`);
-                        }}
-                        checked={value}
-                        aria-label="Show Progress"
-                      />
-                    }
-                    label={
-                      <Box component="div" sx={{ display: 'flex' }}>
-                        <SlideshowIcon />
-                        {t('progress-btn')}
                       </Box>
                     }
                   />
