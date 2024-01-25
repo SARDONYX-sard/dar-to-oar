@@ -39,7 +39,7 @@ permissions:
 on:
   push:
     tags:
-      - "**[0-9]+.[0-9]+.[0-9]+*"
+      - '**[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
           echo "cargo dist plan ran successfully"
           cat dist-manifest.json
           echo "manifest=$(jq -c "." dist-manifest.json)" >> "$GITHUB_OUTPUT"
-      - name: "Upload dist-manifest.json"
+      - name: 'Upload dist-manifest.json'
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
@@ -121,8 +121,8 @@ jobs:
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
           jq --raw-output ".artifacts[]?.path | select( . != null )" dist-manifest.json >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
-      - name: "Upload artifacts"
-        uses: actions/upload-artifact@v3
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts
           path: ${{ steps.cargo-dist.outputs.paths }}
@@ -130,7 +130,7 @@ jobs:
   # Build and package all the platform-agnostic(ish) things
   upload-global-artifacts:
     needs: [plan, upload-local-artifacts]
-    runs-on: "ubuntu-20.04"
+    runs-on: 'ubuntu-20.04'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -141,7 +141,7 @@ jobs:
         run: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.3.1/cargo-dist-installer.sh | sh"
       # Get all the local artifacts for the global tasks to use (for e.g. checksums)
       - name: Fetch local artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifacts
           path: target/distrib/
@@ -155,8 +155,8 @@ jobs:
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
           jq --raw-output ".artifacts[]?.path | select( . != null )" dist-manifest.json >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
-      - name: "Upload artifacts"
-        uses: actions/upload-artifact@v3
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts
           path: ${{ steps.cargo-dist.outputs.paths }}
@@ -188,8 +188,8 @@ jobs:
         with:
           token: ${{ github.token }}
           tag: ${{ needs.plan.outputs.tag }}
-      - name: "Download artifacts"
-        uses: actions/download-artifact@v3
+      - name: 'Download artifacts'
+        uses: actions/download-artifact@v4
         with:
           name: artifacts
           path: artifacts
@@ -197,16 +197,16 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ needs.plan.outputs.tag }}
-          name: "DAR to OAR Converter v${{ needs.plan.outputs.tag }}"
+          name: 'DAR to OAR Converter v${{ needs.plan.outputs.tag }}'
           body: |
             ${{ steps.changelog.outputs.changes }}
             ${{ fromJson(needs.plan.outputs.val).announcement_github_body }}
           prerelease: ${{ fromJson(needs.plan.outputs.val).announcement_is_prerelease }}
-          artifacts: "artifacts/*"
+          artifacts: 'artifacts/*'
           allowUpdates: true
       - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: main
-          commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
+          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           file_pattern: CHANGELOG.md
