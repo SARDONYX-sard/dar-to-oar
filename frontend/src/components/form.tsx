@@ -53,12 +53,15 @@ const getInitialFormValues = (): FormProps => ({
 
 export function ConvertForm() {
   const { t } = useTranslation();
-  const { register, handleSubmit, control, setValue, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, watch } = useForm({
     mode: 'onBlur',
     criteriaMode: 'all',
     shouldFocusError: false,
     defaultValues: getInitialFormValues(),
   });
+
+  /** Use `getValues` to get the old values and use `watch` to monitor `src` and `dst`. */
+  const watchFields = watch(['src', 'dst']);
 
   const setStorage = (key: keyof FormProps) => {
     return (value: string) => {
@@ -115,12 +118,12 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
+                    onChange(e);
                     const path = e.target.value;
                     localStorage.setItem('src', path); // For reload cache
                     if (path !== '') {
                       localStorage.setItem('cached-src', path); // For empty string
                     }
-                    onChange(e);
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
@@ -159,12 +162,12 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
+                    onChange(e);
                     const path = e.target.value;
                     localStorage.setItem('dst', path);
                     if (path !== '') {
                       localStorage.setItem('cached-dst', path);
                     }
-                    onChange(e);
                   }}
                   onBlur={onBlur}
                   error={Boolean(error)}
@@ -435,10 +438,10 @@ export function ConvertForm() {
 
         <Grid container spacing={2}>
           <Grid xs={3}>
-            <UnhideDarBtn path={getValues('src')} />
+            <UnhideDarBtn path={watchFields[0]} />
           </Grid>
           <Grid xs={3}>
-            <RemoveOarBtn darPath={getValues('src')} oarPath={getValues('dst')} />
+            <RemoveOarBtn darPath={watchFields[0]} oarPath={watchFields[1]} />
           </Grid>
         </Grid>
 

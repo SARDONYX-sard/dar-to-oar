@@ -1,7 +1,7 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { CircularProgressWithLabel, notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
@@ -17,7 +17,7 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     if (oarPath === '' && darPath === '') {
       notify.error(t('remove-oar-specify-error'));
       return;
@@ -26,11 +26,8 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
     await progressListener(
       '/dar2oar/progress/remove-oar',
       async () => {
-        if (oarPath === '') {
-          await removeOarDir(darPath);
-        } else {
-          await removeOarDir(oarPath);
-        }
+        const path = oarPath === '' ? darPath : oarPath;
+        await removeOarDir(path);
       },
       {
         setLoading,
@@ -39,7 +36,7 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
         error: t('remove-oar-failed'),
       },
     );
-  };
+  }, [darPath, oarPath, t]);
 
   return (
     <Tooltip title={<p>{t('remove-oar-tooltip')}</p>}>

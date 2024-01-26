@@ -1,7 +1,7 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { CircularProgressWithLabel, notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
@@ -16,7 +16,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     if (path === '') {
       notify.error(t('unhide-dar-specify-error'));
       return;
@@ -34,7 +34,7 @@ export const UnhideDarBtn = ({ path }: Props) => {
         error: t('unhide-dar-failed'),
       },
     );
-  };
+  }, [path, t]);
 
   return (
     <Tooltip title={<p>{t('unhide-dar-btn-tooltip')}</p>}>

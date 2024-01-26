@@ -9,7 +9,7 @@ import {
   type SnackbarKey,
   type SnackbarOrigin,
 } from 'notistack';
-import { forwardRef, memo, ReactNode } from 'react';
+import { forwardRef, memo } from 'react';
 
 const getPosition = (): SnackbarOrigin => {
   const defaultPosition = {
@@ -54,45 +54,43 @@ const action = (id: SnackbarKey) => (
   </IconButton>
 );
 
-const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProps & { component: ReactNode }>(
-  (props, forwardedRef) => {
-    const {
-      id,
-      message,
-      action: componentOrFnAction,
-      variant: notistackVariant,
-      hideIconVariant,
-      style,
-      className,
-    } = props;
+const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProps>((props, forwardedRef) => {
+  const {
+    id,
+    message,
+    action: componentOrFnAction,
+    variant: notistackVariant,
+    hideIconVariant,
+    style,
+    className,
+  } = props;
 
-    const severity = notistackVariant === 'default' ? 'info' : notistackVariant;
-    const action = typeof componentOrFnAction === 'function' ? componentOrFnAction(id) : componentOrFnAction;
+  const severity = notistackVariant === 'default' ? 'info' : notistackVariant;
+  const action = typeof componentOrFnAction === 'function' ? componentOrFnAction(id) : componentOrFnAction;
 
-    return (
-      <Alert
-        ref={forwardedRef}
-        severity={severity}
-        icon={hideIconVariant ? false : undefined}
-        action={action}
-        style={style}
-        className={className}
-        variant="outlined"
-        sx={(theme) => ({
-          alignItems: 'center',
-          backgroundColor: '#1a1919e1',
-          borderRadius: '8px',
-          boxShadow: theme.shadows[8],
-          display: 'flex',
-          maxWidth: '35vw',
-          willChange: 'transform',
-        })}
-      >
-        <AlertTitle sx={{ color: '#fff' }}>{severity.toUpperCase()}</AlertTitle>
-        {message}
-      </Alert>
-    );
-  },
-);
+  return (
+    <Alert
+      ref={forwardedRef}
+      severity={severity}
+      icon={hideIconVariant ? false : undefined}
+      action={action}
+      style={style}
+      className={className}
+      variant="outlined"
+      sx={(theme) => ({
+        alignItems: 'center',
+        backgroundColor: '#1a1919e1',
+        borderRadius: '8px',
+        boxShadow: theme.shadows[8],
+        display: 'flex',
+        maxWidth: '35vw',
+        willChange: 'transform',
+      })}
+    >
+      <AlertTitle sx={{ color: '#fff' }}>{severity.toUpperCase()}</AlertTitle>
+      {message}
+    </Alert>
+  );
+});
 ThemeResponsiveSnackbarComp.displayName = 'ThemeResponsiveSnackbarCompRef';
 const ThemeResponsiveSnackbar = memo(ThemeResponsiveSnackbarComp);

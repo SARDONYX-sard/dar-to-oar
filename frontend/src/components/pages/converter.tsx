@@ -11,19 +11,17 @@ export default function Converter() {
   useLocale();
 
   return (
-    <>
-      <Box
-        component="main"
-        sx={{
-          display: 'grid',
-          minHeight: 'calc(100vh - 56px)',
-          placeContent: 'center',
-          placeItems: 'center',
-          width: '100%',
-        }}
-      >
-        <ConvertForm />
-      </Box>
-    </>
+    <Box
+      component="main"
+      sx={{
+        display: 'grid',
+        minHeight: 'calc(100vh - 56px)',
+        placeContent: 'center',
+        placeItems: 'center',
+        width: '100%',
+      }}
+    >
+      <ConvertForm />
+    </Box>
   );
 }
