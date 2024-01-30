@@ -8,7 +8,7 @@ import { useTranslation } from '@/hooks';
 
 import type { SnackbarOrigin } from 'notistack';
 
-export const NotifyPositionList = () => {
+export const NoticePositionList = () => {
   const { t } = useTranslation();
   const [pos, setPos] = useState(getPosition);
 
@@ -35,7 +35,7 @@ export const NotifyPositionList = () => {
 
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 105 }}>
-      <InputLabel htmlFor="editor-select">{t('notice-location-list-label')}</InputLabel>
+      <InputLabel htmlFor="editor-select">{t('notice-position-list-label')}</InputLabel>
       <Select
         name={'notify-position-list'}
         onChange={handleChange}
@@ -47,12 +47,12 @@ export const NotifyPositionList = () => {
         // and the design will be broken.
         inputProps={{ MenuProps: { disableScrollLock: true } }}
       >
-        <MenuItem value={'top_right'}>{t('notice-location-top-right')}</MenuItem>
-        <MenuItem value={'top_center'}>{t('notice-location-top-center')}</MenuItem>
-        <MenuItem value={'top_left'}>{t('notice-location-top-left')}</MenuItem>
-        <MenuItem value={'bottom_right'}>{t('notice-location-bottom-right')}</MenuItem>
-        <MenuItem value={'bottom_center'}>{t('notice-location-bottom-center')}</MenuItem>
-        <MenuItem value={'bottom_left'}>{t('notice-location-bottom-left')}</MenuItem>
+        <MenuItem value={'top_right'}>{t('notice-position-top-right')}</MenuItem>
+        <MenuItem value={'top_center'}>{t('notice-position-top-center')}</MenuItem>
+        <MenuItem value={'top_left'}>{t('notice-position-top-left')}</MenuItem>
+        <MenuItem value={'bottom_right'}>{t('notice-position-bottom-right')}</MenuItem>
+        <MenuItem value={'bottom_center'}>{t('notice-position-bottom-center')}</MenuItem>
+        <MenuItem value={'bottom_left'}>{t('notice-position-bottom-left')}</MenuItem>
       </Select>
     </FormControl>
   );

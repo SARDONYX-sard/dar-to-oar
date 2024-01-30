@@ -10,7 +10,7 @@ import AceEditor from 'react-ace';
 
 import { ImportLangButton } from '@/components/buttons';
 import {
-  NotifyPositionList,
+  NoticePositionList,
   SelectEditorMode,
   type SelectEditorProps,
   StyleList,
@@ -195,7 +195,7 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
           <TranslationList />
         </TabPanel>
         <TabPanel value="3">
-          <NotifyPositionList />
+          <NoticePositionList />
         </TabPanel>
       </TabContext>
     </Box>
