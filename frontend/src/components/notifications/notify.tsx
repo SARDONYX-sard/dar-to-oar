@@ -1,4 +1,6 @@
-import { OptionsObject, SnackbarMessage, enqueueSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
+
+import type { OptionsObject, SnackbarMessage, SnackbarOrigin } from 'notistack';
 
 // Notify design is defined in provider
 /**
@@ -17,4 +19,17 @@ export const notify = {
   error(message: SnackbarMessage, options?: OptionsObject<'error'>) {
     enqueueSnackbar(message, { variant: 'error', ...options });
   },
+};
+
+export const getPosition = (): SnackbarOrigin => {
+  const defaultPosition = {
+    horizontal: 'right',
+    vertical: 'bottom',
+  } as const;
+  const posJson = JSON.parse(localStorage.getItem('snackbar-position') ?? '{}') as Partial<SnackbarOrigin>;
+
+  return {
+    horizontal: posJson?.horizontal ?? defaultPosition.horizontal,
+    vertical: posJson?.vertical ?? defaultPosition.vertical,
+  };
 };

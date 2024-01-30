@@ -7,22 +7,10 @@ import {
   closeSnackbar,
   type CustomContentProps,
   type SnackbarKey,
-  type SnackbarOrigin,
 } from 'notistack';
 import { forwardRef, memo } from 'react';
 
-const getPosition = (): SnackbarOrigin => {
-  const defaultPosition = {
-    horizontal: 'right',
-    vertical: 'bottom',
-  } as const;
-  const posJson = JSON.parse(localStorage.getItem('snackbar-position') ?? '{}') as Partial<SnackbarOrigin>;
-
-  return {
-    horizontal: posJson?.horizontal ?? defaultPosition.horizontal,
-    vertical: posJson?.vertical ?? defaultPosition.vertical,
-  };
-};
+import { getPosition } from '@/components/notifications';
 
 /**
  * ref
