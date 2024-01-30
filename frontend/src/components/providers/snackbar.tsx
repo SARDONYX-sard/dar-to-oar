@@ -87,7 +87,7 @@ const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProp
         willChange: 'transform',
       })}
     >
-      <AlertTitle sx={{ color: '#fff' }}>{severity.toUpperCase()}</AlertTitle>
+      <AlertTitle sx={{ color: '#fff', fontWeight: 'bold' }}>{severity.toUpperCase()}</AlertTitle>
       {message}
     </Alert>
   );
