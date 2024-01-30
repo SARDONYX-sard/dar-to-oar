@@ -6,11 +6,17 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Button, Grid } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Tab from '@mui/material/Tab';
-import { useState } from 'react';
 import AceEditor from 'react-ace';
 
 import { ImportLangButton } from '@/components/buttons';
-import { SelectEditorMode, SelectEditorProps, StyleList, StyleListProps, TranslationList } from '@/components/lists';
+import {
+  NotifyPositionList,
+  SelectEditorMode,
+  type SelectEditorProps,
+  StyleList,
+  type StyleListProps,
+  TranslationList,
+} from '@/components/lists';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
@@ -156,14 +162,9 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
   );
 };
 
-function Tabs({
-  editorMode,
-  setEditorMode,
-  preset,
-  setPreset,
-  setStyle,
-}: StyleListProps & SelectEditorProps & CSSEditorProps) {
-  const [value, setValue] = useState('1');
+type TabsProps = StyleListProps & SelectEditorProps & CSSEditorProps;
+const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsProps) => {
+  const [value, setValue] = useStorageState('settings-tab-select', '1');
   const { t } = useTranslation();
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -182,6 +183,7 @@ function Tabs({
           <TabList onChange={handleChange} aria-label="Setting tabs">
             <Tab label={t('tab-label-1')} value="1" />
             <Tab label={t('tab-label-2')} value="2" />
+            <Tab label={t('tab-label-3')} value="3" />
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -192,10 +194,13 @@ function Tabs({
           <ImportLangButton />
           <TranslationList />
         </TabPanel>
+        <TabPanel value="3">
+          <NotifyPositionList />
+        </TabPanel>
       </TabContext>
     </Box>
   );
-}
+};
 
 const Help = () => {
   const handleClick = () => start(packageJson.homepage);
