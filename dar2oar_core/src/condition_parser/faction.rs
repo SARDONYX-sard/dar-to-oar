@@ -1,3 +1,4 @@
+//! Parses faction-related conditions based on the provided arguments and condition name.
 use super::dar_interface::ParseError;
 use super::macros::{get_try_into, GetArg as _};
 use crate::{
@@ -6,6 +7,10 @@ use crate::{
     values::Cmp,
 };
 
+/// Parses faction-related conditions based on the provided arguments and condition name.
+///
+/// # Errors
+/// If parsing fails.
 pub(super) fn parse_faction(
     condition_name: &str,
     args: Vec<FnArg<'_>>,

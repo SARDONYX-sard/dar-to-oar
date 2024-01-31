@@ -1,3 +1,4 @@
+//! Parses a comparison-based condition for plugin values.
 use super::dar_interface::ParseError;
 use super::macros::get_try_into;
 use crate::{
@@ -6,7 +7,11 @@ use crate::{
     values::{Cmp, NumericValue, PluginValue},
 };
 
-/// condition_name: "ValueEqualTo" | "ValueLessThan"
+/// Parses a comparison-based condition for plugin values.
+/// `ValueEqualTo` | `ValueLessThan`
+///
+/// # Errors
+/// Parsing failed.
 pub(super) fn parse_compare(
     condition_name: &str,
     args: Vec<FnArg<'_>>,

@@ -1,3 +1,4 @@
+//! Parses a high-level condition set based on the provided syntax.
 use super::actor::parse_actor;
 use super::compare::parse_compare;
 use super::dar_interface::ParseError;
@@ -13,6 +14,9 @@ use crate::conditions::{
 use crate::dar_syntax::syntax::{self, Expression};
 use crate::values::{Cmp, DirectionValue};
 
+/// Parses a high-level condition set based on the provided syntax.
+/// # Errors
+/// Parsing failed.
 pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
     Ok(match input {
         syntax::Condition::And(conditions) => {
@@ -39,6 +43,9 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseE
     })
 }
 
+/// Parses a conditional expression and translates it into a corresponding [`ConditionSet`].
+/// # Errors
+/// Parsing failed.
 fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError> {
     let Expression {
         negated,

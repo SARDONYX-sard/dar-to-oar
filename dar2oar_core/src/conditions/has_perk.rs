@@ -1,19 +1,24 @@
+//! Represents a condition to check if an entity has a specific perk.
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// Represents a condition to check if an entity has a specific perk.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasPerk {
-    /// Condition name "HasPerk"
+    /// The name of the condition, which is "HasPerk".
     pub condition: CompactString,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// The perk to check for in the entity.
     #[serde(default)]
     #[serde(rename = "Perk")]
     pub perk: PluginValue,
@@ -33,12 +38,13 @@ impl Default for HasPerk {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_has_perk() {
+    fn should_serialize_has_perk() -> Result<()> {
         let has_perk = HasPerk::default();
-        let serialized = serde_json::to_string_pretty(&has_perk).unwrap();
+        let serialized = serde_json::to_string_pretty(&has_perk)?;
 
         let expected = r#"{
   "condition": "HasPerk",
@@ -50,10 +56,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_has_perk() {
+    fn should_deserialize_has_perk() -> Result<()> {
         let json_str = r#"{
   "condition": "HasPerk",
   "requiredVersion": "1.0.0.0",
@@ -63,7 +70,7 @@ mod tests {
     "formID": "12345"
   }
 }"#;
-        let deserialized: HasPerk = serde_json::from_str(json_str).unwrap();
+        let deserialized: HasPerk = serde_json::from_str(json_str)?;
 
         let expected = HasPerk {
             negated: true,
@@ -75,5 +82,6 @@ mod tests {
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }

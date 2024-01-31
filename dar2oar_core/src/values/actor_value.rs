@@ -1,6 +1,8 @@
+//! Person and its internal value
 use super::numeric_literal::NumericLiteral;
 use serde::{Deserialize, Serialize};
 
+/// Person and its internal value
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct ActorValue {
     /// default: 0
@@ -22,13 +24,17 @@ pub struct ActorValue {
 /// - Max Actor Value => "Max"
 /// - Actor Value Percentage (0-1) => "Percentage"
 ///
-/// default: ActorValue
+/// default: `ActorValue`
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum ActorValueType {
+    /// Value
     #[default]
     ActorValue,
+    /// Base
     Base,
+    /// Max value
     Max,
+    /// %
     Percentage,
 }
 
@@ -82,6 +88,7 @@ impl<'de> Deserialize<'de> for ActorValueType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -106,17 +113,19 @@ mod tests {
     }
 
     #[test]
-    fn test_serialize() {
+    fn test_serialize() -> Result<()> {
         let value = ActorValueType::Max;
-        let result = serde_json::to_string(&value).unwrap();
+        let result = serde_json::to_string(&value)?;
         assert_eq!(result, "\"Max\"");
+        Ok(())
     }
 
     #[test]
-    fn test_deserialize_valid() {
+    fn test_deserialize_valid() -> Result<()> {
         let json = "\"Percentage\"";
-        let result: ActorValueType = serde_json::from_str(json).unwrap();
+        let result: ActorValueType = serde_json::from_str(json)?;
         assert_eq!(result, ActorValueType::Percentage);
+        Ok(())
     }
 
     #[test]

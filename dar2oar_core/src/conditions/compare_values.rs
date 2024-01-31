@@ -1,19 +1,24 @@
+//! Structure comparing two A and two B
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue};
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// Structure comparing A and B
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CompareValues {
     /// Condition name "CompareValues"
     pub condition: CompactString,
+    /// The required version for compatibility with this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// Comparison object A
     #[serde(default)]
     #[serde(rename = "Value A")]
     pub value_a: NumericValue,
@@ -21,6 +26,7 @@ pub struct CompareValues {
     #[serde(default)]
     /// == | != | > | >= | < | <=
     pub comparison: Cmp,
+    /// Comparison object B
     #[serde(default)]
     #[serde(rename = "Value B")]
     pub value_b: NumericValue,
@@ -46,16 +52,17 @@ mod tests {
         ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericLiteral, NumericValue,
         PluginValue, StaticValue,
     };
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_stringify_compare_values() {
+    fn should_stringify_compare_values() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::StaticValue(StaticValue { value: 42.0 }),
             value_b: NumericValue::StaticValue(StaticValue { value: 42.0 }),
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+        let serialized = serde_json::to_string_pretty(&compare_values)?;
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -70,10 +77,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_stringify_compare_values_with_actor_value() {
+    fn should_stringify_compare_values_with_actor_value() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::ActorValue(ActorValue {
                 actor_value: NumericLiteral::Decimal(123),
@@ -86,7 +94,7 @@ mod tests {
             comparison: Cmp::Ge,
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+        let serialized = serde_json::to_string_pretty(&compare_values)?;
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -103,10 +111,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_stringify_compare_values_with_graph_variable() {
+    fn should_stringify_compare_values_with_graph_variable() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::GraphVariable(GraphValue {
                 graph_variable: "true".to_string(),
@@ -120,7 +129,7 @@ mod tests {
             comparison: Cmp::Ne,
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+        let serialized = serde_json::to_string_pretty(&compare_values)?;
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -137,15 +146,16 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_stringify_compare_values_with_global_variable() {
+    fn should_stringify_compare_values_with_global_variable() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::GlobalVariable(
                 PluginValue {
                     plugin_name: "my_plugin.esm".into(),
-                    form_id: 1usize.into(),
+                    form_id: 1_usize.into(),
                 }
                 .into(),
             ),
@@ -159,7 +169,7 @@ mod tests {
             comparison: Cmp::Gt,
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&compare_values).unwrap();
+        let serialized = serde_json::to_string_pretty(&compare_values)?;
 
         let expected = r#"{
   "condition": "CompareValues",
@@ -180,5 +190,6 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 }

@@ -49,12 +49,19 @@ use nom::{
 };
 use std::fmt;
 
+/// DAR Function arguments
+/// - Plugin e.g. Skyrim.esm | 0x007
+/// - Literal e.g. 1.0
 #[derive(Debug, Clone, PartialEq)]
 pub enum FnArg<'a> {
+    /// e.g. "Skyrim.esm" | 0x007
     PluginValue {
+        /// e.g. "Skyrim.esm"
         plugin_name: &'a str,
+        /// e.g. 1
         form_id: NumberLiteral,
     },
+    /// Just number. (e.g. 1)
     Number(NumberLiteral),
 }
 
@@ -73,8 +80,11 @@ impl fmt::Display for FnArg<'_> {
 /// Hex | Decimal | Float
 #[derive(Debug, Clone, PartialEq)]
 pub enum NumberLiteral {
+    /// e.g. 0x007
     Hex(usize),
+    /// e.g. 1
     Decimal(isize),
+    /// e.g. 1.0
     Float(f32),
 }
 
@@ -88,26 +98,34 @@ impl fmt::Display for NumberLiteral {
     }
 }
 
+/// DAR One line representation
 #[derive(Debug, Clone, PartialEq)]
 pub struct Expression<'a> {
     /// not condition
     pub negated: bool,
     /// function name == condition name
     pub fn_name: &'a str,
+    /// arguments
     pub args: Vec<FnArg<'a>>,
 }
 
 /// AND | OR
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operator {
+    /// AND
     And,
+    /// OR
     Or,
 }
 
+/// Represents a high-level condition, which can be an AND combination, OR combination, or a leaf expression.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Condition<'a> {
+    /// Represents an AND combination of multiple conditions.
     And(Vec<Condition<'a>>),
+    /// Represents an OR combination of multiple conditions.
     Or(Vec<Condition<'a>>),
+    /// Represents a leaf expression within the condition hierarchy.
     Exp(Expression<'a>),
 }
 
@@ -115,20 +133,20 @@ impl<'a> Condition<'a> {
     /// push to inner vec
     ///
     /// # panics
-    /// If push to Self::Exp
+    /// If push to [`Self::Exp`]
     fn push(&mut self, expression: Condition<'a>) {
         match self {
-            Condition::And(inner) => inner.push(expression),
-            Condition::Or(inner) => inner.push(expression),
+            Condition::And(inner) | Condition::Or(inner) => inner.push(expression),
             Condition::Exp(_) => panic!("Expression cannot push"),
         }
     }
 }
 
-/// IResult wrapped for VerboseError
-type IResult<'a, I, O> = nom::IResult<I, O, nom::error::VerboseError<&'a str>>;
+/// Type alias for a result type using [`nom::IResult`], wrapping potential errors with [`nom::error::VerboseError`]
+type IResult<'a, I, O, E = nom::error::VerboseError<&'a str>> = nom::IResult<I, O, E>;
 
 use nom::error::ParseError; // To use from_error_kind
+/// A macro for returning an error with a specific error kind in the `nom::error::VerboseError` variant.
 macro_rules! bail_kind {
     ($input:ident, $kind:ident) => {
         return Err(nom::Err::Error(nom::error::VerboseError::from_error_kind(
@@ -138,6 +156,7 @@ macro_rules! bail_kind {
     };
 }
 
+/// Parses a string literal enclosed in single or double quotes with support for escaping characters.
 fn parse_string(input: &str) -> IResult<&str, &str> {
     alt((
         delimited(
@@ -181,6 +200,11 @@ fn parse_radix_number(input: &str) -> IResult<&str, NumberLiteral> {
     }
 }
 
+/// Parse decimal number(e.g. "123")
+///
+/// ```EBNF
+/// decimal       = ["-"] digit { digit } ;
+/// ```
 fn parse_decimal(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, is_negative) = opt(char('-'))(input)?;
@@ -200,6 +224,7 @@ fn parse_decimal(input: &str) -> IResult<&str, NumberLiteral> {
     }
 }
 
+/// Parse float number(e.g. "12.3")
 fn parse_float(input: &str) -> IResult<&str, NumberLiteral> {
     let (input, _) = multispace0(input)?;
     let (input, is_negative) = opt(char('-'))(input)?;
@@ -223,10 +248,12 @@ fn parse_float(input: &str) -> IResult<&str, NumberLiteral> {
     }
 }
 
+/// Parse a number(e.g. "0x123", "123", "12.3")
 fn parse_number(input: &str) -> IResult<&str, NumberLiteral> {
     alt((parse_radix_number, parse_float, parse_decimal))(input)
 }
 
+/// Parse plugin value(e.g. `"Skyrim.esm" | 0x007`)
 fn parse_plugin(input: &str) -> IResult<&str, FnArg<'_>> {
     let (input, (plugin_name, form_id)) = separated_pair(
         preceded(space0, parse_string),
@@ -243,10 +270,12 @@ fn parse_plugin(input: &str) -> IResult<&str, FnArg<'_>> {
     ))
 }
 
+/// Parse function arguments.
 fn parse_argument(input: &str) -> IResult<&str, FnArg<'_>> {
     alt((parse_plugin, map(parse_number, FnArg::Number)))(input)
 }
 
+/// Prase identifier
 fn parse_ident(input: &str) -> IResult<&str, &str> {
     context(
         "Expected ident. (Example: IsActorBase)",
@@ -254,7 +283,10 @@ fn parse_ident(input: &str) -> IResult<&str, &str> {
     )(input)
 }
 
+/// Parse function call(with arguments)
 fn parse_fn_call(input: &str) -> IResult<&str, (&str, Vec<FnArg<'_>>)> {
+    /// Parse function call with arguments
+    #[inline]
     fn with_args(input: &str) -> IResult<&str, Option<Vec<FnArg<'_>>>> {
         let (input, _) = tag("(")(input)?;
         let (input, args) =
@@ -268,9 +300,7 @@ fn parse_fn_call(input: &str) -> IResult<&str, (&str, Vec<FnArg<'_>>)> {
     let (input, _) = multispace0(input)?;
     let (input, args) = opt(with_args)(input)?;
 
-    let args = args
-        .map(|args| args.unwrap_or_default())
-        .unwrap_or(Vec::new());
+    let args = args.map_or(Vec::new(), Option::unwrap_or_default);
     Ok((input, (fn_name, args)))
 }
 
@@ -285,6 +315,7 @@ fn parse_operator(input: &str) -> IResult<&str, Operator> {
     Ok((input, operator))
 }
 
+/// Parse one line DAR Syntax
 fn parse_expression(input: &str) -> IResult<&str, Expression> {
     let (input, _) = multispace0(input)?;
     let (input, negate) = opt(tag("NOT"))(input)?;
@@ -311,6 +342,7 @@ fn comment(input: &str) -> IResult<&str, &str> {
     Ok((input, comment))
 }
 
+/// Parse DAR syntax
 pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();

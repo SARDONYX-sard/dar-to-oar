@@ -1,19 +1,24 @@
+//! Represents a condition to check if a reference has a specific type.
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// Represents a condition to check if a reference has a specific type.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasRefType {
-    /// Condition name "HasRefType"
+    /// The name of the condition, which is "HasRefType".
     pub condition: CompactString,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// The reference type to check for.
     #[serde(default)]
     #[serde(rename = "Location ref type")]
     pub location_ref_type: Keyword,
@@ -34,10 +39,11 @@ impl Default for HasRefType {
 mod tests {
     use super::*;
     use crate::values::{FormValue, LiteralValue, PluginValue};
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_has_ref_type() {
+    fn should_serialize_has_ref_type() -> Result<()> {
         let has_ref_type = HasRefType {
             location_ref_type: Keyword::Form(FormValue {
                 form: PluginValue {
@@ -47,7 +53,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&has_ref_type).unwrap();
+        let serialized = serde_json::to_string_pretty(&has_ref_type)?;
 
         let expected = r#"{
   "condition": "HasRefType",
@@ -61,10 +67,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_has_ref_type() {
+    fn should_deserialize_has_ref_type() -> Result<()> {
         let json_str = r#"{
             "condition": "HasRefType",
             "requiredVersion": "1.0.0.0",
@@ -73,7 +80,7 @@ mod tests {
                 "editorID": "ExampleLocationTyp"
             }
 }"#;
-        let deserialized: HasRefType = serde_json::from_str(json_str).unwrap();
+        let deserialized: HasRefType = serde_json::from_str(json_str)?;
 
         let expected = HasRefType {
             negated: true,
@@ -84,5 +91,6 @@ mod tests {
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }

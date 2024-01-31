@@ -1,3 +1,4 @@
+//! Parses an actor-related condition based on the provided arguments and condition name.
 use super::dar_interface::ParseError;
 use super::macros::get_try_into;
 use crate::{
@@ -6,6 +7,9 @@ use crate::{
     values::{ActorValue, ActorValueType, Cmp, NumericValue},
 };
 
+/// Parses an actor-related condition based on the provided arguments and condition name.
+/// # Errors
+/// If parsing fails.
 pub(super) fn parse_actor(
     condition_name: &str,
     args: Vec<FnArg<'_>>,

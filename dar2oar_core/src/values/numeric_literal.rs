@@ -1,3 +1,4 @@
+//! Numeric type tied to DAR
 use core::fmt;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
@@ -11,8 +12,11 @@ use serde_json::Value;
 /// default: 0.0
 #[derive(Debug, Clone, PartialEq)]
 pub enum NumericLiteral {
+    /// e.g. 0x007
     Hex(usize),
+    /// e.g. 1
     Decimal(isize),
+    /// e.g. 1.0
     Float(f32),
 }
 
@@ -69,6 +73,7 @@ impl<'de> Deserialize<'de> for NumericLiteral {
     where
         D: Deserializer<'de>,
     {
+        /// Inner deserialization struct
         struct NumericLiteralVisitor;
 
         impl<'de> serde::de::Visitor<'de> for NumericLiteralVisitor {
@@ -85,11 +90,10 @@ impl<'de> Deserialize<'de> for NumericLiteral {
                 if value.starts_with("0x") {
                     // Parse hexadecimal value
                     let hex_value = value.trim_start_matches("0x");
-                    if let Ok(hex) = usize::from_str_radix(hex_value, 16) {
-                        Ok(NumericLiteral::Hex(hex))
-                    } else {
-                        Err(E::custom(format!("Invalid hexadecimal value: {}", value)))
-                    }
+                    usize::from_str_radix(hex_value, 16).map_or_else(
+                        |_err| Err(E::custom(format!("Invalid hexadecimal value: {}", value))),
+                        |hex| Ok(NumericLiteral::Hex(hex)),
+                    )
                 } else if let Ok(decimal) = value.parse::<isize>() {
                     Ok(NumericLiteral::Decimal(decimal))
                 } else if let Ok(float) = value.parse::<f32>() {
@@ -115,48 +119,55 @@ impl<'de> Deserialize<'de> for NumericLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_serialize_non_prefix_hex() {
+    fn test_serialize_non_prefix_hex() -> Result<()> {
         let value = NumericLiteral::Hex(0x2a);
-        let serialized = serde_json::to_string(&value).unwrap();
+        let serialized = serde_json::to_string(&value)?;
         assert_eq!(serialized, r#""2a""#);
+        Ok(())
     }
 
     #[test]
-    fn test_serialize_decimal() {
+    fn test_serialize_decimal() -> Result<()> {
         let value = NumericLiteral::Decimal(123);
-        let serialized = serde_json::to_string(&value).unwrap();
+        let serialized = serde_json::to_string(&value)?;
         assert_eq!(serialized, "123");
+        Ok(())
     }
 
     #[test]
-    fn test_serialize_float() {
+    fn test_serialize_float() -> Result<()> {
         let value = NumericLiteral::Float(3.12);
-        let serialized = serde_json::to_string(&value).unwrap();
+        let serialized = serde_json::to_string(&value)?;
         assert_eq!(serialized, "3.12");
+        Ok(())
     }
 
     #[test]
-    fn test_deserialize_hex() {
+    fn test_deserialize_hex() -> Result<()> {
         let json = r#""0x2a""#;
-        let deserialized: NumericLiteral = serde_json::from_str(json).unwrap();
+        let deserialized: NumericLiteral = serde_json::from_str(json)?;
         assert_eq!(deserialized, NumericLiteral::Hex(0x2a));
+        Ok(())
     }
 
     #[test]
-    fn test_deserialize_decimal() {
+    fn test_deserialize_decimal() -> Result<()> {
         let json = "123";
-        let deserialized: NumericLiteral = serde_json::from_str(json).unwrap();
+        let deserialized: NumericLiteral = serde_json::from_str(json)?;
         assert_eq!(deserialized, NumericLiteral::Decimal(123));
+        Ok(())
     }
 
     #[test]
-    fn test_deserialize_float() {
+    fn test_deserialize_float() -> Result<()> {
         let json = "3.12";
-        let deserialized: NumericLiteral = serde_json::from_str(json).unwrap();
+        let deserialized: NumericLiteral = serde_json::from_str(json)?;
         assert_eq!(deserialized, NumericLiteral::Float(3.12));
+        Ok(())
     }
 
     #[test]

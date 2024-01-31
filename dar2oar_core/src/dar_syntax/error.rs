@@ -1,6 +1,7 @@
-/// Copyright (c) 2014-2019 Geoffroy Couprie
-/// MIT License
-/// https://opensource.org/license/mit/
+//! Copyright (c) 2014-2019 Geoffroy Couprie
+//! MIT License
+//!
+//! <https://opensource.org/license/mit/>
 use nom::{
     error::{VerboseError, VerboseErrorKind},
     Offset,
@@ -39,8 +40,7 @@ pub fn convert_error<I: core::ops::Deref<Target = str>>(input: I, e: VerboseErro
                 .iter()
                 .rev()
                 .position(|&b| b == b'\n')
-                .map(|pos| offset - pos)
-                .unwrap_or(0);
+                .map_or(0, |pos| offset - pos);
 
             // Find the full line after that newline
             let line = input[line_begin..]
@@ -111,8 +111,9 @@ pub fn convert_error<I: core::ops::Deref<Target = str>>(input: I, e: VerboseErro
                 ),
             }
         }
-        // Because `write!` to a `String` is infallible, this `unwrap` is fine.
-        .unwrap();
+        .expect(
+            "Unreachable, Because `write!` to a `String` is infallible, this `unwrap` is fine.",
+        );
     }
 
     result

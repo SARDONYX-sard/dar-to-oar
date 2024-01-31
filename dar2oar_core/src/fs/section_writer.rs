@@ -1,8 +1,10 @@
+//! Functions for writing `config.json`
 use crate::conditions::{ConditionsConfig, MainConfig};
 use crate::error::Result;
 use std::path::Path;
 use tokio::{fs, io::AsyncWriteExt};
 
+/// Write json to a file.
 async fn write_json_to<T>(target_path: impl AsRef<Path>, value: &T) -> Result<()>
 where
     T: ?Sized + serde::Serialize,
@@ -24,7 +26,7 @@ where
 /// Write root config.json
 ///
 /// If it exists, do nothing. (This behavior is intended to facilitate the creation of config files
-/// for 1st_person and 3rd_person.)
+/// for `1st_person` an`3rd_person`on.)
 pub(crate) async fn write_name_space_config<P>(
     oar_name_space_path: P,
     mod_name: &str,

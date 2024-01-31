@@ -1,12 +1,16 @@
+//! Actor's Direction
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 
+/// Actor's Direction
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct DirectionValue {
+    /// Actor's Direction value
     pub(crate) value: Direction,
 }
 
+/// Actor's Direction
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum Direction {
     /// 0.0
@@ -67,6 +71,7 @@ impl<'de> Deserialize<'de> for Direction {
     where
         D: Deserializer<'de>,
     {
+        /// Inner struct for deserialization
         struct DirectionVisitor;
 
         impl<'de> Visitor<'de> for DirectionVisitor {
@@ -80,13 +85,15 @@ impl<'de> Deserialize<'de> for Direction {
             where
                 E: Error,
             {
-                match Direction::try_from(value) {
-                    Ok(value) => Ok(value),
-                    Err(_) => Err(Error::unknown_variant(
-                        &value.to_string(),
-                        &["0", "1", "2", "3", "4"],
-                    )),
-                }
+                Direction::try_from(value).map_or_else(
+                    |_err| {
+                        Err(Error::unknown_variant(
+                            &value.to_string(),
+                            &["0", "1", "2", "3", "4"],
+                        ))
+                    },
+                    |value| Ok(value),
+                )
             }
         }
 
@@ -94,18 +101,19 @@ impl<'de> Deserialize<'de> for Direction {
         let value: Value = Deserialize::deserialize(deserializer)?;
         match value {
             Value::Number(num) => {
-                let direction =
-                    Direction::try_from(num.as_u64().unwrap_or(num.as_f64().unwrap() as u64))
-                        .map_err(|err| {
-                            Error::invalid_type(
-                                serde::de::Unexpected::Other(err),
-                                &"a valid i64 or f64",
-                            )
-                        })?;
+                let direction = num
+                    .as_u64()
+                    .unwrap_or(num.as_f64().ok_or(Error::invalid_type(
+                        serde::de::Unexpected::Other("WeaponType parse f64"),
+                        &"a valid f64",
+                    ))? as u64);
+                let direction = Direction::try_from(direction).map_err(|err| {
+                    Error::invalid_type(serde::de::Unexpected::Other(err), &"a valid u64 or f64")
+                })?;
                 Ok(direction)
             }
             Value::String(s) => {
-                let t = s.parse::<f64>().map_err(|_| {
+                let t = s.parse::<f64>().map_err(|_err| {
                     Error::invalid_type(
                         serde::de::Unexpected::Other("Couldn't parse float value"),
                         &"a valid Direction value",
@@ -124,10 +132,11 @@ impl<'de> Deserialize<'de> for Direction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_direction_value() {
+    fn should_serialize_direction_value() -> Result<()> {
         let direction_value = DirectionValue {
             value: Direction::Back,
         };
@@ -135,22 +144,24 @@ mod tests {
         let expected = r#"{
   "value": 3.0
 }"#;
-        let serialized = serde_json::to_string_pretty(&direction_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&direction_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_direction_value() {
+    fn should_deserialize_direction_value() -> Result<()> {
         let json_str = r#"{
             "value": 1.0
         }"#;
 
-        let deserialized: DirectionValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: DirectionValue = serde_json::from_str(json_str)?;
         let expected = DirectionValue {
             value: Direction::Forward,
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]
@@ -165,21 +176,24 @@ mod tests {
     }
 
     #[test]
-    fn should_serialize_direction() {
+    fn should_serialize_direction() -> Result<()> {
         let direction = Direction::Right;
 
         let expected = "2.0";
-        let serialized = serde_json::to_string(&direction).unwrap();
+        let serialized = serde_json::to_string(&direction)?;
+
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_direction() {
+    fn should_deserialize_direction() -> Result<()> {
         let json_str = "4.0";
 
-        let deserialized: Direction = serde_json::from_str(json_str).unwrap();
+        let deserialized: Direction = serde_json::from_str(json_str)?;
         let expected = Direction::Left;
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }

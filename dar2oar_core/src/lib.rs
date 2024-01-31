@@ -1,29 +1,129 @@
-//! # dar2oar_core
+#![deny(
+    clippy::all,
+    clippy::await_holding_lock,
+    clippy::char_lit_as_u8,
+    clippy::checked_conversions,
+    clippy::cognitive_complexity,
+    clippy::dbg_macro,
+    clippy::debug_assert_with_mut_call,
+    clippy::doc_link_with_quotes,
+    clippy::doc_markdown,
+    clippy::empty_enum,
+    clippy::empty_line_after_outer_attr,
+    clippy::empty_structs_with_brackets,
+    clippy::enum_glob_use,
+    clippy::exit,
+    clippy::expl_impl_clone_on_copy,
+    clippy::explicit_deref_methods,
+    clippy::explicit_into_iter_loop,
+    clippy::fallible_impl_from,
+    clippy::filter_map_next,
+    clippy::flat_map_option,
+    clippy::float_cmp,
+    clippy::float_cmp_const,
+    clippy::float_equality_without_abs,
+    clippy::fn_params_excessive_bools,
+    clippy::from_iter_instead_of_collect,
+    clippy::if_let_mutex,
+    clippy::implicit_clone,
+    clippy::imprecise_flops,
+    clippy::inefficient_to_string,
+    clippy::invalid_upcast_comparisons,
+    clippy::items_after_test_module,
+    clippy::large_digit_groups,
+    clippy::large_stack_arrays,
+    clippy::large_types_passed_by_value,
+    clippy::let_unit_value,
+    clippy::linkedlist,
+    clippy::lossy_float_literal,
+    clippy::macro_use_imports,
+    clippy::manual_ok_or,
+    clippy::map_err_ignore,
+    clippy::map_flatten,
+    clippy::map_unwrap_or,
+    clippy::match_on_vec_items,
+    clippy::match_same_arms,
+    clippy::match_wild_err_arm,
+    clippy::match_wildcard_for_single_variants,
+    clippy::mem_forget,
+    clippy::mismatched_target_os,
+    clippy::missing_const_for_fn,
+    clippy::missing_docs_in_private_items,
+    clippy::missing_enforced_import_renames,
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::mut_mut,
+    clippy::mutex_integer,
+    clippy::needless_borrow,
+    clippy::needless_continue,
+    clippy::needless_for_each,
+    clippy::option_if_let_else,
+    clippy::option_option,
+    clippy::path_buf_push_overwrite,
+    clippy::print_stderr,
+    clippy::print_stdout,
+    clippy::ptr_as_ptr,
+    clippy::rc_mutex,
+    clippy::ref_option_ref,
+    clippy::rest_pat_in_fully_bound_structs,
+    clippy::same_functions_in_if_condition,
+    clippy::semicolon_if_nothing_returned,
+    clippy::single_match_else,
+    clippy::string_add,
+    clippy::string_add_assign,
+    clippy::string_lit_as_bytes,
+    clippy::string_to_string,
+    clippy::suspicious_operation_groupings,
+    clippy::todo,
+    clippy::trait_duplication_in_bounds,
+    clippy::unimplemented,
+    clippy::unnested_or_patterns,
+    clippy::unseparated_literal_suffix,
+    clippy::unused_self,
+    clippy::unwrap_used,
+    clippy::used_underscore_binding,
+    clippy::useless_let_if_seq,
+    clippy::useless_transmute,
+    clippy::verbose_file_reads,
+    clippy::wildcard_dependencies,
+    clippy::wildcard_imports,
+    clippy::zero_sized_map_values
+)]
+// See: https://rust-unofficial.github.io/patterns/anti_patterns/deny-warnings.html#alternatives
+#![deny(
+    bad_style,
+    dead_code,
+    future_incompatible,
+    improper_ctypes,
+    keyword_idents,
+    missing_debug_implementations,
+    missing_docs,
+    no_mangle_generic_items,
+    non_ascii_idents,
+    non_shorthand_field_patterns,
+    nonstandard_style,
+    noop_method_call,
+    overflowing_literals,
+    path_statements,
+    patterns_in_fns_without_body,
+    renamed_and_removed_lints,
+    trivial_casts,
+    trivial_numeric_casts,
+    unconditional_recursion,
+    unsafe_code,
+    unused,
+    unused_allocation,
+    unused_comparisons,
+    unused_crate_dependencies,
+    unused_extern_crates,
+    unused_import_braces,
+    unused_parens,
+    unused_results,
+    while_true
+)]
+//! # `dar2oar_core`
 //!
 //! `dar2oar_core` is a Rust crate that provides functionality for converting Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR) files. The crate includes modules for parsing conditions, handling DAR syntax, managing values, and dealing with file systems.
-//!
-//! ## Modules
-//!
-//! - [condition_parser](condition_parser): Module to convert a parsed DAR into a serializable OAR structure.
-//! - [conditions](conditions): Module for representing conditions used in DAR files.
-//! - [dar_syntax](dar_syntax): Module for handling DAR syntax and conversions.
-//! - [values](values): Module for managing values used in OAR files.
-//!
-//! ## Submodules
-//!
-//! - [error](error): Submodule for defining error types related to DAR to OAR conversion.
-//! - [fs](fs): Submodule containing file system-related functionalities, including the main conversion function.
-//!
-//! ## Public Functions and Types
-//!
-//! - `convert_dar_to_oar`: The main function for converting DAR files to OAR files. It accepts configuration options and a progress callback.
-//! - `Closure`: A struct that provides a default closure for progress reporting.
-//! - `ConvertOptions`: A struct containing various configuration options for the conversion process.
-//! - `ConvertedReport`: An enum representing different outcomes of the conversion process.
-//! - `remove_oar`: Function for removing OAR files from a directory.
-//! - `unhide_dar`: Function to unhide DAR files after conversion.
-//! - `get_mapping_table`: Function for obtaining a mapping table.
-//! - `read_mapping_table`: Function for reading a mapping table from a specified path.
 //!
 //! ## Examples
 //!
@@ -32,22 +132,48 @@
 //! ```no_run
 //! use anyhow::Result;
 //! use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
+//! use tracing::{level_filters::LevelFilter, subscriber::DefaultGuard};
+//! use tracing_appender::non_blocking::WorkerGuard;
 //!
 //! const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
 //! const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
 //! const LOG_PATH: &str = "../convert.log";
 //!
-//! /// Initialization macro for setting up logging.
-//! macro_rules! logger_init {
-//!     () => {
-//!         let (non_blocking, _guard) =
-//!             tracing_appender::non_blocking(std::fs::File::create(LOG_PATH).unwrap());
-//!         tracing_subscriber::fmt()
-//!             .with_writer(non_blocking)
-//!             .with_ansi(false)
-//!             .with_max_level(tracing::Level::DEBUG)
-//!             .init();
-//!     };
+//! /// Multithread init logger.
+//! ///
+//! /// File I/O is No ANSI color, output to stdout has ANSI color.
+//! ///
+//! /// # Returns
+//! /// Guards
+//! /// - If this variable is dropped, the logger stops.
+//! pub(crate) fn init_tracing(
+//!     test_name: &str,
+//!     filter: impl Into<LevelFilter>,
+//! ) -> Result<(WorkerGuard, DefaultGuard)> {
+//!     use tracing_subscriber::{fmt, layer::SubscriberExt};
+//!     std::fs::create_dir_all("../logs")?;
+//!     let (file_writer, guard) =
+//!         tracing_appender::non_blocking(std::fs::File::create(format!("../logs/{test_name}.log"))?);
+//!     let thread_guard = tracing::subscriber::set_default(
+//!         fmt::Subscriber::builder()
+//!             .compact()
+//!             .pretty()
+//!             .with_file(true)
+//!             .with_line_number(true)
+//!             .with_max_level(filter)
+//!             .with_target(false)
+//!             .finish()
+//!             .with(
+//!                 fmt::Layer::default()
+//!                     .compact()
+//!                     .with_ansi(false)
+//!                     .with_file(true)
+//!                     .with_line_number(true)
+//!                     .with_target(false)
+//!                     .with_writer(file_writer),
+//!             ),
+//!     );
+//!     Ok((guard, thread_guard))
 //! }
 //!
 //! /// Asynchronous function to create conversion options.
@@ -61,7 +187,7 @@
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<()> {
-//!     logger_init!();
+//!     let _guard = init_tracing("unhide_dar", tracing::Level::DEBUG)?;
 //!     convert_dar_to_oar(create_options().await?, |_| {}).await?;
 //!     Ok(())
 //! }
@@ -128,14 +254,10 @@
 //!     Ok(())
 //! }
 //! ```
-//!
 mod condition_parser;
 mod conditions;
 mod dar_syntax;
 mod values;
-
-#[cfg(test)]
-mod test_helper;
 
 pub mod error;
 pub mod fs;
@@ -143,3 +265,8 @@ pub mod fs;
 pub use crate::fs::converter::support_cmd::{remove_oar, unhide_dar};
 pub use crate::fs::converter::{convert_dar_to_oar, Closure, ConvertOptions};
 pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};
+
+#[cfg(test)]
+mod test_helper;
+#[cfg(test)]
+extern crate criterion as _; // Needed for cargo bench.

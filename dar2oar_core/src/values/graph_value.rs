@@ -1,19 +1,28 @@
+//! Pair str & Int | Float | Bool
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+/// Pair str & Int | Float | Bool
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct GraphValue {
+    /// string
+    ///
+    /// TODO: Unknown variable
     #[serde(rename = "graphVariable")]
     pub graph_variable: String,
+    /// Float | Int | Bool
     #[serde(rename = "graphVariableType")]
-    pub graph_variable_type: GraphVariableType, // Use the enum type here
+    pub graph_variable_type: GraphVariableType,
 }
 
 /// Float | Int | Bool
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum GraphVariableType {
+    /// Floating point number
     #[default]
     Float,
+    /// Integer
     Int,
+    /// Boolean
     Bool,
 }
 
@@ -49,17 +58,19 @@ impl<'de> Deserialize<'de> for GraphVariableType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_current_weather() {
+    fn should_serialize_current_weather() -> Result<()> {
         let graph_value = GraphValue::default();
 
         let expected = r#"{
   "graphVariable": "",
   "graphVariableType": "Float"
 }"#;
-        let serialized = serde_json::to_string_pretty(&graph_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&graph_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 }

@@ -1,9 +1,12 @@
+//! A combination of the plugin name and the ID in it.
 use super::NumericLiteral;
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// A combination of the plugin name and the ID in it.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct PluginValue {
+    /// e.g. `Skyrim.esm`
     #[serde(rename = "pluginName")]
     #[serde(default)]
     pub plugin_name: String,
@@ -38,6 +41,7 @@ impl From<&str> for FormID {
     }
 }
 
+/// Macro for type conversion of [`NumericLiteral`] and its internal numeric value to [`FormID`].
 macro_rules! from {
     ($($_type:ident),+ $(,)?) => {
         $(
@@ -71,10 +75,11 @@ impl From<NumericLiteral> for FormID {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_plugin_value() {
+    fn should_serialize_plugin_value() -> Result<()> {
         let plugin_value = PluginValue {
             plugin_name: "MyPlugin".into(),
             form_id: NumericLiteral::Decimal(12345).into(),
@@ -85,24 +90,26 @@ mod tests {
   "pluginName": "MyPlugin",
   "formID": "3039"
 }"#;
-        let serialized = serde_json::to_string_pretty(&plugin_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&plugin_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_plugin_value() {
+    fn should_deserialize_plugin_value() -> Result<()> {
         let json_str = r#"{
   "pluginName": "AnotherPlugin",
   "formID": "fff"
 }"#;
 
-        let deserialized: PluginValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: PluginValue = serde_json::from_str(json_str)?;
         let expected = PluginValue {
             plugin_name: "AnotherPlugin".into(),
             form_id: "fff".into(),
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]

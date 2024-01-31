@@ -1,3 +1,4 @@
+//! Auxiliary commands for smooth use of the converter
 use crate::error::{ConvertError, Result};
 use crate::fs::converter::parallel::{get_dar_files, get_oar, is_contain_oar};
 use std::ffi::{OsStr, OsString};
@@ -8,6 +9,9 @@ use tokio::fs;
 
 /// A parallel search will find the `DynamicAnimationReplacer` directory in the path passed as the argument
 /// and remove only the `mohidden` extension names from the files in that directory.
+///
+/// # Errors
+/// - Failed to find the `DynamicAnimationReplacer` directory
 pub async fn unhide_dar(
     dar_dir: impl AsRef<Path>,
     mut progress_fn: impl FnMut(usize),
@@ -21,7 +25,7 @@ pub async fn unhide_dar(
 
     let entires = get_dar_files(dar_dir).into_iter();
     for (idx, entry) in entires.enumerate() {
-        let path = Arc::new(entry.map_err(|_| ConvertError::NotFoundEntry)?.path());
+        let path = Arc::new(entry.map_err(|_err| ConvertError::NotFoundEntry)?.path());
 
         if path.extension() != Some(OsStr::new("mohidden")) {
             continue;
@@ -33,7 +37,7 @@ pub async fn unhide_dar(
             let path = Arc::clone(&path);
             async move {
                 let mut no_hidden_path = path.as_path().to_owned();
-                no_hidden_path.set_extension(""); // Remove .mohidden extension
+                let _ = no_hidden_path.set_extension(""); // Remove .mohidden extension
                 tracing::debug!("Rename {idx}th:\n- From: {path:?}\n-   To: {no_hidden_path:?}\n");
                 fs::rename(path.as_path(), no_hidden_path).await?;
 
@@ -49,7 +53,7 @@ pub async fn unhide_dar(
         progress_fn(idx);
     }
 
-    for task_handle in task_handles.into_iter() {
+    for task_handle in task_handles {
         task_handle.await??;
     }
 
@@ -60,6 +64,9 @@ pub async fn unhide_dar(
 }
 
 /// A parallel search will find and remove the `OpenAnimationReplacer` directory from the path passed as the argument.
+///
+/// # Errors
+/// - Failed to find the `OpenAnimationReplacer` directory
 pub async fn remove_oar(
     search_dir: impl AsRef<Path>,
     mut progress_fn: impl FnMut(usize),
@@ -73,12 +80,14 @@ pub async fn remove_oar(
     let mut prev_dir = OsString::new();
 
     for (idx, entry) in get_oar(search_dir).into_iter().enumerate() {
-        let path = Arc::new(entry.map_err(|_| ConvertError::NotFoundEntry)?.path());
+        let path = Arc::new(entry.map_err(|_err| ConvertError::NotFoundEntry)?.path());
         if path.is_dir() {
-            if let Some(idx) = is_contain_oar(path.as_ref()) {
+            if let Some(oar_start_idx) = is_contain_oar(path.as_ref()) {
                 let paths: Vec<&OsStr> = path.iter().collect();
 
-                if let Some(oar_dir) = paths.get(0..idx + 1).map(|path| path.join(OsStr::new("/")))
+                if let Some(oar_dir) = paths
+                    .get(0..oar_start_idx + 1)
+                    .map(|str_paths| str_paths.join(OsStr::new("/")))
                 {
                     if prev_dir == oar_dir {
                         continue;
@@ -110,7 +119,7 @@ pub async fn remove_oar(
         progress_fn(idx);
     }
 
-    for task_handle in task_handles.into_iter() {
+    for task_handle in task_handles {
         task_handle.await??;
     }
 
@@ -143,7 +152,7 @@ mod test {
             .path()
             .join("TestMod/meshes/actors/character/animations/DynamicAnimationReplacer/100");
         create_dir_all(test_dir.as_path()).await?;
-        File::create(test_dir.join("_condition.txt.mohidden")).await?;
+        let _ = File::create(test_dir.join("_condition.txt.mohidden")).await?;
 
         assert!(unhide_dar(temp_dir.path(), sender!()).await.is_ok());
         Ok(())

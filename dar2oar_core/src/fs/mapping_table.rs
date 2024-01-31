@@ -1,8 +1,11 @@
+//! Module for handling mapping tables in the conversion process.
+//!
+//! This module provides functions to read and parse mapping tables from files asynchronously.
 use crate::error::{ConvertError, Result};
 use compact_str::CompactString;
 use std::collections::HashMap;
 use std::path::Path;
-use tokio::{fs::File, io::AsyncReadExt};
+use tokio::fs::read_to_string;
 
 /// Get mapping table from path
 pub async fn get_mapping_table(
@@ -15,6 +18,9 @@ pub async fn get_mapping_table(
 }
 
 /// Try to read mapping table from path
+///
+/// # Errors
+/// Path is not exist.
 pub async fn read_mapping_table(
     table_path: impl AsRef<Path>,
 ) -> Result<HashMap<CompactString, String>> {
@@ -23,16 +29,18 @@ pub async fn read_mapping_table(
         return Err(ConvertError::NonExistPath(format!("{table_path:?}")));
     };
 
-    let mut file_contents = String::new();
-    File::open(table_path)
-        .await?
-        .read_to_string(&mut file_contents)
-        .await?;
-    Ok(parse_mapping_table(&file_contents))
+    let contents = read_to_string(table_path).await?;
+    Ok(parse_mapping_table(&contents))
 }
 
-/// The key can only be up to [f32]::MAX due to DAR specifications.
-/// Therefore, [CompactString] is used to fit into 24 bytes.
+/// Parse the mapping table from a string.
+///
+/// This function takes a string representing the mapping table and parses it into a [`HashMap`].
+/// It handles sequential numbering of duplicate keys when no key is available.
+///
+/// # Information
+/// The key can only be up to [`f32`]`::MAX` due to DAR specifications.
+/// Therefore, [`CompactString`] is used to fit into 24 bytes.
 fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
     let mut map = HashMap::new();
 
@@ -44,13 +52,10 @@ fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
             continue;
         };
 
-        let mapping = match line.find(' ') {
-            Some(idx) => {
-                let (key, val) = line.split_at(idx);
-                (key, Some(val))
-            }
-            None => (line, None),
-        };
+        let mapping = line.find(' ').map_or((line, None), |sep_idx| {
+            let (key, val) = line.split_at(sep_idx);
+            (key, Some(val))
+        });
         let section_name = match mapping.1 {
             None => {
                 idx += 1;
@@ -63,7 +68,7 @@ fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
             }
         };
 
-        match mapping.0 {
+        let _ = match mapping.0 {
             "" | "\r\n" | "\n" => continue, // Skip blank lines.
             key => map.insert(key.into(), section_name),
         };
@@ -96,15 +101,16 @@ mod tests {
 
         let result = parse_mapping_table(input);
 
-        let mut expected = HashMap::new();
-        expected.insert("8000000".into(), "Combat".into());
-        expected.insert("8000001".into(), "Base".into());
-        expected.insert("8000002".into(), "Base_1".into());
-        expected.insert("8000005".into(), "Female".into());
-        expected.insert("8001000".into(), "Unarmed".into());
-        expected.insert("8001010".into(), "Sword".into());
-        expected.insert("8001020".into(), "Sword+Shield".into());
-
+        let expected = [
+            ("8000000".into(), "Combat".into()),
+            ("8000001".into(), "Base".into()),
+            ("8000002".into(), "Base_1".into()),
+            ("8000005".into(), "Female".into()),
+            ("8001000".into(), "Unarmed".into()),
+            ("8001010".into(), "Sword".into()),
+            ("8001020".into(), "Sword+Shield".into()),
+        ]
+        .into();
         assert_eq!(result, expected);
     }
 }

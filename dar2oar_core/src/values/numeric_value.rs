@@ -1,16 +1,22 @@
+//! A set of f32 | `PluginValue` | Form | Pair str, number
 use super::{actor_value::ActorValue, static_value::StaticValue, FormValue, GraphValue};
-use crate::deserialize_json;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// f32 | `PluginValue` | Form | Pair str, number
+///
 /// In fact, it can be variously accepted rather than Numeric,
 /// but the GUI description of OAR says Numeric Value, so we follow it.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum NumericValue {
+    /// Just f32 value
     StaticValue(StaticValue),
+    /// Pair plugin name & ID
     GlobalVariable(FormValue),
+    /// Person and its internal value
     ActorValue(ActorValue),
+    /// Pair str & Int | Float | Bool
     GraphVariable(GraphValue),
 }
 
@@ -25,6 +31,13 @@ impl<'de> Deserialize<'de> for NumericValue {
     where
         D: serde::Deserializer<'de>,
     {
+        /// Macro to change from [`serde_json`] error to [`serde`] custom error
+        macro_rules! deserialize_json {
+            ($value:expr) => {
+                serde_json::from_value($value).map_err(|e| serde::de::Error::custom(e))
+            };
+        }
+
         let value: Value = Deserialize::deserialize(deserializer)?;
 
         if let Value::Object(map) = &value {
@@ -56,24 +69,25 @@ impl<'de> Deserialize<'de> for NumericValue {
 
 #[cfg(test)]
 mod tests {
-    use crate::values::PluginValue;
-
     use super::*;
+    use crate::values::PluginValue;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_numeric_value_static() {
+    fn should_serialize_numeric_value_static() -> Result<()> {
         let numeric_value = NumericValue::StaticValue(StaticValue::default());
-        let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&numeric_value)?;
 
         let expected = r#"{
   "value": 0.0
 }"#;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_serialize_numeric_value_global_variable() {
+    fn should_serialize_numeric_value_global_variable() -> Result<()> {
         let numeric_value = NumericValue::GlobalVariable(FormValue::default());
 
         let expected = r#"{
@@ -82,24 +96,26 @@ mod tests {
     "formID": ""
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&numeric_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&numeric_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_numeric_value_static() {
+    fn should_deserialize_numeric_value_static() -> Result<()> {
         let json_str = r#"{
             "value": 42.0
         }"#;
 
-        let deserialized: NumericValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: NumericValue = serde_json::from_str(json_str)?;
         let expected = NumericValue::StaticValue(StaticValue { value: 42.0 });
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_numeric_value_global_variable() {
+    fn should_deserialize_numeric_value_global_variable() -> Result<()> {
         let json_str = r#"{
           "form": {
             "pluginName": "MyPlugin",
@@ -107,7 +123,7 @@ mod tests {
           }
         }"#;
 
-        let deserialized: NumericValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: NumericValue = serde_json::from_str(json_str)?;
         let expected = NumericValue::GlobalVariable(
             PluginValue {
                 plugin_name: "MyPlugin".into(),
@@ -117,6 +133,7 @@ mod tests {
         );
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]
