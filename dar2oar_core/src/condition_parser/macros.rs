@@ -1,3 +1,4 @@
+//! Macros for type conversion of parsed DAR structures into easily serializable OAR structures
 use super::ParseError;
 use crate::dar_syntax::syntax::FnArg;
 
@@ -53,7 +54,7 @@ impl GetArg for Vec<FnArg<'_>> {
     }
 }
 
-/// Access [Vec::get](https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.get)(index) & try_into()
+/// [`Vec::get(index)`](https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.get) & [`TryInto`]
 macro_rules! get_try_into {
     ($args:ident[$index:literal], $expected:literal) => {
         <Vec<crate::dar_syntax::syntax::FnArg<'_>> as $crate::condition_parser::macros::GetArg>::try_get(
@@ -70,7 +71,9 @@ macro_rules! get_try_into {
 }
 pub(super) use get_try_into;
 
-/// Generate `ConditionSet` & [Vec]::get(index) & try_into() (can use `into` if you need)
+/// Generate `ConditionSet` &
+/// [`Vec::get`](https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.get)(index) &
+/// [`TryInto`] (can use `into` if you need)
 macro_rules! gen_cond {
     ($id:ident($field_name:ident, $negated:ident), $args:ident, $expected:literal) => {
         ConditionSet::$id($id {

@@ -1,3 +1,4 @@
+//! Common parts for sequential and parallel conversions
 use crate::condition_parser::parse_dar2oar;
 use crate::conditions::ConditionsConfig;
 use crate::error::{ConvertError, Result};
@@ -11,7 +12,7 @@ use tokio::fs;
 // NOTE: Variables in fields do not appear in the log if Option::None.
 #[tracing::instrument(level = "debug", skip(options, is_converted_once), fields(specified_output = &options.oar_dir))]
 /// Common parts of parallel & sequential loop processing.
-pub async fn convert_inner<P>(
+pub(super) async fn convert_inner<P>(
     options: &ConvertOptions,
     path: P,
     parsed_path: &ParsedPath,
@@ -73,11 +74,11 @@ where
                 tracing::debug!("Copy with Nest Dir: {:?}", remain.join(file_name));
                 let non_leaf_dir = $section_root.join(remain); // e.g. mesh/[...]/male/
                 fs::create_dir_all(&non_leaf_dir).await?;
-                fs::copy(path, &non_leaf_dir.join(file_name)).await?;
+                let _ = fs::copy(path, &non_leaf_dir.join(file_name)).await?;
             } else {
                 tracing::debug!("Copy: {file_name}");
                 fs::create_dir_all(&$section_root).await?;
-                fs::copy(path, $section_root.join(file_name)).await?;
+                let _ = fs::copy(path, $section_root.join(file_name)).await?;
             }
         };
     }
@@ -122,7 +123,7 @@ where
                 write_name_space_config(&oar_name_space, &parsed_mod_name, author.as_deref())
                     .await?;
             } else {
-                copy_other_file!(section_root)
+                copy_other_file!(section_root);
             };
         }
         Err(invalid_priority) => {
@@ -137,16 +138,17 @@ where
                 true => oar_name_space,
                 false => section_root,
             };
-            copy_other_file!(section_root)
+            copy_other_file!(section_root);
         }
     };
 
     if *hide_dar && is_contain_oar(path).is_none() {
-        hide_path(path).await?
+        hide_path(path).await?;
     };
     Ok(())
 }
 
+/// Asynchronously hide a path by renaming it with a ".mohidden" extension.
 async fn hide_path(path: impl AsRef<Path>) -> Result<()> {
     let path = path.as_ref();
     // NOTE: Do not use `set_extension` as it overwrites rather than adds.
@@ -164,10 +166,19 @@ async fn hide_path(path: impl AsRef<Path>) -> Result<()> {
     Ok(())
 }
 
+/// Handle conversion results based on whether any conversions occurred.
 #[inline]
-pub(super) fn handle_conversion_results(is_converted_once: bool) -> Result<()> {
+pub(super) const fn handle_conversion_results(is_converted_once: bool) -> Result<()> {
     match is_converted_once {
         true => Ok(()),
         false => Err(ConvertError::NeverConverted),
     }
+}
+
+/// Find `DynamicAnimationReplacer` string in a argument
+#[inline]
+pub(super) fn is_contain_dar(path: impl AsRef<Path>) -> Option<usize> {
+    path.as_ref()
+        .iter()
+        .position(|os_str| os_str == std::ffi::OsStr::new("DynamicAnimationReplacer"))
 }

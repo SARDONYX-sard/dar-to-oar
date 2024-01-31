@@ -33,7 +33,7 @@ pub(crate) struct Convert {
     /// Path to section name table
     ///
     /// - See more details
-    /// https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file
+    /// <https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file>
     mapping_file: Option<String>,
     #[clap(long)]
     /// Path to section name table(For _1st_person)
@@ -41,7 +41,8 @@ pub(crate) struct Convert {
     #[clap(long)]
     /// Use multi thread
     ///
-    /// [Note]
+    /// # Note
+    ///
     /// More than twice the processing speed can be expected,
     /// but the concurrent processing results in thread termination timings being out of order,
     /// so log writes will be out of order as well, greatly reducing readability of the logs.

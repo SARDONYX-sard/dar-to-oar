@@ -1,3 +1,5 @@
+//! Multi thread converter
+use super::common::is_contain_dar;
 use crate::error::{ConvertError, Result};
 use crate::fs::converter::common::{convert_inner, handle_conversion_results};
 use crate::fs::converter::ConvertOptions;
@@ -13,8 +15,8 @@ use std::sync::Arc;
 /// - `options`: Convert options
 /// - `progress_fn`: For progress callback(1st time: max contents count, 2nd~: index)
 ///
-/// # Return
-/// Complete info
+/// # Errors
+/// Failed to convert
 ///
 /// # NOTE
 /// For library reasons, you get the number of DAR dirs and files, not the number of DAR files only
@@ -35,7 +37,7 @@ pub async fn convert_dar_to_oar(
     let mut task_handles: Vec<tokio::task::JoinHandle<Result<()>>> = Vec::new();
 
     for entry in entires {
-        let path = entry.map_err(|_| ConvertError::NotFoundEntry)?.path();
+        let path = entry.map_err(|_err| ConvertError::NotFoundEntry)?.path();
         if !path.is_file() {
             continue;
         }
@@ -74,10 +76,10 @@ pub async fn convert_dar_to_oar(
     handle_conversion_results(is_converted_once.load(Ordering::Relaxed))
 }
 
+/// Get DAR files using a custom filter.
 pub(crate) fn get_dar_files(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bool)> {
     WalkDirGeneric::<(usize, bool)>::new(root).process_read_dir(
         |_depth, _path, _read_dir_state, children| {
-            // Custom filter
             children.retain(|dir_entry_result| {
                 dir_entry_result
                     .as_ref()
@@ -93,6 +95,7 @@ pub(crate) fn get_dar_files(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bo
     )
 }
 
+/// Check if a path contains the directory `OpenAnimationReplacer`.
 #[inline]
 pub(super) fn is_contain_oar(path: impl AsRef<Path>) -> Option<usize> {
     path.as_ref()
@@ -100,14 +103,8 @@ pub(super) fn is_contain_oar(path: impl AsRef<Path>) -> Option<usize> {
         .position(|os_str| os_str == std::ffi::OsStr::new("OpenAnimationReplacer"))
 }
 
+/// Get OAR files using a custom filter.
 pub(crate) fn get_oar(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bool)> {
-    #[inline]
-    fn is_contain_dar(path: impl AsRef<Path>) -> Option<usize> {
-        path.as_ref()
-            .iter()
-            .position(|os_str| os_str == std::ffi::OsStr::new("DynamicAnimationReplacer"))
-    }
-
     WalkDirGeneric::<(usize, bool)>::new(root).process_read_dir(
         |_depth, _path, _read_dir_state, children| {
             // Custom filter

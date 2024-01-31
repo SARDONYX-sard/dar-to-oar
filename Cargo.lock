@@ -821,7 +821,6 @@ dependencies = [
  "criterion",
  "jwalk",
  "nom",
- "once_cell",
  "pretty_assertions",
  "serde",
  "serde_json",

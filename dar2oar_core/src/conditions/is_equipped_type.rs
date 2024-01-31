@@ -1,22 +1,28 @@
+//! Represents a condition to check if a specific type is equipped.
 use super::{condition::default_required_version, is_false};
 use crate::values::TypeValue;
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// Represents a condition to check if a specific type is equipped.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsEquippedType {
-    /// Condition name "IsEquippedType"
+    /// The name of the condition, which is "IsEquippedType".
     pub condition: CompactString,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// The type value to check for equipment.
     #[serde(default)]
     #[serde(rename = "Type")]
     pub type_value: TypeValue,
+    /// Indicates whether the equipment should be in the left hand.
     #[serde(default)]
     #[serde(rename = "Left hand")]
     pub left_hand: bool,
@@ -38,10 +44,11 @@ impl Default for IsEquippedType {
 mod tests {
     use super::*;
     use crate::values::WeaponType;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_is_equipped_type() {
+    fn should_serialize_is_equipped_type() -> Result<()> {
         let is_equipped_type = IsEquippedType {
             negated: true,
             type_value: TypeValue {
@@ -49,7 +56,7 @@ mod tests {
             },
             ..Default::default()
         };
-        let serialized = serde_json::to_string_pretty(&is_equipped_type).unwrap();
+        let serialized = serde_json::to_string_pretty(&is_equipped_type)?;
 
         let expected = r#"{
   "condition": "IsEquippedType",
@@ -62,10 +69,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_is_equipped_type() {
+    fn should_deserialize_is_equipped_type() -> Result<()> {
         let json_str = r#"{
             "condition": "IsEquippedType",
             "requiredVersion": "1.0.0.0",
@@ -74,7 +82,7 @@ mod tests {
             },
             "Left hand": false
         }"#;
-        let deserialized: IsEquippedType = serde_json::from_str(json_str).unwrap();
+        let deserialized: IsEquippedType = serde_json::from_str(json_str)?;
 
         let expected = IsEquippedType {
             type_value: TypeValue {
@@ -85,6 +93,7 @@ mod tests {
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]

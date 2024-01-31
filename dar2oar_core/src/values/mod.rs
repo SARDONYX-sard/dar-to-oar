@@ -1,3 +1,4 @@
+//! DAR Condition values
 mod actor_value;
 mod comparison;
 mod direction_value;
@@ -29,22 +30,23 @@ pub use self::static_value::StaticValue;
 pub use self::type_value::{TypeValue, WeaponType};
 use serde::{Deserialize, Serialize};
 
+/// DAR variable set
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub(crate) enum ValueSet {
+    /// Person and its internal value
     ActorValue(ActorValue),
+    /// Keyword ID
     KeywordValue(LiteralValue),
+    /// Just f32 value
     NumericValue(StaticValue),
+    /// Pair plugin name & ID
     PluginValue(PluginValue),
+    /// A value with a range, used for randomization.
     RandomValue(RandomValue),
+    /// Weapon type
     TypeValue(TypeValue),
+    /// Unknown value
     #[default]
     Unknown,
-}
-
-#[macro_export]
-macro_rules! deserialize_json {
-    ($value:expr) => {
-        serde_json::from_value($value).map_err(|e| serde::de::Error::custom(e.to_string()))
-    };
 }

@@ -2,7 +2,9 @@ use anyhow::Result;
 use tracing::{level_filters::LevelFilter, subscriber::DefaultGuard};
 use tracing_appender::non_blocking::WorkerGuard;
 
-/// multithread init logger.
+/// Multithread init logger.
+///
+/// File I/O is No ANSI color, output to stdout has ANSI color.
 ///
 /// # Returns
 /// Guards

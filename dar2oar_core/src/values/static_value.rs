@@ -1,8 +1,13 @@
+//! A static value within a certain range.
 use serde::{Deserialize, Serialize};
 
-/// -99999996802856924650656260769173209088.000 <= value <= 9.999999680285692e37
+/// A static value within a certain range.
+/// # NOTE
+/// The value is expected to be within the range -99999996802856924650656260769173209088.000
+/// to 9.999999680285692e37.
 ///
-/// when out of range(i.e. -inf or inf), break config.json. Example is here.
+/// If the value is out of this range (i.e., -inf or inf), it may cause issues with `config.json` serialization.
+///
 /// ```json:config.json
 /// {
 ///   "condition": "CompareValues",
@@ -12,6 +17,7 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct StaticValue {
+    /// The value of the static value.
     pub value: f32,
 }
 

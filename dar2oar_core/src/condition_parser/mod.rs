@@ -1,3 +1,4 @@
+//! Module to convert a parsed DAR into a serializable OAR structure.
 mod actor;
 mod compare;
 mod conditions;
@@ -13,6 +14,11 @@ use crate::conditions::ConditionSet;
 use crate::dar_syntax::{convert_error, syntax::parse_condition};
 use crate::error::{ConvertError, Result};
 
+/// Parse a DAR string and convert it into a vector of [`ConditionSets`] representing an OAR structure.
+///
+/// This function takes a DAR string as input and parses it into a serializable OAR structure.
+/// It returns a [`Result`] containing a vector of [`ConditionSet`] if successful,
+/// or a [`ConvertError`] if any parsing or conversion error occurs.
 pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
     let (remain, dar_syn) = match parse_condition(input) {
         Ok(syn) => {
@@ -22,8 +28,7 @@ pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
         Err(err) => {
             let err = match err {
                 nom::Err::Incomplete(_) => return Err(ConvertError::IncompleteConversion),
-                nom::Err::Error(err) => err,
-                nom::Err::Failure(err) => err,
+                nom::Err::Error(err) | nom::Err::Failure(err) => err,
             };
 
             tracing::trace!("Entered ConvertError::InvalidDarSyntax");

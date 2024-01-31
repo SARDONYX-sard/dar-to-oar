@@ -1,3 +1,4 @@
+//! Converter system
 mod common;
 
 pub mod parallel;
@@ -8,27 +9,10 @@ use crate::error::Result;
 use compact_str::CompactString;
 use std::collections::HashMap;
 
-/// # Convert DAR to OAR
+/// Converts Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR) files.
 ///
-/// Asynchronously converts Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR) files.
-///
-/// ## Parameters
-///
-/// - `options`: A structure (`ConvertOptions`) containing various configuration options for the conversion process.
-///   - `dar_dir`: Path to the DAR source directory.
-///   - `oar_dir`: Optional path to the OAR destination directory. If not provided, it is inferred from the source directory.
-///   - `mod_name`: Optional module name in `config.json` and directory name. If not provided, it is inferred from the source directory.
-///   - `author`: Optional mod author in `config.json`.
-///   - `section_table`: Optional path to the section name table.
-///   - `section_1person_table`: Optional path to the section name table for the first person.
-///   - `run_parallel`: A boolean flag indicating whether to use multi-threading for the conversion process.
-///   - `hide_dar`: A boolean flag indicating whether to add `mohidden` to the DAR directory before conversion, treating it as a hidden directory (for MO2 users).
-///
-/// - `progress_fn`: A closure that takes a `usize` parameter, representing the progress of the conversion.
-///
-/// ## Returns
-///
-/// - `Result<ConvertedReport>`: A result indicating the success or failure of the conversion process, along with a `ConvertedReport` enum providing details on the completed actions.
+/// # Errors
+/// Failed conversion
 ///
 /// ## Examples
 ///
@@ -91,11 +75,16 @@ pub async fn convert_dar_to_oar(
     }
 }
 
+/// A structure for creating dummy functions to facilitate refactoring.
+#[derive(Debug)]
 pub struct Closure;
 impl Closure {
-    pub fn default(_: usize) {}
+    /// No operation function pointer
+    #[inline]
+    pub const fn default(_: usize) {}
 }
 
+/// The options for converting a DAR directory to an OAR directory.
 #[derive(Debug, Clone, Default)]
 pub struct ConvertOptions {
     /// DAR source dir path
@@ -118,9 +107,8 @@ pub struct ConvertOptions {
 
 #[cfg(test)]
 mod test {
-    use crate::test_helper::init_tracing;
-
     use super::*;
+    use crate::test_helper::init_tracing;
     use anyhow::Result;
 
     // const DAR_DIR: &str = "../test/data/UNDERDOG - Animations";
@@ -157,18 +145,23 @@ mod test {
 
         let sender = move |idx: usize| {
             let tx = tx.clone();
-            tokio::spawn(async move {
-                tx.send(idx).await.unwrap();
+            let handle = tokio::spawn(async move {
+                match tx.send(idx).await {
+                    Ok(ok) => ok,
+                    Err(err) => tracing::error!("{}", err),
+                };
             });
+
+            drop(handle);
         };
 
         let handle = tokio::spawn(convert_dar_to_oar(create_options().await?, sender));
 
-        let mut walk_len = 0usize;
+        let mut walk_len = 0;
         while let Some(idx) = rx.recv().await {
             match walk_len == 0 {
                 true => walk_len = idx, // NOTE: 1st received index is length.
-                false => println!("[recv] Converted: {}/{}", idx + 1, walk_len),
+                false => tracing::info!("[recv] Converted: {}/{}", idx + 1, walk_len),
             }
         }
 

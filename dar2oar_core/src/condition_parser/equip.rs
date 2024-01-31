@@ -1,3 +1,4 @@
+//! Parses equipment-related conditions based on the provided arguments and condition name.
 use super::macros::{gen_cond, get_try_into};
 use super::{dar_interface::ParseError, macros::GetArg as _};
 use crate::{
@@ -6,6 +7,10 @@ use crate::{
     values::{NumericLiteral, TypeValue},
 };
 
+/// Parses equipment-related conditions based on the provided arguments and condition name.
+///
+/// # Errors
+/// If parsing fails.
 pub(super) fn parse_equip(
     condition_name: &str,
     args: Vec<FnArg<'_>>,
@@ -21,7 +26,7 @@ pub(super) fn parse_equip(
         "IsEquippedRightType" | "IsEquippedLeftType" => {
             let numeric_value: NumericLiteral = get_try_into!(args[0], "WeaponType -1..18")?;
             let type_value = TypeValue {
-                value: numeric_value.try_into().map_err(|_: &str| {
+                value: numeric_value.try_into().map_err(|_err| {
                     ParseError::UnexpectedValue("-1..18".into(), "Unknown value".into())
                 })?,
             };

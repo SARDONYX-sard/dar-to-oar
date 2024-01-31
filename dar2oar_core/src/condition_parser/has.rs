@@ -1,3 +1,4 @@
+//! Parses has-prefix conditions based on the provided arguments and condition name.
 use super::dar_interface::ParseError;
 use super::macros::{gen_cond, get_try_into, GetArg as _};
 use crate::conditions::{
@@ -6,6 +7,10 @@ use crate::conditions::{
 };
 use crate::dar_syntax::syntax::FnArg;
 
+/// Parses has-prefix conditions based on the provided arguments and condition name.
+///
+/// # Errors
+/// If parsing fails.
 pub(super) fn parse_has(
     condition_name: &str,
     args: Vec<FnArg<'_>>,

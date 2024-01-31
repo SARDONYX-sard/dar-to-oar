@@ -1,26 +1,34 @@
+//! Represents a condition involving randomness.
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue, RandomValue};
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
-/// - OAR: Random
+/// Represents a condition involving randomness.
+///
+/// - OAR (Object Arithmetic Representation): Random
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RandomCondition {
-    /// Condition name "Random"
+    /// The name of the condition, which is "Random".
     pub condition: CompactString,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// The random value used in the condition.
     #[serde(default)]
     #[serde(rename = "Random value")]
     pub random_value: RandomValue,
+    /// The comparison operator to use in the condition.
     #[serde(default)]
     #[serde(rename = "Comparison")]
     pub comparison: Cmp,
+    /// The numeric value to compare against in the condition.
     #[serde(default)]
     #[serde(rename = "Numeric value")]
     pub numeric_value: NumericValue,

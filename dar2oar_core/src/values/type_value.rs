@@ -1,14 +1,18 @@
+//! Wrapper for [`WeaponType`]
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 
 use super::NumericLiteral;
 
+/// Wrapper for [`WeaponType`]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct TypeValue {
+    /// Weapon type value
     pub value: WeaponType,
 }
 
+/// Weapon type enumeration
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum WeaponType {
     /// -1.0
@@ -159,20 +163,13 @@ impl From<WeaponType> for f64 {
     }
 }
 
-impl WeaponType {
-    #[inline]
-    fn as_f64(&self) -> f64 {
-        self.clone().into()
-    }
-}
-
 impl Serialize for WeaponType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
         // Serialize the variant as a floating-point number.
-        let value = self.as_f64();
+        let value: f64 = self.clone().into();
         value.serialize(serializer)
     }
 }
@@ -184,6 +181,7 @@ impl<'de> Deserialize<'de> for WeaponType {
     where
         D: Deserializer<'de>,
     {
+        /// Inner struct to deserialization.
         struct WeaponTypeVisitor;
 
         impl<'de> Visitor<'de> for WeaponTypeVisitor {
@@ -197,17 +195,14 @@ impl<'de> Deserialize<'de> for WeaponType {
             where
                 E: Error,
             {
-                match WeaponType::try_from(value as i64) {
-                    Ok(value) => Ok(value),
-                    Err(_) => Err(Error::unknown_variant(
-                        &value.to_string(),
-                        &[
-                            "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0",
-                            "9.0", "10.0", "11.0", "12.0", "13.0", "14.0", "15.0", "16.0", "17.0",
-                            "18.0",
-                        ],
-                    )),
-                }
+                WeaponType::try_from(value as i64).or(Err(Error::unknown_variant(
+                    &value.to_string(),
+                    &[
+                        "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0",
+                        "9.0", "10.0", "11.0", "12.0", "13.0", "14.0", "15.0", "16.0", "17.0",
+                        "18.0",
+                    ],
+                )))
             }
         }
 
@@ -215,25 +210,24 @@ impl<'de> Deserialize<'de> for WeaponType {
         let value: Value = Deserialize::deserialize(deserializer)?;
         match value {
             Value::Number(num) => {
-                let t = WeaponType::try_from(num.as_i64().unwrap_or(num.as_f64().unwrap() as i64))
-                    .map_err(|err| {
-                        Error::invalid_type(
-                            serde::de::Unexpected::Other(err),
-                            &"a valid i64 or f64",
-                        )
-                    })?;
-                Ok(t)
-            }
-            Value::String(s) => {
-                let value: WeaponType = s.as_str().try_into().map_err(|_| {
-                    println!("Yes");
+                let weapon = WeaponType::try_from(num.as_i64().unwrap_or(num.as_f64().ok_or(
                     Error::invalid_type(
-                        serde::de::Unexpected::Other("Couldn't parse float value"),
-                        &"a valid WeaponType float string",
-                    )
+                        serde::de::Unexpected::Other("WeaponType parse f64"),
+                        &"a valid f64",
+                    ),
+                )?
+                    as i64))
+                .map_err(|err| {
+                    Error::invalid_type(serde::de::Unexpected::Other(err), &"a valid i64 or f64")
                 })?;
-                Ok(value)
+                Ok(weapon)
             }
+            Value::String(s) => Ok(s.as_str().try_into().map_err(|_err| {
+                Error::invalid_type(
+                    serde::de::Unexpected::Other("Couldn't parse float value"),
+                    &"a valid WeaponType float string",
+                )
+            })?),
             _ => Err(Error::invalid_type(
                 serde::de::Unexpected::Other("not a valid value for WeaponType"),
                 &"a valid WeaponType value",
@@ -245,10 +239,11 @@ impl<'de> Deserialize<'de> for WeaponType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_type_value() {
+    fn should_serialize_type_value() -> Result<()> {
         let type_value = TypeValue {
             value: WeaponType::Other,
         };
@@ -256,35 +251,38 @@ mod tests {
         let expected = r#"{
   "value": -1.0
 }"#;
-        let serialized = serde_json::to_string_pretty(&type_value).unwrap();
+        let serialized = serde_json::to_string_pretty(&type_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_type_value() {
+    fn should_deserialize_type_value() -> Result<()> {
         let json_str = r#"{
             "value": 18.0
         }"#;
 
-        let deserialized: TypeValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: TypeValue = serde_json::from_str(json_str)?;
         let expected = TypeValue {
             value: WeaponType::Torch,
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_type_value_as_string() {
+    fn should_deserialize_type_value_as_string() -> Result<()> {
         let json_str = r#"{
             "value": "5.0"
         }"#;
 
-        let deserialized: TypeValue = serde_json::from_str(json_str).unwrap();
+        let deserialized: TypeValue = serde_json::from_str(json_str)?;
         let expected = TypeValue {
             value: WeaponType::Greatsword,
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }

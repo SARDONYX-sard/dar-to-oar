@@ -1,13 +1,18 @@
+//! Trigger keywords
 use super::{FormValue, LiteralValue};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// Trigger keywords
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum Keyword {
+    /// Single numeric type
     Literal(LiteralValue),
+    /// plugin value
     Form(FormValue),
 }
+
 impl Default for Keyword {
     fn default() -> Self {
         Self::Literal(LiteralValue::default())
@@ -52,36 +57,38 @@ impl<'de> Deserialize<'de> for Keyword {
 
 #[cfg(test)]
 mod tests {
-    use crate::values::PluginValue;
-
     use super::*;
+    use crate::values::PluginValue;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_keyword_default() {
+    fn should_serialize_keyword_default() -> Result<()> {
         let keyword_enum = Keyword::default();
-        let serialized = serde_json::to_string_pretty(&keyword_enum).unwrap();
+        let serialized = serde_json::to_string_pretty(&keyword_enum)?;
         let expected = r#"{
   "editorID": ""
 }"#;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_keyword_enum_literal() {
+    fn should_deserialize_keyword_enum_literal() -> Result<()> {
         let input = r#"{
   "editorID": "SomeKeyword"
 }"#;
-        let deserialized: Keyword = serde_json::from_str(input).unwrap();
+        let deserialized: Keyword = serde_json::from_str(input)?;
         let expected = Keyword::Literal(LiteralValue {
             editor_id: "SomeKeyword".to_string(),
         });
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_serialize_keyword_enum_form() {
+    fn should_serialize_keyword_enum_form() -> Result<()> {
         let keyword_enum = Keyword::Form(FormValue::default());
 
         let expected = r#"{
@@ -90,12 +97,13 @@ mod tests {
     "formID": ""
   }
 }"#;
-        let serialized = serde_json::to_string_pretty(&keyword_enum).unwrap();
+        let serialized = serde_json::to_string_pretty(&keyword_enum)?;
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_keyword_enum_form() {
+    fn should_deserialize_keyword_enum_form() -> Result<()> {
         let input = r#"{
   "form": {
     "pluginName": "MyPlugin",
@@ -103,7 +111,7 @@ mod tests {
   }
 }"#;
 
-        let deserialized: Keyword = serde_json::from_str(input).unwrap();
+        let deserialized: Keyword = serde_json::from_str(input)?;
         let expected = Keyword::Form(FormValue {
             form: PluginValue {
                 plugin_name: "MyPlugin".into(),
@@ -112,5 +120,6 @@ mod tests {
         });
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }

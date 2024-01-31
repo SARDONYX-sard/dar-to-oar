@@ -8,6 +8,7 @@ use crate::{
     },
 };
 
+/// Couldn't parse in DAR to OAR processing Errors
 #[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
 pub enum ParseError {
     /// - 1st arg: Expected value
@@ -51,7 +52,7 @@ impl TryFrom<&FnArg<'_>> for NumericLiteral {
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
             FnArg::Number(num) => Ok(num.into()),
-            other => Err(ParseError::UnexpectedValue(
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
                 "Number(e.g. 3.0)".into(),
                 format!("{other:?}",),
             )),
@@ -109,7 +110,7 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
             FnArg::Number(num) => Ok(num.into()),
-            other => Err(ParseError::UnexpectedValue(
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
                 "StaticValue(e.g. 3.0)".to_string(),
                 format!("{other:?}",),
             )),
@@ -192,7 +193,7 @@ impl TryFrom<&FnArg<'_>> for Direction {
                     .try_into()
                     .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
             }),
-            other => Err(ParseError::UnexpectedValue(
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
                 "1..=4(in Cast &FnArg to Direction)".into(),
                 format!("{other:?}"),
             )),

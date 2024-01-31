@@ -1,22 +1,28 @@
+//! Represents a condition to check if an entity has a specific magic effect.
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
 use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
+/// Represents a condition to check if an entity has a specific magic effect.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasMagicEffect {
-    /// Condition name "HasMagicEffect"
+    /// The name of the condition, which is "HasMagicEffect".
     pub condition: CompactString,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
     pub required_version: CompactString,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
 
+    /// The magic effect to check for in the entity.
     #[serde(default)]
     #[serde(rename = "Magic effect")]
     pub magic_effect: PluginValue,
+    /// Indicates whether to consider only active effects.
     #[serde(default)]
     #[serde(rename = "Active effects only")]
     pub active_effects_only: bool,
@@ -37,12 +43,13 @@ impl Default for HasMagicEffect {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_has_magic_effect() {
+    fn should_serialize_has_magic_effect() -> Result<()> {
         let has_magic_effect = HasMagicEffect::default();
-        let serialized = serde_json::to_string_pretty(&has_magic_effect).unwrap();
+        let serialized = serde_json::to_string_pretty(&has_magic_effect)?;
 
         let expected = r#"{
   "condition": "HasMagicEffect",
@@ -55,10 +62,11 @@ mod tests {
 }"#;
 
         assert_eq!(serialized, expected);
+        Ok(())
     }
 
     #[test]
-    fn should_deserialize_has_magic_effect() {
+    fn should_deserialize_has_magic_effect() -> Result<()> {
         let json_str = r#"{
             "condition": "HasMagicEffect",
             "requiredVersion": "1.0.0.0",
@@ -68,7 +76,7 @@ mod tests {
             },
             "Active effects only": true
         }"#;
-        let deserialized: HasMagicEffect = serde_json::from_str(json_str).unwrap();
+        let deserialized: HasMagicEffect = serde_json::from_str(json_str)?;
 
         let expected = HasMagicEffect {
             magic_effect: PluginValue {
@@ -80,5 +88,6 @@ mod tests {
         };
 
         assert_eq!(deserialized, expected);
+        Ok(())
     }
 }
