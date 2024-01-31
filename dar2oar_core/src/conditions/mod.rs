@@ -92,8 +92,7 @@ gen_cmp_num_struct!(
     CurrentGameTime
 );
 
-/// generate structures that have only condition and [`PluginValue`]
-#[macro_export]
+/// generate structures that have only condition and `PluginValue`
 macro_rules! gen_one_plugin_struct {
     ($($(#[$attr:meta])* $name:ident, $field:ident => $rename_field:literal),+ $(,)?) => {
         $(
