@@ -5,6 +5,7 @@ description = "DAR to OAR Converter Core"
 authors = ["SARDONYX-sard"]
 categories.workspace = true
 keywords = ["converter", "skyrim"]
+readme = "./readme.md"
 license = "MIT OR Apache-2.0"
 repository.workspace = true
 edition = "2021"
