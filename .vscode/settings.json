@@ -1,9 +1,10 @@
 {
   "editor.codeActionsOnSave": {
-    "source.addMissingImports": "explicit",
     "source.fixAll.eslint": "explicit",
     "source.fixAll.sortJSON": "never"
   },
+  "eslint.execArgv": ["--cache"],
+  "eslint.run": "onType",
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
@@ -11,7 +12,6 @@
     ".swc": true,
     "**/node_modules": true // optional
   },
-  "files.trimTrailingWhitespace": true,
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/node_modules/**": true,
