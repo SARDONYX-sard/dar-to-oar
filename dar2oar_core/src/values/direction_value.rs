@@ -1,5 +1,5 @@
 //! Actor's Direction
-use serde::de::{Error, Visitor};
+use serde::de::{Error, Unexpected, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 
@@ -31,18 +31,18 @@ impl TryFrom<u64> for Direction {
 
     fn try_from(value: u64) -> Result<Self, Self::Error> {
         Ok(match value {
-            0 => Direction::None,
-            1 => Direction::Forward,
-            2 => Direction::Right,
-            3 => Direction::Back,
-            4 => Direction::Left,
+            0 => Self::None,
+            1 => Self::Forward,
+            2 => Self::Right,
+            3 => Self::Back,
+            4 => Self::Left,
             _ => return Err("Invalid value for Direction"),
         })
     }
 }
 
 impl From<&Direction> for f64 {
-    fn from(value: &Direction) -> f64 {
+    fn from(value: &Direction) -> Self {
         match *value {
             Direction::None => 0.0,
             Direction::Forward => 1.0,
@@ -101,28 +101,25 @@ impl<'de> Deserialize<'de> for Direction {
         let value: Value = Deserialize::deserialize(deserializer)?;
         match value {
             Value::Number(num) => {
-                let direction = num
-                    .as_u64()
-                    .unwrap_or(num.as_f64().ok_or(Error::invalid_type(
-                        serde::de::Unexpected::Other("WeaponType parse f64"),
-                        &"a valid f64",
-                    ))? as u64);
-                let direction = Direction::try_from(direction).map_err(|err| {
-                    Error::invalid_type(serde::de::Unexpected::Other(err), &"a valid u64 or f64")
-                })?;
+                let err = || {
+                    Error::invalid_type(Unexpected::Other("WeaponType parse f64"), &"a valid f64")
+                };
+                let direction = num.as_u64().unwrap_or(num.as_f64().ok_or_else(err)? as u64);
+                let err = |err| Error::invalid_type(Unexpected::Other(err), &"a valid u64 or f64");
+                let direction = Self::try_from(direction).map_err(err)?;
                 Ok(direction)
             }
             Value::String(s) => {
                 let t = s.parse::<f64>().map_err(|_err| {
                     Error::invalid_type(
-                        serde::de::Unexpected::Other("Couldn't parse float value"),
+                        Unexpected::Other("Couldn't parse float value"),
                         &"a valid Direction value",
                     )
                 })?;
                 DirectionVisitor.visit_f64(t)
             }
             _ => Err(Error::invalid_type(
-                serde::de::Unexpected::Other("not a valid value for Direction"),
+                Unexpected::Other("not a valid value for Direction"),
                 &"a valid Direction value",
             )),
         }

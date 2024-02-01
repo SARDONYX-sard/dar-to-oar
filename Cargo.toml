@@ -1,7 +1,9 @@
 [workspace.package]
 version = "0.5.0"
 description = "DAR to OAR Converter"
+categories = ["compilers", "games", "parsing"]
 repository = "https://github.com/SARDONYX-sard/dar-to-oar"
+readme = "README.md"
 
 [workspace]
 members = ["dar2oar_core", "dar2oar_cli", "src-tauri"]

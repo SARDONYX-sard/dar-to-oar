@@ -6,14 +6,14 @@ use serde_json::Value;
 use super::NumericLiteral;
 
 /// Wrapper for [`WeaponType`]
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TypeValue {
     /// Weapon type value
     pub value: WeaponType,
 }
 
 /// Weapon type enumeration
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub enum WeaponType {
     /// -1.0
     Other = -1,
@@ -63,26 +63,26 @@ impl TryFrom<i64> for WeaponType {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         Ok(match value {
-            -1 => WeaponType::Other,
-            0 => WeaponType::Unarmed,
-            1 => WeaponType::Sword,
-            2 => WeaponType::Dagger,
-            3 => WeaponType::WarAxe,
-            4 => WeaponType::Mace,
-            5 => WeaponType::Greatsword,
-            6 => WeaponType::Battleaxe,
-            7 => WeaponType::Bow,
-            8 => WeaponType::Staff,
-            9 => WeaponType::Crossbow,
-            10 => WeaponType::Warhammer,
-            11 => WeaponType::Shield,
-            12 => WeaponType::AlterationSpell,
-            13 => WeaponType::IllusionSpell,
-            14 => WeaponType::DestructionSpell,
-            15 => WeaponType::ConjurationSpell,
-            16 => WeaponType::RestorationSpell,
-            17 => WeaponType::Scroll,
-            18 => WeaponType::Torch,
+            -1 => Self::Other,
+            0 => Self::Unarmed,
+            1 => Self::Sword,
+            2 => Self::Dagger,
+            3 => Self::WarAxe,
+            4 => Self::Mace,
+            5 => Self::Greatsword,
+            6 => Self::Battleaxe,
+            7 => Self::Bow,
+            8 => Self::Staff,
+            9 => Self::Crossbow,
+            10 => Self::Warhammer,
+            11 => Self::Shield,
+            12 => Self::AlterationSpell,
+            13 => Self::IllusionSpell,
+            14 => Self::DestructionSpell,
+            15 => Self::ConjurationSpell,
+            16 => Self::RestorationSpell,
+            17 => Self::Scroll,
+            18 => Self::Torch,
             _ => return Err("Invalid value for WeaponType"),
         })
     }
@@ -111,26 +111,26 @@ impl TryFrom<&str> for WeaponType {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
-            "-1" | "-1.0" => WeaponType::Other,
-            "0" | "0.0" => WeaponType::Unarmed,
-            "1" | "1.0" => WeaponType::Sword,
-            "2" | "2.0" => WeaponType::Dagger,
-            "3" | "3.0" => WeaponType::WarAxe,
-            "4" | "4.0" => WeaponType::Mace,
-            "5" | "5.0" => WeaponType::Greatsword,
-            "6" | "6.0" => WeaponType::Battleaxe,
-            "7" | "7.0" => WeaponType::Bow,
-            "8" | "8.0" => WeaponType::Staff,
-            "9" | "9.0" => WeaponType::Crossbow,
-            "10" | "10.0" => WeaponType::Warhammer,
-            "11" | "11.0" => WeaponType::Shield,
-            "12" | "12.0" => WeaponType::AlterationSpell,
-            "13" | "13.0" => WeaponType::IllusionSpell,
-            "14" | "14.0" => WeaponType::DestructionSpell,
-            "15" | "15.0" => WeaponType::ConjurationSpell,
-            "16" | "16.0" => WeaponType::RestorationSpell,
-            "17" | "17.0" => WeaponType::Scroll,
-            "18" | "18.0" => WeaponType::Torch,
+            "-1" | "-1.0" => Self::Other,
+            "0" | "0.0" => Self::Unarmed,
+            "1" | "1.0" => Self::Sword,
+            "2" | "2.0" => Self::Dagger,
+            "3" | "3.0" => Self::WarAxe,
+            "4" | "4.0" => Self::Mace,
+            "5" | "5.0" => Self::Greatsword,
+            "6" | "6.0" => Self::Battleaxe,
+            "7" | "7.0" => Self::Bow,
+            "8" | "8.0" => Self::Staff,
+            "9" | "9.0" => Self::Crossbow,
+            "10" | "10.0" => Self::Warhammer,
+            "11" | "11.0" => Self::Shield,
+            "12" | "12.0" => Self::AlterationSpell,
+            "13" | "13.0" => Self::IllusionSpell,
+            "14" | "14.0" => Self::DestructionSpell,
+            "15" | "15.0" => Self::ConjurationSpell,
+            "16" | "16.0" => Self::RestorationSpell,
+            "17" | "17.0" => Self::Scroll,
+            "18" | "18.0" => Self::Torch,
             _ => return Err("Invalid value for WeaponType"),
         })
     }
@@ -210,16 +210,19 @@ impl<'de> Deserialize<'de> for WeaponType {
         let value: Value = Deserialize::deserialize(deserializer)?;
         match value {
             Value::Number(num) => {
-                let weapon = WeaponType::try_from(num.as_i64().unwrap_or(num.as_f64().ok_or(
-                    Error::invalid_type(
-                        serde::de::Unexpected::Other("WeaponType parse f64"),
-                        &"a valid f64",
-                    ),
-                )?
-                    as i64))
-                .map_err(|err| {
-                    Error::invalid_type(serde::de::Unexpected::Other(err), &"a valid i64 or f64")
-                })?;
+                let weapon =
+                    Self::try_from(num.as_i64().unwrap_or(num.as_f64().ok_or_else(|| {
+                        Error::invalid_type(
+                            serde::de::Unexpected::Other("WeaponType parse f64"),
+                            &"a valid f64",
+                        )
+                    })? as i64))
+                    .map_err(|err| {
+                        Error::invalid_type(
+                            serde::de::Unexpected::Other(err),
+                            &"a valid i64 or f64",
+                        )
+                    })?;
                 Ok(weapon)
             }
             Value::String(s) => Ok(s.as_str().try_into().map_err(|_err| {

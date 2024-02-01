@@ -2,7 +2,7 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// Pair str & Int | Float | Bool
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GraphValue {
     /// string
     ///
@@ -15,7 +15,7 @@ pub struct GraphValue {
 }
 
 /// Float | Int | Bool
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub enum GraphVariableType {
     /// Floating point number
     #[default]
@@ -32,9 +32,9 @@ impl Serialize for GraphVariableType {
         S: Serializer,
     {
         let type_str = match self {
-            GraphVariableType::Float => "Float",
-            GraphVariableType::Int => "Int",
-            GraphVariableType::Bool => "Bool",
+            Self::Float => "Float",
+            Self::Int => "Int",
+            Self::Bool => "Bool",
         };
         serializer.serialize_str(type_str)
     }
@@ -46,12 +46,12 @@ impl<'de> Deserialize<'de> for GraphVariableType {
         D: Deserializer<'de>,
     {
         let type_str = String::deserialize(deserializer)?;
-        match type_str.as_str() {
-            "Float" => Ok(GraphVariableType::Float),
-            "Int" => Ok(GraphVariableType::Int),
-            "Bool" => Ok(GraphVariableType::Bool),
-            _ => Err(serde::de::Error::custom("Invalid graph variable type")),
-        }
+        Ok(match type_str.as_str() {
+            "Float" => Self::Float,
+            "Int" => Self::Int,
+            "Bool" => Self::Bool,
+            _ => return Err(serde::de::Error::custom("Invalid graph variable type")),
+        })
     }
 }
 

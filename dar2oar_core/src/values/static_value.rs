@@ -23,6 +23,6 @@ pub struct StaticValue {
 
 impl From<f32> for StaticValue {
     fn from(value: f32) -> Self {
-        StaticValue { value }
+        Self { value }
     }
 }

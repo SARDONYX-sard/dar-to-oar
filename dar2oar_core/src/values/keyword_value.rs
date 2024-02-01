@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 /// Trigger keywords
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(untagged)]
 pub enum Keyword {
     /// Single numeric type
@@ -33,14 +33,14 @@ impl<'de> Deserialize<'de> for Keyword {
                     Ok(keyword) => keyword,
                     Err(err) => return Err(serde::de::Error::custom(err)),
                 };
-                Ok(Keyword::Literal(keyword_value))
+                Ok(Self::Literal(keyword_value))
             } else if map.contains_key("form") {
                 // If both "pluginName" and "formID" fields are present, assume it's a Form
                 let form_value: FormValue = match serde_json::from_value(value) {
                     Ok(form) => form,
                     Err(err) => return Err(serde::de::Error::custom(err)),
                 };
-                Ok(Keyword::Form(form_value))
+                Ok(Self::Form(form_value))
             } else {
                 Err(serde::de::Error::custom(
                     "Unable to determine Keyword variant",

@@ -59,7 +59,7 @@ fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
         let section_name = match mapping.1 {
             None => {
                 idx += 1;
-                format!("{}_{}", current_section_name, idx)
+                format!("{current_section_name}_{idx}")
             }
             Some(val) => {
                 current_section_name = val.trim();
@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_parse_mapping_table() {
-        let input = r#"
+        let input = "
 8000000  Combat
 8000001
 8000001  Base
@@ -97,7 +97,7 @@ mod tests {
 8001010
 8001010  Sword
 8001020
-8001020  Sword+Shield"#;
+8001020  Sword+Shield";
 
         let result = parse_mapping_table(input);
 

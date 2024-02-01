@@ -43,8 +43,8 @@ pub(super) fn parse_compare(
         "ValueLessThan" => create_compare(Cmp::Lt),
         _ => {
             return Err(ParseError::UnexpectedValue(
-                "ValueEqualTo or ValueLessThan".to_string(),
-                condition_name.to_string(),
+                "ValueEqualTo or ValueLessThan".into(),
+                condition_name.into(),
             ))
         }
     })

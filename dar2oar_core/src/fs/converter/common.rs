@@ -23,28 +23,27 @@ where
 {
     let path = path.as_ref();
     let ConvertOptions {
-        dar_dir: _,
         oar_dir,
         mod_name,
         author,
         section_table,
         section_1person_table,
-        run_parallel: _,
         hide_dar,
+        ..
     } = options;
 
     let ParsedPath {
-        dar_root: _,
         oar_root,
         is_1st_person,
         mod_name: parsed_mod_name,
         priority,
         remain_dir,
+        ..
     } = parsed_path;
 
     let mut parsed_mod_name = mod_name
         .as_deref()
-        .unwrap_or(parsed_mod_name.as_deref().unwrap_or("Unknown"))
+        .unwrap_or_else(|| parsed_mod_name.as_deref().unwrap_or("Unknown"))
         .to_owned();
     if *is_1st_person {
         parsed_mod_name.push_str("_1st_person");
@@ -52,13 +51,12 @@ where
 
     let oar_name_space = oar_dir
         .as_deref()
-        .map(|oar_mod_root| match is_1st_person {
+        .map_or(oar_root.clone(), |oar_mod_root| match is_1st_person {
             true => Path::new(oar_mod_root)
                 .join("meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"),
             false => Path::new(oar_mod_root)
                 .join("meshes/actors/character/animations/OpenAnimationReplacer"),
         })
-        .unwrap_or(oar_root.clone())
         .join(&parsed_mod_name);
 
     let file_name = path

@@ -12,9 +12,9 @@ pub(super) trait GetArg {
     ///
     /// Use [Generic Associated Types(GATs)](https://blog.rust-lang.org/2022/10/28/gats-stabilization.html#what-are-gats)
     /// for the `&T` in [`Vec<T>`] because it has the same lifeTime as [Vec].
-    type Output<'a>
+    type Output<'this>
     where
-        Self: 'a;
+        Self: 'this;
 
     /// Access the element at the specified index of the vector.
     ///
@@ -30,27 +30,24 @@ pub(super) trait GetArg {
     /// A result containing a reference to the desired element or a `Error` with detailed information if the index is out of bounds.
     fn try_get_real<T>(&self, index: usize, expected: T, actual: T) -> Self::Output<'_>
     where
-        T: ToString;
+        T: Into<String>;
 }
 
 impl GetArg for Vec<FnArg<'_>> {
-    type Output<'a> = Result<&'a FnArg<'a>, ParseError> where Self: 'a;
+    type Output<'this> = Result<&'this FnArg<'this>, ParseError> where Self: 'this;
 
     fn try_get(&self, index: usize, expected: impl ToString) -> Self::Output<'_> {
-        self.get(index).ok_or(ParseError::UnexpectedValue(
-            expected.to_string(),
-            format!("None in args[{}]", index),
-        ))
+        self.get(index).ok_or_else(|| {
+            ParseError::UnexpectedValue(expected.to_string(), format!("None in args[{index}]"))
+        })
     }
 
     fn try_get_real<T>(&self, index: usize, expected: T, actual: T) -> Self::Output<'_>
     where
-        T: ToString,
+        T: Into<String>,
     {
-        self.get(index).ok_or(ParseError::UnexpectedValue(
-            expected.to_string(),
-            actual.to_string(),
-        ))
+        self.get(index)
+            .ok_or_else(|| ParseError::UnexpectedValue(expected.into(), actual.into()))
     }
 }
 

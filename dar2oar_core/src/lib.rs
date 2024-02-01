@@ -1,28 +1,48 @@
+#![deny(clippy::all, clippy::nursery, clippy::cargo)]
+#![allow(
+    clippy::derive_partial_eq_without_eq,
+    clippy::future_not_send,
+    clippy::multiple_crate_versions,
+    clippy::pub_with_shorthand,
+    clippy::redundant_pub_crate
+)]
+#![warn(
+    clippy::dbg_macro,
+    clippy::print_stderr,
+    clippy::print_stdout,
+    clippy::todo,
+    clippy::unimplemented
+)]
+// See: https://rust-lang.github.io/rust-clippy/rust-1.75.0/index.html#/?groups=restriction
 #![deny(
-    clippy::all,
-    clippy::await_holding_lock,
+    clippy::allow_attributes_without_reason,
     clippy::char_lit_as_u8,
     clippy::checked_conversions,
+    clippy::clone_on_ref_ptr,
     clippy::cognitive_complexity,
-    clippy::dbg_macro,
     clippy::debug_assert_with_mut_call,
+    clippy::disallowed_script_idents,
     clippy::doc_link_with_quotes,
     clippy::doc_markdown,
     clippy::empty_enum,
     clippy::empty_line_after_outer_attr,
     clippy::empty_structs_with_brackets,
     clippy::enum_glob_use,
+    clippy::error_impl_error,
     clippy::exit,
+    clippy::expect_used,
     clippy::expl_impl_clone_on_copy,
     clippy::explicit_deref_methods,
     clippy::explicit_into_iter_loop,
     clippy::fallible_impl_from,
+    clippy::filetype_is_file,
     clippy::filter_map_next,
     clippy::flat_map_option,
     clippy::float_cmp,
     clippy::float_cmp_const,
     clippy::float_equality_without_abs,
     clippy::fn_params_excessive_bools,
+    clippy::fn_to_numeric_cast_any,
     clippy::from_iter_instead_of_collect,
     clippy::if_let_mutex,
     clippy::implicit_clone,
@@ -60,8 +80,6 @@
     clippy::option_if_let_else,
     clippy::option_option,
     clippy::path_buf_push_overwrite,
-    clippy::print_stderr,
-    clippy::print_stdout,
     clippy::ptr_as_ptr,
     clippy::rc_mutex,
     clippy::ref_option_ref,
@@ -74,12 +92,11 @@
     clippy::string_lit_as_bytes,
     clippy::string_to_string,
     clippy::suspicious_operation_groupings,
-    clippy::todo,
     clippy::trait_duplication_in_bounds,
-    clippy::unimplemented,
     clippy::unnested_or_patterns,
     clippy::unseparated_literal_suffix,
     clippy::unused_self,
+    clippy::unwrap_in_result,
     clippy::unwrap_used,
     clippy::used_underscore_binding,
     clippy::useless_let_if_seq,
@@ -87,7 +104,8 @@
     clippy::verbose_file_reads,
     clippy::wildcard_dependencies,
     clippy::wildcard_imports,
-    clippy::zero_sized_map_values
+    clippy::zero_sized_map_values,
+    clippy::await_holding_lock
 )]
 // See: https://rust-unofficial.github.io/patterns/anti_patterns/deny-warnings.html#alternatives
 #![deny(

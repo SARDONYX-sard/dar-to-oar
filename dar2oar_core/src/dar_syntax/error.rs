@@ -16,16 +16,19 @@ pub fn convert_error<I: core::ops::Deref<Target = str>>(input: I, e: VerboseErro
     for (i, (substring, kind)) in e.errors.iter().enumerate() {
         let offset = input.offset(substring);
 
-        if input.is_empty() {
+        // Safety:
+        // [`Result`] to this variable does not return `Err`,
+        // Because `write!` to a `String` is infallible, this `unwrap` is fine.
+        let _ = if input.is_empty() {
             match kind {
                 VerboseErrorKind::Char(c) => {
-                    write!(&mut result, "{}: expected '{}', got empty input\n\n", i, c)
+                    write!(&mut result, "{i}: expected '{c}', got empty input\n\n")
                 }
                 VerboseErrorKind::Context(s) => {
-                    write!(&mut result, "{}: in {}, got empty input\n\n", i, s)
+                    write!(&mut result, "{i}: in {s}, got empty input\n\n")
                 }
                 VerboseErrorKind::Nom(e) => {
-                    write!(&mut result, "{}: in {:?}, got empty input\n\n", i, e)
+                    write!(&mut result, "{i}: in {e:?}, got empty input\n\n")
                 }
             }
         } else {
@@ -110,10 +113,7 @@ pub fn convert_error<I: core::ops::Deref<Target = str>>(input: I, e: VerboseErro
                     column = column_number,
                 ),
             }
-        }
-        .expect(
-            "Unreachable, Because `write!` to a `String` is infallible, this `unwrap` is fine.",
-        );
+        };
     }
 
     result

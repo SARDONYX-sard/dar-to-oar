@@ -9,7 +9,7 @@ use std::fmt;
 /// - Lt: Less than("<")
 /// - Ge: Greater than or equal(">=")
 /// - Le: Lesser than or equal("<="),
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub enum Cmp {
     #[default]
     /// Equal("==")
@@ -30,12 +30,12 @@ pub enum Cmp {
 impl fmt::Display for Cmp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Cmp::Eq => write!(f, "=="),
-            Cmp::Ne => write!(f, "!="),
-            Cmp::Gt => write!(f, ">"),
-            Cmp::Lt => write!(f, "<"),
-            Cmp::Ge => write!(f, ">="),
-            Cmp::Le => write!(f, "<="),
+            Self::Eq => write!(f, "=="),
+            Self::Ne => write!(f, "!="),
+            Self::Gt => write!(f, ">"),
+            Self::Lt => write!(f, "<"),
+            Self::Ge => write!(f, ">="),
+            Self::Le => write!(f, "<="),
         }
     }
 }
@@ -46,12 +46,12 @@ impl TryFrom<&str> for Cmp {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
-            "==" => Cmp::Eq,
-            "!=" => Cmp::Ne,
-            ">" => Cmp::Gt,
-            "<" => Cmp::Lt,
-            ">=" => Cmp::Ge,
-            "<=" => Cmp::Le,
+            "==" => Self::Eq,
+            "!=" => Self::Ne,
+            ">" => Self::Gt,
+            "<" => Self::Lt,
+            ">=" => Self::Ge,
+            "<=" => Self::Le,
             _ => {
                 return Err(
                     "Invalid comparison operator. Expected '==', '!=', '>', '<', '>=' or '<='",

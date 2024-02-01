@@ -2,17 +2,17 @@
 use serde::{Deserialize, Serialize};
 
 /// Represents the configuration structure for the 'config.json' namespace.
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct MainConfig<'a> {
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MainConfig<'config> {
     /// The name associated with the configuration.
     #[serde(default)]
-    pub name: &'a str,
+    pub name: &'config str,
 
     /// The description associated with the configuration.
     #[serde(default)]
-    pub description: &'a str,
+    pub description: &'config str,
 
     /// The author associated with the configuration.
     #[serde(default)]
-    pub author: &'a str,
+    pub author: &'config str,
 }

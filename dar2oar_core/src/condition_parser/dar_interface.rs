@@ -20,9 +20,9 @@ pub enum ParseError {
 impl From<NumberLiteral> for NumericLiteral {
     fn from(value: NumberLiteral) -> Self {
         match value {
-            NumberLiteral::Decimal(num) => NumericLiteral::Decimal(num),
-            NumberLiteral::Float(num) => NumericLiteral::Float(num),
-            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
+            NumberLiteral::Decimal(num) => Self::Decimal(num),
+            NumberLiteral::Float(num) => Self::Float(num),
+            NumberLiteral::Hex(num) => Self::Hex(num),
         }
     }
 }
@@ -31,9 +31,9 @@ impl From<&NumberLiteral> for NumericLiteral {
     fn from(value: &NumberLiteral) -> Self {
         //! Note: omitting the definition using owned into will result in a circular loop.
         match *value {
-            NumberLiteral::Decimal(num) => NumericLiteral::Decimal(num),
-            NumberLiteral::Float(num) => NumericLiteral::Float(num),
-            NumberLiteral::Hex(num) => NumericLiteral::Hex(num),
+            NumberLiteral::Decimal(num) => Self::Decimal(num),
+            NumberLiteral::Float(num) => Self::Float(num),
+            NumberLiteral::Hex(num) => Self::Hex(num),
         }
     }
 }
@@ -42,7 +42,7 @@ impl TryFrom<FnArg<'_>> for NumericLiteral {
     type Error = ParseError;
 
     fn try_from(value: FnArg) -> Result<Self, Self::Error> {
-        NumericLiteral::try_from(&value)
+        Self::try_from(&value)
     }
 }
 
@@ -100,7 +100,7 @@ impl TryFrom<FnArg<'_>> for StaticValue {
     type Error = ParseError;
 
     fn try_from(value: FnArg) -> Result<Self, Self::Error> {
-        StaticValue::try_from(&value)
+        Self::try_from(&value)
     }
 }
 
@@ -111,7 +111,7 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
         match value {
             FnArg::Number(num) => Ok(num.into()),
             other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
-                "StaticValue(e.g. 3.0)".to_string(),
+                "StaticValue(e.g. 3.0)".to_owned(),
                 format!("{other:?}",),
             )),
         }
