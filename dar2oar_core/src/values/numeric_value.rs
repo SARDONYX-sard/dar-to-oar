@@ -44,15 +44,15 @@ impl<'de> Deserialize<'de> for NumericValue {
             if map.contains_key("value") {
                 // If the "value" field is present, assume it's a StaticValue
                 let static_value: StaticValue = deserialize_json!(value)?;
-                Ok(NumericValue::StaticValue(static_value))
+                Ok(Self::StaticValue(static_value))
             } else if map.contains_key("form") {
                 let global_variable = deserialize_json!(value)?;
-                Ok(NumericValue::GlobalVariable(global_variable))
+                Ok(Self::GlobalVariable(global_variable))
             } else if map.contains_key("actorValue") {
                 let actor_value: ActorValue = deserialize_json!(value)?;
-                Ok(NumericValue::ActorValue(actor_value))
+                Ok(Self::ActorValue(actor_value))
             } else if map.contains_key("graphValue") {
-                Ok(NumericValue::GraphVariable(deserialize_json!(value)?))
+                Ok(Self::GraphVariable(deserialize_json!(value)?))
             } else {
                 Err(serde::de::Error::custom(
                     "Unable to determine NumericValue variant",

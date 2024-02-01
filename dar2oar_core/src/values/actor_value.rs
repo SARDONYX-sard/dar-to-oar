@@ -25,7 +25,7 @@ pub struct ActorValue {
 /// - Actor Value Percentage (0-1) => "Percentage"
 ///
 /// default: `ActorValue`
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub enum ActorValueType {
     /// Value
     #[default]
@@ -42,13 +42,13 @@ impl TryFrom<&str> for ActorValueType {
     type Error = &'static str;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "Value" => Ok(ActorValueType::ActorValue),
-            "Base" => Ok(ActorValueType::Base),
-            "Max" => Ok(ActorValueType::Max),
-            "Percentage" => Ok(ActorValueType::Percentage),
-            _ => Err("Invalid actor value type"),
-        }
+        Ok(match value {
+            "Value" => Self::ActorValue,
+            "Base" => Self::Base,
+            "Max" => Self::Max,
+            "Percentage" => Self::Percentage,
+            _ => return Err("Invalid actor value type"),
+        })
     }
 }
 
@@ -116,13 +116,13 @@ mod tests {
     fn test_serialize() -> Result<()> {
         let value = ActorValueType::Max;
         let result = serde_json::to_string(&value)?;
-        assert_eq!(result, "\"Max\"");
+        assert_eq!(result, r#""Max""#);
         Ok(())
     }
 
     #[test]
     fn test_deserialize_valid() -> Result<()> {
-        let json = "\"Percentage\"";
+        let json = r#""Percentage""#;
         let result: ActorValueType = serde_json::from_str(json)?;
         assert_eq!(result, ActorValueType::Percentage);
         Ok(())
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_invalid() {
-        let json = "\"InvalidType\"";
+        let json = r#""InvalidType""#;
         let result: Result<ActorValueType, _> = serde_json::from_str(json);
         assert!(result.is_err());
     }

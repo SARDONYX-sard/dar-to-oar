@@ -53,11 +53,11 @@ use std::fmt;
 /// - Plugin e.g. Skyrim.esm | 0x007
 /// - Literal e.g. 1.0
 #[derive(Debug, Clone, PartialEq)]
-pub enum FnArg<'a> {
+pub enum FnArg<'input> {
     /// e.g. "Skyrim.esm" | 0x007
     PluginValue {
         /// e.g. "Skyrim.esm"
-        plugin_name: &'a str,
+        plugin_name: &'input str,
         /// e.g. 1
         form_id: NumberLiteral,
     },
@@ -91,26 +91,26 @@ pub enum NumberLiteral {
 impl fmt::Display for NumberLiteral {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            NumberLiteral::Hex(hex) => write!(f, "0x{hex:x}"),
-            NumberLiteral::Decimal(decimal) => write!(f, "{decimal}"),
-            NumberLiteral::Float(float) => write!(f, "{float}"),
+            Self::Hex(hex) => write!(f, "0x{hex:x}"),
+            Self::Decimal(decimal) => write!(f, "{decimal}"),
+            Self::Float(float) => write!(f, "{float}"),
         }
     }
 }
 
 /// DAR One line representation
 #[derive(Debug, Clone, PartialEq)]
-pub struct Expression<'a> {
+pub struct Expression<'input> {
     /// not condition
     pub negated: bool,
     /// function name == condition name
-    pub fn_name: &'a str,
+    pub fn_name: &'input str,
     /// arguments
-    pub args: Vec<FnArg<'a>>,
+    pub args: Vec<FnArg<'input>>,
 }
 
 /// AND | OR
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Operator {
     /// AND
     And,
@@ -120,21 +120,21 @@ pub enum Operator {
 
 /// Represents a high-level condition, which can be an AND combination, OR combination, or a leaf expression.
 #[derive(Debug, Clone, PartialEq)]
-pub enum Condition<'a> {
+pub enum Condition<'input> {
     /// Represents an AND combination of multiple conditions.
-    And(Vec<Condition<'a>>),
+    And(Vec<Condition<'input>>),
     /// Represents an OR combination of multiple conditions.
-    Or(Vec<Condition<'a>>),
+    Or(Vec<Condition<'input>>),
     /// Represents a leaf expression within the condition hierarchy.
-    Exp(Expression<'a>),
+    Exp(Expression<'input>),
 }
 
-impl<'a> Condition<'a> {
+impl<'input> Condition<'input> {
     /// push to inner vec
     ///
     /// # panics
     /// If push to [`Self::Exp`]
-    fn push(&mut self, expression: Condition<'a>) {
+    fn push(&mut self, expression: Condition<'input>) {
         match self {
             Condition::And(inner) | Condition::Or(inner) => inner.push(expression),
             Condition::Exp(_) => panic!("Expression cannot push"),
@@ -143,7 +143,7 @@ impl<'a> Condition<'a> {
 }
 
 /// Type alias for a result type using [`nom::IResult`], wrapping potential errors with [`nom::error::VerboseError`]
-type IResult<'a, I, O, E = nom::error::VerboseError<&'a str>> = nom::IResult<I, O, E>;
+type IResult<'input, I, O, E = nom::error::VerboseError<&'input str>> = nom::IResult<I, O, E>;
 
 use nom::error::ParseError; // To use from_error_kind
 /// A macro for returning an error with a specific error kind in the `nom::error::VerboseError` variant.
@@ -503,7 +503,7 @@ NOT IsActorValueLessThan(30, 60)
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00BCDEF7),
+                form_id: NumberLiteral::Hex(0x00BC_DEF7),
             }],
         };
         let player = Expression {
@@ -538,7 +538,7 @@ NOT IsActorValueLessThan(30, 60)
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
+                form_id: NumberLiteral::Hex(0x0000_0007),
             }],
         })]);
         assert_eq!(parse_condition(input), Ok(("", expected)));
@@ -552,7 +552,7 @@ NOT IsActorValueLessThan(30, 60)
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
+                form_id: NumberLiteral::Hex(0x0000_0007),
             }],
         })])]);
 
@@ -567,7 +567,7 @@ NOT IsActorValueLessThan(30, 60)
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
+                form_id: NumberLiteral::Hex(0x0000_0007),
             }],
         })]);
 

@@ -102,7 +102,7 @@ mod tests {
 
         let expected = FactionRank {
             faction: PluginValue {
-                plugin_name: "".into(),
+                plugin_name: String::new(),
                 form_id: "".into(),
             },
             comparison: Cmp::Eq,

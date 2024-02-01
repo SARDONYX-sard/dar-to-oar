@@ -86,7 +86,7 @@ pub async fn remove_oar(
                 let paths: Vec<&OsStr> = path.iter().collect();
 
                 if let Some(oar_dir) = paths
-                    .get(0..oar_start_idx + 1)
+                    .get(0..=oar_start_idx)
                     .map(|str_paths| str_paths.join(OsStr::new("/")))
                 {
                     if prev_dir == oar_dir {
@@ -145,7 +145,7 @@ mod test {
 
     #[tokio::test]
     async fn should_unhide_dar_files() -> Result<()> {
-        let _guard = init_tracing("unhide_dar", tracing::Level::DEBUG)?;
+        let _guard = init_tracing("unhide_dar", tracing::Level::ERROR)?;
 
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
@@ -160,7 +160,7 @@ mod test {
 
     #[tokio::test]
     async fn should_remove_oar_dir() -> Result<()> {
-        let _guard = init_tracing("remove_oar", tracing::Level::DEBUG)?;
+        let _guard = init_tracing("remove_oar", tracing::Level::ERROR)?;
 
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir

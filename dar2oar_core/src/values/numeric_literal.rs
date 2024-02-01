@@ -22,19 +22,19 @@ pub enum NumericLiteral {
 
 impl From<usize> for NumericLiteral {
     fn from(value: usize) -> Self {
-        NumericLiteral::Hex(value)
+        Self::Hex(value)
     }
 }
 
 impl From<isize> for NumericLiteral {
     fn from(value: isize) -> Self {
-        NumericLiteral::Decimal(value)
+        Self::Decimal(value)
     }
 }
 
 impl From<f32> for NumericLiteral {
     fn from(value: f32) -> Self {
-        NumericLiteral::Float(value)
+        Self::Float(value)
     }
 }
 
@@ -48,9 +48,9 @@ impl fmt::Display for NumericLiteral {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             // NOTE: When converted to a string, omit the hexadecimal prefix (0x) and use the same hex notation as for OAR.
-            NumericLiteral::Hex(hex) => write!(f, "{hex:x}"),
-            NumericLiteral::Decimal(decimal) => write!(f, "{decimal}"),
-            NumericLiteral::Float(float) => write!(f, "{float}"),
+            Self::Hex(hex) => write!(f, "{hex:x}"),
+            Self::Decimal(decimal) => write!(f, "{decimal}"),
+            Self::Float(float) => write!(f, "{float}"),
         }
     }
 }
@@ -61,9 +61,9 @@ impl Serialize for NumericLiteral {
         S: Serializer,
     {
         match self {
-            NumericLiteral::Hex(hex) => serializer.serialize_str(&format!("{:x}", hex)), // NOTE: OAR non prefix(0x)
-            NumericLiteral::Decimal(decimal) => serializer.serialize_i64(*decimal as i64),
-            NumericLiteral::Float(float) => serializer.serialize_f32(*float),
+            Self::Hex(hex) => serializer.serialize_str(&format!("{hex:x}")), // NOTE: OAR non prefix(0x)
+            Self::Decimal(decimal) => serializer.serialize_i64(*decimal as i64),
+            Self::Float(float) => serializer.serialize_f32(*float),
         }
     }
 }
@@ -91,7 +91,7 @@ impl<'de> Deserialize<'de> for NumericLiteral {
                     // Parse hexadecimal value
                     let hex_value = value.trim_start_matches("0x");
                     usize::from_str_radix(hex_value, 16).map_or_else(
-                        |_err| Err(E::custom(format!("Invalid hexadecimal value: {}", value))),
+                        |_err| Err(E::custom(format!("Invalid hexadecimal value: {value}"))),
                         |hex| Ok(NumericLiteral::Hex(hex)),
                     )
                 } else if let Ok(decimal) = value.parse::<isize>() {
@@ -99,7 +99,7 @@ impl<'de> Deserialize<'de> for NumericLiteral {
                 } else if let Ok(float) = value.parse::<f32>() {
                     Ok(NumericLiteral::Float(float))
                 } else {
-                    Err(E::custom(format!("Invalid numeric value: {}", value)))
+                    Err(E::custom(format!("Invalid numeric value: {value}")))
                 }
             }
         }
@@ -109,7 +109,7 @@ impl<'de> Deserialize<'de> for NumericLiteral {
             Value::Number(num) => NumericLiteralVisitor.visit_str(num.to_string().as_str()),
             Value::String(s) => NumericLiteralVisitor.visit_str(s.as_str()),
             _ => Err(serde::de::Error::invalid_type(
-                serde::de::Unexpected::Other(format!("Invalid numeric value: {}", value).as_str()),
+                serde::de::Unexpected::Other(format!("Invalid numeric value: {value}").as_str()),
                 &"a string, integer, or floating-point number",
             )),
         }

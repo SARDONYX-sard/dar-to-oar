@@ -135,7 +135,7 @@ mod test {
         );
         assert_eq!(is_1st_person, true);
         assert_eq!(mod_name, Some("ModName".to_string()));
-        assert_eq!(priority, Ok(8107000));
+        assert_eq!(priority, Ok(8_107_000));
         assert_eq!(remain_dir, None);
         Ok(())
     }
@@ -165,7 +165,7 @@ mod test {
         );
         assert_eq!(is_1st_person, false);
         assert_eq!(mod_name, Some("ModName".to_string()));
-        assert_eq!(priority, Ok(8107000));
+        assert_eq!(priority, Ok(8_107_000));
         assert_eq!(remain_dir, Some(Path::new("InnerDir").to_path_buf()));
         Ok(())
     }

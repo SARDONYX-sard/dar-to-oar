@@ -161,7 +161,7 @@ mod tests {
             fn_name: "IsActorBase",
             args: vec![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
-                form_id: NumberLiteral::Hex(0x00000007),
+                form_id: NumberLiteral::Hex(0x0000_0007),
             }],
         };
         let player = Expression {
