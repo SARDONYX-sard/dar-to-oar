@@ -164,7 +164,7 @@ const JSEditor = ({ editorMode }: JSEditorProps) => {
 
 type TabsProps = StyleListProps & SelectEditorProps & CSSEditorProps;
 const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsProps) => {
-  const [value, setValue] = useStorageState('settings-tab-select', '1');
+  const [value, setValue] = useStorageState('settings-tab-select', 'editor');
   const { t } = useTranslation();
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -181,21 +181,21 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="Setting tabs">
-            <Tab label={t('tab-label-1')} value="1" />
-            <Tab label={t('tab-label-2')} value="2" />
-            <Tab label={t('tab-label-3')} value="3" />
+            <Tab label={t('tab-label-editor')} value="editor" />
+            <Tab label={t('tab-label-notice')} value="notice" />
+            <Tab label={t('tab-label-lang')} value="lang" />
           </TabList>
         </Box>
-        <TabPanel value="1">
+        <TabPanel value="editor">
           <SelectEditorMode editorMode={editorMode} setEditorMode={setEditorMode} />
           <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
         </TabPanel>
-        <TabPanel value="2">
+        <TabPanel value="notice">
+          <NoticePositionList />
+        </TabPanel>
+        <TabPanel value="lang">
           <ImportLangButton />
           <TranslationList />
-        </TabPanel>
-        <TabPanel value="3">
-          <NoticePositionList />
         </TabPanel>
       </TabContext>
     </Box>
