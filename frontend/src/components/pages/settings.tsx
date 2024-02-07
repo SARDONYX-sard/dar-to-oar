@@ -24,14 +24,13 @@ import { selectEditorMode, type EditorMode } from '@/utils/selector';
 import packageJson from '@/../../package.json';
 
 // NOTE: These extensions must be loaded after importing AceEditor or they will error
-import 'ace-builds/src-noconflict/ext-code_lens';
-import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/src-noconflict/keybinding-vim';
-import 'ace-builds/src-noconflict/mode-css';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/snippets/css';
-import 'ace-builds/src-noconflict/snippets/javascript';
-import 'ace-builds/src-noconflict/theme-one_dark';
+import 'ace-builds/src-min-noconflict/ext-language_tools'; // For completion
+import 'ace-builds/src-min-noconflict/keybinding-vim';
+import 'ace-builds/src-min-noconflict/mode-css';
+import 'ace-builds/src-min-noconflict/mode-javascript';
+import 'ace-builds/src-min-noconflict/snippets/css';
+import 'ace-builds/src-min-noconflict/snippets/javascript';
+import 'ace-builds/src-min-noconflict/theme-one_dark';
 
 export default function Settings() {
   useLocale();

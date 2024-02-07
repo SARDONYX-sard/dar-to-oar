@@ -81,6 +81,14 @@ pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), Stri
     crate::logging::change_log_level(log_level.unwrap_or("error")).or_else(|err| bail!(err))
 }
 
+/// Define our own `writeTextFile` api for tauri,
+/// because there was a bug that contents were not written properly
+/// (there was a case that the order of some data in contents was switched).
+#[tauri::command]
+pub(crate) async fn write_file(path: &str, content: &str) -> Result<(), String> {
+    std::fs::write(path, content).or_else(|err| bail!(err))
+}
+
 #[tauri::command]
 pub(crate) async fn remove_oar_dir(window: Window, path: &str) -> Result<(), String> {
     let sender = sender!(window, "/dar2oar/progress/remove-oar");

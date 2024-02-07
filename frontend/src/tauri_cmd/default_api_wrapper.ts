@@ -1,3 +1,4 @@
+import { invoke } from '@tauri-apps/api';
 import { type OpenDialogOptions, open } from '@tauri-apps/api/dialog';
 import { readTextFile } from '@tauri-apps/api/fs';
 import { open as openShell } from '@tauri-apps/api/shell';
@@ -7,8 +8,8 @@ import { notify } from '@/components/notifications';
 /**
  * Read the entire contents of a file into a string.
  * @param {string} pathKey - target path cache key
- * @return [isCancelled, contents]
- * @throws
+ * @return contents
+ * @throws Error
  */
 export async function readFile(pathKey: string, filterName: string) {
   let path = localStorage.getItem(pathKey) ?? '';
@@ -32,6 +33,19 @@ export async function readFile(pathKey: string, filterName: string) {
     return await readTextFile(path);
   }
   return null;
+}
+
+/**
+ *Alternative file writing API to avoid tauri API bug.
+ * # NOTE
+ * We couldn't use `writeTextFile`!
+ * - The `writeTextFile` of tauri's api has a bug that the data order of some contents is unintentionally swapped.
+ * @param path - path to write
+ * @param content - string content
+ * @throws Error
+ */
+export async function writeFile(path: string, content: string) {
+  await invoke('write_file', { path, content });
 }
 
 type OpenOptions = {

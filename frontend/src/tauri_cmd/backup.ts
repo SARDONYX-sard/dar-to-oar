@@ -1,7 +1,6 @@
 import { save } from '@tauri-apps/api/dialog';
-import { writeTextFile } from '@tauri-apps/api/fs';
 
-import { readFile } from '.';
+import { readFile, writeFile } from '.';
 
 export const backup = {
   /** @throws Error */
@@ -37,7 +36,7 @@ export const backup = {
 
     if (typeof path === 'string') {
       localStorage.setItem(pathKey, path);
-      await writeTextFile(path, JSON.stringify(localStorage));
+      await writeFile(path, JSON.stringify(localStorage));
       return path;
     } else {
       return null;
