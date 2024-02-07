@@ -4,7 +4,7 @@
   "backup-export-tooltip": "現在の設定をエクスポートします(他人に譲渡するときは個人情報の取り扱いに注意してください)",
   "backup-export-success": "設定をエクスポートしました",
   "backup-import-btn-name": "インポート",
-  "backup-import-tooltip": "Jsonファイルから設定をインポートします(インポートした瞬間JavaScriptも実行されます! 他人ファイルの場合はJavaScriptに悪意がないか注意してください。)",
+  "backup-import-tooltip": "Jsonファイルから設定をインポートします(インポートした瞬間JavaScriptも実行されます! 他人のファイルの場合はJavaScriptに悪意がないか注意してください。)",
   "conversion-complete": "変換が完了しました",
   "convert-btn": "変換",
   "convert-form-author-name": "Mod作者名",
