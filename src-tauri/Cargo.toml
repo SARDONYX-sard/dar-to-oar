@@ -28,6 +28,7 @@ serde = { version = "1.0", features = ["derive"] } # Implement (De)Serializer
 tauri = { version = "1.4.0", features = [
   "devtools",
   "dialog-open",
+  "dialog-save",
   "fs-all",
   "path-all",
   "shell-all",

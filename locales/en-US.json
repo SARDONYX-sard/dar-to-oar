@@ -1,5 +1,10 @@
 {
   "all-clear-btn": "All Clear",
+  "backup-export-btn-name": "Export",
+  "backup-export-tooltip": "Export current settings",
+  "backup-export-success": "Settings exported.",
+  "backup-import-btn-name": "Import",
+  "backup-import-tooltip": "Import settings from Json file.",
   "conversion-complete": "Conversion Complete.",
   "convert-btn": "Convert",
   "convert-form-author-name": "Mod Author Name",
@@ -69,6 +74,7 @@
   "run-parallel-btn-tooltip2": "Note:  More than twice the processing speed can be expected, but the concurrent processing results in thread termination timings being out of order, so log writes will be out of order as well, greatly reducing readability of the logs.",
   "run-parallel-label": "Run Parallel",
   "select-btn": "Select",
+  "tab-label-backup": "Backup",
   "tab-label-editor": "Editor / Preset",
   "tab-label-lang": "Language",
   "tab-label-notice": "Notice",

@@ -8,14 +8,14 @@ import InputLabel from '@mui/material/InputLabel';
 import Tab from '@mui/material/Tab';
 import AceEditor from 'react-ace';
 
-import { ImportLangButton } from '@/components/buttons';
+import { ImportBackupButton, ExportBackupButton, ImportLangButton } from '@/components/buttons';
 import {
   NoticePositionList,
   SelectEditorMode,
-  type SelectEditorProps,
   StyleList,
-  type StyleListProps,
   TranslationList,
+  type SelectEditorProps,
+  type StyleListProps,
 } from '@/components/lists';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
@@ -184,6 +184,7 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
             <Tab label={t('tab-label-editor')} value="editor" />
             <Tab label={t('tab-label-notice')} value="notice" />
             <Tab label={t('tab-label-lang')} value="lang" />
+            <Tab label={t('tab-label-backup')} value="backup" />
           </TabList>
         </Box>
         <TabPanel value="editor">
@@ -196,6 +197,10 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
         <TabPanel value="lang">
           <ImportLangButton />
           <TranslationList />
+        </TabPanel>
+        <TabPanel value="backup">
+          <ImportBackupButton />
+          <ExportBackupButton />
         </TabPanel>
       </TabContext>
     </Box>

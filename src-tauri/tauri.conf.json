@@ -19,7 +19,7 @@
         "confirm": false,
         "message": false,
         "open": true,
-        "save": false
+        "save": true
       },
       "fs": {
         "all": true

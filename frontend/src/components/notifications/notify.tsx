@@ -26,7 +26,13 @@ export const getPosition = (): SnackbarOrigin => {
     horizontal: 'right',
     vertical: 'bottom',
   } as const;
-  const posJson = JSON.parse(localStorage.getItem('snackbar-position') ?? '{}') as Partial<SnackbarOrigin>;
+
+  let posJson: Partial<SnackbarOrigin> = defaultPosition;
+  try {
+    posJson = JSON.parse(localStorage.getItem('snackbar-position') ?? '{}');
+  } catch (error) {
+    console.error(error);
+  }
 
   return {
     horizontal: posJson?.horizontal ?? defaultPosition.horizontal,

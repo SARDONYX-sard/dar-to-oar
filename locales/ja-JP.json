@@ -1,5 +1,10 @@
 {
   "all-clear-btn": "全入力をクリア",
+  "backup-export-btn-name": "エクスポート",
+  "backup-export-tooltip": "現在の設定をエクスポートします",
+  "backup-export-success": "設定をエクスポートしました",
+  "backup-import-btn-name": "インポート",
+  "backup-import-tooltip": "Jsonファイルから設定をインポートします",
   "conversion-complete": "変換が完了しました",
   "convert-btn": "変換",
   "convert-form-author-name": "Mod作者名",
@@ -69,6 +74,7 @@
   "run-parallel-btn-tooltip2": "注意: 2倍以上の処理速度が期待できますが、並行処理によりスレッドの終了タイミングが順不同になるため、ログの書き込みも同様に順不同になりログの可読性が大幅に低下します。",
   "run-parallel-label": "並列実行",
   "select-btn": "選択",
+  "tab-label-backup": "バックアップ",
   "tab-label-editor": "エディタ・プリセット",
   "tab-label-lang": "言語",
   "tab-label-notice": "通知",
