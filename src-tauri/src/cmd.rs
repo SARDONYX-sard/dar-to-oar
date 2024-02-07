@@ -82,11 +82,6 @@ pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), Stri
 }
 
 #[tauri::command]
-pub(crate) async fn read_to_string(path: &str) -> Result<String, String> {
-    std::fs::read_to_string(path).or_else(|err| bail!(err))
-}
-
-#[tauri::command]
 pub(crate) async fn remove_oar_dir(window: Window, path: &str) -> Result<(), String> {
     let sender = sender!(window, "/dar2oar/progress/remove-oar");
     time!("remove_oar", remove_oar(path, sender))
