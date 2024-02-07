@@ -8,14 +8,14 @@ import InputLabel from '@mui/material/InputLabel';
 import Tab from '@mui/material/Tab';
 import AceEditor from 'react-ace';
 
-import { ImportLangButton } from '@/components/buttons';
+import { ImportBackupButton, ExportBackupButton, ImportLangButton } from '@/components/buttons';
 import {
   NoticePositionList,
   SelectEditorMode,
-  type SelectEditorProps,
   StyleList,
-  type StyleListProps,
   TranslationList,
+  type SelectEditorProps,
+  type StyleListProps,
 } from '@/components/lists';
 import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
@@ -24,14 +24,13 @@ import { selectEditorMode, type EditorMode } from '@/utils/selector';
 import packageJson from '@/../../package.json';
 
 // NOTE: These extensions must be loaded after importing AceEditor or they will error
-import 'ace-builds/src-noconflict/ext-code_lens';
-import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/src-noconflict/keybinding-vim';
-import 'ace-builds/src-noconflict/mode-css';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/snippets/css';
-import 'ace-builds/src-noconflict/snippets/javascript';
-import 'ace-builds/src-noconflict/theme-one_dark';
+import 'ace-builds/src-min-noconflict/ext-language_tools'; // For completion
+import 'ace-builds/src-min-noconflict/keybinding-vim';
+import 'ace-builds/src-min-noconflict/mode-css';
+import 'ace-builds/src-min-noconflict/mode-javascript';
+import 'ace-builds/src-min-noconflict/snippets/css';
+import 'ace-builds/src-min-noconflict/snippets/javascript';
+import 'ace-builds/src-min-noconflict/theme-one_dark';
 
 export default function Settings() {
   useLocale();
@@ -184,6 +183,7 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
             <Tab label={t('tab-label-editor')} value="editor" />
             <Tab label={t('tab-label-notice')} value="notice" />
             <Tab label={t('tab-label-lang')} value="lang" />
+            <Tab label={t('tab-label-backup')} value="backup" />
           </TabList>
         </Box>
         <TabPanel value="editor">
@@ -196,6 +196,10 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
         <TabPanel value="lang">
           <ImportLangButton />
           <TranslationList />
+        </TabPanel>
+        <TabPanel value="backup">
+          <ImportBackupButton />
+          <ExportBackupButton />
         </TabPanel>
       </TabContext>
     </Box>
