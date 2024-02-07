@@ -1,10 +1,10 @@
 {
   "all-clear-btn": "All Clear",
   "backup-export-btn-name": "Export",
-  "backup-export-tooltip": "Export current settings",
+  "backup-export-tooltip": "Export current settings.(Please be careful to handle personal information when transferring to others.)",
   "backup-export-success": "Settings exported.",
   "backup-import-btn-name": "Import",
-  "backup-import-tooltip": "Import settings from Json file.",
+  "backup-import-tooltip": "Import settings from Json file.(JavaScript is also executed at the moment of import! If it is someone else's file, please be careful that the JavaScript is not malicious.)",
   "conversion-complete": "Conversion Complete.",
   "convert-btn": "Convert",
   "convert-form-author-name": "Mod Author Name",
