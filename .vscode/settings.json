@@ -1,10 +1,9 @@
 {
+  "cargo.automaticCheck": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.fixAll.sortJSON": "never"
   },
-  "eslint.execArgv": ["--cache"],
-  "eslint.run": "onType",
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
   // "editor.formatOnSave": false
