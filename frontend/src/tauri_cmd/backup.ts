@@ -24,8 +24,9 @@ export const backup = {
   /** @throws Error */
   async export() {
     const pathKey = 'export-settings-path';
+    const cachedPath = localStorage.getItem(pathKey);
     const path = await save({
-      defaultPath: localStorage.getItem(pathKey) ?? '',
+      defaultPath: cachedPath ?? undefined,
       filters: [
         {
           name: 'g_dar2oar_settings',
@@ -35,7 +36,11 @@ export const backup = {
     });
 
     if (typeof path === 'string') {
-      localStorage.setItem(pathKey, path);
+      if (cachedPath === '') {
+        localStorage.removeItem(pathKey);
+      } else {
+        localStorage.setItem(pathKey, path);
+      }
       await writeFile(path, JSON.stringify(localStorage));
       return path;
     } else {
