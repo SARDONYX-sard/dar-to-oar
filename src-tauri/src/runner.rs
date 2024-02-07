@@ -3,6 +3,7 @@ use anyhow::Context as _;
 
 pub fn run_tauri() -> anyhow::Result<()> {
     tauri::Builder::default()
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| Ok(init_logger(app)?))
         .invoke_handler(tauri::generate_handler![
             crate::cmd::change_log_level,
