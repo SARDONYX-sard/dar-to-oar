@@ -1,4 +1,5 @@
-import { FileOpen } from '@mui/icons-material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileOpen from '@mui/icons-material/FileOpen';
 import { Button, type ButtonProps, Tooltip } from '@mui/material';
 import { type ReactNode } from 'react';
 
@@ -22,7 +23,6 @@ export const BackupButton = ({ buttonName, tooltipTitle, ...props }: Readonly<Pr
         minWidth: '120px',
         width: '120px',
       }}
-      startIcon={<FileOpen />}
       type="button"
       variant="outlined"
       {...props}
@@ -48,6 +48,7 @@ export const ImportBackupButton = () => {
       buttonName={t('backup-import-btn-name')}
       tooltipTitle={t('backup-import-tooltip')}
       onClick={handleClick}
+      startIcon={<FileOpen />}
     />
   );
 };
@@ -70,6 +71,7 @@ export const ExportBackupButton = () => {
       buttonName={t('backup-export-btn-name')}
       tooltipTitle={t('backup-export-tooltip')}
       onClick={handleClick}
+      startIcon={<FileDownloadIcon />}
     />
   );
 };

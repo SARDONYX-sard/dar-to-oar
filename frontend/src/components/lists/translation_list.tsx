@@ -18,17 +18,14 @@ export const TranslationList = () => {
   const locale = 'Locale';
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 135 }}>
-      <InputLabel htmlFor="style-select">{t('lang-preset-label')}</InputLabel>
+      <InputLabel id="locale-select-label">{t('lang-preset-label')}</InputLabel>
       <Select
         id="locale-select"
+        inputProps={{ MenuProps: { disableScrollLock: true } }}
         label={locale}
         labelId="locale-select-label"
-        name={locale}
         onChange={handleChange}
         value={lang}
-        // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
-        // and the design will be broken.
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
       >
         <MenuItem value={'auto'}>{t('lang-preset-auto')}</MenuItem>
         <MenuItem value={'en-US'}>English(US)</MenuItem>

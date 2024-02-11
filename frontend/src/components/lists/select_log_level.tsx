@@ -14,7 +14,7 @@ interface IFormValues {
 export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
   { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
->(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
+>(function SelectLogLevel({ name, onChange, ...props }, ref) {
   const { t } = useTranslation();
 
   const handleChange = useCallback(
@@ -45,17 +45,13 @@ export const SelectLogLevel = forwardRef<
       <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
         <InputLabel id="log-level-select-label">{t('log-level-list-label')}</InputLabel>
         <Select
-          name={name}
-          ref={ref}
-          onChange={handleChange}
-          onBlur={onBlur}
-          labelId="log-level-select-label"
           id="log-level-select"
-          value={value}
-          label="log level"
-          // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
-          // and the design will be broken.
           inputProps={{ MenuProps: { disableScrollLock: true } }}
+          label="log level"
+          labelId="log-level-select-label"
+          onChange={handleChange}
+          {...props}
+          ref={ref}
         >
           <MenuItem value={'trace'}>Trace</MenuItem>
           <MenuItem value={'debug'}>Debug</MenuItem>

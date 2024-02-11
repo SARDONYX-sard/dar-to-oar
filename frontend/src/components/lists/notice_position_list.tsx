@@ -35,17 +35,14 @@ export const NoticePositionList = () => {
 
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 105 }}>
-      <InputLabel htmlFor="editor-select">{t('notice-position-list-label')}</InputLabel>
+      <InputLabel id="notice-position-label">{t('notice-position-list-label')}</InputLabel>
       <Select
-        name={'notify-position-list'}
-        onChange={handleChange}
-        label="Editor Mode"
-        labelId="editor-select-label"
-        id="editor-select"
-        value={`${pos.vertical}_${pos.horizontal}`}
-        // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
-        // and the design will be broken.
+        id="notice-position"
         inputProps={{ MenuProps: { disableScrollLock: true } }}
+        label="Editor Mode"
+        labelId="notice-position-label"
+        onChange={handleChange}
+        value={`${pos.vertical}_${pos.horizontal}`}
       >
         <MenuItem value={'top_right'}>{t('notice-position-top-right')}</MenuItem>
         <MenuItem value={'top_center'}>{t('notice-position-top-center')}</MenuItem>

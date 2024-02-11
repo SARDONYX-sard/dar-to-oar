@@ -35,17 +35,14 @@ export const StyleList = ({ preset, setPreset, setStyle }: StyleListProps) => {
       placement="right-end"
     >
       <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-        <InputLabel htmlFor="style-select">{t('css-preset-list-label')}</InputLabel>
+        <InputLabel id="style-select-label">{t('css-preset-list-label')}</InputLabel>
         <Select
-          name={preset}
-          onChange={handleChange}
+          id="style-select"
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
           label="CSS Presets"
           labelId="style-select-label"
-          id="style-select"
+          onChange={handleChange}
           value={preset}
-          // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
-          // and the design will be broken.
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
         >
           <MenuItem value={'0'}>{t('css-preset-list-item0')}</MenuItem>
           <MenuItem value={'1'}>{t('css-preset-list-item1')}</MenuItem>

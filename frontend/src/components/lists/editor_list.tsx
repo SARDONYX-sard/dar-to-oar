@@ -25,9 +25,8 @@ export const SelectEditorMode = ({ editorMode, setEditorMode }: SelectEditorProp
 
   return (
     <FormControl variant="filled" sx={{ m: 1, minWidth: 105 }}>
-      <InputLabel htmlFor="editor-select">{t('editor-mode-list-label')}</InputLabel>
+      <InputLabel id="editor-select-label">{t('editor-mode-list-label')}</InputLabel>
       <Select
-        name={editorMode}
         onChange={handleChange}
         label="Editor Mode"
         labelId="editor-select-label"
