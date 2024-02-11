@@ -41,7 +41,7 @@ export const backup = {
       } else {
         localStorage.setItem(pathKey, path);
       }
-      await writeFile(path, JSON.stringify(localStorage));
+      await writeFile(path, JSON.stringify(localStorage, null, 2));
       return path;
     } else {
       return null;
