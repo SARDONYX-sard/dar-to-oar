@@ -14,7 +14,7 @@ interface IFormValues {
 export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
   { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
->(function SelectLogLevel({ name, onChange, ...props }, ref) {
+>(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
   const { t } = useTranslation();
 
   const handleChange = useCallback(
@@ -45,13 +45,15 @@ export const SelectLogLevel = forwardRef<
       <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
         <InputLabel id="log-level-select-label">{t('log-level-list-label')}</InputLabel>
         <Select
-          id="log-level-select"
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
-          label="log level"
-          labelId="log-level-select-label"
-          onChange={handleChange}
-          {...props}
+          name={name}
           ref={ref}
+          onChange={handleChange}
+          onBlur={onBlur}
+          labelId="log-level-select-label"
+          id="log-level-select"
+          value={value}
+          label="log level"
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
         >
           <MenuItem value={'trace'}>Trace</MenuItem>
           <MenuItem value={'debug'}>Debug</MenuItem>
