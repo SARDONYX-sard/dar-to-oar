@@ -34,16 +34,21 @@ export function useDynStyle(initialState = getStyle()) {
   return [style, setStyle] as const;
 }
 
+const initScript = () => {
+  return localStorage.getItem('customJS') ?? '';
+};
 /**
  * Inject JavaScript
  */
-export function useInjectScript(initialState = (() => localStorage.getItem('customJS') ?? '')()) {
+export function useInjectScript(initialState = initScript()) {
   const [script, setScript] = useState(initialState);
   const [pathname, setPathname] = useState<string | null>(null);
 
   useEffect(() => {
     const scriptElement = document.createElement('script');
-    scriptElement.innerHTML = script;
+    if (localStorage.getItem('runScript') === 'true') {
+      scriptElement.innerHTML = script;
+    }
     scriptElement.id = 'custom-script';
 
     if (pathname !== window.location.pathname) {

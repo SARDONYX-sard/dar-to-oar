@@ -4,11 +4,10 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Box, Button, Grid } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
 import Tab from '@mui/material/Tab';
-import AceEditor from 'react-ace';
 
 import { ImportBackupButton, ExportBackupButton, ImportLangButton } from '@/components/buttons';
+import { CSSEditor, type CSSEditorProps, JSEditor } from '@/components/editor';
 import {
   NoticePositionList,
   SelectEditorMode,
@@ -17,26 +16,18 @@ import {
   type SelectEditorProps,
   type StyleListProps,
 } from '@/components/lists';
-import { useDynStyle, useInjectScript, useLocale, useStorageState, useTranslation } from '@/hooks';
+import { useDynStyle, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
 import { selectEditorMode, type EditorMode } from '@/utils/selector';
 
 import packageJson from '@/../../package.json';
-
-// NOTE: These extensions must be loaded after importing AceEditor or they will error
-import 'ace-builds/src-min-noconflict/ext-language_tools'; // For completion
-import 'ace-builds/src-min-noconflict/keybinding-vim';
-import 'ace-builds/src-min-noconflict/mode-css';
-import 'ace-builds/src-min-noconflict/mode-javascript';
-import 'ace-builds/src-min-noconflict/snippets/css';
-import 'ace-builds/src-min-noconflict/snippets/javascript';
-import 'ace-builds/src-min-noconflict/theme-one_dark';
 
 export default function Settings() {
   useLocale();
   const [editorMode, setEditorMode] = useStorageState('editorMode', 'default');
   const [preset, setPreset] = useStorageState('presetNumber', '0');
   const [style, setStyle] = useDynStyle();
+  const validEditorMode = selectEditorMode(editorMode);
 
   const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode ?? 'default');
   return (
@@ -51,14 +42,13 @@ export default function Settings() {
         width: '100%',
       }}
     >
-      <CSSEditor editorMode={editorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
-
-      <JSEditor editorMode={editorMode} />
+      <CSSEditor editorMode={validEditorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
+      <JSEditor editorMode={validEditorMode} marginTop={'20px'} />
 
       <Grid container sx={{ width: '95%' }}>
         <Grid sx={{ overflowX: 'auto' }} xs={8}>
           <Tabs
-            editorMode={selectEditorMode(editorMode) ?? 'default'}
+            editorMode={validEditorMode}
             preset={preset}
             setPreset={setPreset}
             setStyle={setStyle}
@@ -73,93 +63,6 @@ export default function Settings() {
     </Box>
   );
 }
-
-type CSSEditorProps = {
-  editorMode: string;
-  setPreset: (script: string) => void;
-  setStyle: (style: string) => void;
-  style: string;
-};
-const CSSEditor = ({ editorMode, setPreset, setStyle, style }: CSSEditorProps) => {
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <InputLabel sx={{ marginTop: '20px' }}>{t('custom-css-label')}</InputLabel>
-      <AceEditor
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
-        onChange={(value) => {
-          setStyle(value);
-          localStorage.setItem('customCSS', value);
-          setPreset('0');
-        }}
-        fontSize={'1rem'}
-        height="300px"
-        mode="css"
-        theme="one_dark"
-        value={style}
-        setOptions={{ useWorker: false }}
-        placeholder="{ body: url('https://localhost' }"
-        name="Custom CSS"
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        keyboardHandler={selectEditorMode(editorMode)}
-        highlightActiveLine
-        tabSize={2}
-        editorProps={{ $blockScrolling: true }}
-      />
-    </>
-  );
-};
-
-type JSEditorProps = {
-  editorMode: string;
-};
-const JSEditor = ({ editorMode }: JSEditorProps) => {
-  const { t } = useTranslation();
-  const [script, setScript] = useInjectScript();
-
-  return (
-    <>
-      <InputLabel error sx={{ marginTop: '20px' }}>
-        {t('custom-js-label')}
-      </InputLabel>
-      <AceEditor
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
-        onChange={(value) => {
-          localStorage.setItem('customJS', value);
-          setScript(value);
-        }}
-        placeholder={`(()=> {
-    const p = document.createElement('p');
-    p.innerText = 'Hello';
-    document.body.appendChild(p);
-)()`}
-        editorProps={{ $blockScrolling: true }}
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        fontSize={'1rem'}
-        height="250px"
-        highlightActiveLine
-        keyboardHandler={selectEditorMode(editorMode)}
-        mode="javascript"
-        name="Custom JavaScript"
-        setOptions={{ useWorker: false }}
-        tabSize={2}
-        theme="one_dark"
-        value={script}
-      />
-    </>
-  );
-};
 
 type TabsProps = StyleListProps & SelectEditorProps & CSSEditorProps;
 const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsProps) => {

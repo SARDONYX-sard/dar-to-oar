@@ -1,7 +1,8 @@
 import { LogLevel } from '@/tauri_cmd';
 
-export type EditorMode = 'default' | 'vim' | undefined;
-export function selectEditorMode(select: string): EditorMode {
+export type EditorMode = 'default' | 'vim';
+/** 'default' if null or undefined */
+export function selectEditorMode(select?: string | null): EditorMode {
   if (select === 'vim') {
     return select;
   } else {
@@ -9,7 +10,8 @@ export function selectEditorMode(select: string): EditorMode {
   }
 }
 
-export function selectLogLevel(logLevel: string): LogLevel {
+/** 'error' if null or undefined */
+export function selectLogLevel(logLevel?: string | null): LogLevel {
   switch (logLevel) {
     case 'trace':
     case 'debug':
