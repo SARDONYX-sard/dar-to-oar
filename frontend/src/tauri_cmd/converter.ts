@@ -40,7 +40,7 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
     },
   };
 
-  let logLevel = selectLogLevel(localStorage.getItem('logLevel') ?? '');
+  let logLevel = selectLogLevel(localStorage.getItem('logLevel'));
   changeLogLevel(logLevel);
 
   const showProgress = props.showProgress ?? false;

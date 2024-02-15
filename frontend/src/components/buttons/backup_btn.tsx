@@ -1,65 +1,105 @@
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileOpen from '@mui/icons-material/FileOpen';
-import { Button, type ButtonProps, Tooltip } from '@mui/material';
-import { type ReactNode } from 'react';
+import { Button, Tooltip } from '@mui/material';
+import { type ReactNode, useState } from 'react';
 
-import { notify } from '@/components/notifications';
+import {
+  LocalStorageDialog,
+  notify,
+  type DialogClickHandler,
+  type LocalStorageDialogProps,
+} from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { backup } from '@/tauri_cmd';
+import { type LocalCache, localStorageManager } from '@/utils/local_storage_manager';
 
 type Props = {
-  buttonName: ReactNode;
+  buttonName: string;
+  /** Trigger to open dialog */
+  onClick?: () => void;
+  startIcon: ReactNode;
   tooltipTitle: ReactNode;
-} & ButtonProps;
+} & LocalStorageDialogProps;
 
-export const BackupButton = ({ buttonName, tooltipTitle, ...props }: Readonly<Props>) => (
-  <Tooltip title={tooltipTitle}>
-    <Button
-      sx={{
-        height: '4em',
-        marginBottom: '8px',
-        marginRight: '8px',
-        marginTop: '8px',
-        minWidth: '120px',
-        width: '120px',
-      }}
-      type="button"
-      variant="outlined"
-      {...props}
-    >
-      {buttonName}
-    </Button>
-  </Tooltip>
-);
+export const BackupButton = ({ buttonName, startIcon, tooltipTitle, onClick, ...props }: Readonly<Props>) => {
+  return (
+    <>
+      <Tooltip title={tooltipTitle}>
+        <Button
+          sx={{
+            height: '4em',
+            marginBottom: '8px',
+            marginRight: '8px',
+            marginTop: '8px',
+            minWidth: '120px',
+            width: '120px',
+          }}
+          type="button"
+          variant="outlined"
+          onClick={onClick}
+          startIcon={startIcon}
+        >
+          {buttonName}
+        </Button>
+      </Tooltip>
+      <LocalStorageDialog buttonName={buttonName} {...props} />
+    </>
+  );
+};
 
 export const ImportBackupButton = () => {
   const { t } = useTranslation();
+  const [settings, setSettings] = useState<LocalCache>({});
+  const [open, setOpen] = useState(false);
 
   const handleClick = async () => {
+    const newSettings = await backup.import();
     try {
-      await backup.import();
+      if (newSettings) {
+        setSettings(newSettings);
+        setOpen(true);
+      }
     } catch (e) {
       notify.error(`${e}`);
     }
   };
 
+  const handleDialogClick: DialogClickHandler = (checkedKeys) => {
+    checkedKeys.forEach((key) => {
+      const value = settings[key];
+      if (value) {
+        localStorage.setItem(key, value);
+      }
+    });
+
+    window.location.reload(); // To enable
+  };
+
   return (
     <BackupButton
       buttonName={t('backup-import-btn-name')}
-      tooltipTitle={t('backup-import-tooltip')}
+      cacheItems={settings}
+      inDialogClick={handleDialogClick}
       onClick={handleClick}
+      open={open}
+      setOpen={setOpen}
       startIcon={<FileOpen />}
+      title={t('backup-import-dialog-title')}
+      tooltipTitle={t('backup-import-tooltip')}
     />
   );
 };
 
 export const ExportBackupButton = () => {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
-  const handleClick = async () => {
+  const handleClick: DialogClickHandler = async (checkedKeys) => {
     try {
-      if (await backup.export()) {
+      const exportTarget = localStorageManager.getFromKeys(checkedKeys);
+      if (await backup.export(exportTarget)) {
         notify.success(t('backup-export-success'));
+        setOpen(false);
       }
     } catch (e) {
       notify.error(`${e}`);
@@ -69,9 +109,14 @@ export const ExportBackupButton = () => {
   return (
     <BackupButton
       buttonName={t('backup-export-btn-name')}
-      tooltipTitle={t('backup-export-tooltip')}
-      onClick={handleClick}
+      cacheItems={localStorageManager.getAll()}
+      inDialogClick={handleClick}
+      open={open}
+      onClick={() => setOpen(true)}
+      setOpen={setOpen}
       startIcon={<FileDownloadIcon />}
+      title={t('backup-export-dialog-title')}
+      tooltipTitle={t('backup-export-tooltip')}
     />
   );
 };

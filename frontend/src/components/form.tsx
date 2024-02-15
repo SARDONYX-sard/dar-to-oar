@@ -44,7 +44,7 @@ const getInitialFormValues = (): FormProps => ({
   mappingPath: localStorage.getItem('mappingPath') ?? '',
   mapping1personPath: localStorage.getItem('mapping1personPath') ?? '',
   loading: false as boolean,
-  logLevel: selectLogLevel(localStorage.getItem('logLevel') ?? 'error'),
+  logLevel: selectLogLevel(localStorage.getItem('logLevel')),
   runParallel: localStorage.getItem('runParallel') === 'true',
   hideDar: localStorage.getItem('hideDar') === 'true',
   showProgress: localStorage.getItem('showProgress') === 'true',
