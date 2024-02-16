@@ -7,7 +7,7 @@
 (async () => {
   /**
    * - Q. Why is this dangerous?
-   * - A. There is a possibility that dangerous binary files could be loaded and accidentally executed by the group.
+   * - A. There is a possibility of downloading and accidentally executing dangerous binary files.
    * - If this pattern is abused, locations can be posted externally via the fetch API.
    * @param {string} url
    * @param {string} filename
