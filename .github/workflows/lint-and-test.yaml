@@ -27,6 +27,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ runner.os }}
       - name: Install components
         run: |
           rustup component add clippy
