@@ -1,9 +1,14 @@
 /**
- * - Accessing an external URL (fetch API)
+ * Examples of what to watch out for in other people's JavaScript (The safest way, of course, is not to do it.)
+ * - Obfuscation by base64 encoding (base64 is not encryption)
+ * - Accessing an external URL (fetch, XMLHttpRequest API)
  * - Those that force a URL change by assigning the URL to window.location
  */
 (async () => {
   /**
+   * - Q. Why is this dangerous?
+   * - A. There is a possibility that dangerous binary files could be loaded and accidentally executed by the group.
+   * - If this pattern is abused, locations can be posted externally via the fetch API.
    * @param {string} url
    * @param {string} filename
    */
@@ -20,6 +25,9 @@
   downloadFile('data:text/html,HelloWorld!', 'helloWorld.txt');
 
   /**
+   * - Q. Why is this dangerous?
+   * - A. It may be possible to download and execute malicious JavaScript.
+   *
    * Reflect others' online Scripts in your own Script field.
    * @param {string} url
    */
