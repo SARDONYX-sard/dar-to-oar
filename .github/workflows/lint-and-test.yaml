@@ -28,7 +28,7 @@ jobs:
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: ${{ runner.os }}
+          prefix-key: cargo-${{ matrix.platform }}
       - name: Install components
         run: |
           rustup component add clippy
