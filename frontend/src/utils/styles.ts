@@ -77,7 +77,8 @@ label.Mui-focused,
   background-color: var(--hover-convert-btn-color);
 }
 
-.MuiLinearProgress-bar {
+.MuiLinearProgress-bar,
+.MuiTabs-indicator {
   background-color: var(--theme-color);
 }
 ` as const;
