@@ -1,7 +1,7 @@
 //! Actor's Direction
-use serde::de::{Error, Unexpected, Visitor};
+use serde::de::Unexpected;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde_json::Value;
+use serde_untagged::UntaggedEnumVisitor;
 
 /// Actor's Direction
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -26,16 +26,16 @@ pub enum Direction {
     Left,
 }
 
-impl TryFrom<u64> for Direction {
+impl TryFrom<f64> for Direction {
     type Error = &'static str;
 
-    fn try_from(value: u64) -> Result<Self, Self::Error> {
+    fn try_from(value: f64) -> Result<Self, Self::Error> {
         Ok(match value {
-            0 => Self::None,
-            1 => Self::Forward,
-            2 => Self::Right,
-            3 => Self::Back,
-            4 => Self::Left,
+            x if (0.0..1.0).contains(&x) => Self::None,
+            x if (1.0..2.0).contains(&x) => Self::Forward,
+            x if (2.0..3.0).contains(&x) => Self::Right,
+            x if (3.0..4.0).contains(&x) => Self::Back,
+            x if (4.0..5.0).contains(&x) => Self::Left,
             _ => return Err("Invalid value for Direction"),
         })
     }
@@ -71,58 +71,13 @@ impl<'de> Deserialize<'de> for Direction {
     where
         D: Deserializer<'de>,
     {
-        /// Inner struct for deserialization
-        struct DirectionVisitor;
-
-        impl<'de> Visitor<'de> for DirectionVisitor {
-            type Value = Direction;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("a valid Direction value")
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-            where
-                E: Error,
-            {
-                Direction::try_from(value).map_or_else(
-                    |_err| {
-                        Err(Error::unknown_variant(
-                            &value.to_string(),
-                            &["0", "1", "2", "3", "4"],
-                        ))
-                    },
-                    |value| Ok(value),
-                )
-            }
-        }
-
-        // Deserialize from a JSON value.
-        let value: Value = Deserialize::deserialize(deserializer)?;
-        match value {
-            Value::Number(num) => {
-                let err = || {
-                    Error::invalid_type(Unexpected::Other("WeaponType parse f64"), &"a valid f64")
-                };
-                let direction = num.as_u64().unwrap_or(num.as_f64().ok_or_else(err)? as u64);
-                let err = |err| Error::invalid_type(Unexpected::Other(err), &"a valid u64 or f64");
-                let direction = Self::try_from(direction).map_err(err)?;
-                Ok(direction)
-            }
-            Value::String(s) => {
-                let t = s.parse::<f64>().map_err(|_err| {
-                    Error::invalid_type(
-                        Unexpected::Other("Couldn't parse float value"),
-                        &"a valid Direction value",
-                    )
-                })?;
-                DirectionVisitor.visit_f64(t)
-            }
-            _ => Err(Error::invalid_type(
-                Unexpected::Other("not a valid value for Direction"),
-                &"a valid Direction value",
-            )),
-        }
+        UntaggedEnumVisitor::new()
+            .f64(|float| {
+                float.try_into().map_err(|_err| {
+                    serde::de::Error::invalid_value(Unexpected::Float(float), &r#"0.0..=4.0"#)
+                })
+            })
+            .deserialize(deserializer)
     }
 }
 
@@ -137,11 +92,11 @@ mod tests {
         let direction_value = DirectionValue {
             value: Direction::Back,
         };
+        let serialized = serde_json::to_string_pretty(&direction_value)?;
 
         let expected = r#"{
   "value": 3.0
 }"#;
-        let serialized = serde_json::to_string_pretty(&direction_value)?;
         assert_eq!(serialized, expected);
         Ok(())
     }

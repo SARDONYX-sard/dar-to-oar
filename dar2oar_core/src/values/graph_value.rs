@@ -1,5 +1,5 @@
 //! Pair str & Int | Float | Bool
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
 /// Pair str & Int | Float | Bool
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -15,7 +15,7 @@ pub struct GraphValue {
 }
 
 /// Float | Int | Bool
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GraphVariableType {
     /// Floating point number
     #[default]
@@ -26,35 +26,6 @@ pub enum GraphVariableType {
     Bool,
 }
 
-impl Serialize for GraphVariableType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let type_str = match self {
-            Self::Float => "Float",
-            Self::Int => "Int",
-            Self::Bool => "Bool",
-        };
-        serializer.serialize_str(type_str)
-    }
-}
-
-impl<'de> Deserialize<'de> for GraphVariableType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let type_str = String::deserialize(deserializer)?;
-        Ok(match type_str.as_str() {
-            "Float" => Self::Float,
-            "Int" => Self::Int,
-            "Bool" => Self::Bool,
-            _ => return Err(serde::de::Error::custom("Invalid graph variable type")),
-        })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -62,7 +33,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn should_serialize_current_weather() -> Result<()> {
+    fn should_serialize_graph_value() -> Result<()> {
         let graph_value = GraphValue::default();
 
         let expected = r#"{
@@ -71,6 +42,23 @@ mod tests {
 }"#;
         let serialized = serde_json::to_string_pretty(&graph_value)?;
         assert_eq!(serialized, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn should_deserialize_graph_value() -> Result<()> {
+        let actual = r#"{
+  "graphVariable": "",
+  "graphVariableType": "Int"
+}"#;
+        let actual: GraphValue = serde_json::from_str(actual)?;
+
+        let expected = GraphValue {
+            graph_variable: "".into(),
+            graph_variable_type: GraphVariableType::Int,
+        };
+
+        assert_eq!(actual, expected);
         Ok(())
     }
 }

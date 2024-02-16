@@ -25,10 +25,11 @@ pub struct ActorValue {
 /// - Actor Value Percentage (0-1) => "Percentage"
 ///
 /// default: `ActorValue`
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ActorValueType {
     /// Value
     #[default]
+    #[serde(rename = "Value")]
     ActorValue,
     /// Base
     Base,
@@ -38,79 +39,11 @@ pub enum ActorValueType {
     Percentage,
 }
 
-impl TryFrom<&str> for ActorValueType {
-    type Error = &'static str;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        Ok(match value {
-            "Value" => Self::ActorValue,
-            "Base" => Self::Base,
-            "Max" => Self::Max,
-            "Percentage" => Self::Percentage,
-            _ => return Err("Invalid actor value type"),
-        })
-    }
-}
-
-impl From<ActorValueType> for &str {
-    fn from(value: ActorValueType) -> Self {
-        match value {
-            ActorValueType::ActorValue => "Value",
-            ActorValueType::Base => "Base",
-            ActorValueType::Max => "Max",
-            ActorValueType::Percentage => "Percentage",
-        }
-    }
-}
-
-impl Serialize for ActorValueType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.clone().into())
-    }
-}
-
-impl<'de> Deserialize<'de> for ActorValueType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let type_str = String::deserialize(deserializer)?;
-        type_str
-            .as_str()
-            .try_into()
-            .map_err(serde::de::Error::custom)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use anyhow::Result;
     use pretty_assertions::assert_eq;
-
-    #[test]
-    fn test_try_from_str_valid() {
-        let value = "Value";
-        let result = ActorValueType::try_from(value);
-        assert_eq!(result, Ok(ActorValueType::ActorValue));
-    }
-
-    #[test]
-    fn test_try_from_str_invalid() {
-        let value = "InvalidValue";
-        let result = ActorValueType::try_from(value);
-        assert_eq!(result, Err("Invalid actor value type"));
-    }
-
-    #[test]
-    fn test_into_str() {
-        let value = ActorValueType::Base;
-        let result: &str = value.into();
-        assert_eq!(result, "Base");
-    }
 
     #[test]
     fn test_serialize() -> Result<()> {

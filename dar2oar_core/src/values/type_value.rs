@@ -1,7 +1,6 @@
 //! Wrapper for [`WeaponType`]
-use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde_json::Value;
+use serde_untagged::UntaggedEnumVisitor;
 
 use super::NumericLiteral;
 
@@ -101,37 +100,37 @@ impl TryFrom<NumericLiteral> for WeaponType {
                 -1..=18 => Ok((num as i64).try_into()?),
                 _ => Err("Got Decimal, Out of range -1..=18"),
             },
-            NumericLiteral::Float(num) => Ok(num.to_string().as_str().try_into()?),
+            NumericLiteral::Float(num) => Ok(num.try_into()?),
         }
     }
 }
 
-impl TryFrom<&str> for WeaponType {
+impl TryFrom<f32> for WeaponType {
     type Error = &'static str;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        Ok(match value {
-            "-1" | "-1.0" => Self::Other,
-            "0" | "0.0" => Self::Unarmed,
-            "1" | "1.0" => Self::Sword,
-            "2" | "2.0" => Self::Dagger,
-            "3" | "3.0" => Self::WarAxe,
-            "4" | "4.0" => Self::Mace,
-            "5" | "5.0" => Self::Greatsword,
-            "6" | "6.0" => Self::Battleaxe,
-            "7" | "7.0" => Self::Bow,
-            "8" | "8.0" => Self::Staff,
-            "9" | "9.0" => Self::Crossbow,
-            "10" | "10.0" => Self::Warhammer,
-            "11" | "11.0" => Self::Shield,
-            "12" | "12.0" => Self::AlterationSpell,
-            "13" | "13.0" => Self::IllusionSpell,
-            "14" | "14.0" => Self::DestructionSpell,
-            "15" | "15.0" => Self::ConjurationSpell,
-            "16" | "16.0" => Self::RestorationSpell,
-            "17" | "17.0" => Self::Scroll,
-            "18" | "18.0" => Self::Torch,
-            _ => return Err("Invalid value for WeaponType"),
+    fn try_from(float: f32) -> Result<Self, Self::Error> {
+        Ok(match float {
+            x if (-1.0..0.0).contains(&x) => Self::Other,
+            x if (0.0..1.0).contains(&x) => Self::Unarmed,
+            x if (1.0..2.0).contains(&x) => Self::Sword,
+            x if (2.0..3.0).contains(&x) => Self::Dagger,
+            x if (3.0..4.0).contains(&x) => Self::WarAxe,
+            x if (4.0..5.0).contains(&x) => Self::Mace,
+            x if (5.0..6.0).contains(&x) => Self::Greatsword,
+            x if (6.0..7.0).contains(&x) => Self::Battleaxe,
+            x if (7.0..8.0).contains(&x) => Self::Bow,
+            x if (8.0..9.0).contains(&x) => Self::Staff,
+            x if (9.0..10.0).contains(&x) => Self::Crossbow,
+            x if (10.0..11.0).contains(&x) => Self::Warhammer,
+            x if (11.0..12.0).contains(&x) => Self::Shield,
+            x if (12.0..13.0).contains(&x) => Self::AlterationSpell,
+            x if (13.0..14.0).contains(&x) => Self::IllusionSpell,
+            x if (14.0..15.0).contains(&x) => Self::DestructionSpell,
+            x if (15.0..16.0).contains(&x) => Self::ConjurationSpell,
+            x if (16.0..17.0).contains(&x) => Self::RestorationSpell,
+            x if (17.0..18.0).contains(&x) => Self::Scroll,
+            x if (18.0..19.0).contains(&x) => Self::Torch,
+            _ => return Err("Expected -1.0..=18.0"),
         })
     }
 }
@@ -181,61 +180,24 @@ impl<'de> Deserialize<'de> for WeaponType {
     where
         D: Deserializer<'de>,
     {
-        /// Inner struct to deserialization.
-        struct WeaponTypeVisitor;
-
-        impl<'de> Visitor<'de> for WeaponTypeVisitor {
-            type Value = WeaponType;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("a valid WeaponType value")
-            }
-
-            fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E>
-            where
-                E: Error,
-            {
-                WeaponType::try_from(value as i64).or(Err(Error::unknown_variant(
-                    &value.to_string(),
-                    &[
-                        "-1.0", "0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0",
-                        "9.0", "10.0", "11.0", "12.0", "13.0", "14.0", "15.0", "16.0", "17.0",
-                        "18.0",
-                    ],
-                )))
-            }
-        }
-
-        // Deserialize from a JSON value.
-        let value: Value = Deserialize::deserialize(deserializer)?;
-        match value {
-            Value::Number(num) => {
-                let weapon =
-                    Self::try_from(num.as_i64().unwrap_or(num.as_f64().ok_or_else(|| {
-                        Error::invalid_type(
-                            serde::de::Unexpected::Other("WeaponType parse f64"),
-                            &"a valid f64",
-                        )
-                    })? as i64))
-                    .map_err(|err| {
-                        Error::invalid_type(
-                            serde::de::Unexpected::Other(err),
-                            &"a valid i64 or f64",
-                        )
-                    })?;
-                Ok(weapon)
-            }
-            Value::String(s) => Ok(s.as_str().try_into().map_err(|_err| {
-                Error::invalid_type(
-                    serde::de::Unexpected::Other("Couldn't parse float value"),
-                    &"a valid WeaponType float string",
-                )
-            })?),
-            _ => Err(Error::invalid_type(
-                serde::de::Unexpected::Other("not a valid value for WeaponType"),
-                &"a valid WeaponType value",
-            )),
-        }
+        UntaggedEnumVisitor::new()
+            .f32(|float| {
+                float.try_into().map_err(|_err| {
+                    serde::de::Error::invalid_value(
+                        serde::de::Unexpected::Float(float.into()),
+                        &r#"-1.0..=18.0"#,
+                    )
+                })
+            })
+            .f64(|float| {
+                (float as f32).try_into().map_err(|_err| {
+                    serde::de::Error::invalid_value(
+                        serde::de::Unexpected::Float(float),
+                        &r#"-1.0..=18.0"#,
+                    )
+                })
+            })
+            .deserialize(deserializer)
     }
 }
 
@@ -275,9 +237,9 @@ mod tests {
     }
 
     #[test]
-    fn should_deserialize_type_value_as_string() -> Result<()> {
+    fn should_deserialize_type_value2() -> Result<()> {
         let json_str = r#"{
-            "value": "5.0"
+            "value": 5.0
         }"#;
 
         let deserialized: TypeValue = serde_json::from_str(json_str)?;
