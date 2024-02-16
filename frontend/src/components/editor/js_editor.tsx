@@ -34,7 +34,13 @@ export const JSEditor = ({ editorMode, marginTop }: JSEditorProps) => {
             control={
               <Checkbox
                 checked={runScript === 'true'}
-                onClick={() => setRunScript(runScript === 'true' ? 'false' : 'true')}
+                onClick={() => {
+                  const newValue = runScript === 'true' ? 'false' : 'true';
+                  if (newValue === 'false') {
+                    window.location.reload();
+                  }
+                  setRunScript(newValue);
+                }}
               />
             }
             label={t('custom-js-auto-run-label')}
