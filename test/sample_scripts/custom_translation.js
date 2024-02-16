@@ -46,7 +46,7 @@
     'custom-css-label': 'Currently applied CSS',
     'custom-js-auto-run-label': 'Auto run',
     'custom-js-auto-run-tooltip':
-      'Automatically run JavaScript on every page transition. You can change the UI and behavior, but use with caution.',
+      'Automatically run JavaScript on every page transition.(If disabled, it will automatically reload to apply the settings.)',
     'custom-js-auto-run-tooltip2':
       'This configuration item will not be activated unless manually selected by the user.',
     'custom-js-label': 'Custom JavaScript(Please do not execute untrusted scripts)',
@@ -66,6 +66,7 @@
     'log-level-list-tooltip3': ' Info: Log the conversion time.',
     'log-level-list-tooltip4': 'Error: Logs nothing but errors.',
     'mapping-wiki-url-leaf': 'wiki#what-is-the-mapping-file',
+    'notice-limit': 'Limit',
     'notice-position-bottom-center': 'Bottom Center',
     'notice-position-bottom-left': 'Bottom Left',
     'notice-position-bottom-right': 'Bottom Right',
