@@ -69,9 +69,13 @@ export function ConvertForm() {
       if (!(key === 'loading' || key === 'progress')) {
         localStorageManager.set(key, value);
       }
-      if (value !== '') {
+
+      if (value === '') {
+        localStorage.removeItem(key);
+      } else {
         localStorage.setItem(`cached-${key}`, value);
       }
+
       setValue(key, value);
     };
   };
