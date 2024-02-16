@@ -183,13 +183,13 @@ impl TryFrom<&FnArg<'_>> for Direction {
     fn try_from(value: &FnArg<'_>) -> Result<Self, Self::Error> {
         match value {
             FnArg::Number(num) => Ok(match *num {
-                NumberLiteral::Hex(num) => (num as u64)
+                NumberLiteral::Hex(num) => (num as f64)
                     .try_into()
                     .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
-                NumberLiteral::Decimal(num) => (num as u64)
+                NumberLiteral::Decimal(num) => (num as f64)
                     .try_into()
                     .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
-                NumberLiteral::Float(num) => (num as u64)
+                NumberLiteral::Float(num) => (num as f64)
                     .try_into()
                     .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
             }),
