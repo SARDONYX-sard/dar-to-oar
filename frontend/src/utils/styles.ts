@@ -136,7 +136,7 @@ export const presetStyles = {
   '4': preset4,
 } as const;
 
-export function selectPreset(select: string) {
+export function selectPreset(select: string | null) {
   switch (select) {
     case '1':
     case '2':

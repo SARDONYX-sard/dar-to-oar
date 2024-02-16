@@ -1,7 +1,7 @@
 import { save } from '@tauri-apps/api/dialog';
 
 import { readFile, writeFile } from '@/tauri_cmd';
-import { cacheKeys, type LocalCache } from '@/utils/local_storage_manager';
+import { cacheKeys, localStorageManager, type LocalCache } from '@/utils/local_storage_manager';
 
 export const backup = {
   /** @throws Error */
@@ -30,7 +30,7 @@ export const backup = {
   /** @throws Error */
   async export(settings: LocalCache) {
     const pathKey = 'export-settings-path';
-    const cachedPath = localStorage.getItem(pathKey);
+    const cachedPath = localStorageManager.get(pathKey);
     const path = await save({
       defaultPath: cachedPath ?? undefined,
       filters: [

@@ -1,12 +1,13 @@
 import { useEffect, useInsertionEffect, useState } from 'react';
 
 import { notify } from '@/components/notifications';
+import { localStorageManager } from '@/utils/local_storage_manager';
 import { selectPreset, presetStyles } from '@/utils/styles';
 
 const getStyle = () => {
-  const presetNumber = selectPreset(localStorage.getItem('presetNumber') ?? '');
+  const presetNumber = selectPreset(localStorageManager.get('presetNumber'));
   if (presetNumber === '0') {
-    return localStorage.getItem('customCSS') ?? '';
+    return localStorageManager.get('customCSS') ?? '';
   } else {
     return presetStyles[presetNumber];
   }
@@ -35,7 +36,7 @@ export function useDynStyle(initialState = getStyle()) {
 }
 
 const initScript = () => {
-  return localStorage.getItem('customJS') ?? '';
+  return localStorageManager.get('customJS') ?? '';
 };
 /**
  * Inject JavaScript

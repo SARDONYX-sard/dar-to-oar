@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api';
 
+import { localStorageManager } from '@/utils/local_storage_manager';
 import { selectLogLevel } from '@/utils/selector';
 
 type ConverterOptions = {
@@ -40,7 +41,7 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
     },
   };
 
-  let logLevel = selectLogLevel(localStorage.getItem('logLevel'));
+  let logLevel = selectLogLevel(localStorageManager.get('logLevel'));
   changeLogLevel(logLevel);
 
   const showProgress = props.showProgress ?? false;

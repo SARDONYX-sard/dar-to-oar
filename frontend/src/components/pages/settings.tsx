@@ -9,7 +9,7 @@ import Tab from '@mui/material/Tab';
 import { ImportBackupButton, ExportBackupButton, ImportLangButton } from '@/components/buttons';
 import { CSSEditor, type CSSEditorProps, JSEditor } from '@/components/editor';
 import {
-  NoticePositionList,
+  NoticeSettingsList,
   SelectEditorMode,
   StyleList,
   TranslationList,
@@ -94,7 +94,7 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
           <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
         </TabPanel>
         <TabPanel value="notice">
-          <NoticePositionList />
+          <NoticeSettingsList />
         </TabPanel>
         <TabPanel value="lang">
           <ImportLangButton />

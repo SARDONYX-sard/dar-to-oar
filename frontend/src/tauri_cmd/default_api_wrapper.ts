@@ -4,19 +4,20 @@ import { readTextFile } from '@tauri-apps/api/fs';
 import { open as openShell } from '@tauri-apps/api/shell';
 
 import { notify } from '@/components/notifications';
+import { localStorageManager, type CacheKey } from '@/utils/local_storage_manager';
 
 /**
  * Read the entire contents of a file into a string.
- * @param {string} pathKey - target path cache key
+ * @param pathKey - target path cache key
  * @return contents
- * @throws Error
+ * @throws `Error`
  */
-export async function readFile(pathKey: string, filterName: string) {
-  let path = localStorage.getItem(pathKey) ?? '';
+export async function readFile(pathKey: CacheKey, filterName: string) {
+  let path = localStorageManager.get(pathKey) ?? '';
 
   const setPath = (newPath: string) => {
     path = newPath;
-    localStorage.setItem(pathKey, path);
+    localStorageManager.set(pathKey, path);
   };
 
   if (

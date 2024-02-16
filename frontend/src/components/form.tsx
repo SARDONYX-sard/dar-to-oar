@@ -18,6 +18,7 @@ import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { convertDar2oar, LogLevel, progressListener, start } from '@/tauri_cmd';
+import { localStorageManager } from '@/utils/local_storage_manager';
 import { get_parent } from '@/utils/path';
 import { selectLogLevel } from '@/utils/selector';
 
@@ -37,17 +38,17 @@ type FormProps = {
 };
 
 const getInitialFormValues = (): FormProps => ({
-  src: localStorage.getItem('src') ?? '',
-  dst: localStorage.getItem('dst') ?? '',
-  modName: localStorage.getItem('modName') ?? '',
-  modAuthor: localStorage.getItem('modAuthor') ?? '',
-  mappingPath: localStorage.getItem('mappingPath') ?? '',
-  mapping1personPath: localStorage.getItem('mapping1personPath') ?? '',
+  src: localStorageManager.get('src') ?? '',
+  dst: localStorageManager.get('dst') ?? '',
+  modName: localStorageManager.get('modName') ?? '',
+  modAuthor: localStorageManager.get('modAuthor') ?? '',
+  mappingPath: localStorageManager.get('mappingPath') ?? '',
+  mapping1personPath: localStorageManager.get('mapping1personPath') ?? '',
   loading: false as boolean,
-  logLevel: selectLogLevel(localStorage.getItem('logLevel')),
-  runParallel: localStorage.getItem('runParallel') === 'true',
-  hideDar: localStorage.getItem('hideDar') === 'true',
-  showProgress: localStorage.getItem('showProgress') === 'true',
+  logLevel: selectLogLevel(localStorageManager.get('logLevel')),
+  runParallel: localStorageManager.get('runParallel') === 'true',
+  hideDar: localStorageManager.get('hideDar') === 'true',
+  showProgress: localStorageManager.get('showProgress') === 'true',
   progress: 0,
 });
 
@@ -65,7 +66,9 @@ export function ConvertForm() {
 
   const setStorage = (key: keyof FormProps) => {
     return (value: string) => {
-      localStorage.setItem(key, value);
+      if (!(key === 'loading' || key === 'progress')) {
+        localStorageManager.set(key, value);
+      }
       if (value !== '') {
         localStorage.setItem(`cached-${key}`, value);
       }
@@ -120,9 +123,9 @@ export function ConvertForm() {
                   onChange={(e) => {
                     onChange(e);
                     const path = e.target.value;
-                    localStorage.setItem('src', path); // For reload cache
+                    localStorageManager.set('src', path); // For reload cache
                     if (path !== '') {
-                      localStorage.setItem('cached-src', path); // For empty string
+                      localStorageManager.set('cached-src', path); // For empty string
                     }
                   }}
                   onBlur={onBlur}
@@ -139,7 +142,7 @@ export function ConvertForm() {
 
               <Grid xs={2}>
                 <SelectPathButton
-                  path={get_parent(value === '' ? localStorage.getItem('cached-src') ?? '' : value)}
+                  path={get_parent(value === '' ? localStorageManager.get('cached-src') ?? '' : value)}
                   isDir
                   setPath={setStorage('src')}
                 />
@@ -164,9 +167,9 @@ export function ConvertForm() {
                   onChange={(e) => {
                     onChange(e);
                     const path = e.target.value;
-                    localStorage.setItem('dst', path);
+                    localStorageManager.set('dst', path);
                     if (path !== '') {
-                      localStorage.setItem('cached-dst', path);
+                      localStorageManager.set('cached-dst', path);
                     }
                   }}
                   onBlur={onBlur}
@@ -181,7 +184,7 @@ export function ConvertForm() {
               </Grid>
               <Grid xs={2}>
                 <SelectPathButton
-                  path={get_parent(value === '' ? localStorage.getItem('cached-dst') ?? '' : value)}
+                  path={get_parent(value === '' ? localStorageManager.get('cached-dst') ?? '' : value)}
                   isDir
                   setPath={setStorage('dst')}
                 />
@@ -205,9 +208,9 @@ export function ConvertForm() {
                   margin="dense"
                   onChange={(e) => {
                     const path = e.target.value;
-                    localStorage.setItem('mappingPath', path);
+                    localStorageManager.set('mappingPath', path);
                     if (path !== '') {
-                      localStorage.setItem('cached-mappingPath', path);
+                      localStorageManager.set('cached-mappingPath', path);
                     }
                     onChange(e);
                   }}
@@ -219,9 +222,9 @@ export function ConvertForm() {
 
               <Grid xs={2}>
                 <SelectPathButton
-                  path={value === '' ? localStorage.getItem('cached-mappingPath') ?? '' : value}
+                  path={value === '' ? localStorageManager.get('cached-mappingPath') ?? '' : value}
                   setPath={(value) => {
-                    localStorage.setItem('cached-mappingPath', value);
+                    localStorageManager.set('cached-mappingPath', value);
                     setStorage('mappingPath')(value);
                   }}
                 />
@@ -245,9 +248,9 @@ export function ConvertForm() {
                   margin="dense"
                   onChange={(e) => {
                     const path = e.target.value;
-                    localStorage.setItem('mapping1personPath', path);
+                    localStorageManager.set('mapping1personPath', path);
                     if (path !== '') {
-                      localStorage.setItem('cached-mapping1personPath', path);
+                      localStorageManager.set('cached-mapping1personPath', path);
                     }
                     onChange(e);
                   }}
@@ -259,7 +262,7 @@ export function ConvertForm() {
 
               <Grid xs={2}>
                 <SelectPathButton
-                  path={value === '' ? localStorage.getItem('cached-mapping1personPath') ?? '' : value}
+                  path={value === '' ? localStorageManager.get('cached-mapping1personPath') ?? '' : value}
                   setPath={setStorage('mapping1personPath')}
                 />
               </Grid>
@@ -280,7 +283,7 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('modName', e.target.value);
+                    localStorageManager.set('modName', e.target.value);
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -303,7 +306,7 @@ export function ConvertForm() {
                   variant="outlined"
                   margin="dense"
                   onChange={(e) => {
-                    localStorage.setItem('modAuthor', e.target.value);
+                    localStorageManager.set('modAuthor', e.target.value);
                     onChange(e);
                   }}
                   onBlur={onBlur}
@@ -349,7 +352,7 @@ export function ConvertForm() {
                     control={
                       <Checkbox
                         onClick={() => {
-                          localStorage.setItem('hideDar', `${!value}`);
+                          localStorageManager.set('hideDar', `${!value}`);
                           setValue('hideDar', !value);
                         }}
                         checked={value}
@@ -386,7 +389,7 @@ export function ConvertForm() {
                       <Checkbox
                         onClick={() => {
                           setValue('showProgress', !value);
-                          localStorage.setItem('showProgress', `${!value}`);
+                          localStorageManager.set('showProgress', `${!value}`);
                         }}
                         checked={value}
                         aria-label="Show Progress"
@@ -421,7 +424,7 @@ export function ConvertForm() {
                     control={
                       <Checkbox
                         onClick={() => {
-                          localStorage.setItem('runParallel', `${!value}`);
+                          localStorageManager.set('runParallel', `${!value}`);
                           setValue('runParallel', !value);
                         }}
                         checked={value}

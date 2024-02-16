@@ -2,6 +2,7 @@ import { FlatNamespace, KeyPrefix, changeLanguage } from 'i18next';
 import { useEffect } from 'react';
 import { type FallbackNs, type UseTranslationOptions, useTranslation as useTrans } from 'react-i18next';
 
+import { localStorageManager } from '@/utils/local_storage_manager';
 import { type I18nKeys } from '@/utils/translation';
 
 /**
@@ -9,7 +10,7 @@ import { type I18nKeys } from '@/utils/translation';
  */
 export function useLocale() {
   useEffect(() => {
-    const locale = localStorage.getItem('locale') ?? window.navigator.language;
+    const locale = localStorageManager.get('locale') ?? window.navigator.language;
     changeLanguage(locale === 'auto' ? window.navigator.language : locale);
   }, []);
 }
