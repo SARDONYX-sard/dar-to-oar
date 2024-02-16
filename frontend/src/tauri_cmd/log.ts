@@ -1,8 +1,6 @@
 import { appLogDir } from '@tauri-apps/api/path';
 import { open as openShell } from '@tauri-apps/api/shell';
 
-
-
 /**
  * Opens the log file.
  * @throws - if not found path
