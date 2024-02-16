@@ -1,5 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 
+import { localStorageManager } from '@/utils/local_storage_manager';
+
 import type { OptionsObject, SnackbarMessage, SnackbarOrigin } from 'notistack';
 
 // Notify design is defined in provider
@@ -21,21 +23,35 @@ export const notify = {
   },
 };
 
-export const getPosition = (): SnackbarOrigin => {
-  const defaultPosition = {
+type SnackbarSettings = {
+  position: SnackbarOrigin;
+  maxSnack: number;
+};
+
+export const defaultSnackbarSettings: SnackbarSettings = {
+  position: {
     horizontal: 'right',
     vertical: 'bottom',
-  } as const;
+  },
+  maxSnack: 3,
+} as const;
 
-  let posJson: Partial<SnackbarOrigin> = defaultPosition;
+export const getSnackbarSettings = (): SnackbarSettings => {
+  let position: Partial<SnackbarOrigin> = {};
   try {
-    posJson = JSON.parse(localStorage.getItem('snackbar-position') ?? '{}');
+    position = JSON.parse(localStorageManager.get('snackbar-position') ?? '{}');
   } catch (error) {
     console.error(error);
   }
 
+  const maxSnack = Number(localStorageManager.get('snackbar-limit'));
+  const { position: defaultPos, maxSnack: defaultMaxSnack } = defaultSnackbarSettings;
+
   return {
-    horizontal: posJson?.horizontal ?? defaultPosition.horizontal,
-    vertical: posJson?.vertical ?? defaultPosition.vertical,
+    position: {
+      horizontal: position?.horizontal ?? defaultPos.horizontal,
+      vertical: position?.vertical ?? defaultPos.vertical,
+    },
+    maxSnack: Number.isNaN(maxSnack) ? defaultMaxSnack : maxSnack,
   };
 };

@@ -10,7 +10,7 @@ import {
 } from 'notistack';
 import { forwardRef, memo } from 'react';
 
-import { getPosition } from '@/components/notifications';
+import { getSnackbarSettings } from '@/components/notifications';
 
 /**
  * ref
@@ -18,10 +18,12 @@ import { getPosition } from '@/components/notifications';
  * @export
  */
 export default function SnackBarProvider() {
+  const settings = getSnackbarSettings();
+
   return (
     <SnackbarProviderInner
       action={action}
-      anchorOrigin={getPosition()}
+      anchorOrigin={settings.position}
       Components={{
         info: ThemeResponsiveSnackbar,
         success: ThemeResponsiveSnackbar,
@@ -29,7 +31,7 @@ export default function SnackBarProvider() {
         warning: ThemeResponsiveSnackbar,
       }}
       dense
-      maxSnack={3}
+      maxSnack={settings.maxSnack}
       preventDuplicate={true}
     />
   );

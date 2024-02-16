@@ -1,6 +1,6 @@
 {
   "all-clear-btn": "全入力をクリア",
-  "backup-dialog-all-checked-label": "全選択",
+  "backup-dialog-all-checked-label": "全て選択",
   "backup-dialog-pub-checked-label": "個人情報以外選択",
   "backup-export-btn-name": "エクスポート",
   "backup-export-dialog-title": "設定のエクスポート",
@@ -59,6 +59,7 @@
   "log-level-list-tooltip3": " Info: 変換時間を記録します",
   "log-level-list-tooltip4": "Error: 重大なエラー以外記録しません",
   "mapping-wiki-url-leaf": "wiki#what-is-the-mapping-file",
+  "notice-limit": "通知上限",
   "notice-position-bottom-center": "下・中央",
   "notice-position-bottom-left": "下・左",
   "notice-position-bottom-right": "下・右",

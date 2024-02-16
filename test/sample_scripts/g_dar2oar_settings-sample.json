@@ -9,5 +9,6 @@
   "locale": "auto",
   "presetNumber": "0",
   "settings-tab-select": "backup",
+  "snackbar-limit": "3",
   "snackbar-position": "{\"vertical\":\"top\",\"horizontal\":\"left\"}"
 }
