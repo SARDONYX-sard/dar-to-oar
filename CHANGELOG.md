@@ -4,6 +4,74 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-02-17
+### :sparkles: New Features
+- [`14894b9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/14894b984c01715a69f7787e30463591b196e809) - **log**: change log display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`42bb664`](https://github.com/SARDONYX-sard/dar-to-oar/commit/42bb664d666d47e14910924349c56f9b010f22ce) - **frontend-tauri**: add empty string check *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bd9cd7f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bd9cd7fcd9d68cd034b09388ae5e03cf4ca69732) - **log**: stop logging thread id's *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`59368a1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/59368a1fe3fd2b908e29d77395627ce69e32ad4c) - **sub_cmd**: add progress report *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`2308e47`](https://github.com/SARDONYX-sard/dar-to-oar/commit/2308e47d121241116f4849a7993de26a9ee05be5) - **front-css**: add css for circular *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a5dc8d3`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a5dc8d308bb6de8277182662301ab7d1c5511893) - **core**: add `trace!` on error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`eef2047`](https://github.com/SARDONYX-sard/dar-to-oar/commit/eef2047aeb04081e73bfe312d429500cfceeca0c) - **frontend**: implement new notification *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`abb8699`](https://github.com/SARDONYX-sard/dar-to-oar/commit/abb86998a7785737f5e3cfb8ee4e2302fdd5d5d2) - **front**: change to tabs *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`833dbfd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/833dbfd49e2c724d3b24204a616bf33798fb7b24) - **frontend**: apply bold to `snackbar` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a1fdc02`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a1fdc023ca713413554655ecf24b1a0b6ea3f3c6) - **frontend**: implement notice position list *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`7ada442`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7ada4429955c8a22d48fe241ea17f8d2b4d855ac) - **gui**: implement settings import/export system *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`6848d5b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6848d5ba820485b110d5d2463d9831dff47f1429) - **gui**: avoid `writeTextFile` bug *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3847839`](https://github.com/SARDONYX-sard/dar-to-oar/commit/38478393e7ab0e16834f4b3b70cc084efdb96d0d) - **locale**: add note *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`80138ac`](https://github.com/SARDONYX-sard/dar-to-oar/commit/80138acff1278a622a952d03fc5fc424bad0d2fb) - **gui-backend**: implement window state store system *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5816653`](https://github.com/SARDONYX-sard/dar-to-oar/commit/58166535cf602a78ce9e741983fb5393caccc938) - **frontend**: use formatted json *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`58b69fe`](https://github.com/SARDONYX-sard/dar-to-oar/commit/58b69fe25e128d4feed1164615e3eaae3acb4dbc) - **frontend**: implement backup dialog *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`63c13cc`](https://github.com/SARDONYX-sard/dar-to-oar/commit/63c13cca1a3eaf291ea3d39dcbcb7e058db7ccea) - **frontend**: implement notice limit settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`213dd1a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/213dd1aa47493e8dadd011931a4df269718d4ce3) - **frontend**: change `all clear` handler *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`07f3b51`](https://github.com/SARDONYX-sard/dar-to-oar/commit/07f3b51232e3c844334a99c2b8c262847d461f88) - **frontend**: add autoReload *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`985c7c0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/985c7c080cdb3058ab4ad4384573d482023bd9f6) - **frontend-style**: add `indicator` color settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`243e497`](https://github.com/SARDONYX-sard/dar-to-oar/commit/243e497d573ab003083bb83c230bb71d3cd500bb) - **front-tauri**: fix progress bar not worked *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`4a7a048`](https://github.com/SARDONYX-sard/dar-to-oar/commit/4a7a0488ac7e691d5f20b6b8f2d793721a8330a6) - **locale**: fix errors in behavior description *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`e9e2dcf`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e9e2dcff381613d5f06a6122b05eb3c83eb6ebde) - **front**: fix cache key *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bf21a7b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bf21a7badfc62667b3841608593f528909e0b04f) - **front-form**: fix subcommand errors due to getting `old` values. *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`9510911`](https://github.com/SARDONYX-sard/dar-to-oar/commit/951091100f271873e10b06a5696c91ab210e0fb1) - **locale**: fix japanese statement *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`58a91f2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/58a91f20916d33a8a8198617407e3e33b65f2bf7) - **front**: fix cache key *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :zap: Performance Improvements
+- [`7460726`](https://github.com/SARDONYX-sard/dar-to-oar/commit/74607262e081288d07fc94f424b0731acad1a0a7) - **backend**: use `Small String Optimization` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`e50c0aa`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e50c0aa94433549900ce9a6cb3190bf0dfd80c0b) - **front**: separate callback *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`028c7f1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/028c7f14c8b5b7096adbe37cd40109a255999e08) - **core**: change unnecessary code *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`419da2d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/419da2d912dcfe9b3b81a69de7289601c3f66f1c) - **front**: rename provider *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a9e0382`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a9e038287b9cb4f595f286bce6b41afefee96ad2) - **frontend**: rename notice list *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ba98e00`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ba98e000cb12d45ef849ec401781eda5de4c967a) - **core**: apply lint fix *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`57d24d3`](https://github.com/SARDONYX-sard/dar-to-oar/commit/57d24d3d00054c4f8625cd27e77db9881fd52718) - **core**: apply lint fix *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`50b0570`](https://github.com/SARDONYX-sard/dar-to-oar/commit/50b0570196d590eeddba26195b462ebdd7f0b6b2) - **frontend**: rename tab's labels *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`e6ec0ee`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e6ec0ee3888d6b7a7082a8bc243b1949b19ebec4) - **frontend**: change label in lists *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a17d5d0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a17d5d07be08f67d62df75aa44192d553762f6c9) - **frontend**: use `localStorage` wrapper *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`d323347`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d32334745ef9a8dfa7e5095cb517a4b44ae48f32) - **core**: change serde code *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`90d5614`](https://github.com/SARDONYX-sard/dar-to-oar/commit/90d561453dc0b928fea54d830279dc283b5f509c) - **front**: remove `remove-oar` test *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`88ccab9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/88ccab953eae21a525ecc180145d180f7575eea3) - **front**: remove unused test *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`e767366`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e767366b6c31c136566c652696f5da25e970585a) - **core**: remove unnecessary comment *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`73a85fe`](https://github.com/SARDONYX-sard/dar-to-oar/commit/73a85feb8b76c9cbb3c7b9a2f792df4fd9cc36bd) - **sample**: change sample code *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`5e5f39f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5e5f39f52579fc86597c5399fb877b1739415b75) - **front**: remove unnecessary files *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`86f61e1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/86f61e122d82df19869ea006cb8757abf6a20f59) - **locale**: change to `Notice Position` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`673d21d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/673d21df2db47a2e5423df2347be64eca74dadd9) - **core**: change macro to private *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b70e373`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b70e3733d5ef1aa0a3c2abdc83effdd6eeb5db20) - **vscode**: add `--cache` in eslint *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bd3a119`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bd3a11943287e347d8ee2c6ed7bdea7fb28ea58c) - **core**: merge previous lint settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`e433123`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e433123f4014baad530499ee5d92a81add2cce95) - **cargo**: add readme meta *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3e73da9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3e73da939b86454a873e10fa7bda2f57e304970e) - **gui-backend**: remove unnecessary commands *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`f321117`](https://github.com/SARDONYX-sard/dar-to-oar/commit/f3211178e14b679e46f15a4f0757a1ccdc2595a7) - **vscode**: correct eslint settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ebd24df`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ebd24dfcff1b9e5d3dd1f7a083a338b755da16a8) - **script**: add danger samples *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`1df3383`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1df33832fb518cbf0b164398eaa6308f66d99cd0) - add sample `g_dar2oar_settings.json` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`dad4d66`](https://github.com/SARDONYX-sard/dar-to-oar/commit/dad4d663cdffc088ad4d5ca899ab812c32570e5e) - change samples *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`51b8680`](https://github.com/SARDONYX-sard/dar-to-oar/commit/51b86802bfa777ffa3006c8e029c803c27da8f11) - **samples**: change samples *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`61a84f9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/61a84f904d0d898b5ea1e40b81ca84e68ada127f) - **samples**: fix docs *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.5.0] - 2024-01-20
 ### :boom: BREAKING CHANGES
 - due to [`1f1433e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1f1433e22b863d490f8eac1842786721f316caf4) - change from `dist` to `dst` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*:
@@ -316,3 +384,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.4.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.3.0...0.4.0
 [0.4.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.0...0.4.1
 [0.5.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.1...0.5.0
+[0.6.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.5.0...0.6.0
