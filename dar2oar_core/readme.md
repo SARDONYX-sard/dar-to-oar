@@ -1,9 +1,9 @@
 # dar2oar_core
 
 `dar2oar_core` is a Rust crate that provides functionality for converting
-DynamicAnimationReplacer (DAR) files to OpenAnimationReplacer (OAR)
-files. The crate includes modules for parsing conditions, handling DAR syntax,
-managing values, and dealing with file systems.
+DynamicAnimationReplacer (DAR) files to OpenAnimationReplacer (OAR) files. The
+crate includes modules for parsing conditions, handling DAR syntax, managing
+values, and dealing with file systems.
 
 ## Modules
 
@@ -39,18 +39,10 @@ managing values, and dealing with file systems.
 - Cargo.toml dependencies
 
 ```toml
-[dev-dependencies]
-dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.3.0" }
+[dependencies]
 anyhow = { version = "1.0.75", features = ["backtrace"] }
-tokio = { version = "1.33.0", features = [
-  "fs",
-  "io-util",
-  "macros",
-  "rt",
-  "rt-multi-thread", #[tokio::main] default setting is to parallelize the number of CPU cores.
-] } # Async Executor
-once_cell = "1.18.0"
-pretty_assertions = "1.4.0"
+dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.6.0" }
+tokio = { version = "1.33.0", features = [ "fs", "io-util", "macros", "rt", "rt-multi-thread" ] } # Async Executor
 tracing-appender = "0.2"
 tracing-subscriber = "0.3.17"
 ```
@@ -60,23 +52,56 @@ tracing-subscriber = "0.3.17"
 ```rust
 use anyhow::Result;
 use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
+use std::path::Path;
+use tracing::{Level, level_filters::LevelFilter, subscriber::DefaultGuard};
+use tracing_appender::non_blocking::WorkerGuard;
+
+/// Multithread init logger.
+///
+/// File I/O is No ANSI color, output to stdout has ANSI color.
+///
+/// # Returns
+/// Guards
+/// - If this variable is dropped, the logger stops.
+pub(crate) fn init_tracing(
+    log_path: impl AsRef<Path>,
+    filter: impl Into<LevelFilter>,
+) -> Result<(WorkerGuard, DefaultGuard)> {
+    use tracing_subscriber::{fmt, layer::SubscriberExt};
+
+    let log_path = log_path.as_ref();
+    std::fs::create_dir_all(
+        log_path
+            .parent()
+            .ok_or_else(|| anyhow::anyhow!("Not found log path's dir"))?,
+    )?;
+    let (file_writer, guard) = tracing_appender::non_blocking(std::fs::File::create(log_path)?);
+    let thread_guard = tracing::subscriber::set_default(
+        fmt::Subscriber::builder()
+            .compact()
+            .pretty()
+            .with_file(true)
+            .with_line_number(true)
+            .with_max_level(filter)
+            .with_target(false)
+            .finish()
+            .with(
+                fmt::Layer::default()
+                    .compact()
+                    .with_ansi(false)
+                    .with_file(true)
+                    .with_line_number(true)
+                    .with_target(false)
+                    .with_writer(file_writer),
+            ),
+    );
+    Ok((guard, thread_guard))
+}
+
 
 const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
 const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
 const LOG_PATH: &str = "../convert.log";
-
-/// Initialization macro for setting up logging.
-macro_rules! logger_init {
-    () => {
-        let (non_blocking, _guard) =
-            tracing_appender::non_blocking(std::fs::File::create(LOG_PATH).unwrap());
-        tracing_subscriber::fmt()
-            .with_writer(non_blocking)
-            .with_ansi(false)
-            .with_max_level(tracing::Level::DEBUG)
-            .init();
-    };
-}
 
 /// Asynchronous function to create conversion options.
 async fn create_options() -> Result<ConvertOptions> {
@@ -90,7 +115,7 @@ async fn create_options() -> Result<ConvertOptions> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    logger_init!();
+    init_tracing(LOG_PATH, Level::DEBUG);
     let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
     // Send function for progress reporting.
@@ -117,17 +142,43 @@ async fn main() -> Result<()> {
 }
 ```
 
+## Documentation
+
+```shell
+cargo doc --open
+```
+
 ## How to run bench
 
-Requirements
+1.Requirements
 
-- test mod: "../test/data/UNDERDOG Animations"
-- mapping_table: "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt"
+- test mod: `../test/data/EVG Conditional Idles`
+- mapping_table:
+  `../test/settings/EVG Conditional Idles_v1.4.2_mapping_table.txt`
+
+2.Execute the following command
 
 ```shell
 cargo bench
-# dar2oar sequential vs parallel/dar2oar multi thread
-#                         time:   [1.5880 s 1.6398 s 1.6992 s]
-# dar2oar sequential vs parallel/dar2oar single thread
-#                         time:   [1.9711 s 2.0215 s 2.0908 s]
+```
+
+3.Output sample
+
+```shell
+Gnuplot not found, using plotters backend
+Benchmarking dar2oar sequential vs parallel/dar2oar multi thread: Warming up for 3.0000 s
+Warning: Unable to complete 10 samples in 23.0s. You may wish to increase target time to 43.4s or enable flat sampling.
+dar2oar sequential vs parallel/dar2oar multi thread
+                        time:   [694.11 ms 737.74 ms 789.09 ms]
+                        change: [+69870% +73764% +78219%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+dar2oar sequential vs parallel/dar2oar single thread
+                        time:   [1.6347 s 1.7119 s 1.7996 s]
+                        change: [+207973% +218915% +231114%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high severe
 ```
