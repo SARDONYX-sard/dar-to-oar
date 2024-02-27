@@ -1,9 +1,9 @@
 //! The path of the DAR is analyzed to obtain the information necessary for the conversion.
 //!
-//! # Format
-//! - Common: "\<ABS or related `ParentDir`\>/\<`ModName`\>/meshes/actors/character/\[_1stperson\]/animations/"
+//! # Format ([]: optional, <>: variable)
+//! - Common: "\<ABS or related `ParentDir`\>/\<`ModName`\>/meshes/actors/<character or creature>/\[_1stperson\]/animations/"
 //!
-//! ### OAR:([]: optional, <>: variable)
+//! ### OAR
 //! - Common + "`OptionAnimationReplacer`/\<`NameSpace`\>/\<`EachSectionName`\>"
 //!
 //! ### DAR: (Only priority order assignment is taken into account. In other words, actor-based allocation is not considered.)
@@ -16,18 +16,20 @@ use std::path::{Path, PathBuf};
 /// The information necessary for the conversion
 #[derive(Debug, Clone)]
 pub struct ParsedPath {
-    /// ModName/meshes/actors/character/animations/DynamicAnimationReplacer
+    /// `"ModName/meshes/actors/character/animations/DynamicAnimationReplacer"`
     pub dar_root: PathBuf,
-    /// ModName/meshes/actors/character/animations/OpenAnimationReplacer
+    /// `"ModName/meshes/actors/character/animations/OpenAnimationReplacer"`
     pub oar_root: PathBuf,
     /// A path that contains a directory named `_1stperson`?
     pub is_1st_person: bool,
-    /// ModName/meshes/actors/character
+    /// `ModName` of `"ModName/meshes/actors/character"`
     pub mod_name: Option<String>,
+    /// `character` of `"ModName/meshes/actors/character"`
+    pub actor_name: Option<String>,
     /// Number is the expected priority dir name of the formal DAR,
     /// but returns Err for the Mod creator who leaves a note.
     pub priority: Result<i32, String>,
-    /// male, female dir
+    /// `male`, `female`, others dir
     pub remain_dir: Option<PathBuf>,
 }
 
@@ -69,6 +71,15 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> Result<ParsedPath> {
                 .and_then(|mod_name| mod_name.to_str().map(str::to_owned))
         });
 
+    let actor_name = path
+        .iter()
+        .position(|os_str| os_str.eq_ignore_ascii_case(OsStr::new("actors")))
+        .and_then(|idx| {
+            paths
+                .get(idx + 1)
+                .and_then(|name| name.to_str().map(str::to_owned))
+        });
+
     let priority = path
         .iter()
         .position(|os_str| os_str == OsStr::new("_CustomConditions"))
@@ -95,6 +106,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> Result<ParsedPath> {
         oar_root,
         is_1st_person,
         mod_name,
+        actor_name,
         priority,
         remain_dir,
     })
@@ -117,6 +129,7 @@ mod test {
             oar_root,
             is_1st_person,
             mod_name,
+            actor_name,
             priority,
             remain_dir,
         } = result?;
@@ -134,7 +147,8 @@ mod test {
             )
         );
         assert_eq!(is_1st_person, true);
-        assert_eq!(mod_name, Some("ModName".to_string()));
+        assert_eq!(mod_name, Some("ModName".into()));
+        assert_eq!(actor_name, Some("character".into()));
         assert_eq!(priority, Ok(8_107_000));
         assert_eq!(remain_dir, None);
         Ok(())
@@ -142,7 +156,7 @@ mod test {
 
     #[test]
     fn test_parse_dar_path_3rd_person() -> Result<()> {
-        let path = Path::new("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer/_CustomConditions/8107000/InnerDir/_conditions.txt");
+        let path = Path::new("../ModName/meshes/actors/falmer/animations/DynamicAnimationReplacer/_CustomConditions/8107000/InnerDir/_conditions.txt");
         let result = parse_dar_path(path);
 
         assert!(result.is_ok());
@@ -151,22 +165,24 @@ mod test {
             oar_root,
             is_1st_person,
             mod_name,
+            actor_name,
             priority,
             remain_dir,
         } = result?;
 
         assert_eq!(
             dar_root,
-            PathBuf::from("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer")
+            PathBuf::from("../ModName/meshes/actors/falmer/animations/DynamicAnimationReplacer")
         );
         assert_eq!(
             oar_root,
-            PathBuf::from("../ModName/meshes/actors/character/animations/OpenAnimationReplacer")
+            PathBuf::from("../ModName/meshes/actors/falmer/animations/OpenAnimationReplacer")
         );
         assert_eq!(is_1st_person, false);
-        assert_eq!(mod_name, Some("ModName".to_string()));
+        assert_eq!(mod_name, Some("ModName".into()));
+        assert_eq!(actor_name, Some("falmer".into()));
         assert_eq!(priority, Ok(8_107_000));
-        assert_eq!(remain_dir, Some(Path::new("InnerDir").to_path_buf()));
+        assert_eq!(remain_dir, Some(Path::new("InnerDir").into()));
         Ok(())
     }
 
