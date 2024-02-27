@@ -23,7 +23,7 @@ where
 {
     let path = path.as_ref();
     let ConvertOptions {
-        oar_dir,
+        oar_dir: specified_oar_root,
         mod_name,
         author,
         section_table,
@@ -36,6 +36,7 @@ where
         oar_root,
         is_1st_person,
         mod_name: parsed_mod_name,
+        actor_name,
         priority,
         remain_dir,
         ..
@@ -49,13 +50,24 @@ where
         parsed_mod_name.push_str("_1st_person");
     };
 
-    let oar_name_space = oar_dir
+    // character, falmer, etc.
+    let actor_name = actor_name.as_deref().unwrap_or_else(|| {
+        tracing::warn!(
+            "actor_name could not be inferred from the dir name. Use the default value \"character\"."
+        );
+        "character"
+    });
+
+    // "[..]/ModName/meshes/actors/character/animations/OpenAnimationReplacer"
+    let oar_name_space = specified_oar_root
         .as_deref()
         .map_or(oar_root.clone(), |oar_mod_root| match is_1st_person {
-            true => Path::new(oar_mod_root)
-                .join("meshes/actors/character/_1stperson/animations/OpenAnimationReplacer"),
-            false => Path::new(oar_mod_root)
-                .join("meshes/actors/character/animations/OpenAnimationReplacer"),
+            true => Path::new(oar_mod_root).join(format!(
+                "meshes/actors/{actor_name}/_1stperson/animations/OpenAnimationReplacer"
+            )),
+            false => Path::new(oar_mod_root).join(format!(
+                "meshes/actors/{actor_name}/animations/OpenAnimationReplacer"
+            )),
         })
         .join(&parsed_mod_name);
 
@@ -126,8 +138,7 @@ where
         }
         Err(invalid_priority) => {
             tracing::warn!(
-                r#"Got invalid priority: "{}". DAR expects "DynamicAnimationReplacer/_CustomConditions/<numeric directory name>/". Thus, copy it as a memo."#,
-                invalid_priority
+                r#"Got invalid priority: "{invalid_priority}". DAR expects "DynamicAnimationReplacer/_CustomConditions/<numeric directory name>/". Thus, copy it as a memo."#
             );
             let section_root = oar_name_space.join(invalid_priority);
             // This is a consideration so that if a file is directly under DynamicAnimationReplacer,
