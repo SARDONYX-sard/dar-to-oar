@@ -10,6 +10,12 @@
     <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml">
         <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml/badge.svg" alt="Release GUI">
     </a>
+    <a href="https://opensource.org/licenses/MIT">
+        <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+    </a>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+        <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License">
+    </a>
 </div>
 
 ![convert-page-with-javascript](https://github.com/SARDONYX-sard/dar-to-oar/assets/68905624/7c793b67-b59e-4083-8e62-db029bdbc266)
