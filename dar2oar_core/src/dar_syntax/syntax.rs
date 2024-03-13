@@ -40,8 +40,8 @@
 
 use nom::{
     branch::alt,
-    bytes::complete::{escaped, tag, take_while, take_while1},
-    character::complete::{char, digit1, hex_digit1, multispace0, one_of, space0},
+    bytes::complete::{escaped, tag, take_while1},
+    character::complete::{char, digit1, hex_digit1, multispace0, not_line_ending, one_of, space0},
     combinator::{map, opt},
     error::context,
     multi::{many0, separated_list1},
@@ -332,12 +332,10 @@ fn parse_expression(input: &str) -> IResult<&str, Expression> {
     ))
 }
 
-/// Comments starting with ';'
-/// - The '\r' is included in the comment, but as long as the comment is ignored, it's not a problem.
+/// Comments starting with ';' until newline
 fn comment(input: &str) -> IResult<&str, &str> {
     let (input, _) = multispace0(input)?;
-    // NOTE: I use this because it is impossible to pick up trailing comments without using `take_while`
-    let (input, comment) = preceded(char(';'), take_while(|c| c != '\n'))(input)?;
+    let (input, comment) = preceded(char(';'), not_line_ending)(input)?;
     let (input, _) = multispace0(input)?;
     Ok((input, comment))
 }
