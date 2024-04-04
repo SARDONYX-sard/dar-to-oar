@@ -7,6 +7,12 @@
 #[derive(Debug, thiserror::Error)]
 pub enum ConvertError {
     /// Failed to write section config target.
+    #[error(
+        "Path was interpreted as the path to ActorBase, but the ID directory is missing. expected: [..]/DynamicAnimationReplacer/{{ESP name}}/{{ID Number}}, actual: {0}"
+    )]
+    MissingBaseId(String),
+
+    /// Failed to write section config target.
     #[error("Failed to write section config target: {0}")]
     FailedWriteSectionConfig(String),
 
