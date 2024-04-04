@@ -809,7 +809,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_cli"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "clap 3.2.25",
@@ -822,7 +822,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_core"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "async-walkdir",
@@ -1271,7 +1271,7 @@ dependencies = [
 
 [[package]]
 name = "g_dar2oar"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "chrono",
