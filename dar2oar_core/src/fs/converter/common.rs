@@ -39,6 +39,8 @@ where
         actor_name,
         priority,
         remain_dir,
+        esp_dir,
+        base_id,
         ..
     } = parsed_path;
 
@@ -95,21 +97,72 @@ where
 
     match priority {
         Ok(priority) => {
+            // There are two types of pass patterns in the DAR. Process them here.
+
             let priority_str = priority.to_string();
+            // Examples
+            // ActorBase: 0001A692 / Condition pattern: 00111000
+            let base_id_or_priority_str = base_id.as_ref().unwrap_or(&priority_str);
+
+            //? # Why do you use base_id instead of priority for section names in ActorBase format?
+            // In ActorBase format, priority is always 0. If priority is used as it is, it will be indistinguishable
+            // from motions for actors with other IDs. To prevent this, use base_id for the section name in ActorBase format.
             let section_name = match is_1st_person {
                 true => section_1person_table
                     .as_ref()
-                    .and_then(|table| table.get(priority_str.as_str())),
+                    .and_then(|table| table.get(base_id_or_priority_str.as_str())),
                 false => section_table
                     .as_ref()
-                    .and_then(|table| table.get(priority_str.as_str())),
+                    .and_then(|table| table.get(base_id_or_priority_str.as_str())),
             }
-            .unwrap_or(&priority_str);
+            .unwrap_or(base_id_or_priority_str);
 
             // e.g. mesh/[..]/OpenAnimationReplacer/ModName/SectionName/
             let section_root = oar_name_space.join(section_name);
             fs::create_dir_all(&section_root).await?;
 
+            // - This block is ActorBase pattern
+            if esp_dir.is_some() {
+                tracing::debug!("This path is ActorBase: {path:?}");
+
+                let esp_dir = esp_dir
+                    .as_ref()
+                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
+                let base_id = base_id
+                    .as_ref()
+                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
+
+                let content = format!("IsActorBase ( \"{esp_dir}\" | 0x{base_id} )");
+                tracing::debug!(
+                    "DAR syntax content auto-generated for ActorBase paths:\n{content}"
+                );
+
+                let config_json = ConditionsConfig {
+                    name: section_name.into(),
+                    priority: *priority,
+                    conditions: parse_dar2oar(&content)?,
+                    ..Default::default()
+                };
+
+                if !section_root.join("config.json").exists() {
+                    write_section_config(&section_root, config_json).await?;
+                }
+
+                // # Ordering validity:
+                // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
+                // so that other threads read after writing true to memory.
+                // - In case of cas failure, use `Relaxed` because the order is unimportant.
+                let _ = is_converted_once.compare_exchange(false, true, AcqRel, Relaxed);
+
+                // NOTE: If you call the function only once with this is_converted_once flag,
+                // the 1st_person&3person conversion will not work!
+                write_name_space_config(&oar_name_space, &parsed_mod_name, author.as_deref())
+                    .await?;
+            };
+
+            // - This block is Condition pattern
+            // If `_condition.txt` exists in the ActorBase path, the `_condition.txt` file will be overwritten by `_config.json`,
+            // but this problem is not considered in ActorBase because `_condition.txt` should not exist.
             if file_name == "_conditions.txt" {
                 let content = fs::read_to_string(path).await?;
                 tracing::debug!("{path:?} Content:\n{}", content);

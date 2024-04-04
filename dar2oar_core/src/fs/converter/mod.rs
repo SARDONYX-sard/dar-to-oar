@@ -112,7 +112,8 @@ mod test {
     use anyhow::Result;
 
     // const DAR_DIR: &str = "../test/data/UNDERDOG - Animations";
-    const DAR_DIR: &str = "../test/data/Delia";
+    // const DAR_DIR: &str = "../test/data/Delia";
+    const DAR_DIR: &str = "../test/data/Axarien's Animations - The Companions (DAR)";
     // const OAR_DIR: &str =
     //     "../test/data/Delia/meshes/actors/character/animations\\OpenAnimationReplacer";
     // const TABLE_PATH: &str = "../test/mapping_tables/UnderDog Animations_v1.9.6_mapping_table.txt";
