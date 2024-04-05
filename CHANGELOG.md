@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2024-04-05
+### :sparkles: New Features
+- [`b95ef4d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b95ef4dd46155c2a98514f1e5866458b3a02c9dc) - **core**: support creature path *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bf9d448`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bf9d4488ce0e7927b44b43795105562bb45391b3) - **core**: use `not_line_ending` api *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c6541ff`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c6541ff867b75ab2d645b1755394f33031daa9d7) - **core**: support `ActorBase` DAR path format *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`d5e101b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d5e101b1b20e254477ea60bf9ae4f51b7d19347d) - **github-template**: add `0.6.0` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b602bd4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b602bd42cd1e4a1a79dfc669667bfeab257b0f98) - **tools**: add auto version upper script *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.6.0] - 2024-02-17
 ### :sparkles: New Features
 - [`14894b9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/14894b984c01715a69f7787e30463591b196e809) - **log**: change log display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -385,3 +396,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.4.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.0...0.4.1
 [0.5.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.1...0.5.0
 [0.6.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.5.0...0.6.0
+[0.7.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.6.0...0.7.0
