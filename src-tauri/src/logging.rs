@@ -107,7 +107,7 @@ fn create_rotate_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize
     let old_file = log_dir.as_ref().join(format!(
         "{}_{}.log",
         log_name,
-        Local::now().format("%F__%H_%M_%S")
+        Local::now().format("%F_%H-%M-%S")
     ));
 
     if log_file.exists() {
