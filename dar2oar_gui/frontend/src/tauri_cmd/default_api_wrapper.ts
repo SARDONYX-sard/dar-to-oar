@@ -4,7 +4,7 @@ import { readTextFile } from '@tauri-apps/api/fs';
 import { open as openShell } from '@tauri-apps/api/shell';
 
 import { notify } from '@/components/notifications';
-import { localStorageManager, type CacheKey } from '@/utils/local_storage_manager';
+import { type CacheKey, localStorageManager } from '@/utils/local_storage_manager';
 
 /**
  * Read the entire contents of a file into a string.

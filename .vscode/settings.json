@@ -1,8 +1,18 @@
 {
-  "cargo.automaticCheck": false,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json][jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
     "source.fixAll.eslint": "explicit",
-    "source.fixAll.sortJSON": "never"
+    "source.fixAll.sortJSON": "never",
+    "source.organizeImports.biome": "explicit"
   },
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,

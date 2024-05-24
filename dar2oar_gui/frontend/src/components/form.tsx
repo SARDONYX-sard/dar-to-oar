@@ -4,22 +4,22 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box, Button, FormControlLabel, FormGroup, TextField, Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 
 import {
   ConvertButton,
-  UnhideDarBtn,
-  SelectPathButton,
-  RemoveOarBtn,
-  LogFileButton,
   LogDirButton,
+  LogFileButton,
+  RemoveOarBtn,
+  SelectPathButton,
+  UnhideDarBtn,
 } from '@/components/buttons';
 import { SelectLogLevel } from '@/components/lists';
 import { LinearWithValueLabel } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { convertDar2oar, LogLevel, progressListener, start } from '@/tauri_cmd';
+import { type LogLevel, convertDar2oar, progressListener, start } from '@/tauri_cmd';
 import { localStorageManager } from '@/utils/local_storage_manager';
-import { get_parent } from '@/utils/path';
+import { getParent } from '@/utils/path';
 import { selectLogLevel } from '@/utils/selector';
 
 type FormProps = {
@@ -83,7 +83,10 @@ export function ConvertForm() {
   const setLoading = (loading: boolean) => setValue('loading', loading);
   const handleAllClear = () => {
     const formValues = ['src', 'dst', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
-    formValues.forEach((key) => setStorage(key)(''));
+
+    for (const key of formValues) {
+      setStorage(key)('');
+    }
   };
 
   const onSubmit: SubmitHandler<FormProps> = async (formProps) => {
@@ -97,42 +100,23 @@ export function ConvertForm() {
   };
 
   return (
-    <Grid sx={{ display: 'block', width: '95vw' }} container component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Grid component='form' container onSubmit={handleSubmit(onSubmit)} sx={{ display: 'block', width: '95vw' }}>
       <Button
-        sx={{ width: '100%', marginBottom: '15px' }}
         onClick={handleAllClear}
         startIcon={<ClearAllIcon />}
-        variant="outlined"
+        sx={{ width: '100%', marginBottom: '15px' }}
+        variant='outlined'
       >
         {t('all-clear-btn')}
       </Button>
       <FormGroup onSubmit={handleSubmit(onSubmit)}>
         <Controller
-          name="src"
           control={control}
-          rules={{
-            required: 'Need Path',
-          }}
+          name='src'
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <Grid container spacing={2}>
               <Grid xs={10}>
                 <TextField
-                  sx={{ width: '100%' }}
-                  label={t('convert-form-dar-label')}
-                  placeholder="[...]/<MOD NAME>"
-                  required
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
-                  onChange={(e) => {
-                    onChange(e);
-                    const path = e.target.value;
-                    localStorageManager.set('src', path); // For reload cache
-                    if (path !== '') {
-                      localStorageManager.set('cached-src', path); // For empty string
-                    }
-                  }}
-                  onBlur={onBlur}
                   error={Boolean(error)}
                   helperText={
                     <>
@@ -141,33 +125,56 @@ export function ConvertForm() {
                       {t('convert-form-dar-helper3')}
                     </>
                   }
+                  label={t('convert-form-dar-label')}
+                  margin='dense'
+                  onBlur={onBlur}
+                  onChange={(e) => {
+                    onChange(e);
+                    const path = e.target.value;
+                    localStorageManager.set('src', path); // For reload cache
+                    if (path !== '') {
+                      localStorageManager.set('cached-src', path); // For empty string
+                    }
+                  }}
+                  placeholder='[...]/<MOD NAME>'
+                  required
+                  sx={{ width: '100%' }}
+                  value={value}
+                  variant='outlined'
                 />
               </Grid>
 
               <Grid xs={2}>
                 <SelectPathButton
-                  path={get_parent(value === '' ? localStorageManager.get('cached-src') ?? '' : value)}
                   isDir
+                  path={getParent(value === '' ? localStorageManager.get('cached-src') ?? '' : value)}
                   setPath={setStorage('src')}
                 />
               </Grid>
             </Grid>
           )}
+          rules={{
+            required: 'Need Path',
+          }}
         />
 
         <Controller
-          name="dst"
           control={control}
+          name='dst'
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <Grid container spacing={2}>
               <Grid xs={10}>
                 <TextField
-                  sx={{ width: '100%' }}
+                  error={Boolean(error)}
+                  helperText={
+                    <>
+                      {t('convert-form-oar-helper')} <br />
+                      {t('convert-form-oar-helper2')}
+                    </>
+                  }
                   label={t('convert-form-oar-label')}
-                  placeholder="<MOD NAME>"
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
+                  margin='dense'
+                  onBlur={onBlur}
                   onChange={(e) => {
                     onChange(e);
                     const path = e.target.value;
@@ -176,20 +183,16 @@ export function ConvertForm() {
                       localStorageManager.set('cached-dst', path);
                     }
                   }}
-                  onBlur={onBlur}
-                  error={Boolean(error)}
-                  helperText={
-                    <>
-                      {t('convert-form-oar-helper')} <br />
-                      {t('convert-form-oar-helper2')}
-                    </>
-                  }
+                  placeholder='<MOD NAME>'
+                  sx={{ width: '100%' }}
+                  value={value}
+                  variant='outlined'
                 />
               </Grid>
               <Grid xs={2}>
                 <SelectPathButton
-                  path={get_parent(value === '' ? localStorageManager.get('cached-dst') ?? '' : value)}
                   isDir
+                  path={getParent(value === '' ? localStorageManager.get('cached-dst') ?? '' : value)}
                   setPath={setStorage('dst')}
                 />
               </Grid>
@@ -198,18 +201,17 @@ export function ConvertForm() {
         />
 
         <Controller
-          name="mappingPath"
           control={control}
+          name='mappingPath'
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <Grid container spacing={2}>
               <Grid xs={10}>
                 <TextField
-                  sx={{ width: '100%' }}
+                  error={Boolean(error)}
+                  helperText={<MappingHelpBtn />}
                   label={t('convert-form-mapping-label')}
-                  placeholder="./mapping_table.txt"
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
+                  margin='dense'
+                  onBlur={onBlur}
                   onChange={(e) => {
                     const path = e.target.value;
                     localStorageManager.set('mappingPath', path);
@@ -218,9 +220,10 @@ export function ConvertForm() {
                     }
                     onChange(e);
                   }}
-                  onBlur={onBlur}
-                  error={Boolean(error)}
-                  helperText={<MappingHelpBtn />}
+                  placeholder='./mapping_table.txt'
+                  sx={{ width: '100%' }}
+                  value={value}
+                  variant='outlined'
                 />
               </Grid>
 
@@ -238,18 +241,17 @@ export function ConvertForm() {
         />
 
         <Controller
-          name="mapping1personPath"
           control={control}
+          name='mapping1personPath'
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <Grid container spacing={2}>
               <Grid xs={10}>
                 <TextField
-                  sx={{ minWidth: '100%' }}
+                  error={Boolean(error)}
+                  helperText={t('convert-form-mapping-helper')}
                   label={t('convert-form-mapping-1st-label')}
-                  placeholder="./mapping_table_for_1st_person.txt"
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
+                  margin='dense'
+                  onBlur={onBlur}
                   onChange={(e) => {
                     const path = e.target.value;
                     localStorageManager.set('mapping1personPath', path);
@@ -258,9 +260,10 @@ export function ConvertForm() {
                     }
                     onChange(e);
                   }}
-                  onBlur={onBlur}
-                  error={Boolean(error)}
-                  helperText={t('convert-form-mapping-helper')}
+                  placeholder='./mapping_table_for_1st_person.txt'
+                  sx={{ minWidth: '100%' }}
+                  value={value}
+                  variant='outlined'
                 />
               </Grid>
 
@@ -277,22 +280,22 @@ export function ConvertForm() {
         <Grid container spacing={2}>
           <Grid xs={3}>
             <Controller
-              name="modName"
               control={control}
+              name='modName'
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <TextField
+                  error={Boolean(error)}
+                  helperText={t('convert-form-mod-name-helper')}
                   label={t('convert-form-mod-name')}
-                  placeholder={t('convert-form-mod-name')}
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
+                  margin='dense'
+                  onBlur={onBlur}
                   onChange={(e) => {
                     localStorageManager.set('modName', e.target.value);
                     onChange(e);
                   }}
-                  onBlur={onBlur}
-                  error={Boolean(error)}
-                  helperText={t('convert-form-mod-name-helper')}
+                  placeholder={t('convert-form-mod-name')}
+                  value={value}
+                  variant='outlined'
                 />
               )}
             />
@@ -300,22 +303,22 @@ export function ConvertForm() {
 
           <Grid xs={3}>
             <Controller
-              name="modAuthor"
               control={control}
+              name='modAuthor'
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <TextField
+                  error={Boolean(error)}
+                  helperText={t('convert-form-author-name-helper')}
                   label={t('convert-form-author-name')}
-                  placeholder={t('convert-form-author-placeholder')}
-                  value={value}
-                  variant="outlined"
-                  margin="dense"
+                  margin='dense'
+                  onBlur={onBlur}
                   onChange={(e) => {
                     localStorageManager.set('modAuthor', e.target.value);
                     onChange(e);
                   }}
-                  onBlur={onBlur}
-                  error={Boolean(error)}
-                  helperText={t('convert-form-author-name-helper')}
+                  placeholder={t('convert-form-author-placeholder')}
+                  value={value}
+                  variant='outlined'
                 />
               )}
             />
@@ -323,8 +326,8 @@ export function ConvertForm() {
 
           <Grid xs={2}>
             <Controller
-              name="logLevel"
               control={control}
+              name='logLevel'
               render={({ field: { value } }) => <SelectLogLevel value={value} {...register('logLevel')} />}
             />
           </Grid>
@@ -341,8 +344,8 @@ export function ConvertForm() {
         <Grid container sx={{ alignItems: 'center' }}>
           <Grid xs={3}>
             <Controller
-              name="hideDar"
               control={control}
+              name='hideDar'
               render={({ field: { value } }) => (
                 <Tooltip
                   title={
@@ -355,16 +358,16 @@ export function ConvertForm() {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        aria-label='Hide DAR'
+                        checked={value}
                         onClick={() => {
                           localStorageManager.set('hideDar', `${!value}`);
                           setValue('hideDar', !value);
                         }}
-                        checked={value}
-                        aria-label="Hide DAR"
                       />
                     }
                     label={
-                      <Box component="div" sx={{ display: 'flex' }}>
+                      <Box component='div' sx={{ display: 'flex' }}>
                         <VisibilityOffIcon />
                         {t('hide-dar-btn')}
                       </Box>
@@ -377,8 +380,8 @@ export function ConvertForm() {
 
           <Grid xs={3}>
             <Controller
-              name="showProgress"
               control={control}
+              name='showProgress'
               render={({ field: { value } }) => (
                 <Tooltip
                   title={
@@ -391,16 +394,16 @@ export function ConvertForm() {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        aria-label='Show Progress'
+                        checked={value}
                         onClick={() => {
                           setValue('showProgress', !value);
                           localStorageManager.set('showProgress', `${!value}`);
                         }}
-                        checked={value}
-                        aria-label="Show Progress"
                       />
                     }
                     label={
-                      <Box component="div" sx={{ display: 'flex' }}>
+                      <Box component='div' sx={{ display: 'flex' }}>
                         <SlideshowIcon />
                         {t('progress-btn')}
                       </Box>
@@ -413,8 +416,8 @@ export function ConvertForm() {
 
           <Grid xs={3}>
             <Controller
-              name="runParallel"
               control={control}
+              name='runParallel'
               render={({ field: { value } }) => (
                 <Tooltip
                   title={
@@ -427,12 +430,12 @@ export function ConvertForm() {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        aria-label='Run Parallel'
+                        checked={value}
                         onClick={() => {
                           localStorageManager.set('runParallel', `${!value}`);
                           setValue('runParallel', !value);
                         }}
-                        checked={value}
-                        aria-label="Run Parallel"
                       />
                     }
                     label={t('run-parallel-label')}
@@ -453,8 +456,8 @@ export function ConvertForm() {
         </Grid>
 
         <Controller
-          name="loading"
           control={control}
+          name='loading'
           render={({ field: { value } }) => (
             <Box sx={{ width: '100%', paddingTop: '10px' }}>
               <ConvertButton loading={value} setLoading={setLoading} />
@@ -463,8 +466,8 @@ export function ConvertForm() {
         />
 
         <Controller
-          name="progress"
           control={control}
+          name='progress'
           render={({ field: { value } }) => <LinearWithValueLabel progress={value} />}
         />
       </FormGroup>
@@ -481,7 +484,7 @@ function MappingHelpBtn() {
       {t('convert-form-mapping-helper')}
       <br />
       {t('convert-form-mapping-helper2')}
-      <Button onClick={handleMappingClick} style={{ fontSize: 'small' }} type="button">
+      <Button onClick={handleMappingClick} style={{ fontSize: 'small' }} type='button'>
         [{t('convert-form-mapping-help-link-name')}]
       </Button>
     </>

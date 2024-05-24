@@ -5,11 +5,11 @@ import AceEditor from 'react-ace';
 import { useInjectScript, useStorageState, useTranslation } from '@/hooks';
 import { selectEditorMode } from '@/utils/selector';
 
-export type JSEditorProps = {
+export type JsEditorProps = {
   editorMode: string;
   marginTop?: string;
 };
-export const JSEditor = ({ editorMode, marginTop }: JSEditorProps) => {
+export const JsEditor = ({ editorMode, marginTop }: JsEditorProps) => {
   const { t } = useTranslation();
 
   const [script, setScript] = useInjectScript();
@@ -17,8 +17,16 @@ export const JSEditor = ({ editorMode, marginTop }: JSEditorProps) => {
 
   return (
     <>
-      <Grid container sx={{ display: 'flex', justifyContent: 'space-evenly', width: '100%', marginTop: marginTop }}>
-        <InputLabel sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} error>
+      <Grid
+        container
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          width: '100%',
+          marginTop: marginTop,
+        }}
+      >
+        <InputLabel error sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {t('custom-js-label')}
         </InputLabel>
         <Tooltip
@@ -49,10 +57,16 @@ export const JSEditor = ({ editorMode, marginTop }: JSEditorProps) => {
       </Grid>
 
       <AceEditor
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
+        editorProps={{ $blockScrolling: true }}
+        enableBasicAutocompletion
+        enableLiveAutocompletion
+        enableSnippets
+        fontSize={'1rem'}
+        height='250px'
+        highlightActiveLine
+        keyboardHandler={selectEditorMode(editorMode)}
+        mode='javascript'
+        name='Custom JavaScript'
         onChange={(value) => {
           localStorage.setItem('customJS', value);
           setScript(value);
@@ -62,19 +76,13 @@ export const JSEditor = ({ editorMode, marginTop }: JSEditorProps) => {
     p.innerText = 'Hello';
     document.body.appendChild(p);
 )()`}
-        editorProps={{ $blockScrolling: true }}
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        fontSize={'1rem'}
-        height="250px"
-        highlightActiveLine
-        keyboardHandler={selectEditorMode(editorMode)}
-        mode="javascript"
-        name="Custom JavaScript"
         setOptions={{ useWorker: false }}
+        style={{
+          width: '95%',
+          backgroundColor: '#2424248c',
+        }}
         tabSize={2}
-        theme="one_dark"
+        theme='one_dark'
         value={script}
       />
     </>

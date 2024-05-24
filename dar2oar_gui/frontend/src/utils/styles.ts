@@ -93,7 +93,7 @@ const preset1 = createPreset(
   --image-size: cover;
   --image-url: url("https://i.redd.it/red-forest-1920-1080-v0-s9u8ki2rr70a1.jpg?s=139edf608c428656505a143635a0687dec086229");
   --main-bg-color: #2223;
-  --theme-color: #ff8e16;` as const,
+  --theme-color: #ff8e16;`,
 );
 
 const preset2 = createPreset(
@@ -104,7 +104,7 @@ const preset2 = createPreset(
   --image-size: cover;
   --image-url: url("https://images.pexels.com/photos/2817421/pexels-photo-2817421.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750& dpr=1");
   --main-bg-color: #2223;
-  --theme-color: #5a9ab9;` as const,
+  --theme-color: #5a9ab9;`,
 );
 
 const preset3 = createPreset(
@@ -115,7 +115,7 @@ const preset3 = createPreset(
   --image-size: cover;
   --image-url: url("https://images.pexels.com/photos/6162265/pexels-photo-6162265.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
   --main-bg-color: #2223;
-  --theme-color: #9644f1;` as const,
+  --theme-color: #9644f1;`,
 );
 
 const preset4 = createPreset(
@@ -127,7 +127,7 @@ const preset4 = createPreset(
   --image-position-y: center;
   --image-url: url('https://images.pexels.com/photos/973324/pexels-photo-973324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
   --main-bg-color: #222a;
-  --theme-color: rgb(185, 185, 90);` as const,
+  --theme-color: rgb(185, 185, 90);`,
 );
 
 export const presetStyles = {

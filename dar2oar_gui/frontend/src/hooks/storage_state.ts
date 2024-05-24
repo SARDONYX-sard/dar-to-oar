@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { type CacheKey } from '@/utils/local_storage_manager';
+import type { CacheKey } from '@/utils/local_storage_manager';
 
 type CacheKeyAll = CacheKey | 'runScript';
 const getCacheStr = (cacheKey: CacheKeyAll, initialState: string) => localStorage.getItem(cacheKey) ?? initialState;

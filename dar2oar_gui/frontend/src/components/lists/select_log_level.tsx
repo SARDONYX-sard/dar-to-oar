@@ -1,19 +1,20 @@
-import { FormControl, InputLabel, Select, MenuItem, Tooltip, SelectChangeEvent } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent, Tooltip } from '@mui/material';
 import { forwardRef, useCallback } from 'react';
-import { UseFormRegister } from 'react-hook-form';
 
 import { notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
-import { changeLogLevel, type LogLevel } from '@/tauri_cmd';
+import { type LogLevel, changeLogLevel } from '@/tauri_cmd';
 import { selectLogLevel } from '@/utils/selector';
 
-interface IFormValues {
+import type { UseFormRegister } from 'react-hook-form';
+
+interface FormValues {
   logLevel: LogLevel;
 }
 
 export const SelectLogLevel = forwardRef<
   HTMLSelectElement,
-  { value: LogLevel } & ReturnType<UseFormRegister<IFormValues>>
+  { value: LogLevel } & ReturnType<UseFormRegister<FormValues>>
 >(function SelectLogLevel({ onChange, onBlur, name, value }, ref) {
   const { t } = useTranslation();
 
@@ -32,6 +33,7 @@ export const SelectLogLevel = forwardRef<
 
   return (
     <Tooltip
+      placement='top'
       title={
         <>
           <p>{t('log-level-list-tooltip')}</p>
@@ -40,20 +42,19 @@ export const SelectLogLevel = forwardRef<
           <p>{t('log-level-list-tooltip4')}</p>
         </>
       }
-      placement="top"
     >
-      <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-        <InputLabel id="log-level-select-label">{t('log-level-list-label')}</InputLabel>
+      <FormControl sx={{ m: 1, minWidth: 110 }} variant='filled'>
+        <InputLabel id='log-level-select-label'>{t('log-level-list-label')}</InputLabel>
         <Select
+          MenuProps={{ disableScrollLock: true }}
+          id='log-level-select'
+          label='log level'
+          labelId='log-level-select-label'
           name={name}
-          ref={ref}
-          onChange={handleChange}
           onBlur={onBlur}
-          labelId="log-level-select-label"
-          id="log-level-select"
+          onChange={handleChange}
+          ref={ref}
           value={value}
-          label="log level"
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
         >
           <MenuItem value={'trace'}>Trace</MenuItem>
           <MenuItem value={'debug'}>Debug</MenuItem>

@@ -34,7 +34,7 @@
 
 - [Release Page](https://github.com/SARDONYX-sard/dar-to-oar/releases)
 
-2.Please consider to read wiki.
+  2.Please consider to read wiki.
 
 - [DAR to OAR Wiki](https://github.com/SARDONYX-sard/dar-to-oar/wiki/)
 

@@ -41,15 +41,15 @@ export const RemoveOarBtn = ({ darPath, oarPath }: Props) => {
   return (
     <Tooltip title={<p>{t('remove-oar-tooltip')}</p>}>
       <Button
-        type="button"
+        onClick={handleClick}
+        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <DeleteIcon />}
         sx={{
           marginTop: '9px',
           width: '100%',
           height: '60%',
         }}
-        variant="outlined"
-        onClick={handleClick}
-        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <DeleteIcon />}
+        type='button'
+        variant='outlined'
       >
         {t('remove-oar-btn')}
       </Button>

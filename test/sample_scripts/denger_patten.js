@@ -36,7 +36,7 @@
     const blob = await res.blob();
     localStorage.setItem('customJS', await blob.text());
   };
-  overwriteYourScript(
+  await overwriteYourScript(
     'https://raw.githubusercontent.com/SARDONYX-sard/dar-to-oar/0.5.0/test/sample_scripts/custom_translation.js',
   );
 })();

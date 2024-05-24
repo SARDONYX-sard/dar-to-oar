@@ -1,11 +1,12 @@
 import { FileOpen } from '@mui/icons-material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Button, type ButtonProps, Tooltip } from '@mui/material';
-import { type ReactNode } from 'react';
 
 import { notify } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { openLogDir, openLogFile } from '@/tauri_cmd';
+
+import type { ReactNode } from 'react';
 
 type Props = {
   buttonName: ReactNode;
@@ -15,14 +16,14 @@ type Props = {
 export const LogButton = ({ buttonName, tooltipTitle, ...props }: Props) => (
   <Tooltip title={tooltipTitle}>
     <Button
+      startIcon={<FileOpen />}
       sx={{
         marginTop: '9px',
         width: '100%',
         height: '60%',
       }}
-      startIcon={<FileOpen />}
-      type="button"
-      variant="outlined"
+      type='button'
+      variant='outlined'
       {...props}
     >
       {buttonName}
@@ -43,7 +44,7 @@ export const LogFileButton = () => {
     }
   };
 
-  return <LogButton buttonName={t('open-log-btn')} tooltipTitle={t('open-log-tooltip')} onClick={handleClick} />;
+  return <LogButton buttonName={t('open-log-btn')} onClick={handleClick} tooltipTitle={t('open-log-tooltip')} />;
 };
 
 export const LogDirButton = () => {

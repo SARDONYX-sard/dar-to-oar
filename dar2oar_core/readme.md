@@ -150,13 +150,13 @@ cargo doc --open
 
 ## How to run bench
 
-1.Requirements
+1. Requirements
 
-- test mod: `../test/data/EVG Conditional Idles`
-- mapping_table:
-  `../test/settings/EVG Conditional Idles_v1.4.2_mapping_table.txt`
+   - test mod: `../test/data/EVG Conditional Idles`
+   - mapping_table:
+     `../test/settings/EVG Conditional Idles_v1.4.2_mapping_table.txt`
 
-2.Execute the following command
+2. Execute the following command
 
 ```shell
 cargo bench

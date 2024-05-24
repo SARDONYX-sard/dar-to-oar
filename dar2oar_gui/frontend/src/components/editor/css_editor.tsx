@@ -4,44 +4,44 @@ import AceEditor from 'react-ace';
 import { useTranslation } from '@/hooks';
 import { selectEditorMode } from '@/utils/selector';
 
-export type CSSEditorProps = {
+export type CssEditorProps = {
   editorMode: string;
   setPreset: (script: string) => void;
   setStyle: (style: string) => void;
   style: string;
 };
 
-export const CSSEditor = ({ editorMode, setPreset, setStyle, style }: CSSEditorProps) => {
+export const CssEditor = ({ editorMode, setPreset, setStyle, style }: CssEditorProps) => {
   const { t } = useTranslation();
 
   return (
     <>
       <InputLabel sx={{ marginTop: '20px' }}>{t('custom-css-label')}</InputLabel>
       <AceEditor
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
+        editorProps={{ $blockScrolling: true }}
+        enableBasicAutocompletion
+        enableLiveAutocompletion
+        enableSnippets
+        fontSize={'1rem'}
+        height='300px'
+        highlightActiveLine
+        keyboardHandler={selectEditorMode(editorMode)}
+        mode='css'
+        name='Custom CSS'
         onChange={(value) => {
           setStyle(value);
           localStorage.setItem('customCSS', value);
           setPreset('0');
         }}
-        fontSize={'1rem'}
-        height="300px"
-        mode="css"
-        theme="one_dark"
-        value={style}
-        setOptions={{ useWorker: false }}
         placeholder="{ body: url('https://localhost' }"
-        name="Custom CSS"
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        keyboardHandler={selectEditorMode(editorMode)}
-        highlightActiveLine
+        setOptions={{ useWorker: false }}
+        style={{
+          width: '95%',
+          backgroundColor: '#2424248c',
+        }}
         tabSize={2}
-        editorProps={{ $blockScrolling: true }}
+        theme='one_dark'
+        value={style}
       />
     </>
   );

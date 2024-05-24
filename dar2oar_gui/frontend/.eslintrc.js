@@ -1,9 +1,11 @@
+// For compatibility with Biome (fast linter&fmt made by Rust), the following settings are made
+// to compensate for missing functions of Biome with eslint.
+
 /** @type {import('eslint/lib/shared/types').ConfigData} */
 module.exports = {
-  plugins: ['strict-dependencies', 'unused-imports'],
-  extends: ['next/core-web-vitals', 'plugin:import/recommended', 'plugin:import/warnings', 'prettier'],
+  extends: ['next/core-web-vitals'],
   settings: {
-    // NOTE: eslint cannot resolve aliases by @ without the following two settings
+    // NOTE: eslint cannot resolve aliases by `@` without the following two settings
     // See:https://github.com/import-js/eslint-plugin-import/issues/2765#issuecomment-1701641064
     next: {
       rootDir: __dirname,
@@ -14,30 +16,19 @@ module.exports = {
       },
     },
   },
+
+  // `next/core-web-vitals` of `eslint-config-next` has sort import and `sort-props` functions, so use them.
   rules: {
-    'strict-dependencies/strict-dependencies': [
-      'error',
-      [
-        { module: 'src/components/pages', allowReferenceFrom: [], allowSameModule: false },
-        {
-          module: 'src/components',
-          allowReferenceFrom: ['src/components/form', 'src/components/pages'],
-          allowSameModule: true,
-        },
-        { module: 'src/hooks', allowSameModule: false },
-        { module: 'src/tauri_cmd', allowSameModule: false },
-        { module: 'src/utils', allowSameModule: true },
-      ],
-      { resolveRelativeImport: false },
-    ],
-    // ref：https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/order.md
     'import/order': [
-      'error',
+      'warn',
       {
-        groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'object', 'type', 'index'],
+        alphabetize: {
+          caseInsensitive: true,
+          order: 'asc',
+        },
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
         'newlines-between': 'always',
         pathGroupsExcludedImportTypes: ['builtin'],
-        alphabetize: { order: 'asc', caseInsensitive: true },
         pathGroups: [
           { pattern: '@/**', group: 'internal', position: 'before' },
           // styles
@@ -47,5 +38,6 @@ module.exports = {
         ],
       },
     ],
+    'react/jsx-sort-props': 'warn',
   },
 };

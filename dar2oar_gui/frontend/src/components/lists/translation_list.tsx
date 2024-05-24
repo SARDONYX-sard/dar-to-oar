@@ -17,13 +17,13 @@ export const TranslationList = () => {
 
   const locale = 'Locale';
   return (
-    <FormControl variant="filled" sx={{ m: 1, minWidth: 135 }}>
-      <InputLabel id="locale-select-label">{t('lang-preset-label')}</InputLabel>
+    <FormControl sx={{ m: 1, minWidth: 135 }} variant='filled'>
+      <InputLabel id='locale-select-label'>{t('lang-preset-label')}</InputLabel>
       <Select
-        id="locale-select"
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
+        MenuProps={{ disableScrollLock: true }}
+        id='locale-select'
         label={locale}
-        labelId="locale-select-label"
+        labelId='locale-select-label'
         onChange={handleChange}
         value={lang}
       >

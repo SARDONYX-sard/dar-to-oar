@@ -12,7 +12,7 @@ export default function Converter() {
 
   return (
     <Box
-      component="main"
+      component='main'
       sx={{
         display: 'grid',
         minHeight: 'calc(100vh - 56px)',

@@ -3,6 +3,9 @@
     "jayfong.generate-index",
     "lokalise.i18n-ally",
     "rust-lang.rust-analyzer",
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "vitest.explorer",
+    "biomejs.biome",
+    "editorconfig.editorconfig"
   ]
 }

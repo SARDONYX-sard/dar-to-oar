@@ -5,6 +5,7 @@ import Loading from '@/components/pages/loading';
 import '@/utils/translation';
 
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 import '@/app/globals.css';
 
@@ -30,17 +31,17 @@ export const metadata: Metadata = {
 };
 
 type Props = Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>;
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={inter.className}>
         <ThemeProvider>
           <SnackBarProvider />
           {children}
           {/* To prevents the conversion button from being hidden because the menu is fixed. */}
-          <div style={{ height: '56px' }}></div>
+          <div style={{ height: '56px' }} />
           <Menu />
         </ThemeProvider>
       </body>

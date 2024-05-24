@@ -4,10 +4,10 @@ import { Button, Tooltip } from '@mui/material';
 import { type ReactNode, useState } from 'react';
 
 import {
-  LocalStorageDialog,
-  notify,
   type DialogClickHandler,
+  LocalStorageDialog,
   type LocalStorageDialogProps,
+  notify,
 } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { backup } from '@/tauri_cmd';
@@ -26,6 +26,8 @@ export const BackupButton = ({ buttonName, startIcon, tooltipTitle, onClick, ...
     <>
       <Tooltip title={tooltipTitle}>
         <Button
+          onClick={onClick}
+          startIcon={startIcon}
           sx={{
             height: '4em',
             marginBottom: '8px',
@@ -34,10 +36,8 @@ export const BackupButton = ({ buttonName, startIcon, tooltipTitle, onClick, ...
             minWidth: '120px',
             width: '120px',
           }}
-          type="button"
-          variant="outlined"
-          onClick={onClick}
-          startIcon={startIcon}
+          type='button'
+          variant='outlined'
         >
           {buttonName}
         </Button>
@@ -65,12 +65,12 @@ export const ImportBackupButton = () => {
   };
 
   const handleDialogClick: DialogClickHandler = (checkedKeys) => {
-    checkedKeys.forEach((key) => {
+    for (const key of checkedKeys) {
       const value = settings[key];
       if (value) {
         localStorage.setItem(key, value);
       }
-    });
+    }
 
     window.location.reload(); // To enable
   };
@@ -111,8 +111,8 @@ export const ExportBackupButton = () => {
       buttonName={t('backup-export-btn-name')}
       cacheItems={localStorageManager.getAll()}
       inDialogClick={handleClick}
-      open={open}
       onClick={() => setOpen(true)}
+      open={open}
       setOpen={setOpen}
       startIcon={<FileDownloadIcon />}
       title={t('backup-export-dialog-title')}

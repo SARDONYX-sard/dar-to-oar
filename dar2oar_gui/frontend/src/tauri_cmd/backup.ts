@@ -1,7 +1,7 @@
 import { save } from '@tauri-apps/api/dialog';
 
 import { readFile, writeFile } from '@/tauri_cmd';
-import { cacheKeys, localStorageManager, type LocalCache } from '@/utils/local_storage_manager';
+import { type LocalCache, cacheKeys, localStorageManager } from '@/utils/local_storage_manager';
 
 export const backup = {
   /** @throws Error */
@@ -12,16 +12,17 @@ export const backup = {
       const obj = JSON.parse(settings);
 
       // Validate
-      Object.keys(obj).forEach((key) => {
+      for (const key of Object.keys(obj)) {
         // The import path does not need to be overwritten.
         if (key === pathKey) {
           return;
         }
         // Remove invalid settings values
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         if (!cacheKeys.includes(key as any)) {
           delete obj[key];
         }
-      });
+      }
 
       return obj as LocalCache;
     }
@@ -42,10 +43,9 @@ export const backup = {
     });
 
     if (typeof path === 'string') {
-      await writeFile(path, JSON.stringify(settings, null, 2));
+      await writeFile(path, `${JSON.stringify(settings, null, 2)}\n`);
       return path;
-    } else {
-      return null;
     }
+    return null;
   },
 };

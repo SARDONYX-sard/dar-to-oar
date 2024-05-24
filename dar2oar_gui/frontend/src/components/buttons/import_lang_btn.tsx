@@ -33,16 +33,16 @@ export const ImportLangButton = () => {
       }
     >
       <Button
+        onClick={handleClick}
+        startIcon={<FileOpen />}
         sx={{
           height: '4em',
           marginTop: '8px',
           minWidth: '120px',
           width: '120px',
         }}
-        onClick={handleClick}
-        startIcon={<FileOpen />}
-        type="button"
-        variant="outlined"
+        type='button'
+        variant='outlined'
       >
         {t('import-lang-btn')}
       </Button>

@@ -1,12 +1,13 @@
-import { InputLabel, FormControl, TextField } from '@mui/material';
+import { FormControl, InputLabel, TextField } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
-import { type SnackbarOrigin } from 'notistack';
-import { ChangeEventHandler, useCallback, useState } from 'react';
+import { type ChangeEventHandler, useCallback, useState } from 'react';
 
 import { getSnackbarSettings } from '@/components/notifications';
 import { useTranslation } from '@/hooks';
 import { localStorageManager } from '@/utils/local_storage_manager';
+
+import type { SnackbarOrigin } from 'notistack';
 
 export const NoticeSettingsList = () => {
   const { t } = useTranslation();
@@ -15,26 +16,23 @@ export const NoticeSettingsList = () => {
   const [pos, setPos] = useState(position);
   const [maxSnack, setMaxSnack] = useState(initMaxSnack);
 
-  const handlePosChange = useCallback(
-    (e: SelectChangeEvent<string>) => {
-      const [vertical, horizontal] = e.target.value.split('_');
+  const handlePosChange = useCallback((e: SelectChangeEvent<string>) => {
+    const [vertical, horizontal] = e.target.value.split('_');
 
-      const newPosition: SnackbarOrigin = {
-        vertical: vertical === 'bottom' || vertical === 'top' ? vertical : 'bottom',
-        horizontal: horizontal === 'center' || horizontal === 'right' || horizontal === 'left' ? horizontal : 'right',
-      };
+    const newPosition: SnackbarOrigin = {
+      vertical: vertical === 'bottom' || vertical === 'top' ? vertical : 'bottom',
+      horizontal: horizontal === 'center' || horizontal === 'right' || horizontal === 'left' ? horizontal : 'right',
+    };
 
-      localStorageManager.set(
-        'snackbar-position',
-        JSON.stringify({
-          vertical: vertical,
-          horizontal: horizontal,
-        }),
-      );
-      setPos(newPosition);
-    },
-    [setPos],
-  );
+    localStorageManager.set(
+      'snackbar-position',
+      JSON.stringify({
+        vertical: vertical,
+        horizontal: horizontal,
+      }),
+    );
+    setPos(newPosition);
+  }, []);
 
   const handleMaxSnackChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
     const newValue = Number(e.target.value);
@@ -49,13 +47,13 @@ export const NoticeSettingsList = () => {
 
   return (
     <>
-      <FormControl variant="filled" sx={{ m: 1, minWidth: 105 }}>
-        <InputLabel id="notice-position-label">{t('notice-position-list-label')}</InputLabel>
+      <FormControl sx={{ m: 1, minWidth: 105 }} variant='filled'>
+        <InputLabel id='notice-position-label'>{t('notice-position-list-label')}</InputLabel>
         <Select
-          id="notice-position"
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
-          label="Editor Mode"
-          labelId="notice-position-label"
+          MenuProps={{ disableScrollLock: true }}
+          id='notice-position'
+          label='Editor Mode'
+          labelId='notice-position-label'
           onChange={handlePosChange}
           value={`${pos.vertical}_${pos.horizontal}`}
         >
@@ -71,12 +69,12 @@ export const NoticeSettingsList = () => {
         InputLabelProps={{ shrink: true }}
         InputProps={{ inputProps: { min: 1 } }}
         error={maxSnack < 1}
-        id="outlined-number"
-        label={t('notice-limit')}
         helperText={maxSnack < 1 ? 'Min. 1' : ''}
+        id='outlined-number'
+        label={t('notice-limit')}
         onChange={handleMaxSnackChange}
         sx={{ m: 1, minWidth: 105, width: 105 }}
-        type="number"
+        type='number'
         value={maxSnack}
       />
     </>

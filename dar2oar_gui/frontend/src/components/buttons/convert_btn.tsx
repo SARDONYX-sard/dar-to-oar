@@ -18,13 +18,13 @@ export function ConvertButton({ loading, setLoading }: Props) {
 
   return (
     <LoadingButton
-      type="submit"
-      sx={{ width: '100%' }}
       endIcon={<ConvertIcon />}
       loading={loading}
-      loadingPosition="end"
-      variant="contained"
+      loadingPosition='end'
       onChange={() => setLoading(true)}
+      sx={{ width: '100%' }}
+      type='submit'
+      variant='contained'
     >
       <span>{loading ? t('converting-btn') : t('convert-btn')}</span>
     </LoadingButton>

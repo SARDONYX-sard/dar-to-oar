@@ -19,15 +19,15 @@ export function SelectPathButton({ path, isDir = false, setPath }: Props) {
 
   return (
     <Button
+      onClick={handleClick}
+      startIcon={<FolderOpenIcon />}
       sx={{
         marginTop: '9px',
         width: '100%',
         height: '55px',
       }}
-      onClick={handleClick}
-      startIcon={<FolderOpenIcon />}
-      type="button"
-      variant="outlined"
+      type='button'
+      variant='outlined'
     >
       {t('select-btn')}
     </Button>

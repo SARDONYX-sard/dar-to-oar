@@ -1,7 +1,7 @@
 'use client';
 
 import { CssBaseline } from '@mui/material';
-import { createTheme, ThemeProvider as ThemeProviderInner } from '@mui/material/styles';
+import { ThemeProvider as ThemeProviderInner, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useMemo } from 'react';
 
