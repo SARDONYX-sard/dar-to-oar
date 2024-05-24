@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Structure comparing A and B
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CompareValues {
-    /// Condition name "CompareValues"
+    /// Condition name "`CompareValues`"
     pub condition: CompactString,
     /// The required version for compatibility with this condition.
     #[serde(default = "default_required_version")]

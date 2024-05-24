@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if the current weather matches a specified weather.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CurrentWeather {
-    /// The name of the condition, which is "CurrentWeather".
+    /// The name of the condition, which is "`CurrentWeather`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if an entity has a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasKeyword {
-    /// The name of the condition, which is "HasKeyword".
+    /// The name of the condition, which is "`HasKeyword`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

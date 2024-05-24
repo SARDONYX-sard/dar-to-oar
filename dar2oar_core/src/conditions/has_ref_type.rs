@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if a reference has a specific type.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasRefType {
-    /// The name of the condition, which is "HasRefType".
+    /// The name of the condition, which is "`HasRefType`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

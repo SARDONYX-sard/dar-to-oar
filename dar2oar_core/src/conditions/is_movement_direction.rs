@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition based on the movement direction of an entity.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsMovementDirection {
-    /// The name of the condition, which is "IsMovementDirection".
+    /// The name of the condition, which is "`IsMovementDirection`".
     pub condition: CompactString,
     /// The required version for compatibility with this condition.
     #[serde(default = "default_required_version")]

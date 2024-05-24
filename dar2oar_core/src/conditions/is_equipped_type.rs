@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if a specific type is equipped.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsEquippedType {
-    /// The name of the condition, which is "IsEquippedType".
+    /// The name of the condition, which is "`IsEquippedType`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

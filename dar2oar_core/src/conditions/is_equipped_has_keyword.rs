@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if an equipped item has a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsEquippedHasKeyword {
-    /// The name of the condition, which is "IsEquippedHasKeyword".
+    /// The name of the condition, which is "`IsEquippedHasKeyword`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

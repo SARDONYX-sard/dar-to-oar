@@ -30,13 +30,13 @@ pub enum ConvertError {
     /// Could not find files with ".mohidden" extension.
     #[error("Could not find files with \".mohidden\" extension")]
     NotFoundUnhideTarget,
-    /// Not found "DynamicAnimationReplacer" directory.
+    /// Not found `DynamicAnimationReplacer` directory.
     #[error("Not found \"DynamicAnimationReplacer\" directory")]
     NotFoundDarDir,
     /// Not found file name.
     #[error("Not found file name")]
     NotFoundFileName,
-    /// Not found "OpenAnimationReplacer" directory.
+    /// Not found `OpenAnimationReplacer` directory.
     #[error("Not found \"OpenAnimationReplacer\" directory")]
     NotFoundOarDir,
     /// Not found DAR priority(Number) directory.

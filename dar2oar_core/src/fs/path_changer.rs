@@ -35,12 +35,12 @@ pub struct ParsedPath {
     /// `male`, `female`, others dir
     pub remain_dir: Option<PathBuf>,
 
-    /// Appears only in the actor_base directory format.
+    /// Appears only in the `actor_base` directory format.
     ///
     /// # Examples.
     /// `Skyrim.esm`.
     pub esp_dir: Option<String>,
-    /// Appears only in the actor_base directory format.
+    /// Appears only in the `actor_base` directory format.
     ///
     /// # Examples.
     /// `0001A692`.

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if an entity has a specific perk.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasPerk {
-    /// The name of the condition, which is "HasPerk".
+    /// The name of the condition, which is "`HasPerk`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

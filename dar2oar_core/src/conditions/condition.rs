@@ -14,7 +14,7 @@ pub fn default_required_version() -> CompactString {
 /// Represents a generic condition.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Condition {
-    /// The name of the condition (e.g., IsWornHasKeyword).
+    /// The name of the condition (e.g., "`IsWornHasKeyword`").
     #[serde(default)]
     pub condition: CompactString,
     /// The required version for this condition.

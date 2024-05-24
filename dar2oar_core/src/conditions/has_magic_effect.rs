@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to check if an entity has a specific magic effect.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HasMagicEffect {
-    /// The name of the condition, which is "HasMagicEffect".
+    /// The name of the condition, which is "`HasMagicEffect`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

@@ -97,7 +97,7 @@ pub struct ConvertOptions {
     pub author: Option<String>,
     /// path to section name table
     pub section_table: Option<HashMap<CompactString, String>>,
-    /// path to section name table(For _1st_person)
+    /// path to section name table(For `_1st_person`)
     pub section_1person_table: Option<HashMap<CompactString, String>>,
     /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
     pub run_parallel: bool,

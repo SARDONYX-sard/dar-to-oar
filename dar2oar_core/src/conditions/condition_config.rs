@@ -9,7 +9,7 @@ pub struct ConditionsConfig {
     /// An arbitrary name given by the user (value in the mapping table).
     ///
     /// # Note
-    /// The name will probably exceed 24 bytes, so it should not be a [CompactString].
+    /// The name will probably exceed 24 bytes, so it should not be a [`CompactString`].
     #[serde(default)]
     pub name: String,
     /// The description associated with the animation root configuration.

@@ -92,7 +92,7 @@ pub async fn remove_oar(
                     if prev_dir == oar_dir {
                         continue;
                     }
-                    prev_dir = oar_dir.clone();
+                    prev_dir.clone_from(&oar_dir);
 
                     task_handles.push(tokio::spawn({
                         let found_once = Arc::clone(&found_once);

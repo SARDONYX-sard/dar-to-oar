@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition to test the reference's faction rank against a specified rank.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FactionRank {
-    /// The name of the condition, which is "FactionRank".
+    /// The name of the condition, which is "`FactionRank`".
     pub condition: CompactString,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]

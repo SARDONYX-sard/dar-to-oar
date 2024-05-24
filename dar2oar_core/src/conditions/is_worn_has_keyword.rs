@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Represents a condition based on whether an entity is worn and has a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IsWornHasKeyword {
-    /// The name of the condition, which is "IsWornHasKeyword".
+    /// The name of the condition, which is "`IsWornHasKeyword`".
     pub condition: CompactString,
     /// The required version for compatibility with this condition.
     #[serde(default = "default_required_version")]
