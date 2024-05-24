@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tauri dev",
     "dev:front": "next ./dar2oar_gui/frontend",
-    "build": "rimraf ./out && tauri build",
+    "build": "rimraf ./dar2oar_gui/frontend/out && tauri build",
     "build:front": "next build ./dar2oar_gui/frontend",
     "build:icons": "cargo tauri icon ./dar2oar_gui/backend/icons/icon.png",
     "test": "jest",
