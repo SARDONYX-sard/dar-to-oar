@@ -34,7 +34,7 @@ export const privateCacheKeys = [
 export const cacheKeys = [...pubCacheKeys, ...privateCacheKeys];
 
 export type CacheKey = (typeof cacheKeys)[number];
-export type LocalCache = Partial<{ [key in CacheKey]: string }>;
+export type LocalCache = Partial<{ [Key in CacheKey]: string }>;
 
 /** Wrapper for type completion of keys to be cached */
 export const localStorageManager = {
@@ -49,23 +49,27 @@ export const localStorageManager = {
   },
   getFromKeys(keys: CacheKey[]) {
     const res: LocalCache = {};
-    keys.forEach((key) => {
+
+    for (const key of keys) {
       const value = localStorageManager.get(key);
       if (value) {
         res[key] = value;
       }
-    });
+    }
+
     return res;
   },
   /** Get all cache */
   getAll() {
     const res: LocalCache = {};
-    cacheKeys.forEach((key) => {
+
+    for (const key of cacheKeys) {
       const val = localStorageManager.get(key);
       if (val) {
         res[key] = val;
       }
-    });
+    }
+
     return res;
   },
   /** Set cache */
@@ -73,6 +77,8 @@ export const localStorageManager = {
     return localStorage.setItem(key, value);
   },
   removeFromKeys(keys: CacheKey[]) {
-    keys.forEach((key) => localStorage.removeItem(key));
+    for (const key of keys) {
+      localStorage.removeItem(key);
+    }
   },
 };

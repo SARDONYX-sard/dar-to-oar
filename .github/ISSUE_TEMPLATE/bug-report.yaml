@@ -1,8 +1,8 @@
 ---
 name: Bug Report
 description: File a bug report
-title: "[Bug]: "
-labels: ["bug"]
+title: '[Bug]: '
+labels: ['bug']
 
 body:
   - type: markdown
@@ -40,7 +40,7 @@ body:
       label: Unexpected behavior here
       description: May I ask you to tell us about the unexpected behavior?
       # yamllint disable-line rule:line-length
-      placeholder: "Example: logger is not worked."
+      placeholder: 'Example: logger is not worked.'
     validations:
       required: true
   - type: textarea
@@ -49,7 +49,7 @@ body:
       label: Expected behavior
       description: May I ask you to tell us about the behavior you expect?
       # yamllint disable-line rule:line-length
-      placeholder: "Example: Reflects the level specification of the logger in the GUI."
+      placeholder: 'Example: Reflects the level specification of the logger in the GUI.'
     validations:
       required: true
   - type: textarea

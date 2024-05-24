@@ -3,10 +3,10 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Alert, AlertTitle, IconButton } from '@mui/material';
 import {
-  SnackbarProvider as SnackbarProviderInner,
-  closeSnackbar,
   type CustomContentProps,
   type SnackbarKey,
+  SnackbarProvider as SnackbarProviderInner,
+  closeSnackbar,
 } from 'notistack';
 import { forwardRef, memo } from 'react';
 
@@ -22,14 +22,14 @@ export default function SnackBarProvider() {
 
   return (
     <SnackbarProviderInner
-      action={action}
-      anchorOrigin={settings.position}
       Components={{
         info: ThemeResponsiveSnackbar,
         success: ThemeResponsiveSnackbar,
         error: ThemeResponsiveSnackbar,
         warning: ThemeResponsiveSnackbar,
       }}
+      action={action}
+      anchorOrigin={settings.position}
       dense
       maxSnack={settings.maxSnack}
       preventDuplicate={true}
@@ -39,8 +39,8 @@ export default function SnackBarProvider() {
 
 /** It exists to realize the deletion of the history of the passage at any timing by Click. */
 const action = (id: SnackbarKey) => (
-  <IconButton aria-label="close" color="inherit" size="small" onClick={() => closeSnackbar(id)}>
-    <CloseIcon fontSize="inherit" />
+  <IconButton aria-label='close' color='inherit' onClick={() => closeSnackbar(id)} size='small'>
+    <CloseIcon fontSize='inherit' />
   </IconButton>
 );
 
@@ -60,13 +60,12 @@ const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProp
 
   return (
     <Alert
+      action={action}
+      className={className}
+      icon={hideIconVariant ? false : undefined}
       ref={forwardedRef}
       severity={severity}
-      icon={hideIconVariant ? false : undefined}
-      action={action}
       style={style}
-      className={className}
-      variant="outlined"
       sx={(theme) => ({
         alignItems: 'center',
         backgroundColor: '#1a1919e1',
@@ -76,6 +75,7 @@ const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProp
         maxWidth: '35vw',
         willChange: 'transform',
       })}
+      variant='outlined'
     >
       <AlertTitle sx={{ color: '#fff', fontWeight: 'bold' }}>{severity.toUpperCase()}</AlertTitle>
       {message}

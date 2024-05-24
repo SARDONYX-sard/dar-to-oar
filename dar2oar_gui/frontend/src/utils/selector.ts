@@ -1,13 +1,12 @@
-import { LogLevel } from '@/tauri_cmd';
+import type { LogLevel } from '@/tauri_cmd';
 
 export type EditorMode = 'default' | 'vim';
 /** 'default' if null or undefined */
 export function selectEditorMode(select?: string | null): EditorMode {
   if (select === 'vim') {
     return select;
-  } else {
-    return 'default';
   }
+  return 'default';
 }
 
 /** 'error' if null or undefined */

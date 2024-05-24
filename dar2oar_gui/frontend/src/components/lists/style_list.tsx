@@ -1,9 +1,9 @@
-import { FormControl, Tooltip, InputLabel } from '@mui/material';
+import { FormControl, InputLabel, Tooltip } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 
 import { useTranslation } from '@/hooks';
-import { selectPreset, presetStyles } from '@/utils/styles';
+import { presetStyles, selectPreset } from '@/utils/styles';
 
 export type StyleListProps = {
   setStyle: (value: string) => void;
@@ -26,21 +26,21 @@ export const StyleList = ({ preset, setPreset, setStyle }: StyleListProps) => {
 
   return (
     <Tooltip
+      placement='right-end'
       title={
         <>
           <p>{t('css-preset-list-tooltip')}</p>
           <p>{t('css-preset-list-tooltip2')}</p>
         </>
       }
-      placement="right-end"
     >
-      <FormControl variant="filled" sx={{ m: 1, minWidth: 110 }}>
-        <InputLabel id="style-select-label">{t('css-preset-list-label')}</InputLabel>
+      <FormControl sx={{ m: 1, minWidth: 110 }} variant='filled'>
+        <InputLabel id='style-select-label'>{t('css-preset-list-label')}</InputLabel>
         <Select
-          id="style-select"
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
-          label="CSS Presets"
-          labelId="style-select-label"
+          MenuProps={{ disableScrollLock: true }}
+          id='style-select'
+          label='CSS Presets'
+          labelId='style-select-label'
           onChange={handleChange}
           value={preset}
         >

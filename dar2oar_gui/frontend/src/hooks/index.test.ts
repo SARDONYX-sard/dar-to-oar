@@ -1,6 +1,7 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
 
 import { useStorageState } from '@/hooks';
+import type { CacheKey } from '@/utils/local_storage_manager';
 
 afterEach(() => {
   cleanup();
@@ -8,7 +9,7 @@ afterEach(() => {
 
 describe('useStorageState hook', () => {
   it('should set and get value from state', () => {
-    const storageKey = 'testKey';
+    const storageKey: CacheKey = 'cached-dst';
     const initialValue = 'initialValue';
 
     const { result } = renderHook(() => useStorageState(storageKey, initialValue));

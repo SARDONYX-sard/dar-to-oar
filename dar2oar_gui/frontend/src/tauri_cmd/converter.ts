@@ -41,7 +41,7 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
     },
   };
 
-  let logLevel = selectLogLevel(localStorageManager.get('logLevel'));
+  const logLevel = selectLogLevel(localStorageManager.get('logLevel'));
   changeLogLevel(logLevel);
 
   const showProgress = props.showProgress ?? false;
@@ -61,7 +61,7 @@ export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
  * @returns {Promise<void>} A promise that resolves when the log level is changed.
  */
 export async function changeLogLevel(logLevel?: LogLevel): Promise<void> {
-  return invoke('change_log_level', { logLevel });
+  await invoke('change_log_level', { logLevel });
 }
 
 /**

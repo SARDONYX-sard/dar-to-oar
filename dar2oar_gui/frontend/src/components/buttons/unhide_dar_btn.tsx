@@ -39,15 +39,15 @@ export const UnhideDarBtn = ({ path }: Props) => {
   return (
     <Tooltip title={<p>{t('unhide-dar-btn-tooltip')}</p>}>
       <Button
-        type="button"
+        onClick={handleClick}
+        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
         sx={{
           marginTop: '9px',
           width: '100%',
           height: '60%',
         }}
-        variant="outlined"
-        onClick={handleClick}
-        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
+        type='button'
+        variant='outlined'
       >
         {t('unhide-dar-btn')}
       </Button>

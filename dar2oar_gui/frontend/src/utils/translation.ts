@@ -1,12 +1,12 @@
 'use client';
-import { use, type Resource } from 'i18next';
+import { type Resource, use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { notify } from '@/components/notifications';
 import { localStorageManager } from '@/utils/local_storage_manager';
 
-import dictEnUS from '@/../../locales/en-US.json';
-import dictJaJP from '@/../../locales/ja-JP.json';
+import dictEnUs from '@/../../locales/en-US.json';
+import dictJaJp from '@/../../locales/ja-JP.json';
 
 function getCustomTranslationDict() {
   try {
@@ -20,10 +20,10 @@ function getCustomTranslationDict() {
 // See: https://partnerhub.warnermediagroup.com/metadata/languages
 const resources = {
   'en-US': {
-    translation: dictEnUS,
+    translation: dictEnUs,
   },
   'ja-JP': {
-    translation: dictJaJP,
+    translation: dictJaJp,
   },
   custom: { translation: getCustomTranslationDict() },
 } as const satisfies Resource;

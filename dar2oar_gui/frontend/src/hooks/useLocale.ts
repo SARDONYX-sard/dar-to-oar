@@ -1,9 +1,9 @@
-import { FlatNamespace, KeyPrefix, changeLanguage } from 'i18next';
+import { type FlatNamespace, type KeyPrefix, changeLanguage } from 'i18next';
 import { useEffect } from 'react';
 import { type FallbackNs, type UseTranslationOptions, useTranslation as useTrans } from 'react-i18next';
 
 import { localStorageManager } from '@/utils/local_storage_manager';
-import { type I18nKeys } from '@/utils/translation';
+import type { I18nKeys } from '@/utils/translation';
 
 /**
  * Change language
@@ -18,6 +18,7 @@ export function useLocale() {
 type $Tuple<T> = readonly [T?, ...T[]];
 type UseTranslation = <
   Ns extends FlatNamespace | $Tuple<FlatNamespace> | undefined = undefined,
+  // biome-ignore lint/style/useNamingConvention: <explanation>
   KPrefix extends KeyPrefix<FallbackNs<Ns>> = undefined,
 >(
   ns?: Ns,

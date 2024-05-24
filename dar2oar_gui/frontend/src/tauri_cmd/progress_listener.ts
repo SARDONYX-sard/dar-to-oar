@@ -1,6 +1,9 @@
-import { listen, type EventCallback, type EventName } from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
 
 import { notify } from '@/components/notifications';
+
+import type { EventCallback, EventName } from '@tauri-apps/api/event';
+import type { JSX } from 'react/jsx-runtime';
 
 type ListenerProps = {
   setLoading: (loading: boolean) => void;

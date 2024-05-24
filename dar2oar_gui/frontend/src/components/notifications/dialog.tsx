@@ -9,10 +9,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { type ReactNode, useState, type Dispatch, type SetStateAction } from 'react';
+import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
 
 import { useTranslation } from '@/hooks';
-import { CacheKey, LocalCache, pubCacheKeys } from '@/utils/local_storage_manager';
+import { type CacheKey, type LocalCache, pubCacheKeys } from '@/utils/local_storage_manager';
 
 export type DialogClickHandler = (checkedKeys: CacheKey[]) => void;
 export type LocalStorageDialogProps = {
@@ -81,10 +81,10 @@ export const LocalStorageDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth={'md'}>
+    <Dialog fullWidth maxWidth={'md'} onClose={handleClose} open={open}>
       <DialogTitle>{title}</DialogTitle>
       <IconButton
-        aria-label="close"
+        aria-label='close'
         onClick={handleClose}
         sx={{
           position: 'absolute',
@@ -119,15 +119,15 @@ export const LocalStorageDialog = ({
             oneObject[key] = value;
 
             return (
-              <ListItem key={key} disablePadding>
-                <ListItemButton onClick={handleToggle(key)} dense>
+              <ListItem disablePadding key={key}>
+                <ListItemButton dense onClick={handleToggle(key)}>
                   <ListItemIcon>
                     <Checkbox
-                      edge="start"
                       checked={checked.includes(key)}
-                      tabIndex={-1}
                       disableRipple
+                      edge='start'
                       inputProps={{ 'aria-labelledby': labelId }}
+                      tabIndex={-1}
                     />
                   </ListItemIcon>
                   <ListItemText id={labelId} primary={key} secondary={value} />

@@ -21,9 +21,9 @@ const defaultVersion = '2'; // 2: Bump up `minor` version is default
 const useGpg = true; // Verified commit with GPG key.
 
 // import modules
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
 // paths
 const basePath = path.resolve(__dirname, '..');
 const packageJsonPath = path.join(basePath, 'package.json');
@@ -81,7 +81,7 @@ function updateVersion(currentVersion, versionType) {
 function updatePackageJson(newVersion) {
   const packageJson = require(packageJsonPath);
   packageJson.version = newVersion;
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+  fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 }
 
 /**

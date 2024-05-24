@@ -2,15 +2,14 @@ import { useEffect, useInsertionEffect, useState } from 'react';
 
 import { notify } from '@/components/notifications';
 import { localStorageManager } from '@/utils/local_storage_manager';
-import { selectPreset, presetStyles } from '@/utils/styles';
+import { presetStyles, selectPreset } from '@/utils/styles';
 
 const getStyle = () => {
   const presetNumber = selectPreset(localStorageManager.get('presetNumber'));
   if (presetNumber === '0') {
     return localStorageManager.get('customCSS') ?? '';
-  } else {
-    return presetStyles[presetNumber];
   }
+  return presetStyles[presetNumber];
 };
 
 /**

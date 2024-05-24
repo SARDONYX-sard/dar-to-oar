@@ -1,11 +1,11 @@
-import { InputLabel, FormControl } from '@mui/material';
+import { FormControl, InputLabel } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { useCallback } from 'react';
 
 import { useTranslation } from '@/hooks';
-import type { EditorMode } from '@/utils/selector';
 import { selectEditorMode } from '@/utils/selector';
+import type { EditorMode } from '@/utils/selector';
 
 export type SelectEditorProps = {
   setEditorMode: (value: EditorMode) => void;
@@ -24,17 +24,15 @@ export const SelectEditorMode = ({ editorMode, setEditorMode }: SelectEditorProp
   );
 
   return (
-    <FormControl variant="filled" sx={{ m: 1, minWidth: 105 }}>
-      <InputLabel id="editor-select-label">{t('editor-mode-list-label')}</InputLabel>
+    <FormControl sx={{ m: 1, minWidth: 105 }} variant='filled'>
+      <InputLabel id='editor-select-label'>{t('editor-mode-list-label')}</InputLabel>
       <Select
+        MenuProps={{ disableScrollLock: true }} // NOTE: Without this, padding will be added to the body during popup in consideration of nest, and the design will be broken.
+        id='editor-select'
+        label='Editor Mode'
+        labelId='editor-select-label'
         onChange={handleChange}
-        label="Editor Mode"
-        labelId="editor-select-label"
-        id="editor-select"
         value={editorMode}
-        // NOTE: Without this, padding will be added to the body during popup in consideration of nest,
-        // and the design will be broken.
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
       >
         <MenuItem value={'default'}>Default</MenuItem>
         <MenuItem value={'vim'}>Vim</MenuItem>
