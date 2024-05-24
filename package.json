@@ -6,16 +6,16 @@
   "private": true,
   "scripts": {
     "dev": "tauri dev",
-    "dev:front": "next frontend",
-    "build": "rimraf ./out && tauri build",
-    "build:front": "next build frontend",
-    "build:icons": "cargo tauri icon ./src-tauri/icons/icon.png",
+    "dev:front": "next ./dar2oar_gui/frontend",
+    "build": "rimraf ./dar2oar_gui/frontend/out && tauri build",
+    "build:front": "next build ./dar2oar_gui/frontend",
+    "build:icons": "cargo tauri icon ./dar2oar_gui/backend/icons/icon.png",
     "test": "jest",
     "test:back": " cargo test --workspace",
     "test:all": "npm test && npm run test:back",
     "fmt": "prettier --cache  --write \"**/*.+(js|json|yml|ts|tsx|css)\" --ignore-path ./.gitignore && cargo fmt --all",
-    "lint": "next lint frontend --cache && cargo clippy --workspace",
-    "lint:fix": "npm run fmt && next lint frontend --fix --cache  && cargo clippy --workspace --fix --allow-staged --allow-dirty",
+    "lint": "next lint ./dar2oar_gui/frontend --cache && cargo clippy --workspace",
+    "lint:fix": "npm run fmt && next lint ./dar2oar_gui/frontend --fix --cache  && cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "tauri": "tauri"
   },
   "dependencies": {
