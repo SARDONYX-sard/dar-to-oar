@@ -6,7 +6,7 @@ repository = "https://github.com/SARDONYX-sard/dar-to-oar"
 readme = "README.md"
 
 [workspace]
-members = ["dar2oar_core", "dar2oar_cli", "src-tauri"]
+members = ["dar2oar_core", "dar2oar_cli", "dar2oar_gui/backend"]
 default-members = ["dar2oar_cli"]
 resolver = "2"
 

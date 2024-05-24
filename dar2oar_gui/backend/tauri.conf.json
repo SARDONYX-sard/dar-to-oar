@@ -1,5 +1,5 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "../../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "npm run build:front",
     "beforeDevCommand": "npm run dev:front",
@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "g_dar2oar",
-    "version": "../package.json"
+    "version": "../../package.json"
   },
   "tauri": {
     "allowlist": {
