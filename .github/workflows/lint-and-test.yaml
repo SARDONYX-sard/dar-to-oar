@@ -53,9 +53,9 @@ jobs:
       - name: Node.js cache
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/frontend/.next/cache
+          path: ${{ github.workspace }}/dar2oar_gui/frontend/.next/cache
           # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('frontend/src/**/*.[jt]s', 'frontend/src/**/*.[jt]sx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('dar2oar_gui/frontend/src/**/*.[jt]s', 'dar2oar_gui/frontend/src/**/*.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - name: Install frontend dependencies
