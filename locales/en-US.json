@@ -39,7 +39,7 @@
   "css-preset-list-tooltip": "You can choose a CSS preset.",
   "css-preset-list-tooltip2": "Note: Editing \"Preset\" will overwrite \"Custom\".",
   "custom-css-label": "Currently applied CSS",
-  "custom-js-auto-run-label": "Auto run",
+  "custom-js-auto-run-label": "JS Auto run",
   "custom-js-auto-run-tooltip": "Automatically run JavaScript on every page transition.(If disabled, it will automatically reload to apply the settings.)",
   "custom-js-auto-run-tooltip2": "This configuration item will not be activated unless manually selected by the user.",
   "custom-js-label": "Custom JavaScript(Please do not execute untrusted scripts)",
