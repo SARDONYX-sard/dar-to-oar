@@ -19,16 +19,17 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
     "@mui/icons-material": "^5.15.18",
     "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "^5.15.18",
+    "@tanstack/react-query": "^5.40.0",
     "@tauri-apps/api": "^1.5.6",
-    "ace-builds": "^1.34.1",
     "i18next": "^23.11.5",
+    "monaco-vim": "^0.4.1",
     "next": "14.2.3",
     "notistack": "^3.0.1",
     "react": "18.3.1",
-    "react-ace": "^11.0.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.51.5",
     "react-i18next": "^14.1.2"
@@ -50,5 +51,8 @@
     "typescript": "5.4.5",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "1.6.0"
+  },
+  "overrides": {
+    "monaco-editor": "^0.49.0"
   }
 }

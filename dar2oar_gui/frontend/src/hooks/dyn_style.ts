@@ -1,4 +1,4 @@
-import { useEffect, useInsertionEffect, useState } from 'react';
+import { useCallback, useEffect, useInsertionEffect, useState } from 'react';
 
 import { notify } from '@/components/notifications';
 import { localStorageManager } from '@/utils/local_storage_manager';
@@ -44,6 +44,11 @@ export function useInjectScript(initialState = initScript()) {
   const [script, setScript] = useState(initialState);
   const [pathname, setPathname] = useState<string | null>(null);
 
+  const handleScriptChange = useCallback((newValue: string | undefined) => {
+    setScript(newValue ?? '');
+    localStorage.setItem('customJS', newValue ?? '');
+  }, []);
+
   useEffect(() => {
     const scriptElement = document.createElement('script');
     if (localStorage.getItem('runScript') === 'true') {
@@ -68,5 +73,5 @@ export function useInjectScript(initialState = initScript()) {
     };
   }, [script, pathname]);
 
-  return [script, setScript] as const;
+  return [script, handleScriptChange] as const;
 }

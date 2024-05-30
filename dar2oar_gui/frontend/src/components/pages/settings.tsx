@@ -3,8 +3,9 @@
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid, Skeleton } from '@mui/material';
 import Tab from '@mui/material/Tab';
+import { Suspense, type SyntheticEvent } from 'react';
 
 import { ExportBackupButton, ImportBackupButton, ImportLangButton } from '@/components/buttons';
 import { CssEditor, type CssEditorProps, JsEditor } from '@/components/editor';
@@ -22,8 +23,6 @@ import { type EditorMode, selectEditorMode } from '@/utils/selector';
 
 import packageJson from '@/../../package.json';
 
-import type { SyntheticEvent } from 'react';
-
 export default function Settings() {
   useLocale();
   const [editorMode, setEditorMode] = useStorageState('editorMode', 'default');
@@ -31,7 +30,7 @@ export default function Settings() {
   const [style, setStyle] = useDynStyle();
   const validEditorMode = selectEditorMode(editorMode);
 
-  const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode ?? 'default');
+  const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode);
   return (
     <Box
       component='main'
@@ -44,8 +43,12 @@ export default function Settings() {
         width: '100%',
       }}
     >
-      <CssEditor editorMode={validEditorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
-      <JsEditor editorMode={validEditorMode} marginTop={'20px'} />
+      <Suspense fallback={<Skeleton />}>
+        <CssEditor editorMode={validEditorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
+      </Suspense>
+      <Suspense fallback={<Skeleton />}>
+        <JsEditor editorMode={validEditorMode} marginTop={'20px'} />
+      </Suspense>
 
       <Grid container sx={{ width: '95%' }}>
         <Grid sx={{ overflowX: 'auto' }} xs={8}>

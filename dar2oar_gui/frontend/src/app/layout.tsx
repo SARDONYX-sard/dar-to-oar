@@ -11,16 +11,7 @@ import '@/app/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-const Menu = dynamic(() => import('@/components/navigation'), {
-  loading: () => <Loading />,
-  ssr: false,
-});
-
-const ThemeProvider = dynamic(() => import('@/components/providers/theme'), {
-  loading: () => <Loading />,
-  ssr: false,
-});
-const SnackBarProvider = dynamic(() => import('@/components/providers/snackbar'), {
+const ClientLayout = dynamic(() => import('@/app/client_layout'), {
   loading: () => <Loading />,
   ssr: false,
 });
@@ -37,13 +28,11 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <ThemeProvider>
-          <SnackBarProvider />
+        <ClientLayout>
           {children}
           {/* To prevents the conversion button from being hidden because the menu is fixed. */}
           <div style={{ height: '56px' }} />
-          <Menu />
-        </ThemeProvider>
+        </ClientLayout>
       </body>
     </html>
   );

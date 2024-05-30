@@ -1,8 +1,7 @@
 import InputLabel from '@mui/material/InputLabel';
-import AceEditor from 'react-ace';
 
+import { CodeEditor } from '@/components/editor';
 import { useTranslation } from '@/hooks';
-import { selectEditorMode } from '@/utils/selector';
 
 export type CssEditorProps = {
   editorMode: string;
@@ -14,34 +13,32 @@ export type CssEditorProps = {
 export const CssEditor = ({ editorMode, setPreset, setStyle, style }: CssEditorProps) => {
   const { t } = useTranslation();
 
+  const handleCodeChange = (newValue: string | undefined) => {
+    const value = newValue ?? '';
+    setStyle(value);
+    localStorage.setItem('customCSS', value);
+    setPreset('0');
+  };
+
   return (
     <>
       <InputLabel sx={{ marginTop: '20px' }}>{t('custom-css-label')}</InputLabel>
-      <AceEditor
-        editorProps={{ $blockScrolling: true }}
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        fontSize={'1rem'}
-        height='300px'
-        highlightActiveLine
-        keyboardHandler={selectEditorMode(editorMode)}
-        mode='css'
-        name='Custom CSS'
-        onChange={(value) => {
-          setStyle(value);
-          localStorage.setItem('customCSS', value);
-          setPreset('0');
+      <CodeEditor
+        defaultValue={style}
+        height='260px'
+        language={'css'}
+        onChange={handleCodeChange}
+        options={{
+          suggestOnTriggerCharacters: true,
+          renderWhitespace: 'boundary',
+          rulers: [120],
+          hover: {
+            above: true,
+          },
         }}
-        placeholder="{ body: url('https://localhost' }"
-        setOptions={{ useWorker: false }}
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
-        tabSize={2}
-        theme='one_dark'
-        value={style}
+        theme='vs-dark'
+        vimMode={editorMode === 'vim'}
+        width={'95%'}
       />
     </>
   );

@@ -1,9 +1,9 @@
+'use client';
 import { Checkbox, FormControlLabel, Grid, Tooltip } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
-import AceEditor from 'react-ace';
 
+import { CodeEditor } from '@/components/editor';
 import { useInjectScript, useStorageState, useTranslation } from '@/hooks';
-import { selectEditorMode } from '@/utils/selector';
 
 export type JsEditorProps = {
   editorMode: string;
@@ -12,7 +12,7 @@ export type JsEditorProps = {
 export const JsEditor = ({ editorMode, marginTop }: JsEditorProps) => {
   const { t } = useTranslation();
 
-  const [script, setScript] = useInjectScript();
+  const [script, handleCodeChange] = useInjectScript();
   const [runScript, setRunScript] = useStorageState('runScript', 'false');
 
   return (
@@ -56,35 +56,23 @@ export const JsEditor = ({ editorMode, marginTop }: JsEditorProps) => {
         </Tooltip>
       </Grid>
 
-      <AceEditor
-        editorProps={{ $blockScrolling: true }}
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        enableSnippets
-        fontSize={'1rem'}
-        height='250px'
-        highlightActiveLine
-        keyboardHandler={selectEditorMode(editorMode)}
-        mode='javascript'
-        name='Custom JavaScript'
-        onChange={(value) => {
-          localStorage.setItem('customJS', value);
-          setScript(value);
+      <CodeEditor
+        defaultValue={script}
+        height='280px'
+        language={'javascript'}
+        onChange={handleCodeChange}
+        options={{
+          renderWhitespace: 'boundary',
+          rulers: [120],
+          hover: {
+            above: true,
+          },
         }}
-        placeholder={`(()=> {
-    const p = document.createElement('p');
-    p.innerText = 'Hello';
-    document.body.appendChild(p);
-)()`}
-        setOptions={{ useWorker: false }}
-        style={{
-          width: '95%',
-          backgroundColor: '#2424248c',
-        }}
-        tabSize={2}
-        theme='one_dark'
-        value={script}
+        theme='vs-dark'
+        vimMode={editorMode === 'vim'}
+        width={'95%'}
       />
+      <InputLabel id='status-node' sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
     </>
   );
 };
