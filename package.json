@@ -4,6 +4,7 @@
   "license": "MIT",
   "homepage": "https://github.com/SARDONYX-sard/dar-to-oar",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tauri dev",
     "dev:front": "next ./dar2oar_gui/frontend",

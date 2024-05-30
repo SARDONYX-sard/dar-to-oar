@@ -27,12 +27,14 @@ const loadVimKeyBindings: OnMount = (editor, monaco) => {
   });
 
   // setup monaco-vim
+  // @ts-ignore
   window.require.config({
     paths: {
       'monaco-vim': 'https://unpkg.com/monaco-vim/dist/monaco-vim',
     },
   });
 
+  // @ts-ignore
   window.require(['monaco-vim'], (monacoVim: VimMode) => {
     const statusNode = document.querySelector('#status-node');
     monacoVim.initVimMode(editor, statusNode);
