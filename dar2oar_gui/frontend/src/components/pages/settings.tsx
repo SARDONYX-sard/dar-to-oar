@@ -1,24 +1,18 @@
 'use client';
-
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Box, Button, Grid } from '@mui/material';
 import Tab from '@mui/material/Tab';
 
-import { ExportBackupButton, ImportBackupButton, ImportLangButton } from '@/components/buttons';
-import { CssEditor, type CssEditorProps, JsEditor } from '@/components/editor';
-import {
-  NoticeSettingsList,
-  SelectEditorMode,
-  type SelectEditorProps,
-  StyleList,
-  type StyleListProps,
-  TranslationList,
-} from '@/components/lists';
+import { ExecJsBtn, ExportBackupButton, ImportBackupButton, ImportLangButton } from '@/components/buttons';
+import { Editor, type EditorProps } from '@/components/editor';
+import { NoticeSettingsList, SelectEditorMode, StyleList, TranslationList } from '@/components/lists';
+import type { SelectEditorProps, StyleListProps } from '@/components/lists';
 import { useDynStyle, useLocale, useStorageState, useTranslation } from '@/hooks';
 import { start } from '@/tauri_cmd';
-import { type EditorMode, selectEditorMode } from '@/utils/selector';
+import { selectEditorMode } from '@/utils/selector';
+import type { EditorMode } from '@/utils/selector';
 
 import packageJson from '@/../../package.json';
 
@@ -31,7 +25,7 @@ export default function Settings() {
   const [style, setStyle] = useDynStyle();
   const validEditorMode = selectEditorMode(editorMode);
 
-  const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode ?? 'default');
+  const setEditorKeyMode = (editorMode: EditorMode) => setEditorMode(editorMode);
   return (
     <Box
       component='main'
@@ -44,8 +38,7 @@ export default function Settings() {
         width: '100%',
       }}
     >
-      <CssEditor editorMode={validEditorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
-      <JsEditor editorMode={validEditorMode} marginTop={'20px'} />
+      <Editor editorMode={validEditorMode} setPreset={setPreset} setStyle={setStyle} style={style} />
 
       <Grid container sx={{ width: '95%' }}>
         <Grid sx={{ overflowX: 'auto' }} xs={8}>
@@ -66,7 +59,7 @@ export default function Settings() {
   );
 }
 
-type TabsProps = StyleListProps & SelectEditorProps & CssEditorProps;
+type TabsProps = StyleListProps & SelectEditorProps & EditorProps;
 const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsProps) => {
   const [value, setValue] = useStorageState('settings-tab-select', 'editor');
   const { t } = useTranslation();
@@ -94,6 +87,7 @@ const Tabs = ({ editorMode, setEditorMode, preset, setPreset, setStyle }: TabsPr
         <TabPanel value='editor'>
           <SelectEditorMode editorMode={editorMode} setEditorMode={setEditorMode} />
           <StyleList preset={preset} setPreset={setPreset} setStyle={setStyle} />
+          <ExecJsBtn sx={{ marginLeft: '10px' }} />
         </TabPanel>
         <TabPanel value='notice'>
           <NoticeSettingsList />

@@ -17,6 +17,7 @@ export const pubCacheKeys = [
   'custom-translation-dict',
   'customCSS',
   'customJS',
+  'editor-tab-select',
   'editorMode',
   'locale',
   'presetNumber',

@@ -39,7 +39,7 @@
   "css-preset-list-tooltip": "CSS presetを選択",
   "css-preset-list-tooltip2": "注意: 「プリセット」を編集すると「カスタム」が上書きされます",
   "custom-css-label": "現在適用されているCSS",
-  "custom-js-auto-run-label": "自動実行",
+  "custom-js-auto-run-label": "JS自動実行",
   "custom-js-auto-run-tooltip": "ページを遷移するたびにJavaScriptを自動実行します。(無効化した場合、設定を適用するために自動で再読み込みします)",
   "custom-js-auto-run-tooltip2": "この設定項目はユーザーが手動で選択しない限り有効化されることはありません",
   "custom-js-label": "カスタムJavaScript(信用できないスクリプトは実行しないでください)",

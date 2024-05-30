@@ -26,5 +26,6 @@
     "**/node_modules/**": true,
     "**/target/**": true
   },
-  "rust-analyzer.check.command": "clippy"
+  "rust-analyzer.check.command": "clippy",
+  "i18n-ally.keystyle": "nested"
 }
