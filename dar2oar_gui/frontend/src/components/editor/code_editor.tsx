@@ -6,6 +6,8 @@
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { type ComponentProps, memo, useCallback, useRef } from 'react';
 
+import { atomOneDarkPro } from './atom_onedark_pro';
+
 import type monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type { VimMode } from 'monaco-vim';
 
@@ -54,12 +56,25 @@ function CodeEditorInternal({ vimMode = false, onMount, ...params }: CodeEditorP
         loadVimKeyBindings(editor, monaco);
       }
 
+      editor.updateOptions({
+        theme: 'onedark',
+      });
       onMount?.(editor, monaco);
     },
     [onMount, vimMode],
   );
 
-  return <Editor key='' theme='vs-dark' {...params} onMount={handleDidMount} />;
+  return (
+    <Editor
+      key=''
+      theme='vs-dark'
+      {...params}
+      beforeMount={(monaco) => {
+        monaco.editor.defineTheme('onedark', atomOneDarkPro);
+      }}
+      onMount={handleDidMount}
+    />
+  );
 }
 
 export const CodeEditor = memo(CodeEditorInternal);
