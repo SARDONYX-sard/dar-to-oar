@@ -19,6 +19,7 @@ export const SelectEditorMode = ({ editorMode, setEditorMode }: SelectEditorProp
     (e: SelectChangeEvent<string>) => {
       const presetEditor = selectEditorMode(e.target.value);
       setEditorMode(presetEditor);
+      window.location.reload();
     },
     [setEditorMode],
   );
