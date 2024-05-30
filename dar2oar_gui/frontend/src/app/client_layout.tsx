@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT or Apache-2.0
 'use client';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import NextLink from 'next/link';
 
 import Menu from '@/components/navigation';
@@ -34,16 +33,13 @@ const darkTheme = createTheme({
 interface ClientLayoutProps {
   children: ReactNode;
 }
-const queryClient = new QueryClient();
 export default function ClientLayout({ children }: Readonly<ClientLayoutProps>) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={darkTheme}>
-        <SnackBarProvider />
-        <CssBaseline />
-        {children}
-        <Menu />
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider theme={darkTheme}>
+      <SnackBarProvider />
+      <CssBaseline />
+      {children}
+      <Menu />
+    </ThemeProvider>
   );
 }
