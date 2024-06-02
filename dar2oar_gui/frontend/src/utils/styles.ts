@@ -28,7 +28,17 @@ main {
   box-shadow: var(--autofill-color) 0px 0px 0px 100px inset !important;
 }
 
-.ace_gutter,
+.monaco-editor,
+.monaco-editor-background {
+  background-color: #2121213b !important;
+  --vscode-editorGutter-background: #283d671a !important;
+}
+
+.decorationsOverviewRuler,
+.monaco-editor .minimap canvas {
+  opacity: 0.6;
+}
+
 .MuiOutlinedInput-root {
   background-color: #2424248c !important;
 }
@@ -38,16 +48,11 @@ p.Mui-error {
   color: var(--error-color);
 }
 
-main:has(.ace_editor) > .MuiInputLabel-animated {
-  background-color: #2f2e2eba;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
 a,
-span.Mui-checked > svg,
-.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.Mui-focused > fieldset,
-.Mui-selected, /* Bottom Navigation */
+span.Mui-checked>svg,
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.Mui-focused>fieldset,
+/* Bottom Navigation */
+.Mui-selected,
 .MuiButton-outlined {
   color: var(--theme-color) !important;
   border-color: var(--theme-color);

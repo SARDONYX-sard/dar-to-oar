@@ -39,8 +39,3 @@ a {
     color-scheme: dark;
   }
 }
-
-.monaco-editor,
-.monaco-editor-background {
-  background-color: #2424248c !important;
-}
