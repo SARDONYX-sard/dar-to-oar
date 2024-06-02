@@ -42,9 +42,8 @@ values, and dealing with file systems.
 [dependencies]
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.6.0" }
+quick_tracing = {version = "0.1.4", features = ["derive"] }
 tokio = { version = "1.33.0", features = [ "fs", "io-util", "macros", "rt", "rt-multi-thread" ] } # Async Executor
-tracing-appender = "0.2"
-tracing-subscriber = "0.3.17"
 ```
 
 ### Parallel Async with Progress report
@@ -54,54 +53,9 @@ use anyhow::Result;
 use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
 use std::path::Path;
 use tracing::{Level, level_filters::LevelFilter, subscriber::DefaultGuard};
-use tracing_appender::non_blocking::WorkerGuard;
-
-/// Multithread init logger.
-///
-/// File I/O is No ANSI color, output to stdout has ANSI color.
-///
-/// # Returns
-/// Guards
-/// - If this variable is dropped, the logger stops.
-pub(crate) fn init_tracing(
-    log_path: impl AsRef<Path>,
-    filter: impl Into<LevelFilter>,
-) -> Result<(WorkerGuard, DefaultGuard)> {
-    use tracing_subscriber::{fmt, layer::SubscriberExt};
-
-    let log_path = log_path.as_ref();
-    std::fs::create_dir_all(
-        log_path
-            .parent()
-            .ok_or_else(|| anyhow::anyhow!("Not found log path's dir"))?,
-    )?;
-    let (file_writer, guard) = tracing_appender::non_blocking(std::fs::File::create(log_path)?);
-    let thread_guard = tracing::subscriber::set_default(
-        fmt::Subscriber::builder()
-            .compact()
-            .pretty()
-            .with_file(true)
-            .with_line_number(true)
-            .with_max_level(filter)
-            .with_target(false)
-            .finish()
-            .with(
-                fmt::Layer::default()
-                    .compact()
-                    .with_ansi(false)
-                    .with_file(true)
-                    .with_line_number(true)
-                    .with_target(false)
-                    .with_writer(file_writer),
-            ),
-    );
-    Ok((guard, thread_guard))
-}
-
 
 const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
 const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
-const LOG_PATH: &str = "../convert.log";
 
 /// Asynchronous function to create conversion options.
 async fn create_options() -> Result<ConvertOptions> {
@@ -114,8 +68,8 @@ async fn create_options() -> Result<ConvertOptions> {
 }
 
 #[tokio::main]
+#[quick_tracing::try_init(file = "../convert.log", level = "DEBUG")]
 async fn main() -> Result<()> {
-    init_tracing(LOG_PATH, Level::DEBUG);
     let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
     // Send function for progress reporting.
