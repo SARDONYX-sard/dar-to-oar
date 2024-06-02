@@ -105,10 +105,10 @@ pub struct ConvertOptions {
     pub hide_dar: bool,
 }
 
+#[cfg(feature = "tracing")]
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::test_helper::init_tracing;
     use anyhow::Result;
 
     // const DAR_DIR: &str = "../test/data/UNDERDOG - Animations";
@@ -131,17 +131,17 @@ mod test {
     }
 
     #[ignore]
+    #[quick_tracing::try_init(test = "convert_non_mpsc", level = "DEBUG")]
     #[tokio::test]
     async fn convert_non_mpsc() -> Result<()> {
-        let _guard = init_tracing("convert_non_mpsc", tracing::Level::DEBUG)?;
         convert_dar_to_oar(create_options().await?, |_| {}).await?;
         Ok(())
     }
 
     #[ignore]
+    #[quick_tracing::try_init(test = "convert_mpsc", level = "DEBUG")]
     #[tokio::test]
     async fn convert_with_mpsc() -> Result<()> {
-        let _guard = init_tracing("convert_with_mpsc", tracing::Level::DEBUG)?;
         let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
         let sender = move |idx: usize| {

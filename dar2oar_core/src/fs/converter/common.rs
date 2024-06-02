@@ -10,7 +10,9 @@ use std::sync::atomic::{AtomicBool, Ordering::AcqRel, Ordering::Relaxed};
 use tokio::fs;
 
 // NOTE: Variables in fields do not appear in the log if Option::None.
-#[tracing::instrument(level = "debug", skip(options, is_converted_once), fields(specified_output = &options.oar_dir))]
+#[cfg_attr(feature = "tracing",
+  tracing::instrument(level = "debug", skip(options, is_converted_once), fields(specified_output = &options.oar_dir))
+)]
 /// Common parts of parallel & sequential loop processing.
 pub(super) async fn convert_inner<P>(
     options: &ConvertOptions,
@@ -53,7 +55,8 @@ where
     };
 
     // character, falmer, etc.
-    let actor_name = actor_name.as_deref().unwrap_or_else(|| {
+    let actor_name = actor_name.as_deref().unwrap_or({
+        #[cfg(feature = "tracing")]
         tracing::warn!(
             "actor_name could not be inferred from the dir name. Use the default value \"character\"."
         );
@@ -83,11 +86,13 @@ where
     macro_rules! copy_other_file {
         ($section_root:ident) => {
             if let Some(remain) = remain_dir {
+                #[cfg(feature = "tracing")]
                 tracing::debug!("Copy with Nest Dir: {:?}", remain.join(file_name));
                 let non_leaf_dir = $section_root.join(remain); // e.g. mesh/[...]/male/
                 fs::create_dir_all(&non_leaf_dir).await?;
                 let _ = fs::copy(path, &non_leaf_dir.join(file_name)).await?;
             } else {
+                #[cfg(feature = "tracing")]
                 tracing::debug!("Copy: {file_name}");
                 fs::create_dir_all(&$section_root).await?;
                 let _ = fs::copy(path, $section_root.join(file_name)).await?;
@@ -123,6 +128,7 @@ where
 
             // - This block is ActorBase pattern
             if esp_dir.is_some() {
+                #[cfg(feature = "tracing")]
                 tracing::debug!("This path is ActorBase: {path:?}");
 
                 let esp_dir = esp_dir
@@ -133,6 +139,7 @@ where
                     .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
 
                 let content = format!("IsActorBase ( \"{esp_dir}\" | 0x{base_id} )");
+                #[cfg(feature = "tracing")]
                 tracing::debug!(
                     "DAR syntax content auto-generated for ActorBase paths:\n{content}"
                 );
@@ -165,6 +172,7 @@ where
             // but this problem is not considered in ActorBase because `_condition.txt` should not exist.
             if file_name == "_conditions.txt" {
                 let content = fs::read_to_string(path).await?;
+                #[cfg(feature = "tracing")]
                 tracing::debug!("{path:?} Content:\n{}", content);
 
                 let config_json = ConditionsConfig {
@@ -190,6 +198,7 @@ where
             };
         }
         Err(invalid_priority) => {
+            #[cfg(feature = "tracing")]
             tracing::warn!(
                 r#"Got invalid priority: "{invalid_priority}". DAR expects "DynamicAnimationReplacer/_CustomConditions/<numeric directory name>/". Thus, copy it as a memo."#
             );
@@ -223,6 +232,7 @@ async fn hide_path(path: impl AsRef<Path>) -> Result<()> {
         hidden_path.push_str(".mohidden");
     };
 
+    #[cfg(feature = "tracing")]
     tracing::debug!("Rename:\nfrom: {path:?}\nto: {hidden_path:?}");
     fs::rename(path, &hidden_path).await?;
     Ok(())

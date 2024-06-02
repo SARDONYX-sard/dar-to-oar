@@ -23,6 +23,7 @@ pub async fn convert_dar_to_oar(
     let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_file_count(dar_dir).await?;
+    #[cfg(feature = "tracing")]
     tracing::info!("Sequential Converter/DAR file counts: {}", walk_len);
     progress_fn(walk_len);
 
@@ -40,9 +41,11 @@ pub async fn convert_dar_to_oar(
             Err(_) => continue,
         };
 
+        #[cfg(feature = "tracing")]
         tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
         convert_inner(&options, path, &parsed_path, &is_converted_once).await?;
         progress_fn(idx);
+        #[cfg(feature = "tracing")]
         tracing::debug!("[End {}th conversion]\n\n", idx);
         idx += 1;
     }
@@ -70,6 +73,7 @@ async fn get_dar_file_count(root: impl AsRef<Path>) -> Result<usize> {
     let mut entries = get_dar_files(root).await;
     while let Some(entry) = entries.next().await {
         let path = entry?.path();
+        #[cfg(feature = "tracing")]
         tracing::trace!("Calculate walk_len[{}]: {:?}", walk_len, &path);
         match is_contain_dar(path) {
             Some(_) => walk_len += 1,

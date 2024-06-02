@@ -28,6 +28,7 @@ pub async fn convert_dar_to_oar(
     let dar_dir = options.dar_dir.as_str();
 
     let walk_len = get_dar_files(dar_dir).into_iter().count();
+    #[cfg(feature = "tracing")]
     tracing::info!("Parallel Converter/DAR dir & file counts: {}", walk_len);
     progress_fn(walk_len);
 

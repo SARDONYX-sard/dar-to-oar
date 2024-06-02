@@ -17,6 +17,7 @@ pub async fn unhide_dar(
     mut progress_fn: impl FnMut(usize),
 ) -> Result<()> {
     let walk_len = get_dar_files(&dar_dir).into_iter().count();
+    #[cfg(feature = "tracing")]
     tracing::debug!("Parallel unhide DAR dir & file counts: {}", walk_len);
     progress_fn(walk_len);
 
@@ -31,6 +32,7 @@ pub async fn unhide_dar(
             continue;
         };
 
+        #[cfg(feature = "tracing")]
         tracing::debug!("{:?}", &path);
         task_handles.push(tokio::spawn({
             let rename_once = Arc::clone(&rename_once);
@@ -38,6 +40,7 @@ pub async fn unhide_dar(
             async move {
                 let mut no_hidden_path = path.as_path().to_owned();
                 let _ = no_hidden_path.set_extension(""); // Remove .mohidden extension
+                #[cfg(feature = "tracing")]
                 tracing::debug!("Rename {idx}th:\n- From: {path:?}\n-   To: {no_hidden_path:?}\n");
                 fs::rename(path.as_path(), no_hidden_path).await?;
 
@@ -72,6 +75,7 @@ pub async fn remove_oar(
     mut progress_fn: impl FnMut(usize),
 ) -> Result<()> {
     let walk_len = get_oar(&search_dir).into_iter().count();
+    #[cfg(feature = "tracing")]
     tracing::debug!("Parallel remove OAR dir & file counts: {}", walk_len);
     progress_fn(walk_len);
 
@@ -98,6 +102,7 @@ pub async fn remove_oar(
                         let found_once = Arc::clone(&found_once);
 
                         async move {
+                            #[cfg(feature = "tracing")]
                             tracing::debug!("Try to remove oar dir: {:?}\n", &oar_dir);
                             fs::remove_dir_all(oar_dir).await?;
                             // # Ordering validity:
@@ -129,10 +134,10 @@ pub async fn remove_oar(
     }
 }
 
+#[cfg(feature = "tracing")]
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::test_helper::init_tracing;
     use anyhow::Result;
     use temp_dir::TempDir;
     use tokio::fs::{create_dir_all, File};
@@ -144,9 +149,8 @@ mod test {
     }
 
     #[tokio::test]
+    #[quick_tracing::try_init(file = "../log/unhide_dar.log", level = "ERROR")]
     async fn should_unhide_dar_files() -> Result<()> {
-        let _guard = init_tracing("unhide_dar", tracing::Level::ERROR)?;
-
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
             .path()
@@ -159,9 +163,8 @@ mod test {
     }
 
     #[tokio::test]
+    #[quick_tracing::init(file = "../log/remove_oar.log", level = "ERROR")]
     async fn should_remove_oar_dir() -> Result<()> {
-        let _guard = init_tracing("remove_oar", tracing::Level::ERROR)?;
-
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
             .path()

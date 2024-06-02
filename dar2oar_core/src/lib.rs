@@ -287,6 +287,4 @@ pub use crate::fs::converter::{convert_dar_to_oar, Closure, ConvertOptions};
 pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};
 
 #[cfg(test)]
-mod test_helper;
-#[cfg(test)]
 extern crate criterion as _; // Needed for cargo bench.

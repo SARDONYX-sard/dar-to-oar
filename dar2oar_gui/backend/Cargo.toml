@@ -22,9 +22,11 @@ tauri-build = { version = "1.5.2", features = [] }
 [dependencies]
 anyhow = { version = "1.0.86", features = ["backtrace"] }
 chrono = "0.4.38"
-dar2oar_core = { path = "../../dar2oar_core" }
+dar2oar_core = { path = "../../dar2oar_core", features = ["tracing"] }
 once_cell = "1.19.0"
-serde = { version = "1.0.202", features = ["derive"] } # Implement (De)Serializer
+serde = { version = "1.0.202", features = [
+  "derive",
+] } # Implement (De)Serializer
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri = { version = "1.6.7", features = [
   "devtools",
