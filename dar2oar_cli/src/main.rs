@@ -1,5 +1,4 @@
 mod cli;
-mod convert;
 mod logger;
 
 use crate::cli::{run_cli, Cli};
@@ -15,15 +14,15 @@ async fn main() -> anyhow::Result<()> {
         Ok(()) => {
             let elapsed = start.elapsed();
             tracing::info!(
-                "Conversion time: {}.{}secs.",
+                "Elapsed time: {}.{}secs.",
                 elapsed.as_secs(),
                 elapsed.subsec_millis()
             );
             Ok(())
         }
         Err(err) => {
-            tracing::error!("{}", err);
-            anyhow::bail!("{}", err)
+            tracing::error!("{err}");
+            anyhow::bail!("{err}")
         }
     }
 }

@@ -149,7 +149,7 @@ mod test {
     }
 
     #[tokio::test]
-    #[quick_tracing::try_init(file = "../log/unhide_dar.log", level = "ERROR")]
+    #[quick_tracing::try_init(file = "../logs/unhide_dar.log", level = "ERROR")]
     async fn should_unhide_dar_files() -> Result<()> {
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
@@ -163,7 +163,7 @@ mod test {
     }
 
     #[tokio::test]
-    #[quick_tracing::init(file = "../log/remove_oar.log", level = "ERROR")]
+    #[quick_tracing::init(file = "../logs/remove_oar.log", level = "ERROR")]
     async fn should_remove_oar_dir() -> Result<()> {
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir

@@ -1,8 +1,9 @@
 mod commands;
+mod convert;
 
 use crate::cli::commands::Commands;
-use crate::convert::dar2oar;
 use crate::init_tracing;
+use convert::dar2oar;
 use dar2oar_core::{remove_oar, unhide_dar, Closure};
 use std::str::FromStr;
 use tracing::Level;

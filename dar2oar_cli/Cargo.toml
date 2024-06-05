@@ -21,7 +21,7 @@ path = "./src/main.rs"
 anyhow = { version = "1.0.86", features = ["backtrace"] }
 # NOTE: clap uses v3.2.23, the last successfully built version, because color mode was erased in v4
 clap = { version = "3.2.23", features = ["derive"] } # For CLI
-dar2oar_core = { path = "../dar2oar_core" }
+dar2oar_core = { path = "../dar2oar_core", features = ["tracing"] }
 tokio = { version = "1.37.0", features = [
   "fs",
   "rt",
