@@ -25,11 +25,10 @@ pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
             #[cfg(feature = "tracing")]
             tracing::debug!("Input => Parsed DAR:\n{:#?}", dar_ast);
 
-            let oar = parse_conditions(dar_ast)?;
+            let oar_ast = parse_conditions(dar_ast)?;
             #[cfg(feature = "tracing")]
-            tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar);
-            let oar = oar.try_into()?;
-            Ok(oar)
+            tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar_ast);
+            Ok(oar_ast.try_into()?)
         }
         Err(err) => Err(ConvertError::InvalidDarSyntax(err.to_string())),
     }
