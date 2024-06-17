@@ -18,10 +18,10 @@ default = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-async-walkdir = "1.0.0" # To traverse dir recursivly(Single thiread)
+annotate-snippets = "0.11.4" # Error reporting display
+async-walkdir = "2.0.0" # To traverse dir recursivly(Single thiread)
 compact_str = { version = "0.7.1", features = ["serde"] }
 jwalk = "0.8.1" # To parallel traverse dir recursivly
-nom = { version = "7.1.3", features = ["alloc"] } # Syntax
 serde = { version = "1.0.202", features = [
   "derive",
 ] } # Implement (De)Serializer
@@ -37,6 +37,7 @@ tokio = { version = "1.37.0", features = [
 ] } # Async Executor
 tokio-stream = "0.1.15" # Async next() method
 tracing = { version = "0.1.40", optional = true } # Logger
+winnow = "0.6.13" # Parser conbinator
 
 [dev-dependencies]
 anyhow = { version = "1.0.86", features = ["backtrace"] }
