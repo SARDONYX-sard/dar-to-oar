@@ -39,7 +39,7 @@
 //! ```
 
 use core::fmt;
-use std::num::ParseIntError;
+use core::num::ParseIntError;
 use winnow::ascii::{
     dec_int, digit1, hex_digit1, multispace0, oct_digit1, take_escaped, till_line_ending,
 };
@@ -47,9 +47,10 @@ use winnow::combinator::{
     alt, delimited, dispatch, fail, opt, preceded, repeat, separated, separated_pair, seq,
 };
 use winnow::error::{
-    AddContext, FromExternalError, ParserError, StrContext::Expected, StrContext::Label,
+    AddContext, FromExternalError, ParserError,
+    StrContext::{self, Expected, Label},
+    StrContextValue,
 };
-use winnow::error::{StrContext, StrContextValue};
 use winnow::token::{one_of, take, take_while};
 use winnow::{PResult, Parser};
 
