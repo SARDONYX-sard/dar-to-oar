@@ -160,11 +160,20 @@ type Stream<'i> = &'i str;
 type Error<'i> = winnow::error::ContextError;
 
 /// Parse DAR syntax.
-pub fn parse_dar_syntax(input: Stream<'_>) -> Result<Condition<'_>, super::error::ReadableError> {
+pub fn parse_dar_syntax(input: Stream<'_>) -> Result<Condition<'_>, ReadableError> {
     let syntax = input;
     parse_condition::<Error>
         .parse(syntax)
         .map_err(|error| ReadableError::from_parse(error, input))
+}
+
+/// Parses a string with surrounding whitespace(0 or more times)
+fn delimited_with_multispace0<'i, E>(s: &'static str) -> impl Parser<Stream<'i>, &'i str, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    delimited(multispace0, s, multispace0)
+        .context(StrContext::Expected(StrContextValue::StringLiteral(s)))
 }
 
 /// single or double quote string
@@ -203,17 +212,21 @@ where
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
     dispatch!(take(2_usize);
-        "0b" | "0B" => digit1.try_map(|s| usize::from_str_radix(s, 2)),
-        "0o" | "0O" => oct_digit1.try_map(|s| usize::from_str_radix(s, 8)),
-        "0d" | "0D" => digit1.try_map(|s: &str| s.parse::<usize>()),
-        "0x" | "0X" => hex_digit1.try_map(|s|usize::from_str_radix(s, 16)),
-        _ => fail,
+        "0b" | "0B" => digit1.try_map(|s| usize::from_str_radix(s, 2))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("binary"))),
+        "0o" | "0O" => oct_digit1.try_map(|s| usize::from_str_radix(s, 8))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("octal"))),
+        "0d" | "0D" => digit1.try_map(|s: &str| s.parse::<usize>())
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("decimal"))),
+        "0x" | "0X" => hex_digit1.try_map(|s|usize::from_str_radix(s, 16))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("hexadecimal"))),
+        _ => fail.context(StrContext::Label("radix prefix"))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0b")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0o")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0d")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0x"))),
     )
     .map(NumberLiteral::Hex)
-    .context(Label("Radix digits"))
-    .context(Expected(StrContextValue::Description(
-        r#"Radix digits: e.g. `0x0007`"#,
-    )))
     .parse_next(input)
 }
 
@@ -225,14 +238,17 @@ where
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
     alt((
-        radix_digits,
-        float.map(NumberLiteral::Float),
-        dec_int.map(NumberLiteral::Decimal),
+        radix_digits.context(Label("number")),
+        float.map(NumberLiteral::Float).context(Label("number")),
+        dec_int.map(NumberLiteral::Decimal).context(Label("number")),
+        // At this point, if the string `Hi`, etc. is received, the following error report is made.
+        fail.context(Label("number"))
+            .context(Expected(StrContextValue::StringLiteral(
+                "radix: e.g. 0x007",
+            )))
+            .context(Expected(StrContextValue::StringLiteral("float: e.g. 33.0")))
+            .context(Expected(StrContextValue::StringLiteral("decimal: e.g. 10"))),
     ))
-    .context(Label("Number"))
-    .context(Expected(StrContextValue::Description(
-        r#"Number: e.g. `0x00123`, `123`, `12.3`"#,
-    )))
     .parse_next(input)
 }
 
@@ -266,7 +282,14 @@ where
         + AddContext<Stream<'i>, StrContext>
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
-    alt((parse_plugin, number.map(FnArg::Number))).parse_next(input)
+    alt((
+        parse_plugin,
+        number.map(FnArg::Number),
+        fail.context(Label("function argument"))
+            .context(Expected(StrContextValue::Description("plugin")))
+            .context(Expected(StrContextValue::StringLiteral("number"))),
+    ))
+    .parse_next(input)
 }
 
 /// Parse identifier
@@ -301,15 +324,17 @@ where
     seq!(
         ident,
         opt(delimited(
-            delimited(multispace0, '(', multispace0),
-            separated(0.., delimited(multispace0, parse_argument , multispace0), ","),
-            delimited(multispace0, ')', multispace0)
-        )).map(|args| args.unwrap_or_default())
+            delimited_with_multispace0("("),
+            separated(
+                0..,
+                delimited(multispace0, parse_argument, multispace0).context(Label("FnArg")),
+                ","
+            ),
+            delimited_with_multispace0(")"),
+        ))
+        .map(|args| args.unwrap_or_default())
     )
     .context(Label("Function call"))
-    .context(Expected(StrContextValue::Description(
-        r#"FnCall: e.g. `IsActorBase("Skyrim.esm" | 0x00000007)`, `IsActorValueEqualTo(0x00000007, 30)`, etc."#,
-    )))
     .parse_next(input)
 }
 
@@ -343,7 +368,7 @@ where
 {
     seq!(
       _: multispace0,
-      opt("NOT").map(|not| not.is_some()),
+      opt("NOT").context(Label("NOT")).map(|not| not.is_some()),
       _: multispace0,
       fn_call,
       _: multispace0,
@@ -356,26 +381,7 @@ where
     .parse_next(input)
 }
 
-/// Comment starting with ';' until newline
-fn line_comment<'i, E>(input: &mut Stream<'i>) -> PResult<Stream<'i>, E>
-where
-    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
-{
-    delimited(multispace0, preceded(';', till_line_ending), multispace0)
-        .context(Label("Comment"))
-        .context(Expected(StrContextValue::Description(
-            "Comment(e.g. `; Any String`)",
-        )))
-        .parse_next(input)
-}
-
-/// Comments starting with ';' until newline
-fn line_comments<'i, E>(input: &mut Stream<'i>) -> PResult<Vec<Stream<'i>>, E>
-where
-    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
-{
-    repeat(0.., line_comment).parse_next(input)
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Parse DAR syntax
 fn parse_condition<'i, E>(input: &mut Stream<'i>) -> PResult<Condition<'i>, E>
@@ -400,9 +406,9 @@ where
         }
 
         let (expr, operator) = delimited(
-            line_comments,
+            line_comments0,
             seq!(parse_expression, opt(parse_operator)),
-            line_comments,
+            line_comments0,
         )
         .parse_next(input)?;
 
@@ -446,6 +452,31 @@ where
 
     Ok(top_conditions)
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// Comment starting with ';' until newline
+fn line_comment<'i, E>(input: &mut Stream<'i>) -> PResult<Stream<'i>, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    delimited(multispace0, preceded(';', till_line_ending), multispace0)
+        .context(Label("Comment"))
+        .context(Expected(StrContextValue::Description(
+            "Comment(e.g. `; Any String`)",
+        )))
+        .parse_next(input)
+}
+
+/// Comments starting with ';' until newline. 0 or more.
+fn line_comments0<'i, E>(input: &mut Stream<'i>) -> PResult<Vec<Stream<'i>>, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    repeat(0.., line_comment).parse_next(input)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
@@ -564,7 +595,7 @@ NOT IsActorValueLessThan(30, 60)
             ; This is a line comment.
             ; This is a line comment.
 
-            IsEquippedRightType(3) OR
+      IsEquippedRightType(3) OR
 
             ; This is a line comment.
             IsEquippedRightType(4)
