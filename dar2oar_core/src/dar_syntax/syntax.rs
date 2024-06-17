@@ -40,7 +40,9 @@
 
 use core::fmt;
 use std::num::ParseIntError;
-use winnow::ascii::{dec_int, digit1, hex_digit1, multispace0, oct_digit1, till_line_ending};
+use winnow::ascii::{
+    dec_int, digit1, hex_digit1, multispace0, oct_digit1, take_escaped, till_line_ending,
+};
 use winnow::combinator::{
     alt, delimited, dispatch, fail, opt, preceded, repeat, separated, separated_pair, seq,
 };
@@ -48,7 +50,7 @@ use winnow::error::{
     AddContext, FromExternalError, ParserError, StrContext::Expected, StrContext::Label,
 };
 use winnow::error::{StrContext, StrContextValue};
-use winnow::token::{take, take_until, take_while};
+use winnow::token::{one_of, take, take_while};
 use winnow::{PResult, Parser};
 
 use super::error::ReadableError;
@@ -164,15 +166,26 @@ pub fn parse_dar_syntax(input: Stream<'_>) -> Result<Condition<'_>, super::error
         .map_err(|error| ReadableError::from_parse(error, input))
 }
 
-/// This parser gathers all `char`s up into a `String`with a parse to recognize the double quote
-/// character, before the string (using `preceded`) and after the string (using `terminated`).
+/// single or double quote string
 fn string<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {
+    let single_quote = take_escaped(
+        take_while(1.., |c| c != '\'' && c != '\\'),
+        '\\',
+        one_of(['\\', '\'']),
+    );
+
+    let double_quote = take_escaped(
+        take_while(1.., |c| c != '\"' && c != '\\'),
+        '\\',
+        one_of(['\\', '"']),
+    );
+
     alt((
-        delimited('"', take_until(0.., "\""), '"'),
-        delimited('\'', take_until(0.., "\'"), '\''),
+        delimited('\"', single_quote, '\"'),
+        delimited('"', double_quote, '"'),
     ))
     .context(Label("String"))
     .context(Expected(StrContextValue::Description(
@@ -256,11 +269,11 @@ where
 }
 
 /// Parse identifier
-fn parse_ident<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
+fn ident<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {
-    take_while(0.., |c: char| c.is_alphanumeric() || c == '_')
+    take_while(1.., |c: char| c.is_alphanumeric() || c == '_')
         .context(Label("Identifier"))
         .context(Expected(StrContextValue::Description(
             "Identifier(e.g. `IsActorBase`)",
@@ -278,14 +291,14 @@ where
 /// ; Pattern2
 /// IsActorValueEqualTo(0x00000007, 30)
 /// ```
-fn parse_fn_call<'i, E>(input: &mut Stream<'i>) -> PResult<(&'i str, Vec<FnArg<'i>>), E>
+fn fn_call<'i, E>(input: &mut Stream<'i>) -> PResult<(&'i str, Vec<FnArg<'i>>), E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
     seq!(
-        parse_ident,
+        ident,
         opt(delimited(
             delimited(multispace0, '(', multispace0),
             separated(0.., delimited(multispace0, parse_argument , multispace0), ","),
@@ -331,7 +344,7 @@ where
       _: multispace0,
       opt("NOT").map(|not| not.is_some()),
       _: multispace0,
-      parse_fn_call,
+      fn_call,
       _: multispace0,
     )
     .map(|(negated, (fn_name, args))| Expression {
@@ -438,23 +451,23 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
+    macro_rules! parse_assert {
+        ($parser:ident($input:tt), $expected:expr) => {
+            match $parser::<Error<'_>>.parse($input) {
+                Ok(actual) => assert_eq!(actual, $expected),
+                Err(err) => panic!("{}", ReadableError::from_parse(err, $input)),
+            }
+        };
+    }
+
     #[test]
     fn should_parse_radix_number() {
-        macro_rules! assert_eq_radix {
-            ($actual: expr, $expected:expr) => {
-                assert_eq!(
-                    radix_digits::<Error<'_>>.parse(&mut $actual),
-                    Ok(NumberLiteral::Hex($expected))
-                )
-            };
-        }
-
-        assert_eq_radix!("0b1010", 10);
-        assert_eq_radix!("0B1110", 14);
-        assert_eq_radix!("0o37", 31);
-        assert_eq_radix!("0O37", 31);
-        assert_eq_radix!("0x000007", 7);
-        assert_eq_radix!("0X1A", 26);
+        parse_assert!(radix_digits("0b1010"), NumberLiteral::Hex(10));
+        parse_assert!(radix_digits("0B1010"), NumberLiteral::Hex(10));
+        parse_assert!(radix_digits("0o37"), NumberLiteral::Hex(31));
+        parse_assert!(radix_digits("0O37"), NumberLiteral::Hex(31));
+        parse_assert!(radix_digits("0x00000007"), NumberLiteral::Hex(7));
+        parse_assert!(radix_digits("0X1A"), NumberLiteral::Hex(26));
     }
 
     #[test]
@@ -465,57 +478,34 @@ mod tests {
 
     #[test]
     fn should_parse_number() {
-        assert_eq!(
-            number::<Error<'_>>.parse("33"),
-            Ok(NumberLiteral::Decimal(33))
-        );
-        assert_eq!(
-            number::<Error<'_>>.parse("33.0"),
-            Ok(NumberLiteral::Float(33.0))
-        );
-        assert_eq!(
-            number::<Error<'_>>.parse("0x00000007"),
-            Ok(NumberLiteral::Hex(0x00000007))
-        );
+        parse_assert!(number("33"), NumberLiteral::Decimal(33));
+        parse_assert!(number("33.0"), NumberLiteral::Float(33.0));
+        parse_assert!(number("0x00000007"), NumberLiteral::Hex(0x00000007));
     }
 
     #[test]
     fn should_parse_string() {
-        assert_eq!(string::<Error<'_>>.parse(r#""33""#), Ok("33"));
-        assert_eq!(string::<Error<'_>>.parse(r#""100""#), Ok("100"));
-        assert_eq!(string::<Error<'_>>.parse(r#""0""#), Ok("0"));
-
-        assert_eq!(
-            string::<Error<'_>>.parse(r#""with\"escaped""#),
-            Ok("with\\\"escaped")
-        );
+        parse_assert!(string(r#""0""#), "0");
+        parse_assert!(string(r#""with\"escaped""#), "with\\\"escaped");
     }
 
     #[test]
     fn should_parse_ident() {
-        let input = "IsActorBase";
-        match parse_ident::<Error<'_>>.parse(input) {
-            Ok(actual) => assert_eq!(actual, "IsActorBase"),
-            Err(err) => panic!("{}", ReadableError::from_parse(err, input)),
-        }
+        parse_assert!(ident("IsActorBase"), "IsActorBase");
     }
 
     #[test]
     fn should_parse_fn_call() {
         let input = r#"IsActorValueLessThan(30, 60)"#;
-        match parse_fn_call::<Error<'_>>.parse(input) {
-            Ok(actual) => assert_eq!(
-                actual,
-                (
-                    "IsActorValueLessThan",
-                    vec![
-                        FnArg::Number(NumberLiteral::Decimal(30)),
-                        FnArg::Number(NumberLiteral::Decimal(60)),
-                    ]
-                )
-            ),
-            Err(err) => panic!("{}", ReadableError::from_parse(err, input)),
-        }
+        let expected = (
+            "IsActorValueLessThan",
+            vec![
+                FnArg::Number(NumberLiteral::Decimal(30)),
+                FnArg::Number(NumberLiteral::Decimal(60)),
+            ],
+        );
+
+        parse_assert!(fn_call(input), expected);
     }
 
     #[test]
@@ -523,10 +513,7 @@ mod tests {
         let input = r#"
         ; comment
 "#;
-        match line_comment::<Error<'_>>.parse(input) {
-            Ok(actual) => assert_eq!(actual, " comment"),
-            Err(err) => panic!("{}", ReadableError::from_parse(err, input)),
-        }
+        parse_assert!(line_comment(input), " comment");
     }
 
     #[test]
