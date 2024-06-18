@@ -41,7 +41,8 @@ values, and dealing with file systems.
 ```toml
 [dependencies]
 anyhow = { version = "1.0.75", features = ["backtrace"] }
-dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.7.0" }
+# dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar", tag = "0.8.0" } # Fixed version
+dar2oar_core = { git = "https://github.com/SARDONYX-sard/dar-to-oar" }
 quick_tracing = {version = "0.1.5", features = ["derive"] }
 tokio = { version = "1.33.0", features = [ "fs", "io-util", "macros", "rt", "rt-multi-thread" ] } # Async Executor
 ```
