@@ -65,20 +65,26 @@ const ThemeResponsiveSnackbarComp = forwardRef<HTMLDivElement, CustomContentProp
       icon={hideIconVariant ? false : undefined}
       ref={forwardedRef}
       severity={severity}
-      style={style}
+      style={{
+        whiteSpace: 'pre', // ref: https://github.com/iamhosseindhv/notistack/issues/32
+        ...style,
+      }}
       sx={(theme) => ({
         alignItems: 'center',
         backgroundColor: '#1a1919e1',
         borderRadius: '8px',
         boxShadow: theme.shadows[8],
         display: 'flex',
-        maxWidth: '35vw',
+        maxWidth: '65vw',
         willChange: 'transform',
       })}
       variant='outlined'
     >
       <AlertTitle sx={{ color: '#fff', fontWeight: 'bold' }}>{severity.toUpperCase()}</AlertTitle>
-      {message}
+      {/* HACK: Convert whitespace to a special Unicode space equal to the numeric width to alleviate whitespace misalignment.
+                ref: https://www.fileformat.info/info/unicode/char/2007/index.htm
+      */}
+      {message?.toString().replaceAll(' ', '\u2007')}
     </Alert>
   );
 });
