@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2024-06-18
+### :sparkles: New Features
+- [`b7df936`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b7df936a33d07e4bfeb8e04ca1ec9f9d69f0f48b) - **gui**: change log file name fmt *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`9ca9716`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9ca971679fa75cafab366cd0492266481dc8333d) - **frontend**: change linter to `biome` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`3313bbd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/3313bbd97e45df9b3c701eaef17d80f5bb979ac7) - **frontend**: change to use monaco editor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b3ca061`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b3ca061b83237967ad3326dc3af74da5650fafa9) - **frontend**: merge to one monaco editor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`eefd88b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/eefd88b9c11794316a2c50c7c24e814723300f51) - **frontend**: add reload in editor list *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bca5c60`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bca5c605b4e3389501d78e5d7731b251380f8026) - **frontend**: change theme to `AtomOnedark` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`2f950c8`](https://github.com/SARDONYX-sard/dar-to-oar/commit/2f950c8ce73f2f54a995b09b360919956f20b2ea) - **front-css**: apply transparent *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`2d954ca`](https://github.com/SARDONYX-sard/dar-to-oar/commit/2d954ca62a608f3d5718a836d90b72e2e3cfe490) - add `quick_tracing` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`6105985`](https://github.com/SARDONYX-sard/dar-to-oar/commit/61059859c5145ef0f32a74da00970f4a4d763d5f) - change to better error reporting parser *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a6a0e43`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a6a0e43aa0318279bdc5579cde95eddcdbfaefe1) - support escaped string *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b212167`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b212167c1bd748df0b65e78e9dc1a0af252bfe9e) - support incomplete parse error reporting *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`9d455d1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9d455d128d883d982d4662ff83ca6c9878965b2f) - **dar-syntax**: add context *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`bb41d80`](https://github.com/SARDONYX-sard/dar-to-oar/commit/bb41d80c5b4f5c9027431856002581e3a9f0a1f4) - **core**: report error occurred path *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ebadf9f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ebadf9f35ca6c7d21e39a995e9b75b800f230454) - **front**: use unicode to  alleviate whitespace misalignment *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`701bc59`](https://github.com/SARDONYX-sard/dar-to-oar/commit/701bc59746eb5f3d83362878c4291c5cf11f4589) - **dar-debug**: change to hex display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`b3322c5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b3322c5f7f9f388a602617ed65e0e0f1d17b0048) - **frontend**: ignore lint *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`801ca39`](https://github.com/SARDONYX-sard/dar-to-oar/commit/801ca39c1b25e702dae2cda2b740cc5561aa9ede) - **locales**: fix symlink *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`696d1ff`](https://github.com/SARDONYX-sard/dar-to-oar/commit/696d1ffe0bcd86963d886711b602910e94c24453) - **locales**: fix symlink *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`84c83fb`](https://github.com/SARDONYX-sard/dar-to-oar/commit/84c83fb503f950190e0ce01292e445c55afe4eaf) - **core**: apply lint fix *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`0e940a2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0e940a231f7073fe0900d7c03803105a19a9d96a) - **gui**: combine all gui-related dirs into one *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`e3ff129`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e3ff129bd6232e1b6b4991bf81e6ec794d85905b) - **logger**: modify logger behavior *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b5f2493`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b5f2493d6a64daf845b6bed78ed9d3d1c2a4fc65) - **core-syntax**: organize imports *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`402002f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/402002fb1e54b4d4aade1c9554cb024825f14e59) - **dar-syntax**: sort functions *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :white_check_mark: Tests
+- [`23ff3ac`](https://github.com/SARDONYX-sard/dar-to-oar/commit/23ff3aceaaca98df9a90a90e8b66cd64f9080fd5) - **jest**: fix jest config error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`05563b7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/05563b7cce1a34b24296713d817122283a74a5db) - **core**: change tracing attr *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`0dfa8f6`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0dfa8f6685cd48ba13c53c5d9f35869693cf3800) - remove unused test config file *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`9e9b738`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9e9b7385aa92b6626b7fe2559cd8c705b1428a15) - **cspell**: add `biomejs` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`cc17494`](https://github.com/SARDONYX-sard/dar-to-oar/commit/cc17494ed914d0003776ec54faa3d9f4fbcc196d) - **core**: rename variale *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c968a66`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c968a662cdcff6c32afa2c2a2b803c603a2f7d2f) - fix `.editorconfig`'s indent size *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.7.0] - 2024-04-05
 ### :sparkles: New Features
 - [`b95ef4d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b95ef4dd46155c2a98514f1e5866458b3a02c9dc) - **core**: support creature path *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -397,3 +438,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.5.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.4.1...0.5.0
 [0.6.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.5.0...0.6.0
 [0.7.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.6.0...0.7.0
+[0.8.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.7.0...0.8.0
