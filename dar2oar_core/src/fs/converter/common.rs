@@ -147,7 +147,7 @@ where
                 let config_json = ConditionsConfig {
                     name: section_name.into(),
                     priority: *priority,
-                    conditions: parse_dar2oar(&content)?,
+                    conditions: parse_dar2oar(path, &content)?,
                     ..Default::default()
                 };
 
@@ -178,7 +178,7 @@ where
                 let config_json = ConditionsConfig {
                     name: section_name.into(),
                     priority: *priority,
-                    conditions: parse_dar2oar(&content)?,
+                    conditions: parse_dar2oar(path, &content)?,
                     ..Default::default()
                 };
                 write_section_config(section_root, config_json).await?;

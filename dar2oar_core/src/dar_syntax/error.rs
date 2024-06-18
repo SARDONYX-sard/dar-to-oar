@@ -7,7 +7,7 @@ use winnow::error::{ContextError, ParseError};
 #[derive(Debug, PartialEq)]
 pub struct ReadableError {
     /// Title(e.g. Error tittle, Path)
-    title: String,
+    pub title: String,
     /// Error message
     message: String,
     /// Error position
@@ -26,7 +26,7 @@ impl ReadableError {
             .find(|e| input.is_char_boundary(*e))
             .unwrap_or(start);
         Self {
-            title: "Parse error".to_string(),
+            title: "[DAR Syntax Error]".to_string(),
             message,
             span: start..end,
             input,
