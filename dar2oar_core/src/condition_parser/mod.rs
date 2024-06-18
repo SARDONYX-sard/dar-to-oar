@@ -11,44 +11,35 @@ mod macros;
 use self::conditions::parse_conditions;
 pub use self::dar_interface::ParseError;
 use crate::conditions::ConditionSet;
-use crate::dar_syntax::{convert_error, syntax::parse_condition};
+use crate::dar_syntax::parse_dar_syntax;
 use crate::error::{ConvertError, Result};
+use std::path::Path;
 
 /// Parse a DAR string and convert it into a vector of [`ConditionSets`] representing an OAR structure.
 ///
 /// This function takes a DAR string as input and parses it into a serializable OAR structure.
 /// It returns a [`Result`] containing a vector of [`ConditionSet`] if successful,
 /// or a [`ConvertError`] if any parsing or conversion error occurs.
-pub fn parse_dar2oar(input: &str) -> Result<Vec<ConditionSet>> {
-    let (remain, dar_syn) = match parse_condition(input) {
-        Ok(syn) => {
+///
+/// # Info
+/// Now, `path` is only used in case of errors.
+pub fn parse_dar2oar<P>(path: P, input: &str) -> Result<Vec<ConditionSet>>
+where
+    P: AsRef<Path>,
+{
+    match parse_dar_syntax(input) {
+        Ok(dar_ast) => {
             #[cfg(feature = "tracing")]
-            tracing::debug!("Input => Parsed DAR:\n{:#?}", syn);
-            syn
-        }
-        Err(err) => {
-            let err = match err {
-                nom::Err::Incomplete(_) => return Err(ConvertError::IncompleteConversion),
-                nom::Err::Error(err) | nom::Err::Failure(err) => err,
-            };
+            tracing::debug!("Input => Parsed DAR:\n{:#?}", dar_ast);
 
+            let oar_ast = parse_conditions(dar_ast)?;
             #[cfg(feature = "tracing")]
-            tracing::trace!("Entered ConvertError::InvalidDarSyntax");
-            return Err(ConvertError::InvalidDarSyntax(convert_error(input, err)));
+            tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar_ast);
+            Ok(oar_ast.try_into()?)
         }
-    };
-
-    match remain.is_empty() {
-        true => {
-            let oar = parse_conditions(dar_syn)?;
-            #[cfg(feature = "tracing")]
-            tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar);
-            Ok(oar.try_into()?)
-        }
-        false => {
-            #[cfg(feature = "tracing")]
-            tracing::trace!("Entered ConvertError::IncompleteParseDar");
-            Err(ConvertError::IncompleteParseDar(remain.into()))
-        }
+        Err(mut err) => Err(ConvertError::InvalidDarSyntax({
+            err.title = path.as_ref().to_string_lossy().to_string();
+            err.to_string()
+        })),
     }
 }

@@ -37,17 +37,25 @@
 //! digit         = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 //! hex_digit     = digit | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"  ;
 //! ```
-
-use nom::{
-    branch::alt,
-    bytes::complete::{escaped, tag, take_while1},
-    character::complete::{char, digit1, hex_digit1, multispace0, not_line_ending, one_of, space0},
-    combinator::{map, opt},
-    error::context,
-    multi::{many0, separated_list1},
-    sequence::{delimited, preceded, separated_pair},
+use core::fmt;
+use core::mem;
+use core::num::ParseIntError;
+use winnow::ascii::{
+    dec_int, digit1, hex_digit1, multispace0, oct_digit1, take_escaped, till_line_ending, Caseless,
 };
-use std::fmt;
+use winnow::combinator::{
+    alt, delimited, dispatch, eof, fail, opt, preceded, repeat, separated, separated_pair, seq,
+};
+use winnow::error::{
+    AddContext, FromExternalError, PResult, ParserError,
+    StrContext::{self, Expected, Label},
+    StrContextValue,
+};
+use winnow::token::{one_of, take, take_while};
+use winnow::Parser;
+
+use super::error::ReadableError;
+use super::float::float;
 
 /// DAR Function arguments
 /// - Plugin e.g. Skyrim.esm | 0x007
@@ -134,244 +142,284 @@ impl<'input> Condition<'input> {
     ///
     /// # panics
     /// If push to [`Self::Exp`]
-    fn push(&mut self, expression: Condition<'input>) {
+    fn push(&mut self, expression: Self) {
         match self {
             Condition::And(inner) | Condition::Or(inner) => inner.push(expression),
-            Condition::Exp(_) => panic!("Expression cannot push"),
+            Condition::Exp(_) => {
+                #[cfg(feature = "tracing")]
+                tracing::error!("Expression cannot push");
+            }
         }
     }
 }
 
-/// Type alias for a result type using [`nom::IResult`], wrapping potential errors with [`nom::error::VerboseError`]
-type IResult<'input, I, O, E = nom::error::VerboseError<&'input str>> = nom::IResult<I, O, E>;
+/// Parsing target.
+type Stream<'i> = &'i str;
 
-use nom::error::ParseError; // To use from_error_kind
-/// A macro for returning an error with a specific error kind in the `nom::error::VerboseError` variant.
-macro_rules! bail_kind {
-    ($input:ident, $kind:ident) => {
-        return Err(nom::Err::Error(nom::error::VerboseError::from_error_kind(
-            $input,
-            nom::error::ErrorKind::$kind,
-        )))
-    };
+/// A type alias to allow modification of error types.
+type Error<'i> = winnow::error::ContextError;
+
+/// Parse DAR syntax.
+pub fn parse_dar_syntax(input: Stream<'_>) -> Result<Condition<'_>, ReadableError> {
+    let syntax = input;
+    parse_condition::<Error>
+        .parse(syntax)
+        .map_err(|error| ReadableError::from_parse(error, input))
 }
 
-/// Parses a string literal enclosed in single or double quotes with support for escaping characters.
-fn parse_string(input: &str) -> IResult<&str, &str> {
-    alt((
-        delimited(
-            char('\''),
-            escaped(take_while1(|c| c != '\'' && c != '\\'), '\\', one_of("\\'")),
-            char('\''),
-        ),
-        delimited(
-            char('"'),
-            escaped(take_while1(|c| c != '"' && c != '\\'), '\\', one_of("\\\"")),
-            char('"'),
-        ),
-    ))(input)
+/// Parses a string with surrounding whitespace(0 or more times)
+fn delimited_with_multispace0<'i, E>(s: &'static str) -> impl Parser<Stream<'i>, &'i str, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    delimited(multispace0, s, multispace0)
+        .context(StrContext::Expected(StrContextValue::StringLiteral(s)))
 }
 
-/// NOTE: All octal and binary notations are replaced by hex (the value to be retained is in decimal), and hexadecimal notation is used for notation.
-fn parse_radix_number(input: &str) -> IResult<&str, NumberLiteral> {
-    let (input, _) = multispace0(input)?;
-    let (input, radix) = alt((
-        tag("0X"),
-        tag("0B"),
-        tag("0O"),
-        tag("0x"),
-        tag("0b"),
-        tag("0o"),
-    ))(input)?;
-    let (input, digits) = hex_digit1(input)?;
-
-    let base = match radix {
-        "0x" | "0X" => 16,
-        "0b" | "0B" => 2,
-        "0o" | "0O" => 8,
-        _ => bail_kind!(input, HexDigit),
-    };
-
-    let result = usize::from_str_radix(digits, base);
-
-    match result {
-        Ok(number) => Ok((input, NumberLiteral::Hex(number))),
-        _ => bail_kind!(input, HexDigit),
-    }
-}
-
-/// Parse decimal number(e.g. "123")
-///
-/// ```EBNF
-/// decimal       = ["-"] digit { digit } ;
-/// ```
-fn parse_decimal(input: &str) -> IResult<&str, NumberLiteral> {
-    let (input, _) = multispace0(input)?;
-    let (input, is_negative) = opt(char('-'))(input)?;
-    let (input, digits) = digit1(input)?;
-    let parsed_number = digits.parse::<isize>();
-
-    match parsed_number {
-        Ok(number) => {
-            let signed_number = if is_negative.is_some() {
-                -number
-            } else {
-                number
-            };
-            Ok((input, NumberLiteral::Decimal(signed_number)))
-        }
-        _ => bail_kind!(input, Digit),
-    }
-}
-
-/// Parse float number(e.g. "12.3")
-fn parse_float(input: &str) -> IResult<&str, NumberLiteral> {
-    let (input, _) = multispace0(input)?;
-    let (input, is_negative) = opt(char('-'))(input)?;
-    let (input, whole_part) = digit1(input)?;
-    let (input, dot) = char('.')(input)?;
-    let (input, fraction_part) = digit1(input)?;
-
-    let number_str = format!(
-        "{}{}{}{}",
-        is_negative.unwrap_or(' '),
-        whole_part,
-        dot,
-        fraction_part
+/// single or double quote string
+fn string<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    let single_quote = take_escaped(
+        take_while(1.., |c| c != '\'' && c != '\\'),
+        '\\',
+        one_of(['\\', '\'']),
     );
 
-    let parsed_number = number_str.trim().parse::<f32>();
+    let double_quote = take_escaped(
+        take_while(1.., |c| c != '\"' && c != '\\'),
+        '\\',
+        one_of(['\\', '"']),
+    );
 
-    match parsed_number {
-        Ok(number) => Ok((input, NumberLiteral::Float(number))),
-        _ => bail_kind!(input, Float),
-    }
+    alt((
+        delimited('\"', single_quote, '\"'),
+        delimited('"', double_quote, '"'),
+    ))
+    .context(Label("String"))
+    .context(Expected(StrContextValue::Description(
+        r#"String: e.g. `"Skyrim.esm"`"#,
+    )))
+    .parse_next(input)
+}
+
+/// Replace a prefixed radix number such as `0x` with Replace with hexadecimal number without prefix.
+fn radix_digits<'i, E>(input: &mut Stream<'i>) -> PResult<NumberLiteral, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    dispatch!(take(2_usize);
+        "0b" | "0B" => digit1.try_map(|s| usize::from_str_radix(s, 2))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("binary"))),
+        "0o" | "0O" => oct_digit1.try_map(|s| usize::from_str_radix(s, 8))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("octal"))),
+        "0d" | "0D" => digit1.try_map(|s: &str| s.parse::<usize>())
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("decimal"))),
+        "0x" | "0X" => hex_digit1.try_map(|s|usize::from_str_radix(s, 16))
+          .context(StrContext::Label("digit")).context(StrContext::Expected(StrContextValue::Description("hexadecimal"))),
+        _ => fail.context(StrContext::Label("radix prefix"))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0b")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0o")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0d")))
+          .context(StrContext::Expected(StrContextValue::StringLiteral("0x"))),
+    )
+    .map(NumberLiteral::Hex)
+    .parse_next(input)
 }
 
 /// Parse a number(e.g. "0x123", "123", "12.3")
-fn parse_number(input: &str) -> IResult<&str, NumberLiteral> {
-    alt((parse_radix_number, parse_float, parse_decimal))(input)
+fn number<'i, E>(input: &mut Stream<'i>) -> PResult<NumberLiteral, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    alt((
+        radix_digits.context(Label("number")),
+        float.map(NumberLiteral::Float).context(Label("number")),
+        dec_int.map(NumberLiteral::Decimal).context(Label("number")),
+        // At this point, if the string `Hi`, etc. is received, the following error report is made.
+        fail.context(Label("number"))
+            .context(Expected(StrContextValue::Description(
+                "radix: e.g. `0x007`",
+            )))
+            .context(Expected(StrContextValue::Description("float: e.g. `33.0`")))
+            .context(Expected(StrContextValue::Description("decimal: e.g. `10`"))),
+    ))
+    .parse_next(input)
 }
 
 /// Parse plugin value(e.g. `"Skyrim.esm" | 0x007`)
-fn parse_plugin(input: &str) -> IResult<&str, FnArg<'_>> {
-    let (input, (plugin_name, form_id)) = separated_pair(
-        preceded(space0, parse_string),
-        preceded(space0, tag("|")),
-        preceded(space0, parse_number),
-    )(input)?;
-
-    Ok((
-        input,
-        FnArg::PluginValue {
-            plugin_name,
-            form_id,
-        },
-    ))
+fn parse_plugin<'i, E>(input: &mut Stream<'i>) -> PResult<FnArg<'i>, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    separated_pair(
+        delimited(multispace0, string, multispace0),
+        "|",
+        delimited(multispace0, number, multispace0),
+    )
+    .map(|(plugin_name, form_id)| FnArg::PluginValue {
+        plugin_name,
+        form_id,
+    })
+    .context(Label("Plugin"))
+    .context(Expected(StrContextValue::Description(
+        r#"Plugin: e.g. `"Skyrim.esm" | 0x007`"#,
+    )))
+    .parse_next(input)
 }
 
 /// Parse function arguments.
-fn parse_argument(input: &str) -> IResult<&str, FnArg<'_>> {
-    alt((parse_plugin, map(parse_number, FnArg::Number)))(input)
+fn parse_argument<'i, E>(input: &mut Stream<'i>) -> PResult<FnArg<'i>, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    alt((
+        parse_plugin,
+        number.map(FnArg::Number),
+        fail.context(Label("function argument"))
+            .context(Expected(StrContextValue::Description("plugin")))
+            .context(Expected(StrContextValue::StringLiteral("number"))),
+    ))
+    .parse_next(input)
 }
 
-/// Prase identifier
-fn parse_ident(input: &str) -> IResult<&str, &str> {
-    context(
-        "Expected ident. (Example: IsActorBase)",
-        take_while1(|c: char| c.is_alphanumeric() || c == '_'),
-    )(input)
+/// Parse identifier
+fn ident<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    take_while(1.., |c: char| c.is_alphanumeric() || c == '_')
+        .context(Label("Identifier"))
+        .context(Expected(StrContextValue::Description(
+            "Identifier(e.g. `IsActorBase`)",
+        )))
+        .parse_next(input)
 }
 
 /// Parse function call(with arguments)
-fn parse_fn_call(input: &str) -> IResult<&str, (&str, Vec<FnArg<'_>>)> {
-    /// Parse function call with arguments
-    #[inline]
-    fn with_args(input: &str) -> IResult<&str, Option<Vec<FnArg<'_>>>> {
-        let (input, _) = tag("(")(input)?;
-        let (input, args) =
-            opt(separated_list1(tag(","), preceded(space0, parse_argument)))(input)?;
-        let (input, _) = multispace0(input)?;
-        let (input, _) = tag(")")(input)?;
-        Ok((input, args))
-    }
-
-    let (input, fn_name) = parse_ident(input)?;
-    let (input, _) = multispace0(input)?;
-    let (input, args) = opt(with_args)(input)?;
-
-    let args = args.map_or(Vec::new(), Option::unwrap_or_default);
-    Ok((input, (fn_name, args)))
+///
+/// # Expected Syntax Examples
+/// ```txt
+/// ; Pattern1
+/// IsActorBase("Skyrim.esm" | 0x00000007)
+///
+/// ; Pattern2
+/// IsActorValueEqualTo(0x00000007, 30)
+/// ```
+fn fn_call<'i, E>(input: &mut Stream<'i>) -> PResult<(&'i str, Vec<FnArg<'i>>), E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    seq!(
+        ident,
+        opt(delimited(
+            delimited_with_multispace0("("),
+            separated(
+                0..,
+                delimited(multispace0, parse_argument, multispace0).context(Label("FnArg")),
+                ","
+            ),
+            delimited_with_multispace0(")"),
+        ))
+        .map(|args| args.unwrap_or_default())
+    )
+    .context(Label("Function call"))
+    .parse_next(input)
 }
 
 /// - Expect an AND or OR string.
 /// - After AND or OR comes Expression with a line break in between, so the line break is also checked.
-fn parse_operator(input: &str) -> IResult<&str, Operator> {
-    let (input, _) = multispace0(input)?;
-    let (input, operator) = alt((
-        map(tag("AND"), |_| Operator::And),
-        map(tag("OR"), |_| Operator::Or),
-    ))(input)?;
-    Ok((input, operator))
+fn parse_operator<'i, E>(input: &mut Stream<'i>) -> PResult<Operator, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    preceded(
+        multispace0,
+        alt((
+            Caseless("AND").value(Operator::And),
+            Caseless("OR").value(Operator::Or),
+        )),
+    )
+    .context(Label("Operator"))
+    .context(Expected(StrContextValue::StringLiteral("AND")))
+    .context(Expected(StrContextValue::StringLiteral("OR")))
+    .parse_next(input)
 }
 
 /// Parse one line DAR Syntax
-fn parse_expression(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = multispace0(input)?;
-    let (input, negate) = opt(tag("NOT"))(input)?;
-    let (input, _) = space0(input)?;
-    let (input, (function_name, args)) = parse_fn_call(input)?;
-
-    Ok((
-        input,
-        Expression {
-            negated: negate.is_some(),
-            fn_name: function_name,
-            args,
-        },
-    ))
+/// # Expected Syntax examples
+/// ```txt
+/// NOT IsInCombat()
+/// ```
+fn parse_expression<'i, E>(input: &mut Stream<'i>) -> PResult<Expression<'i>, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
+    seq!(
+        _: multispace0,
+        opt(Caseless("NOT")).context(Expected(StrContextValue::StringLiteral("NOT")))
+            .map(|not| not.is_some()),
+        _: multispace0,
+        fn_call,
+        _: multispace0,
+    )
+    .map(|(negated, (fn_name, args))| Expression {
+        negated,
+        fn_name,
+        args,
+    })
+    .parse_next(input)
 }
 
-/// Comments starting with ';' until newline
-fn comment(input: &str) -> IResult<&str, &str> {
-    let (input, _) = multispace0(input)?;
-    let (input, comment) = preceded(char(';'), not_line_ending)(input)?;
-    let (input, _) = multispace0(input)?;
-    Ok((input, comment))
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Parse DAR syntax
-pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
+fn parse_condition<'i, E>(input: &mut Stream<'i>) -> PResult<Condition<'i>, E>
+where
+    E: ParserError<Stream<'i>>
+        + AddContext<Stream<'i>, StrContext>
+        + FromExternalError<Stream<'i>, ParseIntError>,
+{
     let mut top_conditions = Condition::And(Vec::new());
     let mut or_vec = Vec::new();
-    let mut input_tmp = input;
     let mut is_in_or_stmt = false;
 
     loop {
-        let (input, _) = multispace0(input_tmp)?;
+        #[cfg(feature = "tracing")]
+        tracing::trace!("top_conditions = {top_conditions:#?},\nor_vec = {or_vec:#?}");
+
+        let _ = multispace0(input)?;
         // Dealing with cases where nothing is written in _condition.txt
         if input.is_empty() {
             break;
         }
-        // Skip line comment.
-        if let Ok((input, _)) = comment(input) {
-            input_tmp = input;
-            continue;
-        };
 
-        let (input, expr) = parse_expression(input)?;
-        let (input, _) = space0(input)?;
-        let (input, operator) = opt(parse_operator)(input)?;
-        let (input, _) = many0(comment)(input)?;
-        let (input, _) = multispace0(input)?;
+        let _ = line_comments0(input)?;
+        let (expr, operator) = seq!(parse_expression, opt(parse_operator)).parse_next(input)?;
+        let _ = line_comments0(input)?;
+        let _ = multispace0(input)?;
 
+        #[cfg(feature = "tracing")]
+        tracing::trace!("expr: {expr:#?}");
         if let Some(operator) = operator {
             match operator {
                 Operator::And => {
                     if is_in_or_stmt {
                         or_vec.push(Condition::Exp(expr));
-                        top_conditions.push(Condition::Or(or_vec.clone()));
-                        or_vec.clear();
+                        top_conditions.push(Condition::Or(mem::take(&mut or_vec)));
                         is_in_or_stmt = false;
                     } else {
                         top_conditions.push(Condition::Exp(expr));
@@ -383,14 +431,11 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
                 }
             };
 
-            // NOTE:
-            // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
-            // but others write it, so it cannot be an error.
+            // To support tailing `OR` or `AND` statement.
             if input.is_empty() {
                 if is_in_or_stmt {
-                    top_conditions.push(Condition::Or(or_vec.clone()));
+                    top_conditions.push(Condition::Or(mem::take(&mut or_vec)));
                 }
-                input_tmp = input;
                 break;
             }
         } else {
@@ -401,50 +446,122 @@ pub fn parse_condition(input: &str) -> IResult<&str, Condition<'_>> {
                 }
                 false => top_conditions.push(Condition::Exp(expr)),
             }
-            input_tmp = input; // To avoid or.clone, so call here.
+
+            let _ = eof
+                .context(Label("End of file"))
+                .context(Expected(StrContextValue::Description("end of file")))
+                .context(Expected(StrContextValue::Description(
+                    "Tailing op: `OR` or `AND`",
+                )))
+                .context(Expected(StrContextValue::Description(
+                    "Conditional statement(if it has op): e.g. `NOT IsInCombat() AND`",
+                )))
+                .parse_next(input)?;
             break;
         }
-        input_tmp = input;
     }
 
-    Ok((input_tmp, top_conditions))
+    Ok(top_conditions)
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// Comment starting with ';' until newline
+fn line_comment<'i, E>(input: &mut Stream<'i>) -> PResult<Stream<'i>, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    delimited(multispace0, preceded(';', till_line_ending), multispace0)
+        .context(Label("Comment"))
+        .context(Expected(StrContextValue::Description(
+            "Comment(e.g. `; Any String`)",
+        )))
+        .parse_next(input)
+}
+
+/// Comments starting with ';' until newline. 0 or more.
+fn line_comments0<'i, E>(input: &mut Stream<'i>) -> PResult<Vec<Stream<'i>>, E>
+where
+    E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
+{
+    repeat(0.., line_comment).parse_next(input)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
-    #[test]
-    fn test_parse_hex_number() {
-        assert_eq!(parse_radix_number("0x1A"), Ok(("", NumberLiteral::Hex(26))));
+    macro_rules! parse_assert {
+        ($parser:ident($input:tt), $expected:expr) => {
+            match $parser::<Error<'_>>.parse($input) {
+                Ok(actual) => assert_eq!(actual, $expected),
+                Err(err) => panic!("{}", ReadableError::from_parse(err, $input)),
+            }
+        };
     }
 
     #[test]
-    fn test_parse_binary_number() {
-        assert_eq!(
-            parse_radix_number("0b1010"),
-            Ok(("", NumberLiteral::Hex(10)))
+    fn should_parse_radix_number() {
+        parse_assert!(radix_digits("0b1010"), NumberLiteral::Hex(10));
+        parse_assert!(radix_digits("0B1010"), NumberLiteral::Hex(10));
+        parse_assert!(radix_digits("0o37"), NumberLiteral::Hex(31));
+        parse_assert!(radix_digits("0O37"), NumberLiteral::Hex(31));
+        parse_assert!(radix_digits("0x00000007"), NumberLiteral::Hex(7));
+        parse_assert!(radix_digits("0X1A"), NumberLiteral::Hex(26));
+    }
+
+    #[test]
+    fn should_error_radix_number() {
+        assert!(radix_digits::<Error<'_>>.parse("0z123").is_err());
+        assert!(radix_digits::<Error<'_>>.parse("0x").is_err());
+    }
+
+    #[test]
+    fn should_parse_number() {
+        parse_assert!(number("33"), NumberLiteral::Decimal(33));
+        parse_assert!(number("33.0"), NumberLiteral::Float(33.0));
+        parse_assert!(number("0x00000007"), NumberLiteral::Hex(0x00000007));
+    }
+
+    #[test]
+    fn should_parse_string() {
+        parse_assert!(string(r#""0""#), "0");
+        parse_assert!(string(r#""with\"escaped""#), "with\\\"escaped");
+    }
+
+    #[test]
+    fn should_parse_ident() {
+        parse_assert!(ident("IsActorBase"), "IsActorBase");
+    }
+
+    #[test]
+    fn should_parse_fn_call() {
+        let input = r#"IsActorValueLessThan(30, 60)"#;
+        let expected = (
+            "IsActorValueLessThan",
+            vec![
+                FnArg::Number(NumberLiteral::Decimal(30)),
+                FnArg::Number(NumberLiteral::Decimal(60)),
+            ],
         );
+
+        parse_assert!(fn_call(input), expected);
     }
 
     #[test]
-    fn test_parse_octal_number() {
-        assert_eq!(parse_radix_number("0O37"), Ok(("", NumberLiteral::Hex(31))));
+    fn should_parse_comment() {
+        let input = r#"
+        ; comment
+"#;
+        parse_assert!(line_comment(input), " comment");
     }
 
     #[test]
-    fn test_parse_invalid_input() {
-        assert!(parse_radix_number("0z123").is_err());
-    }
-
-    #[test]
-    fn test_parse_missing_digits() {
-        assert!(parse_radix_number("0x").is_err());
-    }
-
-    #[test]
-    fn test_parse_conditions() {
+    #[cfg_attr(feature = "tracing", quick_tracing::init)]
+    fn should_parse_conditions() {
         let input = r#"
 IsActorBase("Skyrim.esm" | 0X000007) AND
 NOT IsInCombat() AND
@@ -475,23 +592,31 @@ NOT IsActorValueLessThan(30, 60)
             }),
         ]);
 
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+        match parse_dar_syntax(input) {
+            Ok(actual) => assert_eq!(actual, expected),
+            Err(err) => panic!("{err}"),
+        }
     }
 
     #[test]
-    fn test_parse_conditions_with_comments() {
+    #[cfg_attr(feature = "tracing", quick_tracing::init)]
+    fn should_parse_conditions_with_comments() {
         let input = r#"
-            IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
+            ; This is start of line comment.
+
+      IsActorBase("Skyrim.esm" | 0x00BCDEF7) Or
             ; Parse test only indent function call.
-            IsPlayerTeammate AND
+
+  noT         IsPlayerTeammate aNd
             ; This is a line comment.
             ; This is a line comment.
 
-            IsEquippedRightType(3) OR
+      IsEquippedRightType(3) OR
 
             ; This is a line comment.
             IsEquippedRightType(4)
 
+            ; This is end of line comment.
             ; This is end of line comment.
 
 "#;
@@ -505,7 +630,7 @@ NOT IsActorValueLessThan(30, 60)
             }],
         };
         let player = Expression {
-            negated: false,
+            negated: true,
             fn_name: "IsPlayerTeammate",
             args: vec![],
         };
@@ -525,7 +650,10 @@ NOT IsActorValueLessThan(30, 60)
             Condition::Or(vec![Condition::Exp(equip_r3), Condition::Exp(equip_r4)]),
         ]);
 
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+        match parse_dar_syntax(input) {
+            Ok(actual) => assert_eq!(actual, expected),
+            Err(err) => panic!("{err}"),
+        }
     }
 
     #[test]
@@ -539,7 +667,8 @@ NOT IsActorValueLessThan(30, 60)
                 form_id: NumberLiteral::Hex(0x0000_0007),
             }],
         })]);
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+
+        assert_eq!(parse_condition::<Error>.parse(input), Ok(expected));
     }
 
     #[test]
@@ -554,7 +683,7 @@ NOT IsActorValueLessThan(30, 60)
             }],
         })])]);
 
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+        assert_eq!(parse_condition::<Error>.parse(input), Ok(expected));
     }
 
     #[test]
@@ -569,6 +698,6 @@ NOT IsActorValueLessThan(30, 60)
             }],
         })]);
 
-        assert_eq!(parse_condition(input), Ok(("", expected)));
+        assert_eq!(parse_condition::<Error>.parse(input), Ok(expected));
     }
 }

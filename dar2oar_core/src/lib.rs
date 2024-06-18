@@ -235,3 +235,8 @@ pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};
 
 #[cfg(test)]
 extern crate criterion as _; // Needed for cargo bench.
+
+#[cfg(test)]
+extern crate quick_tracing as _; // To avoid lint error.
+#[cfg(test)]
+extern crate temp_dir as _; // To avoid lint error.

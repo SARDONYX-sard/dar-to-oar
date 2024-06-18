@@ -53,5 +53,6 @@
   },
   "overrides": {
     "monaco-editor": "^0.49.0"
-  }
+  },
+  "packageManager": "npm@10.8.1"
 }

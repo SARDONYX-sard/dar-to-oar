@@ -51,7 +51,7 @@ pub enum ConvertError {
     IncompleteParseDar(String),
 
     /// DAR syntax error.
-    #[error("DAR syntax error.:\n{0}")]
+    #[error("[DAR Syntax Error]\n{0}")]
     InvalidDarSyntax(String),
 
     /// This is not valid utf8.
@@ -77,6 +77,10 @@ pub enum ConvertError {
     /// Represents all other cases of `std::io::Error`.
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+
+    /// Async walkdir error.
+    #[error(transparent)]
+    AsyncWalkDirError(#[from] async_walkdir::Error),
 
     /// Thread join error.
     #[error(transparent)]

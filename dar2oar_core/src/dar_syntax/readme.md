@@ -3,7 +3,7 @@
 ## Features
 
 - [x] parser
-- [ ] human readable error report
+- [x] human readable error report
 
 ## Import rule
 

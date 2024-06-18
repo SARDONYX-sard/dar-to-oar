@@ -134,7 +134,6 @@ pub async fn remove_oar(
     }
 }
 
-#[cfg(feature = "tracing")]
 #[cfg(test)]
 mod test {
     use super::*;
@@ -144,12 +143,18 @@ mod test {
 
     macro_rules! sender {
         () => {
-            |idx: usize| tracing::debug!("{}", idx)
+            |_idx: usize| {
+                #[cfg(feature = "tracing")]
+                tracing::debug!(_idx)
+            }
         };
     }
 
     #[tokio::test]
-    #[quick_tracing::try_init(file = "../logs/unhide_dar.log", level = "ERROR")]
+    #[cfg_attr(
+        feature = "tracing",
+        quick_tracing::try_init(file = "../logs/unhide_dar.log", level = "ERROR")
+    )]
     async fn should_unhide_dar_files() -> Result<()> {
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
@@ -163,7 +168,10 @@ mod test {
     }
 
     #[tokio::test]
-    #[quick_tracing::init(file = "../logs/remove_oar.log", level = "ERROR")]
+    #[cfg_attr(
+        feature = "tracing",
+        quick_tracing::try_init(file = "../logs/remove_oar.log", level = "ERROR")
+    )]
     async fn should_remove_oar_dir() -> Result<()> {
         let temp_dir = TempDir::new()?;
         let test_dir = temp_dir
