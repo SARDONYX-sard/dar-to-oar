@@ -1,7 +1,7 @@
-# dar2oar_core
+# `dar2oar_core`
 
 `dar2oar_core` is a Rust crate that provides functionality for converting
-DynamicAnimationReplacer (DAR) files to OpenAnimationReplacer (OAR) files. The
+`DynamicAnimationReplacer`(DAR) files to `OpenAnimationReplacer`(OAR) files. The
 crate includes modules for parsing conditions, handling DAR syntax, managing
 values, and dealing with file systems.
 
@@ -107,7 +107,7 @@ cargo doc --open
 1. Requirements
 
    - test mod: `../test/data/EVG Conditional Idles`
-   - mapping_table:
+   - `mapping_table`:
      `../test/settings/EVG Conditional Idles_v1.4.2_mapping_table.txt`
 
 2. Execute the following command
