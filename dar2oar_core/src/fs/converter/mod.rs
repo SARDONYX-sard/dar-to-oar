@@ -130,17 +130,23 @@ mod test {
         })
     }
 
-    #[ignore]
-    #[quick_tracing::try_init(test = "convert_non_mpsc", level = "DEBUG")]
+    #[ignore = "need MOD data"]
     #[tokio::test]
+    #[cfg_attr(
+        feature = "tracing",
+        quick_tracing::try_init(test = "convert_non_mpsc", level = "DEBUG")
+    )]
     async fn convert_non_mpsc() -> Result<()> {
         convert_dar_to_oar(create_options().await?, |_| {}).await?;
         Ok(())
     }
 
-    #[ignore]
-    #[quick_tracing::try_init(test = "convert_mpsc", level = "DEBUG")]
+    #[ignore = "need MOD data"]
     #[tokio::test]
+    #[cfg_attr(
+        feature = "tracing",
+        quick_tracing::try_init(test = "convert_mpsc", level = "DEBUG")
+    )]
     async fn convert_with_mpsc() -> Result<()> {
         let (tx, mut rx) = tokio::sync::mpsc::channel(500);
 
