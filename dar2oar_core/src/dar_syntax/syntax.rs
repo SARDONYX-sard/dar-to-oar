@@ -369,12 +369,12 @@ where
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
     seq!(
-      _: multispace0,
-      opt(Caseless("NOT")).context(Expected(StrContextValue::StringLiteral("NOT")))
-          .map(|not| not.is_some()),
-      _: multispace0,
-      fn_call,
-      _: multispace0,
+        _: multispace0,
+        opt(Caseless("NOT")).context(Expected(StrContextValue::StringLiteral("NOT")))
+            .map(|not| not.is_some()),
+        _: multispace0,
+        fn_call,
+        _: multispace0,
     )
     .map(|(negated, (fn_name, args))| Expression {
         negated,
@@ -399,7 +399,7 @@ where
 
     loop {
         #[cfg(feature = "tracing")]
-        tracing::trace!("{top_conditions:#?}, {or_vec:#?}");
+        tracing::trace!("top_conditions = {top_conditions:#?},\nor_vec = {or_vec:#?}");
 
         let _ = multispace0(input)?;
         // Dealing with cases where nothing is written in _condition.txt
@@ -407,14 +407,13 @@ where
             break;
         }
 
-        let (expr, operator) = delimited(
-            line_comments0,
-            seq!(parse_expression, opt(parse_operator)),
-            line_comments0,
-        )
-        .parse_next(input)?;
+        let _ = line_comments0(input)?;
+        let (expr, operator) = seq!(parse_expression, opt(parse_operator)).parse_next(input)?;
+        let _ = line_comments0(input)?;
         let _ = multispace0(input)?;
 
+        #[cfg(feature = "tracing")]
+        tracing::trace!("expr: {expr:#?}");
         if let Some(operator) = operator {
             match operator {
                 Operator::And => {
@@ -452,7 +451,10 @@ where
                 .context(Label("End of file"))
                 .context(Expected(StrContextValue::Description("end of file")))
                 .context(Expected(StrContextValue::Description(
-                    "otherwise `OR` or `AND`(to the next conditional statement)",
+                    "Tailing op: `OR` or `AND`",
+                )))
+                .context(Expected(StrContextValue::Description(
+                    "Conditional statement(if it has op): e.g. `NOT IsInCombat() AND`",
                 )))
                 .parse_next(input)?;
             break;
@@ -558,6 +560,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(feature = "tracing", quick_tracing::init)]
     fn should_parse_conditions() {
         let input = r#"
 IsActorBase("Skyrim.esm" | 0X000007) AND
@@ -596,6 +599,7 @@ NOT IsActorValueLessThan(30, 60)
     }
 
     #[test]
+    #[cfg_attr(feature = "tracing", quick_tracing::init)]
     fn should_parse_conditions_with_comments() {
         let input = r#"
             ; This is start of line comment.
