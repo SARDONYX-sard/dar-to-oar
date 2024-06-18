@@ -3,6 +3,7 @@
     "appender",
     "biomejs",
     "bools",
+    "Caseless",
     "chrono",
     "Couprie",
     "ctypes",

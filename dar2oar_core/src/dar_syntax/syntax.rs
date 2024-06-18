@@ -37,22 +37,22 @@
 //! digit         = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 //! hex_digit     = digit | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"  ;
 //! ```
-
 use core::fmt;
+use core::mem;
 use core::num::ParseIntError;
 use winnow::ascii::{
-    dec_int, digit1, hex_digit1, multispace0, oct_digit1, take_escaped, till_line_ending,
+    dec_int, digit1, hex_digit1, multispace0, oct_digit1, take_escaped, till_line_ending, Caseless,
 };
 use winnow::combinator::{
-    alt, delimited, dispatch, fail, opt, preceded, repeat, separated, separated_pair, seq,
+    alt, delimited, dispatch, eof, fail, opt, preceded, repeat, separated, separated_pair, seq,
 };
 use winnow::error::{
-    AddContext, FromExternalError, ParserError,
+    AddContext, FromExternalError, PResult, ParserError,
     StrContext::{self, Expected, Label},
     StrContextValue,
 };
 use winnow::token::{one_of, take, take_while};
-use winnow::{PResult, Parser};
+use winnow::Parser;
 
 use super::error::ReadableError;
 use super::float::float;
@@ -243,11 +243,11 @@ where
         dec_int.map(NumberLiteral::Decimal).context(Label("number")),
         // At this point, if the string `Hi`, etc. is received, the following error report is made.
         fail.context(Label("number"))
-            .context(Expected(StrContextValue::StringLiteral(
-                "radix: e.g. 0x007",
+            .context(Expected(StrContextValue::Description(
+                "radix: e.g. `0x007`",
             )))
-            .context(Expected(StrContextValue::StringLiteral("float: e.g. 33.0")))
-            .context(Expected(StrContextValue::StringLiteral("decimal: e.g. 10"))),
+            .context(Expected(StrContextValue::Description("float: e.g. `33.0`")))
+            .context(Expected(StrContextValue::Description("decimal: e.g. `10`"))),
     ))
     .parse_next(input)
 }
@@ -346,12 +346,14 @@ where
 {
     preceded(
         multispace0,
-        alt(("AND".value(Operator::And), "OR".value(Operator::Or))),
+        alt((
+            Caseless("AND").value(Operator::And),
+            Caseless("OR").value(Operator::Or),
+        )),
     )
     .context(Label("Operator"))
-    .context(Expected(StrContextValue::Description(
-        "Operator: `AND` or `OR`",
-    )))
+    .context(Expected(StrContextValue::StringLiteral("AND")))
+    .context(Expected(StrContextValue::StringLiteral("OR")))
     .parse_next(input)
 }
 
@@ -368,7 +370,8 @@ where
 {
     seq!(
       _: multispace0,
-      opt("NOT").context(Label("NOT")).map(|not| not.is_some()),
+      opt(Caseless("NOT")).context(Expected(StrContextValue::StringLiteral("NOT")))
+          .map(|not| not.is_some()),
       _: multispace0,
       fn_call,
       _: multispace0,
@@ -387,7 +390,6 @@ where
 fn parse_condition<'i, E>(input: &mut Stream<'i>) -> PResult<Condition<'i>, E>
 where
     E: ParserError<Stream<'i>>
-        // Below this is the `fn_call` trait bounds.
         + AddContext<Stream<'i>, StrContext>
         + FromExternalError<Stream<'i>, ParseIntError>,
 {
@@ -411,13 +413,14 @@ where
             line_comments0,
         )
         .parse_next(input)?;
+        let _ = multispace0(input)?;
 
         if let Some(operator) = operator {
             match operator {
                 Operator::And => {
                     if is_in_or_stmt {
                         or_vec.push(Condition::Exp(expr));
-                        top_conditions.push(Condition::Or(core::mem::take(&mut or_vec)));
+                        top_conditions.push(Condition::Or(mem::take(&mut or_vec)));
                         is_in_or_stmt = false;
                     } else {
                         top_conditions.push(Condition::Exp(expr));
@@ -429,12 +432,10 @@ where
                 }
             };
 
-            // NOTE:
-            // The "OR" & "AND" at the end is syntactically anathema to DAR in my opinion,
-            // but others write it, so it cannot be an error.
+            // To support tailing `OR` or `AND` statement.
             if input.is_empty() {
                 if is_in_or_stmt {
-                    top_conditions.push(Condition::Or(or_vec.clone()));
+                    top_conditions.push(Condition::Or(mem::take(&mut or_vec)));
                 }
                 break;
             }
@@ -446,6 +447,14 @@ where
                 }
                 false => top_conditions.push(Condition::Exp(expr)),
             }
+
+            let _ = eof
+                .context(Label("End of file"))
+                .context(Expected(StrContextValue::Description("end of file")))
+                .context(Expected(StrContextValue::Description(
+                    "otherwise `OR` or `AND`(to the next conditional statement)",
+                )))
+                .parse_next(input)?;
             break;
         }
     }
@@ -589,9 +598,12 @@ NOT IsActorValueLessThan(30, 60)
     #[test]
     fn should_parse_conditions_with_comments() {
         let input = r#"
-            IsActorBase("Skyrim.esm" | 0x00BCDEF7) OR
+            ; This is start of line comment.
+
+      IsActorBase("Skyrim.esm" | 0x00BCDEF7) Or
             ; Parse test only indent function call.
-            IsPlayerTeammate AND
+
+  noT         IsPlayerTeammate aNd
             ; This is a line comment.
             ; This is a line comment.
 
@@ -614,7 +626,7 @@ NOT IsActorValueLessThan(30, 60)
             }],
         };
         let player = Expression {
-            negated: false,
+            negated: true,
             fn_name: "IsPlayerTeammate",
             args: vec![],
         };
