@@ -12,6 +12,9 @@ function usage() {
   Examples:
   node version_up.js minor
   node version_up.js 2
+
+  undo commit & tag
+  node version_up.js undo
 `;
 }
 
@@ -41,6 +44,10 @@ if (isDebug) {
 main();
 
 function main() {
+  if (process.argv[2] === 'undo') {
+    gitUndo();
+  }
+
   const versionType = process.argv[2] || defaultVersion;
   const newVersion = updateVersion(currentVersion, versionType);
 
@@ -139,4 +146,10 @@ function gitCommitAndTag(currentVersion, newVersion) {
   } catch (error) {
     throw new Error(`Failed to create Git commit and tag: ${error}`);
   }
+}
+
+function gitUndo() {
+  const prevTag = execSync('git describe --tags --abbrev=0').toString();
+  execSync(`git tag -d ${prevTag}`);
+  execSync('git reset --soft HEAD^');
 }
