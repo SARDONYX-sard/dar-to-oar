@@ -46,6 +46,7 @@ main();
 function main() {
   if (process.argv[2] === 'undo') {
     gitUndo();
+    return;
   }
 
   const versionType = process.argv[2] || defaultVersion;
