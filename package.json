@@ -16,7 +16,7 @@
     "test:all": "npm test && npm run test:back",
     "fmt": "biome format ./ && prettier --cache --write \"**/*.+(yml|yaml)\" --ignore-path ./.gitignore && cargo fmt --all",
     "lint": "next lint ./dar2oar_gui/frontend && biome lint ./ && cargo clippy --workspace",
-    "lint:fix": "npm run fmt && next lint ./dar2oar_gui/frontend --fix && biome check --apply ./  && cargo clippy --workspace --fix --allow-staged --allow-dirty",
+    "lint:fix": "npm run fmt && next lint ./dar2oar_gui/frontend --fix && biome check --write ./  && cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -34,7 +34,7 @@
     "react-i18next": "^14.1.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.7.3",
+    "@biomejs/biome": "1.8.3",
     "@tauri-apps/cli": "^1.5.14",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",

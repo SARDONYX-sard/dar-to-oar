@@ -10,11 +10,8 @@ function usage() {
   3. patch: Increment the patch version.(e.g. 0.0.0 -> 0.0.1)
 
   Examples:
-  node version_up.js minor
-  node version_up.js 2
-
-  undo commit & tag
-  node version_up.js undo
+  node version_up.cjs minor
+  node version_up.cjs 2
 `;
 }
 
@@ -24,8 +21,11 @@ const defaultVersion = '2'; // 2: Bump up `minor` version is default
 const useGpg = true; // Verified commit with GPG key.
 
 // import modules
+// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const fs = require('node:fs');
+// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const path = require('node:path');
+// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const { execSync } = require('node:child_process');
 // paths
 const basePath = path.resolve(__dirname, '..');
@@ -37,18 +37,16 @@ const packageJson = require(packageJsonPath);
 const currentVersion = packageJson.version;
 
 if (isDebug) {
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(packageJsonPath);
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(cargoTomlPath);
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(issueTemplatePath);
 }
 main();
 
 function main() {
-  if (process.argv[2] === 'undo') {
-    gitUndo();
-    return;
-  }
-
   const versionType = process.argv[2] || defaultVersion;
   const newVersion = updateVersion(currentVersion, versionType);
 
@@ -57,6 +55,7 @@ function main() {
   updateIssueTemplate(newVersion);
   gitCommitAndTag(currentVersion, newVersion);
 
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(`Updated version: ${currentVersion} => ${newVersion}`);
 }
 
@@ -143,14 +142,9 @@ function gitCommitAndTag(currentVersion, newVersion) {
     // Create Git tag
     execSync(`git tag ${newVersion} ${tagFlags} -m "Version ${newVersion}"`);
 
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
     console.log('Git commit and tag created successfully.');
   } catch (error) {
     throw new Error(`Failed to create Git commit and tag: ${error}`);
   }
-}
-
-function gitUndo() {
-  const prevTag = execSync('git describe --tags --abbrev=0').toString();
-  execSync(`git tag -d ${prevTag}`);
-  execSync('git reset --soft HEAD^');
 }

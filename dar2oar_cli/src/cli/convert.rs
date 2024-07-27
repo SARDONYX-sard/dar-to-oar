@@ -33,7 +33,7 @@ pub(crate) struct Convert {
     /// Path to section name table
     ///
     /// - See more details
-    /// <https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file>
+    ///   `https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file`
     mapping_file: Option<String>,
     #[clap(long)]
     /// Path to section name table(For _1st_person)
