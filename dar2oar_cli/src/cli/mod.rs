@@ -1,6 +1,8 @@
+mod color;
 mod commands;
 mod convert;
 
+use crate::cli::color::get_styles;
 use crate::cli::commands::Commands;
 use crate::init_tracing;
 use convert::dar2oar;
@@ -11,6 +13,9 @@ use tracing::Level;
 /// Converter CLI version
 #[derive(Debug, clap::Parser)]
 #[clap(name = "dar2oar", about)]
+#[cfg_attr(feature = "color",
+command(styles=get_styles())
+)]
 pub(crate) struct Cli {
     #[clap(subcommand)]
     command: Commands,
