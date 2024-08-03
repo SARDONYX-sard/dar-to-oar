@@ -47,8 +47,8 @@ where
     alt((
         recognize_float,
         literal(Caseless("nan")),
-        (opt(one_of(['+', '-'])), literal(Caseless("infinity"))).recognize(),
-        (opt(one_of(['+', '-'])), literal(Caseless("inf"))).recognize(),
+        (opt(one_of(['+', '-'])), literal(Caseless("infinity"))).take(),
+        (opt(one_of(['+', '-'])), literal(Caseless("inf"))).take(),
     ))
     .parse_next(input)
 }
@@ -70,6 +70,6 @@ where
         alt(((digit1, ('.', opt(digit1))).void(), ('.', digit1).void())),
         opt((one_of(['e', 'E']), opt(one_of(['+', '-'])), cut_err(digit1))),
     )
-        .recognize()
+        .take()
         .parse_next(input)
 }
