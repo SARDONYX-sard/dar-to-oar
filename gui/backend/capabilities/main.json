@@ -7,10 +7,10 @@
     "core:app:allow-app-show",
     "core:event:allow-listen",
     "core:event:allow-unlisten",
+    "core:path:allow-resolve-directory",
     "core:window:allow-show",
     "dialog:allow-open",
     "dialog:allow-save",
-    "fs:allow-applog-meta",
     "fs:allow-read-text-file",
     "shell:allow-open"
   ]

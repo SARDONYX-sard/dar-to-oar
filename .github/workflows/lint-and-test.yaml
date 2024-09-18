@@ -122,7 +122,7 @@ jobs:
         shell: bash
         if: runner.os == 'Linux'
         run: |
-          mv ./target/release/g-dar2oar ./build
+          mv ./target/release/g_dar2oar ./build
           mv ./target/release/dar2oar ./build
 
       - name: Upload a Build Artifact
