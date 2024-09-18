@@ -1,4 +1,4 @@
-import { save } from '@tauri-apps/api/dialog';
+import { save } from '@tauri-apps/plugin-dialog';
 
 import { readFile, writeFile } from '@/tauri_cmd';
 import { type LocalCache, cacheKeys, localStorageManager } from '@/utils/local_storage_manager';

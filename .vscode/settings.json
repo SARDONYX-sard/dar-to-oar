@@ -1,4 +1,7 @@
 {
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "[javascript][javascriptreact][typescript][typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

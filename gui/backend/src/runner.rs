@@ -1,9 +1,21 @@
 use crate::logging::init_logger;
 use anyhow::Context as _;
+use tauri_plugin_window_state::StateFlags;
 
-pub fn run_tauri() -> anyhow::Result<()> {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+pub fn run() -> anyhow::Result<()> {
+    let builder = tauri::Builder::default();
+
+    #[allow(clippy::large_stack_frames)]
+    builder
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(
+            // https://github.com/tauri-apps/plugins-workspace/issues/344
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(StateFlags::all() & !StateFlags::VISIBLE)
+                .build(),
+        )
         .setup(|app| Ok(init_logger(app)?))
         .invoke_handler(tauri::generate_handler![
             crate::cmd::change_log_level,

@@ -6,6 +6,7 @@ import NextLink from 'next/link';
 
 import Menu from '@/components/navigation';
 import SnackBarProvider from '@/components/providers/snackbar';
+import { showWindow } from '@/tauri_cmd';
 
 import type { ComponentProps, ReactNode } from 'react';
 
@@ -34,6 +35,8 @@ interface ClientLayoutProps {
   children: ReactNode;
 }
 export default function ClientLayout({ children }: Readonly<ClientLayoutProps>) {
+  showWindow();
+
   return (
     <ThemeProvider theme={darkTheme}>
       <SnackBarProvider />

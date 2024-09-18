@@ -17,6 +17,7 @@ resolver = "2"
 [workspace.dependencies]
 anyhow = { version = "1.0.89", features = ["backtrace"] }
 serde = { version = "1.0.210", features = ["derive"] }    # Implement (De)Serialize
+serde_json = "1.0.128"                                    # core: To json/GUI: To avoid generate_context error.
 tokio = { version = "1.40.0" }                            # Async runtime
 tracing = { version = "0.1.40" }                          # logger
 tracing-subscriber = "0.3.18"

@@ -1,7 +1,7 @@
 use crate::convert_option::GuiConverterOptions;
 use dar2oar_core::{convert_dar_to_oar, remove_oar, unhide_dar, Closure};
 use std::time::Instant;
-use tauri::Window;
+use tauri::{Emitter as _, Window};
 
 /// Early return with Err() and write log error.
 macro_rules! bail {

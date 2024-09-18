@@ -4,6 +4,7 @@ use once_cell::sync::OnceCell;
 use std::fs::{self, File};
 use std::path::Path;
 use std::str::FromStr;
+use tauri::Manager as _;
 use tracing::{debug, info};
 use tracing_subscriber::{
     filter::{self, LevelFilter},
@@ -20,7 +21,7 @@ static INSTANCE: OnceCell<Handle<LevelFilter, Registry>> = OnceCell::new();
 /// # Errors
 /// Double init
 pub(crate) fn init_logger(app: &tauri::App) -> Result<()> {
-    let resolver = app.path_resolver();
+    let resolver = app.path();
     let log_dir = &resolver.app_log_dir().context("Not found log dir")?;
     let log_name = format!("{}.log", app.package_info().name);
 
@@ -71,6 +72,7 @@ pub(crate) fn change_log_level(log_level: &str) -> Result<()> {
 /// # Why did you make this?
 /// Because `tracing_appender` must be executed in the **root function** to work.
 /// In this case where the log location is obtained with tauri, the logger cannot be initialized with the root function.
+#[allow(clippy::cognitive_complexity)]
 fn create_rotate_log(log_dir: impl AsRef<Path>, log_name: &str, max_files: usize) -> Result<File> {
     fs::create_dir_all(&log_dir)?;
 

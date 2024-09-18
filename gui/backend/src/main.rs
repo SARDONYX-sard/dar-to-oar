@@ -7,7 +7,7 @@ mod logging;
 mod runner;
 
 fn main() -> std::io::Result<()> {
-    crate::runner::run_tauri().map_err(|err| {
+    crate::runner::run().map_err(|err| {
         tracing::error!("Error: {}", err);
         std::process::exit(1);
     })

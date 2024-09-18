@@ -41,7 +41,7 @@ export const getSnackbarSettings = (): SnackbarSettings => {
   try {
     position = JSON.parse(localStorageManager.get('snackbar-position') ?? '{}');
   } catch (error) {
-    console.error(error);
+    notify.error(`${error}`);
   }
 
   const maxSnack = Number(localStorageManager.get('snackbar-limit'));

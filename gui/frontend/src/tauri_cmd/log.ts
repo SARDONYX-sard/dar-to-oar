@@ -1,5 +1,5 @@
 import { appLogDir } from '@tauri-apps/api/path';
-import { open as openShell } from '@tauri-apps/api/shell';
+import { open } from '@tauri-apps/plugin-shell';
 
 /**
  * Opens the log file.
@@ -7,7 +7,7 @@ import { open as openShell } from '@tauri-apps/api/shell';
  */
 export async function openLogFile() {
   const logFile = `${await appLogDir()}/g_dar2oar.log`;
-  await openShell(logFile);
+  await open(logFile);
 }
 
 /**
@@ -15,5 +15,5 @@ export async function openLogFile() {
  * @throws - if not found path
  */
 export async function openLogDir() {
-  await openShell(await appLogDir());
+  await open(await appLogDir());
 }
