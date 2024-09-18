@@ -1,6 +1,7 @@
-use dar2oar_core::{convert_dar_to_oar, get_mapping_table, Closure, ConvertOptions};
+use dar2oar_core::{convert_dar_to_oar, error::Result, get_mapping_table, Closure, ConvertOptions};
+use std::path::PathBuf;
 
-pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
+pub(crate) async fn dar2oar(args: Convert) -> Result<()> {
     let config = ConvertOptions {
         dar_dir: args.source,
         oar_dir: args.destination,
@@ -11,8 +12,7 @@ pub(crate) async fn dar2oar(args: Convert) -> anyhow::Result<()> {
         run_parallel: args.run_parallel,
         hide_dar: args.hide_dar,
     };
-    convert_dar_to_oar(config, Closure::default).await?;
-    Ok(())
+    convert_dar_to_oar(config, Closure::default).await
 }
 
 #[derive(Debug, clap::Args)]
@@ -34,10 +34,10 @@ pub(crate) struct Convert {
     ///
     /// - See more details
     ///   `https://github.com/SARDONYX-sard/dar-to-oar/wiki#what-is-the-mapping-file`
-    mapping_file: Option<String>,
+    mapping_file: Option<PathBuf>,
     #[clap(long)]
     /// Path to section name table(For _1st_person)
-    mapping_1person_file: Option<String>,
+    mapping_1person_file: Option<PathBuf>,
     #[clap(long)]
     /// Use multi thread
     ///
@@ -50,17 +50,4 @@ pub(crate) struct Convert {
     #[clap(long)]
     /// After conversion, add ".mohidden" to all DAR files to hide them(For MO2 user)
     hide_dar: bool,
-
-    // ---logger
-    #[clap(long)]
-    /// Log output to standard output as well
-    pub stdout: bool,
-    #[clap(long, default_value = "error")]
-    /// Log level
-    ///
-    /// trace | debug | info | warn | error
-    pub log_level: String,
-    #[clap(long, default_value = "./convert.log")]
-    /// Output path of log file
-    pub log_path: String,
 }

@@ -29,6 +29,9 @@
       },
       "shell": {
         "all": true
+      },
+      "window": {
+        "show": false
       }
     },
     "bundle": {
@@ -71,6 +74,7 @@
         "resizable": true,
         "theme": "Dark",
         "title": "DAR to OAR Converter",
+        "visible": false,
         "width": 825
       }
     ]

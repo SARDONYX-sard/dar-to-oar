@@ -43,13 +43,6 @@ pub enum ConvertError {
     #[error("Not found DAR priority(Number) directory")]
     NotFoundPriorityDir,
 
-    /// Incomplete conversion.
-    #[error("Incomplete conversion")]
-    IncompleteConversion,
-    /// Incomplete parse DAR. Remain:
-    #[error("Incomplete parse DAR. Remain:\n{0}")]
-    IncompleteParseDar(String),
-
     /// DAR syntax error.
     #[error("[DAR Syntax Error]\n{0}")]
     InvalidDarSyntax(String),

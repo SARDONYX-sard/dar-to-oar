@@ -2,14 +2,14 @@
 name = "dar2oar_cli"
 version.workspace = true
 description = "DAR to OAR Converter CLI"
-authors = ["SARDONYX-sard"]
+authors.workspace = true
 categories.workspace = true
 keywords = ["converter", "skyrim", "cli"]
 readme = "./readme.md"
-license = "MIT OR Apache-2.0"
+license.workspace = true
 repository.workspace = true
-edition = "2021"
-rust-version = "1.60"
+edition.workspace = true
+rust-version.workspace = true
 
 [[bin]]
 name = "dar2oar"
@@ -18,21 +18,25 @@ path = "./src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = { version = "1.0.86", features = ["backtrace"] }
+anyhow = { workspace = true }
 clap = { version = "4.5.13", features = ["derive"] } # For CLI
-dar2oar_core = { path = "../dar2oar_core", features = ["tracing"] }
-tokio = { version = "1.37.0", features = [
+dar2oar_core = { workspace = true, features = ["tracing"] }
+tokio = { workspace = true, features = [
   "fs",
   "rt",
   "rt-multi-thread",
   "macros",
 ] }
-tracing = "0.1.40" # Logger
-tracing-subscriber = "0.3.18"
+tracing = { workspace = true } # Logger
+tracing-subscriber = { workspace = true }
 
 [dev-dependencies]
-pretty_assertions = "1.4.0"
+pretty_assertions = { workspace = true }
+
 
 [features]
 default = ["color"]
 color = []
+
+[lints]
+workspace = true
