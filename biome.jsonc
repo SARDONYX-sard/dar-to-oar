@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/1.9.1/schema.json",
   "extends": [],
   "files": {
-    "ignore": ["out", ".next", "node_modules", "target", "./test"],
+    "ignore": ["out", ".next", "node_modules", "target", "./test", "**/gen"],
     "ignoreUnknown": true
   },
   "formatter": {
@@ -46,6 +46,10 @@
       "style": {
         "noDefaultExport": "off",
         "noImplicitBoolean": "off"
+      },
+      "suspicious": {
+        "noConsoleLog": "off", // Configuration to be removed in due course.
+        "noReactSpecificProps": "off" // Too many false positives.
       }
     }
   },

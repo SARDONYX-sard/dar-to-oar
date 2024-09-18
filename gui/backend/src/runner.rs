@@ -5,6 +5,7 @@ use tauri_plugin_window_state::StateFlags;
 pub fn run() -> anyhow::Result<()> {
     let builder = tauri::Builder::default();
 
+    #[allow(clippy::large_stack_frames)]
     builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())

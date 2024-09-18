@@ -27,7 +27,6 @@ type Props = Readonly<{
 export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
-      {/* biome-ignore lint/suspicious/noReactSpecificProps: <explanation> */}
       <body className={inter.className}>
         <ClientLayout>
           {children}
