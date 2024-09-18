@@ -15,6 +15,7 @@ build
 test/data/*
 !test/data/*.md
 *.log
+gui/backend/gen/
 
 # Rust build cache
 **/target

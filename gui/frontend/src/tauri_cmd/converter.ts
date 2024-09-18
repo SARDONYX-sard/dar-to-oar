@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { localStorageManager } from '@/utils/local_storage_manager';
 import { selectLogLevel } from '@/utils/selector';

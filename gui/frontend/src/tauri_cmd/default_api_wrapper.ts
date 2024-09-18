@@ -1,7 +1,8 @@
-import { invoke } from '@tauri-apps/api';
-import { type OpenDialogOptions, open } from '@tauri-apps/api/dialog';
-import { readTextFile } from '@tauri-apps/api/fs';
-import { open as openShell } from '@tauri-apps/api/shell';
+import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { type OpenDialogOptions, open } from '@tauri-apps/plugin-dialog';
+import { readTextFile } from '@tauri-apps/plugin-fs';
+import { open as openShell } from '@tauri-apps/plugin-shell';
 
 import { notify } from '@/components/notifications';
 import { type CacheKey, localStorageManager } from '@/utils/local_storage_manager';
@@ -89,5 +90,15 @@ export async function start(path: string, openWith?: string) {
     if (error instanceof Error) {
       notify.error(error.message);
     }
+  }
+}
+
+/** HACK: Avoid blank white screen on load.
+ * - https://github.com/tauri-apps/tauri/issues/5170#issuecomment-2176923461
+ * - https://github.com/tauri-apps/tauri/issues/7488
+ */
+export function showWindow() {
+  if (typeof window !== 'undefined') {
+    getCurrentWindow().show();
   }
 }

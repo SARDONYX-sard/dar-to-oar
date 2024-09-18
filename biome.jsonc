@@ -5,20 +5,40 @@
     "ignore": ["out", ".next", "node_modules", "target", "./test"],
     "ignoreUnknown": true
   },
-  "organizeImports": {
-    "enabled": true
-  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": true,
-    "indentWidth": 2,
     "indentStyle": "space",
+    "indentWidth": 2,
     "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "jsxQuoteStyle": "single",
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    },
+    "globals": ["test", "it", "expect", "describe", "afterEach"] // Avoid warnings when calling the test functions.
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space"
+    },
+    "parser": {
+      "allowComments": true
+    }
   },
   "linter": {
     "ignore": ["./tools/version_up.js"],
     "rules": {
       "all": true,
+      "correctness": {
+        "noUndeclaredDependencies": "off",
+        "useImportExtensions": "off"
+      },
       "performance": {
         "noBarrelFile": "off",
         "noReExportAll": "off"
@@ -29,21 +49,7 @@
       }
     }
   },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "jsxQuoteStyle": "single",
-      "trailingCommas": "all",
-      "semicolons": "always",
-      "arrowParentheses": "always"
-    },
-    "globals": ["test", "it", "expect", "describe", "afterEach"] // Avoid warnings when calling the test functions.
-  },
-  "json": {
-    "parser": { "allowComments": true },
-    "formatter": {
-      "enabled": true,
-      "indentStyle": "space"
-    }
+  "organizeImports": {
+    "enabled": true
   }
 }
