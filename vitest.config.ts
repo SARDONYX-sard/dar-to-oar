@@ -9,9 +9,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
-    alias: [{ find: '@/', replacement: `${__dirname}/dar2oar_gui/frontend/src/` }],
+    alias: [{ find: '@/', replacement: `${__dirname}/gui/frontend/src/` }],
     globals: true,
-    root: './dar2oar_gui/frontend/src/',
+    root: './gui/frontend/src/',
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.mts'],
     testTransformMode: {

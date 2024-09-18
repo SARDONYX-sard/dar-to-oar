@@ -1,18 +1,3 @@
-#![deny(clippy::all, clippy::nursery, clippy::cargo)]
-#![allow(
-    clippy::derive_partial_eq_without_eq,
-    clippy::future_not_send,
-    clippy::multiple_crate_versions,
-    clippy::pub_with_shorthand,
-    clippy::redundant_pub_crate
-)]
-#![warn(
-    clippy::dbg_macro,
-    clippy::print_stderr,
-    clippy::print_stdout,
-    clippy::todo,
-    clippy::unimplemented
-)]
 // See: https://rust-lang.github.io/rust-clippy/rust-1.75.0/index.html#/?groups=restriction
 #![deny(
     clippy::allow_attributes_without_reason,
@@ -66,7 +51,6 @@
     clippy::match_wild_err_arm,
     clippy::match_wildcard_for_single_variants,
     clippy::mem_forget,
-    clippy::mismatched_target_os,
     clippy::missing_const_for_fn,
     clippy::missing_docs_in_private_items,
     clippy::missing_enforced_import_renames,
