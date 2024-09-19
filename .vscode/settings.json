@@ -19,7 +19,7 @@
   },
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
-  // "editor.formatOnSave": false
+  // "editor.formatOnSave": false,
   "files.exclude": {
     ".swc": true,
     "**/node_modules": true // optional

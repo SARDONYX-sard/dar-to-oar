@@ -38,9 +38,7 @@ export const LogFileButton = () => {
     try {
       await openLogFile();
     } catch (error) {
-      if (error instanceof Error) {
-        notify.error(error.message);
-      }
+      notify.error(`${error}`);
     }
   };
 
@@ -54,9 +52,7 @@ export const LogDirButton = () => {
     try {
       await openLogDir();
     } catch (error) {
-      if (error instanceof Error) {
-        notify.error(error.message);
-      }
+      notify.error(`${error}`);
     }
   };
 
