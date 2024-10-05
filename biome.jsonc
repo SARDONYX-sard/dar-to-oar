@@ -1,8 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
   "extends": [],
   "files": {
-    "ignore": ["out", ".next", "node_modules", "target", "./test", "**/gen"],
+    "ignore": ["**/gen", ".next", "cspell.jsonc", "node_modules", "out", "target", "./test"],
     "ignoreUnknown": true
   },
   "formatter": {
@@ -19,8 +19,7 @@
       "quoteStyle": "single",
       "semicolons": "always",
       "trailingCommas": "all"
-    },
-    "globals": ["test", "it", "expect", "describe", "afterEach"] // Avoid warnings when calling the test functions.
+    }
   },
   "json": {
     "formatter": {
@@ -39,13 +38,15 @@
         "noUndeclaredDependencies": "off",
         "useImportExtensions": "off"
       },
+      "nursery": {
+        "all": false
+      },
       "performance": {
         "noBarrelFile": "off",
         "noReExportAll": "off"
       },
       "style": {
-        "noDefaultExport": "off",
-        "noImplicitBoolean": "off"
+        "noDefaultExport": "off"
       },
       "suspicious": {
         "noConsoleLog": "off", // Configuration to be removed in due course.
@@ -55,5 +56,17 @@
   },
   "organizeImports": {
     "enabled": true
-  }
+  },
+  "overrides": [
+    {
+      "include": ["./gui/frontend/src/components/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off" // Because we want to use PascalCase for the React component file name.
+          }
+        }
+      }
+    }
+  ]
 }

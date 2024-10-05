@@ -18,13 +18,14 @@ resolver = "2"
 anyhow = { version = "1.0.89", features = ["backtrace"] }
 serde = { version = "1.0.210", features = ["derive"] }    # Implement (De)Serialize
 serde_json = "1.0.128"                                    # core: To json/GUI: To avoid generate_context error.
+snafu = "0.8.5"
 tokio = { version = "1.40.0" }                            # Async runtime
 tracing = { version = "0.1.40" }                          # logger
 tracing-subscriber = "0.3.18"
 tracing-appender = "0.2.3"
 
 # dev-dependencies
-temp-dir = "0.1.13"
+temp-dir = "0.1.14"
 pretty_assertions = "1.4.1"                                  # Color diff assertion
 quick_tracing = { version = "0.1.5", features = ["derive"] } # Easy logging
 

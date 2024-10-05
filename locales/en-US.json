@@ -42,7 +42,7 @@
   "custom-js-auto-run-label": "JS Auto run",
   "custom-js-auto-run-tooltip": "Automatically run JavaScript on every page transition.(If disabled, it will automatically reload to apply the settings.)",
   "custom-js-auto-run-tooltip2": "This configuration item will not be activated unless manually selected by the user.",
-  "custom-js-label": "Custom JavaScript(Please do not execute untrusted scripts)",
+  "custom-js-label": "JavaScript to be executed each time you move pages (only when you give permission to do so)",
   "editor-mode-list-label": "Editor Mode",
   "hide-dar-btn": "Hide DAR",
   "hide-dar-btn-tooltip": "After conversion, add \".mohidden\" to all DAR files to hide them.(For MO2 user)",

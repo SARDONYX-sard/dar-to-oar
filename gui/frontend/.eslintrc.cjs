@@ -1,7 +1,8 @@
+// @ts-check
 // For compatibility with Biome (fast linter&fmt made by Rust), the following settings are made
 // to compensate for missing functions of Biome with eslint.
 
-/** @type {import('eslint/lib/shared/types').ConfigData} */
+// /** @type {import('eslint').Linter.LegacyConfig} */
 module.exports = {
   extends: ['next/core-web-vitals'],
   settings: {

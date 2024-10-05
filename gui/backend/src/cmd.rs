@@ -78,7 +78,7 @@ pub(crate) async fn convert_dar2oar_with_progress(
 #[tauri::command]
 pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), String> {
     tracing::debug!("Selected log level: {:?}", log_level);
-    crate::logging::change_log_level(log_level.unwrap_or("error")).or_else(|err| bail!(err))
+    crate::log::change_level(log_level.unwrap_or("error")).or_else(|err| bail!(err))
 }
 
 /// Define our own `writeTextFile` api for tauri,

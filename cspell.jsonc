@@ -38,6 +38,7 @@
     "tauri",
     "thiserror",
     "Unhide",
+    "Uninit",
     "unlisten",
     "unnested",
     "unoptimized",

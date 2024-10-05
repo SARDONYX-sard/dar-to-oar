@@ -1,0 +1,1 @@
+export { LinearWithValueLabel } from './LinearWithValueLabel';

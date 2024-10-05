@@ -1,8 +1,8 @@
-import Converter from '@/components/pages/converter';
+import { Top } from '@/components/templates/Top';
 
 /**
- * # Root page (URL: /).
+ * Root page (URL: /).
  */
-export default function Home() {
-  return <Converter />;
+export default function Page() {
+  return <Top />;
 }

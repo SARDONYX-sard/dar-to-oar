@@ -15,7 +15,7 @@
     "quickfix.biome": "explicit",
     "source.fixAll.eslint": "explicit",
     "source.fixAll.sortJSON": "never",
-    "source.organizeImports.biome": "explicit"
+    "source.organizeImports.biome": "never"
   },
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,
