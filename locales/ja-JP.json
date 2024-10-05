@@ -42,7 +42,7 @@
   "custom-js-auto-run-label": "JS自動実行",
   "custom-js-auto-run-tooltip": "ページを遷移するたびにJavaScriptを自動実行します。(無効化した場合、設定を適用するために自動で再読み込みします)",
   "custom-js-auto-run-tooltip2": "この設定項目はユーザーが手動で選択しない限り有効化されることはありません",
-  "custom-js-label": "カスタムJavaScript(信用できないスクリプトは実行しないでください)",
+  "custom-js-label": "(実行許可時のみ)ページ移動ごとに実行されるJavaScript",
   "editor-mode-list-label": "エディタモード",
   "hide-dar-btn": "DARを非表示",
   "hide-dar-btn-tooltip": "変換後、DARの全ファイルに「.mohidden」を追加して非表示化します(MO2ユーザ向け)",

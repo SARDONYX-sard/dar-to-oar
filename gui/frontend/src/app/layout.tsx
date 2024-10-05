@@ -1,25 +1,17 @@
 import dynamic from 'next/dynamic';
-import { Inter } from 'next/font/google';
 
-import Loading from '@/components/pages/loading';
-import '@/utils/translation';
+export { metadata } from '@/components/meta/meta';
+import { inter } from '@/components/meta/font';
+import Loading from '@/components/templates/Loading';
 
-import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import '@/app/globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-
-const ClientLayout = dynamic(() => import('@/app/client_layout'), {
+const ClientLayout = dynamic(() => import('@/components/layout/ClientLayout'), {
   loading: () => <Loading />,
   ssr: false,
 });
-
-export const metadata: Metadata = {
-  title: 'DAR to OAR converter',
-  description: 'Convert from DAR to OAR.',
-};
 
 type Props = Readonly<{
   children: ReactNode;
@@ -28,11 +20,7 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <ClientLayout>
-          {children}
-          {/* To prevents the conversion button from being hidden because the menu is fixed. */}
-          <div style={{ height: '56px' }} />
-        </ClientLayout>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
