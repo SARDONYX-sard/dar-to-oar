@@ -30,11 +30,11 @@
 
 ## Getting Started for User
 
-1.Download latest version from the following link.
+Download latest version from the following link.
 
 - [Release Page](https://github.com/SARDONYX-sard/dar-to-oar/releases)
 
-  2.Please consider to read wiki.
+Please consider to read wiki.
 
 - [DAR to OAR Wiki](https://github.com/SARDONYX-sard/dar-to-oar/wiki/)
 
