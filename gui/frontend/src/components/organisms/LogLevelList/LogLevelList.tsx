@@ -1,3 +1,4 @@
+import { Tooltip, type SelectChangeEvent } from '@mui/material';
 import { useCallback } from 'react';
 
 import { useTranslation } from '@/components/hooks/useTranslation';
@@ -7,10 +8,9 @@ import { LOG } from '@/services/api/log';
 
 import { useLogLevelContext } from '../../providers/LogLevelProvider';
 
-import type { SelectChangeEvent } from '@mui/material';
-
 export const LogLevelList = () => {
   const { logLevel, setLogLevel } = useLogLevelContext();
+  const { t } = useTranslation();
 
   const handleOnChange = useCallback(
     async ({ target }: SelectChangeEvent) => {
@@ -29,12 +29,23 @@ export const LogLevelList = () => {
     { value: 'error', label: 'Error' },
   ] as const;
 
+  const tooltip = (
+    <>
+      {t('log-level-list-tooltip')}
+      {t('log-level-list-tooltip2')}
+      {t('log-level-list-tooltip3')}
+      {t('log-level-list-tooltip4')}
+    </>
+  );
+
   return (
-    <SelectWithLabel
-      label={useTranslation().t('log-level-list-label')}
-      menuItems={menuItems}
-      onChange={handleOnChange}
-      value={logLevel}
-    />
+    <Tooltip title={tooltip}>
+      <SelectWithLabel
+        label={t('log-level-list-label')}
+        menuItems={menuItems}
+        onChange={handleOnChange}
+        value={logLevel}
+      />
+    </Tooltip>
   );
 };
