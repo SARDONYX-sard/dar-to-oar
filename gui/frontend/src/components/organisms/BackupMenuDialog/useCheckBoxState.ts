@@ -5,8 +5,8 @@ import { type Cache, PUB_CACHE_KEYS } from '@/lib/storage';
 
 export const useCheckBoxState = (cacheItems: Cache) => {
   const [isAllChecked, setIsAllChecked] = useState(false);
-  const [isPubAllChecked, setIsPublicAllChecked] = useState(false); // "isPubAllChecked"を"isPublicAllChecked"に変更
-  const [checked, setSelectedItems] = useState<readonly (keyof Cache)[]>([]); // "checked"を"selectedItems"に変更
+  const [isPubAllChecked, setIsPublicAllChecked] = useState(false);
+  const [checked, setSelectedItems] = useState<readonly (keyof Cache)[]>([]);
 
   const handleToggleItem = (selectedKey: keyof Cache) => () => {
     setSelectedItems((prev) => {

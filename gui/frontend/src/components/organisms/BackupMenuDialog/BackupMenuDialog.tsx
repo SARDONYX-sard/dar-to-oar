@@ -12,7 +12,7 @@ import type { Cache, CacheKey } from '@/lib/storage';
 
 import { CacheItem } from './CacheItem';
 import { CheckBoxControls } from './CheckBoxControls';
-import { useCheckBoxState } from './useCheckBoxState'; // カスタムフックのインポート
+import { useCheckBoxState } from './useCheckBoxState';
 
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
