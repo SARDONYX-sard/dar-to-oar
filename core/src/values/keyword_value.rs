@@ -58,8 +58,8 @@ impl<'de> Deserialize<'de> for Keyword {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::Result;
     use crate::values::PluginValue;
-    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

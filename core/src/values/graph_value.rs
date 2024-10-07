@@ -29,7 +29,7 @@ pub enum GraphVariableType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use anyhow::Result;
+    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

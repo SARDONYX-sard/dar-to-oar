@@ -1,4 +1,4 @@
-use anyhow::Result;
+use crate::error::Result;
 use std::fs::File;
 use std::path::Path;
 use tracing::Level;

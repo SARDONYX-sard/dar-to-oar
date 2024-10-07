@@ -70,8 +70,8 @@ impl<'de> Deserialize<'de> for NumericValue {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::Result;
     use crate::values::PluginValue;
-    use anyhow::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

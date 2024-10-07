@@ -178,7 +178,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> Result<ParsedPath> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use anyhow::Result;
+    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

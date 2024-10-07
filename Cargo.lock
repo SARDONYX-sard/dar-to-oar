@@ -126,9 +126,6 @@ name = "anyhow"
 version = "1.0.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86fdf8605db99b54d3cd748a44c6d04df638eb5dafb219b135d0149bd0db01f6"
-dependencies = [
- "backtrace",
-]
 
 [[package]]
 name = "arrayvec"
@@ -954,10 +951,10 @@ dependencies = [
 name = "dar2oar_cli"
 version = "0.8.0"
 dependencies = [
- "anyhow",
  "clap",
  "dar2oar_core",
  "pretty_assertions",
+ "snafu",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -968,7 +965,6 @@ name = "dar2oar_core"
 version = "0.8.0"
 dependencies = [
  "annotate-snippets",
- "anyhow",
  "async-walkdir",
  "compact_str",
  "criterion",

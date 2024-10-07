@@ -44,7 +44,7 @@ impl Default for IsEquippedHasKeyword {
 mod tests {
     use super::*;
     use crate::values::{FormValue, PluginValue};
-    use anyhow::Result;
+    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

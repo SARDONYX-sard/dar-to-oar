@@ -137,7 +137,7 @@ pub async fn remove_oar(
 #[cfg(test)]
 mod test {
     use super::*;
-    use anyhow::Result;
+    use crate::error::Result;
     use temp_dir::TempDir;
     use tokio::fs::{create_dir_all, File};
 

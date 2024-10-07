@@ -39,7 +39,7 @@ impl Default for IsMovementDirection {
 mod tests {
     use super::*;
     use crate::values::Direction;
-    use anyhow::Result;
+    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

@@ -1,4 +1,5 @@
 mod cli;
+mod error;
 mod logger;
 
 use crate::cli::{run_cli, Cli};

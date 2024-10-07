@@ -132,7 +132,7 @@
 //! ### Async with non Progress report.
 //!
 //! ```no_run
-//! use anyhow::Result;
+//! use crate::error::Result;
 //! use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
 //! use tracing::{level_filters::LevelFilter, subscriber::DefaultGuard};
 //!
@@ -159,7 +159,7 @@
 //! ### Parallel Async with Progress report.
 //!
 //! ```no_run
-//! use anyhow::Result;
+//! use crate::error::Result;
 //! use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
 //!
 //! const DAR_DIR: &str = "../test/data/UNDERDOG Animations";

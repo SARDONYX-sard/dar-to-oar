@@ -52,7 +52,7 @@ mod tests {
         ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericLiteral, NumericValue,
         PluginValue, StaticValue,
     };
-    use anyhow::Result;
+    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

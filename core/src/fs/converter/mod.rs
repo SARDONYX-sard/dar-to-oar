@@ -109,7 +109,7 @@ pub struct ConvertOptions {
 #[cfg(test)]
 mod test {
     use super::*;
-    use anyhow::Result;
+    use crate::error::Result;
 
     // const DAR_DIR: &str = "../test/data/UNDERDOG - Animations";
     // const DAR_DIR: &str = "../test/data/Delia";
