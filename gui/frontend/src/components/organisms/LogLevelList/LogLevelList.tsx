@@ -31,15 +31,15 @@ export const LogLevelList = () => {
 
   const tooltip = (
     <>
-      {t('log-level-list-tooltip')}
-      {t('log-level-list-tooltip2')}
-      {t('log-level-list-tooltip3')}
-      {t('log-level-list-tooltip4')}
+      <p> {t('log-level-list-tooltip')}</p>
+      <p> {t('log-level-list-tooltip2')}</p>
+      <p> {t('log-level-list-tooltip3')}</p>
+      <p> {t('log-level-list-tooltip4')}</p>
     </>
   );
 
   return (
-    <Tooltip title={tooltip}>
+    <Tooltip placement='top' title={tooltip}>
       <SelectWithLabel
         label={t('log-level-list-label')}
         menuItems={menuItems}
