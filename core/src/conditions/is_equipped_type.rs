@@ -43,8 +43,8 @@ impl Default for IsEquippedType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::WeaponType;
     use crate::error::Result;
+    use crate::values::WeaponType;
     use pretty_assertions::assert_eq;
 
     #[test]

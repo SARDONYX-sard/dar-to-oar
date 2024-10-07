@@ -48,11 +48,11 @@ impl Default for CompareValues {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::Result;
     use crate::values::{
         ActorValue, ActorValueType, GraphValue, GraphVariableType, NumericLiteral, NumericValue,
         PluginValue, StaticValue,
     };
-    use crate::error::Result;
     use pretty_assertions::assert_eq;
 
     #[test]

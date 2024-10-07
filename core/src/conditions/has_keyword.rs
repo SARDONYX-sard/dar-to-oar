@@ -38,8 +38,8 @@ impl Default for HasKeyword {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::LiteralValue;
     use crate::error::Result;
+    use crate::values::LiteralValue;
     use pretty_assertions::assert_eq;
 
     #[test]

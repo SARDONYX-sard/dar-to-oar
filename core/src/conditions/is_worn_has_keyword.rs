@@ -38,8 +38,8 @@ impl Default for IsWornHasKeyword {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::{FormValue, PluginValue};
     use crate::error::Result;
+    use crate::values::{FormValue, PluginValue};
     use pretty_assertions::assert_eq;
 
     #[test]

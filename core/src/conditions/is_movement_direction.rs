@@ -38,8 +38,8 @@ impl Default for IsMovementDirection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::Direction;
     use crate::error::Result;
+    use crate::values::Direction;
     use pretty_assertions::assert_eq;
 
     #[test]

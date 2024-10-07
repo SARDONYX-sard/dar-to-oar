@@ -1,4 +1,4 @@
-import { Tooltip, type SelectChangeEvent } from '@mui/material';
+import { type SelectChangeEvent, Tooltip } from '@mui/material';
 import { useCallback } from 'react';
 
 import { useTranslation } from '@/components/hooks/useTranslation';

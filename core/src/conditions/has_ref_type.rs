@@ -38,8 +38,8 @@ impl Default for HasRefType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::{FormValue, LiteralValue, PluginValue};
     use crate::error::Result;
+    use crate::values::{FormValue, LiteralValue, PluginValue};
     use pretty_assertions::assert_eq;
 
     #[test]

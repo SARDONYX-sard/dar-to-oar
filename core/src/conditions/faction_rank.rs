@@ -48,8 +48,8 @@ impl Default for FactionRank {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::StaticValue;
     use crate::error::Result;
+    use crate::values::StaticValue;
     use pretty_assertions::assert_eq;
 
     #[test]

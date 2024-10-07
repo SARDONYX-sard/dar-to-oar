@@ -48,8 +48,8 @@ impl Default for HasMagicEffectWithKeyword {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::values::PluginValue;
     use crate::error::Result;
+    use crate::values::PluginValue;
     use pretty_assertions::assert_eq;
 
     #[test]

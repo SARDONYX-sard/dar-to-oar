@@ -50,8 +50,7 @@ tokio = { version = "1.33.0", features = [ "fs", "io-util", "macros", "rt", "rt-
 ### Parallel Async with Progress report
 
 ```rust
-use crate::error::Result;
-use dar2oar_core::{convert_dar_to_oar, ConvertOptions, get_mapping_table};
+use dar2oar_core::{convert_dar_to_oar, ConvertOptions, error::Result, get_mapping_table};
 use std::path::Path;
 use tracing::{Level, level_filters::LevelFilter, subscriber::DefaultGuard};
 
