@@ -47,8 +47,8 @@ export const RemoveOarButton = ({ darPath, oarPath }: Props) => {
         startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <DeleteIcon />}
         sx={{
           marginTop: '9px',
+          minHeight: '50px',
           width: '100%',
-          height: '60%',
         }}
         type='button'
         variant='outlined'

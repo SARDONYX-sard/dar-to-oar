@@ -45,8 +45,8 @@ export const UnhideDarButton = ({ path }: Props) => {
         startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
         sx={{
           marginTop: '9px',
+          minHeight: '50px',
           width: '100%',
-          height: '60%',
         }}
         type='button'
         variant='outlined'
