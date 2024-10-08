@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 
-import { SelectWithLabel } from './SelectWithLabel'; // 適切なパスに変更
+import { SelectWithLabel } from './SelectWithLabel';
 
 describe('SelectWithLabel', () => {
-  const mockOnChange = vitest.fn(); // onChangeイベントをモック
+  const mockOnChange = vitest.fn();
 
   const menuItems = [
     { label: 'Option 1', value: 'option1' },
