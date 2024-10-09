@@ -27,7 +27,7 @@ const RESOURCES = {
  * @default `en-US`
  */
 const normalize = (str: string | null): Exclude<I18n, 'auto'> => {
-  switch (str === 'auto' ? window.navigator.language : str) {
+  switch (str === null || str === 'auto' ? window.navigator.language : str) {
     case 'ja':
     case 'ja-JP':
       return 'ja-JP';
