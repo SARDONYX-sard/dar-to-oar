@@ -3,8 +3,6 @@ import { useInsertionEffect, useRef, useState } from 'react';
 import { CSS, type CssPresets } from '@/lib/css';
 import { NOTIFY } from '@/lib/notify';
 
-const USER_CUSTOM_CSS_ID = 'user-custom-css';
-
 /**
  * Inject CSS dynamically on the client side.
  */
@@ -28,7 +26,7 @@ export function useInjectCss() {
     const styleElement = document.createElement('style');
 
     if (!style.current) {
-      styleElement.id = USER_CUSTOM_CSS_ID; // Assign ID so that user can edit
+      styleElement.id = CSS.css.id; // Assign ID so that user can edit
       styleElement.innerHTML = css;
       style.current = styleElement;
       NOTIFY.try(() => document.head.appendChild(styleElement));

@@ -170,6 +170,9 @@ export const CSS = {
   },
 
   css: {
+    /** ID of the HTML from which the CSS is drawn. */
+    id: 'user-custom-css',
+
     /** Get css */
     get: (presetN: keyof typeof PRESETS) => PRESETS[presetN],
     /** Set css */
