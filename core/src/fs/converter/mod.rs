@@ -166,9 +166,10 @@ mod test {
 
         let mut walk_len = 0;
         while let Some(idx) = rx.recv().await {
-            match walk_len == 0 {
-                true => walk_len = idx, // NOTE: 1st received index is length.
-                false => tracing::info!("[recv] Converted: {}/{}", idx + 1, walk_len),
+            if walk_len == 0 {
+                walk_len = idx;
+            } else {
+                tracing::info!("[recv] Converted: {}/{walk_len}", idx + 1);
             }
         }
 
