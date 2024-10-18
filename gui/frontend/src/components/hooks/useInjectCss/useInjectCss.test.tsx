@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CSS_PRESETS } from '@/lib/css';
+import { CSS } from '@/lib/css';
 
 import { useInjectCss } from './useInjectCss';
 
@@ -53,7 +53,7 @@ describe('useInjectCss hook', () => {
       result.current.setPreset('1');
     });
 
-    expect(CSS_PRESETS.setPreset).toHaveBeenCalledWith('1');
+    expect(CSS.setPreset).toHaveBeenCalledWith('1');
     expect(result.current.preset).toBe('1');
   });
 

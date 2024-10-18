@@ -20,7 +20,7 @@ const FORM_PRIVATE_CACHE_KEYS_OBJ = {
 } as const;
 
 const PUB_CACHE_KEYS_OBJ = {
-  customCss: 'customCss',
+  customCss: 'customCSS',
   presetNumber: 'presetNumber',
   editorMode: 'editorMode',
   customJs: 'customJS',

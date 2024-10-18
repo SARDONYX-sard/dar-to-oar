@@ -1,22 +1,21 @@
 import { useInsertionEffect, useRef, useState } from 'react';
 
-import { CSS_PRESETS, type CssPresets } from '@/lib/css';
+import { CSS, type CssPresets } from '@/lib/css';
 import { NOTIFY } from '@/lib/notify';
 
 const USER_CUSTOM_CSS_ID = 'user-custom-css';
-const initCss = () => CSS_PRESETS.getPreset(CSS_PRESETS.get());
 
 /**
  * Inject CSS dynamically on the client side.
  */
 export function useInjectCss() {
-  const [preset, setPreset] = useState<CssPresets>(CSS_PRESETS.get());
-  const [css, setCss] = useState(initCss());
+  const [preset, setPreset] = useState<CssPresets>(CSS.preset.get());
+  const [css, setCss] = useState(CSS.css.get(preset));
   const style = useRef<HTMLStyleElement | null>(null);
 
   const setPresetHook = (value: CssPresets) => {
     setPreset(value);
-    CSS_PRESETS.setPreset(value);
+    CSS.preset.set(value);
   };
 
   const setHook = (value?: string) => {

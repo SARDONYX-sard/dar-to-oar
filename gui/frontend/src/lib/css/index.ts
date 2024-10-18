@@ -140,7 +140,7 @@ const preset4 = createPreset(
 );
 
 const PRESETS = {
-  '0': STORAGE.get(PUB_CACHE_OBJ.presetNumber) ?? '',
+  '0': STORAGE.get(PUB_CACHE_OBJ.customCss) ?? '',
   '1': preset1,
   '2': preset2,
   '3': preset3,
@@ -159,17 +159,21 @@ const normalize = (select?: string | null) => {
   }
 };
 
-export const CSS_PRESETS = {
+export const CSS = {
   normalize,
 
-  /** get current preset */
-  get: () => normalize(STORAGE.get(PUB_CACHE_OBJ.presetNumber)),
+  preset: {
+    /** Get current preset */
+    get: () => normalize(STORAGE.get(PUB_CACHE_OBJ.presetNumber)),
+    /** Set current preset */
+    set: (presetN: keyof typeof PRESETS) => STORAGE.set(PUB_CACHE_OBJ.presetNumber, presetN),
+  },
 
-  getPreset: (presetN: keyof typeof PRESETS) => PRESETS[presetN],
-  setPreset: (presetN: keyof typeof PRESETS) => STORAGE.set(PUB_CACHE_OBJ.presetNumber, presetN),
-
-  setCss(css: string) {
-    STORAGE.set(PUB_CACHE_OBJ.customCss, css);
+  css: {
+    /** Get css */
+    get: (presetN: keyof typeof PRESETS) => PRESETS[presetN],
+    /** Set css */
+    set: (css: string) => STORAGE.set(PUB_CACHE_OBJ.customCss, css),
   },
 } as const;
 
