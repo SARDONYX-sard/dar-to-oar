@@ -1,7 +1,7 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Box, Button, FormControlLabel, FormGroup, Link, TextField, Tooltip } from '@mui/material';
+import { Box, Button, FormControlLabel, FormGroup, TextField, Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid2';
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
@@ -469,8 +469,7 @@ export function ConvertForm() {
 function MappingHelpBtn() {
   const { t } = useTranslation();
   const href = `https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`;
-  const handleMappingClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault(); // Avoid to jump by browser
+  const handleMappingClick: MouseEventHandler<HTMLButtonElement> = (_e) => {
     start(href);
   };
 
@@ -479,10 +478,9 @@ function MappingHelpBtn() {
       {t('convert-form-mapping-helper')}
       <br />
       {t('convert-form-mapping-helper2')}
-
-      <Link href={href} onClick={handleMappingClick} rel='noopener' style={{ fontSize: 'small' }} target='_blank'>
+      <Button onClick={handleMappingClick} style={{ fontSize: 'small' }} type='button'>
         [{t('convert-form-mapping-help-link-name')}]
-      </Link>
+      </Button>
     </>
   );
 }

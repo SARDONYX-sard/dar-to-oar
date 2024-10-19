@@ -24,8 +24,7 @@ const sx: SxProps<Theme> = {
 export const Settings = () => {
   useInjectJs();
 
-  const handleHelpClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
-    event.preventDefault(); // Avoid to jump by browser
+  const handleHelpClick: MouseEventHandler<HTMLButtonElement> = (_event) => {
     start(packageJson.homepage); // jump by backend api
   };
 
@@ -38,7 +37,7 @@ export const Settings = () => {
           <Tabs />
         </Grid>
         <Grid size={4} sx={{ overflowX: 'auto' }}>
-          <Help href={packageJson.homepage} onClick={handleHelpClick} version={packageJson.version} />
+          <Help onClick={handleHelpClick} version={packageJson.version} />
         </Grid>
       </Grid>
     </Box>
