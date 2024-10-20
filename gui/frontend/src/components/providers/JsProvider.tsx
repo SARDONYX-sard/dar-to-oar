@@ -10,8 +10,6 @@ type ContextType = {
 const Context = createContext<ContextType | undefined>(undefined);
 
 type Props = { children: ReactNode };
-
-/** Wrapper component to allow user-defined css and existing css design presets to be retrieved/modified from anywhere */
 export const JsProvider = ({ children }: Props) => {
   const [js, setJs] = useState(STORAGE.get(PUB_CACHE_OBJ.customJs) ?? '');
 
