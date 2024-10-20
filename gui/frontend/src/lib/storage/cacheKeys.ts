@@ -29,6 +29,7 @@ const PUB_CACHE_KEYS_OBJ = {
   editorTabSelect: 'editor-tab-select',
   locale: 'locale',
   settingsTabSelect: 'settings-tab-select',
+  settingsTabPosition: 'settings-tab-position',
   snackbarLimit: 'snackbar-limit',
   snackbarPosition: 'snackbar-position',
 } as const;
@@ -50,6 +51,10 @@ export const PRIVATE_CACHE_OBJ = {
   ...PRIVATE_CACHE_KEYS_OBJ,
 } as const;
 
+export const HIDDEN_CACHE_OBJ = {
+  runScript: 'run-script',
+} as const;
+
 /** Public cache keys that are available and exposed for standard use in the application. */
 export const PUB_CACHE_KEYS = [...OBJECT.values(PUB_CACHE_OBJ)] as const;
 
@@ -57,7 +62,7 @@ export const PUB_CACHE_KEYS = [...OBJECT.values(PUB_CACHE_OBJ)] as const;
 const PRIVATE_CACHE_KEYS = [...OBJECT.values(PRIVATE_CACHE_OBJ)] as const;
 
 /** Hidden cache keys, typically used for restricted data like permissions for running scripts. */
-export const HIDDEN_CACHE_KEYS = ['run-script'] as const;
+export const HIDDEN_CACHE_KEYS = [...OBJECT.values(HIDDEN_CACHE_OBJ)] as const;
 
 /** Aggregated list of both public and private cache keys. */
 export const CACHE_KEYS = [...PUB_CACHE_KEYS, ...PRIVATE_CACHE_KEYS] as const;
