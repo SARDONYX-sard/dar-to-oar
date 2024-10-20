@@ -1,3 +1,5 @@
+//@ts-check
+
 (() => {
   // - Custom Transaction
   //   How to apply?
@@ -8,7 +10,7 @@
   // clearCustomTranslation();
 
   function setCustomTranslation() {
-    /** ref: https://github.com/SARDONYX-sard/dar-to-oar/blob/0.6.0/locales/en-US.json */
+    /** ref: https://github.com/SARDONYX-sard/dar-to-oar/blob/0.8.1/locales/en-US.json */
     const i18n = {
       'all-clear-btn': 'All Clear',
       'backup-dialog-all-checked-label': 'Check all',
@@ -53,12 +55,12 @@
       'css-preset-list-tooltip': 'You can choose a CSS preset.',
       'css-preset-list-tooltip2': 'Note: Editing "Preset" will overwrite "Custom".',
       'custom-css-label': 'Currently applied CSS',
-      'custom-js-auto-run-label': 'Auto run',
+      'custom-js-auto-run-label': 'JS Auto run',
       'custom-js-auto-run-tooltip':
         'Automatically run JavaScript on every page transition.(If disabled, it will automatically reload to apply the settings.)',
       'custom-js-auto-run-tooltip2':
         'This configuration item will not be activated unless manually selected by the user.',
-      'custom-js-label': 'Custom JavaScript(Please do not execute untrusted scripts)',
+      'custom-js-label': 'JavaScript to be executed each time you move pages (only when you give permission to do so)',
       'editor-mode-list-label': 'Editor Mode',
       'hide-dar-btn': 'Hide DAR',
       'hide-dar-btn-tooltip': 'After conversion, add ".mohidden" to all DAR files to hide them.(For MO2 user)',
@@ -105,6 +107,10 @@
       'tab-label-editor': 'Editor / Preset',
       'tab-label-lang': 'Language',
       'tab-label-notice': 'Notice',
+      'tab-label-tab': 'Tab',
+      'tab-list-position-bottom': 'Bottom',
+      'tab-list-position-label': 'Tab Position',
+      'tab-list-position-top': 'Top',
       'unhide-dar-btn': 'Unhide DAR',
       'unhide-dar-btn-tooltip': 'Unhide DAR files hidden by "Hide DAR".(For MO2 user)',
       'unhide-dar-failed': 'Could not find files with ".mohidden" extension',

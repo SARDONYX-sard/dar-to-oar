@@ -1,3 +1,5 @@
+//@ts-check
+
 /**
  * Examples of what to watch out for in other people's JavaScript (The safest way, of course, is not to do it.)
  * - Obfuscation by base64 encoding (base64 is not encryption)
