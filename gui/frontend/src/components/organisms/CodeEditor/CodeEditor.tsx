@@ -6,6 +6,7 @@ import { useTranslation } from '@/components/hooks/useTranslation';
 import { useCssContext } from '@/components/providers/CssProvider';
 import { useJsContext } from '@/components/providers/JsProvider';
 import { CSS } from '@/lib/css';
+import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
 import { type EditorInfo, EditorInitializer } from './EditorInitializer';
 
@@ -14,7 +15,7 @@ export const CodeEditor = () => {
   const { css, setCss, setPreset } = useCssContext();
   const { t } = useTranslation();
 
-  const [value, setValue] = useStorageState<'javascript' | 'css'>('editor-tab-select', 'javascript');
+  const [value, setValue] = useStorageState<'javascript' | 'css'>(PUB_CACHE_OBJ.editorTabSelect, 'javascript');
   const handleTabChange: TabListProps['onChange'] = (_event, newValue) => {
     setValue(newValue);
   };

@@ -3,15 +3,15 @@ import { Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 
 import { useStorageState } from '@/components/hooks/useStorageState/useStorageState';
 import { useTranslation } from '@/components/hooks/useTranslation';
+import { HIDDEN_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
 import type { FormControlLabelProps } from '@mui/material';
 
 type Props = Omit<FormControlLabelProps, 'control' | 'label'>;
-const CACHE_KEY = 'run-script';
 
 export const JsAutoRunButton = ({ ...props }: Props) => {
   const { t } = useTranslation();
-  const [runScript, setRunScript] = useStorageState(CACHE_KEY, false);
+  const [runScript, setRunScript] = useStorageState(HIDDEN_CACHE_OBJ.runScript, false);
 
   const title = (
     <>
@@ -33,7 +33,7 @@ export const JsAutoRunButton = ({ ...props }: Props) => {
   return (
     <Tooltip title={title}>
       <FormControlLabel
-        control={<Checkbox checked={runScript} name={`input-${CACHE_KEY}`} onClick={handleClick} />}
+        control={<Checkbox checked={runScript} name={`input-${HIDDEN_CACHE_OBJ.runScript}`} onClick={handleClick} />}
         label={label}
         {...props}
       />
