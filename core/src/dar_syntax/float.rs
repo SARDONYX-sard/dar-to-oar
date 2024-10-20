@@ -1,6 +1,11 @@
-//! Parse float(Decimal point `. ` without a decimal point.)
+// SPDX-License-Identifier: MIT
+//! This code is a fork of winnow's `float`.(Decimal point `. ` without a decimal point.)
 //!
 //! Winnow's standard `float` does not error if there is no decimal point. So it is impossible to distinguish between a decimal point and a floating point.
+//!
+//! # Ref
+//! - [MIT License](https://github.com/winnow-rs/winnow/blob/v0.6.20/LICENSE-MIT)
+//! - [Code](https://github.com/winnow-rs/winnow/blob/8674ed2c3f57963a4e96c56616ee0a35f58cd258/src/ascii/mod.rs#L1485)
 use winnow::{
     ascii::{digit1, Caseless},
     combinator::{alt, cut_err, opt, trace},
