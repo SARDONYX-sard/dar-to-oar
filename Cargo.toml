@@ -1,5 +1,5 @@
 [workspace.package]
-version = "0.8.0"
+version = "0.9.0"
 description = "DAR to OAR Converter"
 categories = ["compilers", "games", "parsing"]
 authors = ["SARDONYX-sard"]
@@ -15,11 +15,11 @@ default-members = ["cli"]
 resolver = "2"
 
 [workspace.dependencies]
-serde = { version = "1.0.210", features = ["derive"] }    # Implement (De)Serialize
-serde_json = "1.0.128"                                    # core: To json/GUI: To avoid generate_context error.
+serde = { version = "1.0.210", features = ["derive"] } # Implement (De)Serialize
+serde_json = "1.0.132"                                 # core: To json/GUI: To avoid generate_context error.
 snafu = "0.8.5"
-tokio = { version = "1.40.0" }                            # Async runtime
-tracing = { version = "0.1.40" }                          # logger
+tokio = { version = "1.40.0" }                         # Async runtime
+tracing = { version = "0.1.40" }                       # logger
 tracing-subscriber = "0.3.18"
 tracing-appender = "0.2.3"
 
@@ -47,29 +47,3 @@ future_not_send = "allow"
 multiple_crate_versions = "allow"
 pub_with_shorthand = "allow"
 redundant_pub_crate = "allow"
-
-
-# The profile that 'cargo dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "thin"
-
-# Config for 'cargo dist'
-[workspace.metadata.dist]
-# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "0.10.0"
-# CI backends to support
-ci = ["github"]
-# The installers to generate for each app
-installers = ["shell", "powershell"]
-# Target platforms to build apps for (Rust target-triple syntax)
-targets = [
-  "aarch64-apple-darwin",
-  "x86_64-apple-darwin",
-  "x86_64-unknown-linux-gnu",
-  "x86_64-pc-windows-msvc",
-]
-# Publish jobs to run in CI
-pr-run-mode = "skip"
-# Skip checking whether the specified configuration files are up to date
-allow-dirty = ["ci"]

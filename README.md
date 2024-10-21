@@ -4,9 +4,6 @@
     <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml">
         <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml/badge.svg" alt="Cargo Lint & Test">
     </a>
-    <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml">
-        <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-cli.yaml/badge.svg" alt="Release Cli">
-    </a>
     <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml">
         <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/release-gui.yaml/badge.svg" alt="Release GUI">
     </a>

@@ -91,23 +91,23 @@ function updatePackageJson(newVersion) {
   fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 }
 
-const workSpaceRegExp = /\[workspace\.package\]\nversion = "(.*)"/;
-
 /**
  * @param {string} newVersion
  */
 function updateCargoToml(newVersion) {
+  // biome-ignore lint/performance/useTopLevelRegex: <explanation>
+  const workSpaceRegExp = /\[workspace\.package\]\nversion = "(.*)"/;
   let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
   cargoToml = cargoToml.replace(workSpaceRegExp, `[workspace.package]\nversion = "${newVersion}"`);
   fs.writeFileSync(cargoTomlPath, cargoToml);
 }
 
-const issueRexExp = /options:\n((\s+- .*\n)+)/;
-
 /**
  * @param {string} newVersion
  */
 function updateIssueTemplate(newVersion) {
+  // biome-ignore lint/performance/useTopLevelRegex: <explanation>
+  const issueRexExp = /options:\n((\s+- .*\n)+)/;
   let issueTemplate = fs.readFileSync(issueTemplatePath, 'utf8');
   const versionList = issueTemplate.match(issueRexExp)?.[1];
   if (versionList == null) {
