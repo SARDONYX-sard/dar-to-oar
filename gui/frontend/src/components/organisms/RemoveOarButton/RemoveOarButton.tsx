@@ -41,8 +41,8 @@ export const RemoveOarButton = () => {
   return (
     <ButtonWithToolTip
       buttonName={t('remove-oar-btn')}
-      onClick={handleClick}
       icon={loading ? <CircularProgressWithLabel value={progress} /> : <DeleteIcon />}
+      onClick={handleClick}
       tooltipTitle={<p>{t('remove-oar-tooltip')}</p>}
       variant='contained'
     />

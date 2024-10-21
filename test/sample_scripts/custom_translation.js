@@ -10,7 +10,7 @@
   // clearCustomTranslation();
 
   function setCustomTranslation() {
-    /** ref: https://github.com/SARDONYX-sard/dar-to-oar/blob/0.8.1/locales/en-US.json */
+    /** ref: https://github.com/SARDONYX-sard/dar-to-oar/blob/0.9.0/locales/en-US.json */
     const i18n = {
       'all-clear-btn': 'All Clear',
       'backup-dialog-all-checked-label': 'Check all',
@@ -31,7 +31,7 @@
       'convert-form-author-name-helper': '[Optional]',
       'convert-form-author-placeholder': 'Name',
       'convert-form-dar-helper': '[Required] Path of dir containing "DynamicAnimationReplacer".',
-      'convert-form-dar-helper2': '"C:\\[...]/Mod Name/" -> Convert 1st & 3rd person',
+      'convert-form-dar-helper2': '"C:/[...]/Mod Name/" -> Convert 1st & 3rd person',
       'convert-form-dar-helper3': '"[...]/animations/DynamicAnimationReplacer" -> Convert 3rd person',
       'convert-form-dar-label': 'DAR(source) Directory',
       'convert-form-mapping-1st-label': 'Mapping Table Path(For _1st_person)',
@@ -68,6 +68,9 @@
       'import-lang-btn': 'Import Language',
       'import-lang-tooltip': 'Import any language from a Json file. (automatically reloads for validation).',
       'import-lang-tooltip2': 'Note: For invalid Json, fall back to English. (See Wiki for how to write Json)',
+      'infer-btn': 'Infer',
+      'infer-btn-tooltip':
+        'Infer OAR and ModName from DAR (input). (Even if each item is not entered without this function, it is inferred to some extent on the back-end side.)',
       'lang-preset-auto': 'Auto',
       'lang-preset-custom': 'Custom',
       'lang-preset-label': 'Language',
@@ -89,19 +92,19 @@
       'open-log-dir-btn': 'Log(dir)',
       'open-log-dir-tooltip': 'Open the log storage location.',
       'open-log-tooltip': 'Open current log file.(Rotate to a new log file each time the application is launched.)',
-      'progress-btn': 'ProgressBar',
-      'progress-btn-tooltip': 'Display detail progress',
-      'progress-btn-tooltip2': '',
+      'progress-btn': 'Progress',
+      'progress-btn-tooltip': 'Let the back-end report detailed progress.',
+      'progress-btn-tooltip2': '(conversion may be slightly slower)',
       'remove-oar-btn': 'Remove OAR',
       'remove-oar-failed': 'Not found "OpenAnimationReplacer" directory',
       'remove-oar-specify-error': 'DAR or OAR dir must be specified.',
       'remove-oar-success': 'Removed OAR directory.',
       'remove-oar-tooltip':
         'Find and delete OAR dir from "OAR(destination) Directory"(or "DAR(source) Directory*" if not specified).',
-      'run-parallel-btn-tooltip': 'Use multi-threading.',
+      'run-parallel-btn-tooltip': 'Attempt file-by-file parallel conversion.',
       'run-parallel-btn-tooltip2':
-        'Note:  More than twice the processing speed can be expected, but the concurrent processing results in thread termination timings being out of order, so log writes will be out of order as well, greatly reducing readability of the logs.',
-      'run-parallel-label': 'Run Parallel',
+        'Pros: extremely fast conversion / Cons: entries in logs are out of order and difficult to read',
+      'run-parallel-label': 'Parallel',
       'select-btn': 'Select',
       'tab-label-backup': 'Backup',
       'tab-label-editor': 'Editor / Preset',

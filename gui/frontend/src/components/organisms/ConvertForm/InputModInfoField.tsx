@@ -1,9 +1,9 @@
-import { TextField, Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, TextField } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { setPathToStorage } from './ConvertForm';
 
-import type { FormProps } from './';
+import type { FormProps } from './ConvertForm';
 import type { ReactNode } from 'react';
 
 type Props = {
