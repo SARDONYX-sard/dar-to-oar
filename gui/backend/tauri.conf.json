@@ -10,13 +10,13 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 920,
+        "height": 790,
         "resizable": true,
         "theme": "Dark",
         "title": "DAR to OAR Converter",
         "transparent": true,
         "visible": false,
-        "width": 825,
+        "width": 980,
         "windowEffects": {
           "effects": ["micaDark"]
         }

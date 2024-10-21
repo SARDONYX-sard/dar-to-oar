@@ -76,13 +76,13 @@ label.Mui-focused,
   background-color: var(--hover-btn-color);
 }
 
-#x-data-grid-selected,
-.MuiLoadingButton-root {
+.MuiButton-containedPrimary,
+#x-data-grid-selected {
   color: #fff;
   background-color: var(--convert-btn-color);
 }
 
-.MuiLoadingButton-root:hover {
+.MuiButton-containedPrimary:hover {
   background-color: var(--hover-convert-btn-color);
 }
 
@@ -118,13 +118,13 @@ const preset2 = createPreset(
 
 const preset3 = createPreset(
   `--autofill-color: #eb37ff1c;
-  --convert-btn-color: #ab2b7e6e;
+  --convert-btn-color: #7c00c932;
   --hover-btn-color: #8b51fb8b;
-  --hover-convert-btn-color: #7d00c9a3;
+  --hover-convert-btn-color: #8737b884;
   --image-size: cover;
   --image-url: url("https://images.pexels.com/photos/6162265/pexels-photo-6162265.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
   --main-bg-color: #2223;
-  --theme-color: #9644f1;`,
+  --theme-color: #9644f1`,
 );
 
 const preset4 = createPreset(

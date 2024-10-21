@@ -1,25 +1,24 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Tooltip } from '@mui/material';
-import Button from '@mui/material/Button';
 import { useCallback, useState } from 'react';
+import { useWatch } from 'react-hook-form';
 
+import { ButtonWithToolTip } from '@/components/atoms/ButtonWithToolTip';
 import { CircularProgressWithLabel } from '@/components/atoms/CircularProgressWithLabel';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { NOTIFY } from '@/lib/notify';
 import { unhideDarDir } from '@/services/api/convert';
 import { progressListener } from '@/services/api/event';
 
-type Props = {
-  path: string;
-};
+import type { FormProps } from '../ConvertForm/ConvertForm';
 
-export const UnhideDarButton = ({ path }: Props) => {
+export const UnhideDarButton = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const { src: path } = useWatch<FormProps>();
 
   const handleClick = useCallback(async () => {
-    if (path === '') {
+    if (path === undefined || path === '') {
       NOTIFY.error(t('unhide-dar-specify-error'));
       return;
     }
@@ -33,26 +32,18 @@ export const UnhideDarButton = ({ path }: Props) => {
         setLoading,
         setProgress,
         success: t('unhide-dar-success'),
-        error: t('unhide-dar-failed'),
+        error: `${path}:\n${t('unhide-dar-failed')}`,
       },
     );
   }, [path, t]);
 
   return (
-    <Tooltip title={<p>{t('unhide-dar-btn-tooltip')}</p>}>
-      <Button
-        onClick={handleClick}
-        startIcon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
-        sx={{
-          marginTop: '9px',
-          minHeight: '50px',
-          width: '100%',
-        }}
-        type='button'
-        variant='outlined'
-      >
-        {t('unhide-dar-btn')}
-      </Button>
-    </Tooltip>
+    <ButtonWithToolTip
+      buttonName={t('unhide-dar-btn')}
+      icon={loading ? <CircularProgressWithLabel value={progress} /> : <VisibilityIcon />}
+      onClick={handleClick}
+      tooltipTitle={<p>{t('unhide-dar-btn-tooltip')}</p>}
+      variant='contained'
+    />
   );
 };
