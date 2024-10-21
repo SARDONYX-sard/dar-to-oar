@@ -26,6 +26,14 @@ export const createStorage = <
     get: (key: CacheKey<K>) => localStorage.getItem(key),
 
     /**
+     * Retrieves the value from localStorage for the given cache key.
+     * @param key - The cache key to retrieve.
+     * @example
+     * assert(storage.getOrDefault('snackbar-limit') === '');
+     */
+    getOrDefault: (key: CacheKey<K>) => localStorage.getItem(key) ?? '',
+
+    /**
      * Retrieves the values for multiple cache keys from localStorage.
      * @param keys - Array of cache keys to retrieve.
      * @example

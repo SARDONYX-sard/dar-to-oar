@@ -1,30 +1,28 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Box, Button, FormControlLabel, FormGroup, TextField, Tooltip } from '@mui/material';
-import Checkbox from '@mui/material/Checkbox';
+import { Button, FormGroup } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
+import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 
-import { ConvertButton } from '@/components/atoms/ConvertButton';
-import { LinearWithValueLabel } from '@/components/atoms/LinearWithValueLabel';
 import { useTranslation } from '@/components/hooks/useTranslation';
-import { LogDirButton } from '@/components/molecules/LogDirButton';
-import { LogFileButton } from '@/components/molecules/LogFileButton';
-import { SelectPathButton } from '@/components/molecules/SelectPathButton';
-import { LogLevelList } from '@/components/organisms/LogLevelList';
-import { RemoveOarButton } from '@/components/organisms/RemoveOarButton';
-import { UnhideDarButton } from '@/components/organisms/UnhideDarButton';
-import { getParent } from '@/lib/path';
+import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertNav';
 import { STORAGE } from '@/lib/storage';
+import { PRIVATE_CACHE_OBJ, PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { convertDar2oar } from '@/services/api/convert';
 import { progressListener } from '@/services/api/event';
 import { LOG, type LogLevel } from '@/services/api/log';
-import { start } from '@/services/api/shell';
 
-import type { MouseEventHandler } from 'react';
+import { parseDarPath } from '../../../lib/path/parseDarPath';
 
-type FormProps = {
+import { CheckboxField } from './CheckboxField';
+import { InputModInfoField } from './InputModInfoField';
+import { InputPathField } from './InputPathField';
+import { useCheckFields } from './useCheckField';
+import { useInputPathFields } from './useInputPathField';
+import { useModInfoFields } from './useModInfoField';
+
+import type { ComponentPropsWithRef } from 'react';
+
+export type FormProps = {
   src: string;
   dst: string;
   modName: string;
@@ -36,451 +34,123 @@ type FormProps = {
   runParallel: boolean;
   hideDar: boolean;
   showProgress: boolean;
+  inferPath: boolean;
   progress: number;
 };
 
 const getInitialFormValues = (): FormProps => ({
-  src: STORAGE.get('src') ?? '',
-  dst: STORAGE.get('dst') ?? '',
-  modName: STORAGE.get('modName') ?? '',
-  modAuthor: STORAGE.get('modAuthor') ?? '',
-  mappingPath: STORAGE.get('mappingPath') ?? '',
-  mapping1personPath: STORAGE.get('mapping1personPath') ?? '',
-  loading: false as boolean,
+  src: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.src),
+  dst: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.dst),
+  modName: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modName),
+  modAuthor: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modAuthor),
+  mappingPath: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.mappingPath),
+  mapping1personPath: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.mapping1personPath),
+  loading: false,
   logLevel: LOG.get(),
-  runParallel: STORAGE.get('runParallel') === 'true',
-  hideDar: STORAGE.get('hideDar') === 'true',
-  showProgress: STORAGE.get('showProgress') === 'true',
+  runParallel: STORAGE.get(PUB_CACHE_OBJ.runParallel) === 'true',
+  hideDar: STORAGE.get(PUB_CACHE_OBJ.hideDar) === 'true',
+  showProgress: STORAGE.get(PUB_CACHE_OBJ.showProgress) === 'true',
+  inferPath: STORAGE.get(PUB_CACHE_OBJ.inferPath) === 'true',
   progress: 0,
 });
 
+const PATH_FORM_VALUES = ['src', 'dst', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
+
+export type PathFormKeys = (typeof PATH_FORM_VALUES)[number];
+
+export const setPathToStorage = (name: PathFormKeys, path: string) => {
+  STORAGE.set(name, path);
+  if (path !== '') {
+    STORAGE.set(`cached-${name}`, path);
+    return;
+  }
+  STORAGE.remove(name);
+};
+
 export function ConvertForm() {
   const { t } = useTranslation();
-  const { handleSubmit, control, setValue, watch } = useForm({
+
+  const methods = useForm({
     mode: 'onBlur',
     criteriaMode: 'all',
     shouldFocusError: false,
     defaultValues: getInitialFormValues(),
   });
+  const { setValue, getValues } = methods;
 
-  /** Use `getValues` to get the old values and use `watch` to monitor `src` and `dst`. */
-  const watchFields = watch(['src', 'dst']);
-
-  const setStorage = (key: keyof FormProps) => {
-    return (value: string) => {
-      if (!(key === 'loading' || key === 'progress')) {
-        STORAGE.set(key, value);
-      }
-
-      if (value === '') {
-        localStorage.removeItem(key);
-      } else {
-        localStorage.setItem(`cached-${key}`, value);
-      }
-
-      setValue(key, value);
-    };
-  };
-
-  const setLoading = (loading: boolean) => setValue('loading', loading);
   const handleAllClear = () => {
-    const formValues = ['src', 'dst', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
-
-    for (const key of formValues) {
-      setStorage(key)('');
+    for (const key of PATH_FORM_VALUES) {
+      setValue(key, '');
+      setPathToStorage(key, '');
     }
   };
 
   const onSubmit: SubmitHandler<FormProps> = async (formProps) => {
-    await progressListener('/dar2oar/progress/converter', async () => await convertDar2oar(formProps), {
+    const setLoading = (loading: boolean) => setValue('loading', loading);
+    const task = async () => await convertDar2oar(formProps);
+
+    await progressListener('/dar2oar/progress/converter', task, {
       setLoading,
-      setProgress(percentage: number) {
-        setValue('progress', percentage);
-      },
+      setProgress: (percentage: number) => setValue('progress', percentage),
       success: t('conversion-complete'),
     });
   };
 
+  const pathFields = useInputPathFields();
+  const modInfoFields = useModInfoFields();
+  const checkFields = useCheckFields();
+
   return (
-    <Grid component='form' container={true} onSubmit={handleSubmit(onSubmit)} sx={{ display: 'block', width: '95vw' }}>
-      <Button
-        onClick={handleAllClear}
-        startIcon={<ClearAllIcon />}
-        sx={{ width: '100%', marginBottom: '15px' }}
-        variant='outlined'
+    <FormProvider {...methods}>
+      <Grid
+        component='form'
+        container={true}
+        onSubmit={methods.handleSubmit(onSubmit)}
+        sx={{ width: '100vw', justifyContent: 'center' }}
       >
-        {t('all-clear-btn')}
-      </Button>
-      <FormGroup onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          control={control}
-          name='src'
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <Grid container={true} spacing={2}>
-              <Grid size={10}>
-                <TextField
-                  error={Boolean(error)}
-                  helperText={
-                    <>
-                      {t('convert-form-dar-helper')} <br />
-                      {t('convert-form-dar-helper2')} <br />
-                      {t('convert-form-dar-helper3')}
-                    </>
-                  }
-                  label={t('convert-form-dar-label')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    onChange(e);
-                    const path = e.target.value;
-                    STORAGE.set('src', path); // For reload cache
-                    if (path !== '') {
-                      STORAGE.set('cached-src', path); // For empty string
-                    }
-                  }}
-                  placeholder='[...]/<MOD NAME>'
-                  required={true}
-                  sx={{ width: '100%' }}
-                  value={value}
-                  variant='outlined'
-                />
-              </Grid>
+        <FormGroup sx={{ width: '95%' }}>
+          <Button
+            onClick={handleAllClear}
+            startIcon={<ClearAllIcon />}
+            sx={{ width: '100%', marginTop: '15px', marginBottom: '15px' }}
+            variant='outlined'
+          >
+            {t('all-clear-btn')}
+          </Button>
 
-              <Grid size={2}>
-                <SelectPathButton
-                  isDir={true}
-                  path={getParent(value === '' ? (STORAGE.get('cached-src') ?? '') : value)}
-                  setPath={setStorage('src')}
-                />
-              </Grid>
-            </Grid>
-          )}
-          rules={{
-            required: 'Need Path',
-          }}
-        />
+          {pathFields.map((props) => {
+            let onChange: ComponentPropsWithRef<typeof InputPathField>['onChange'] | undefined;
 
-        <Controller
-          control={control}
-          name='dst'
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <Grid container={true} spacing={2}>
-              <Grid size={10}>
-                <TextField
-                  error={Boolean(error)}
-                  helperText={
-                    <>
-                      {t('convert-form-oar-helper')} <br />
-                      {t('convert-form-oar-helper2')}
-                    </>
-                  }
-                  label={t('convert-form-oar-label')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    onChange(e);
-                    const path = e.target.value;
-                    STORAGE.set('dst', path);
-                    if (path !== '') {
-                      STORAGE.set('cached-dst', path);
-                    }
-                  }}
-                  placeholder='<MOD NAME>'
-                  sx={{ width: '100%' }}
-                  value={value}
-                  variant='outlined'
-                />
-              </Grid>
-              <Grid size={2}>
-                <SelectPathButton
-                  isDir={true}
-                  path={getParent(value === '' ? (STORAGE.get('cached-dst') ?? '') : value)}
-                  setPath={setStorage('dst')}
-                />
-              </Grid>
-            </Grid>
-          )}
-        />
+            if (props.name === 'src') {
+              onChange = (e) => {
+                if (getValues('inferPath')) {
+                  const parsedPath = parseDarPath(e.target.value);
+                  setValue('dst', parsedPath.oarRoot);
+                  setValue('modName', parsedPath.modName ?? '');
+                }
+              };
+            }
+            return <InputPathField key={props.name} onChange={onChange} {...props} />;
+          })}
 
-        <Controller
-          control={control}
-          name='mappingPath'
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <Grid container={true} spacing={2}>
-              <Grid size={10}>
-                <TextField
-                  error={Boolean(error)}
-                  helperText={<MappingHelpBtn />}
-                  label={t('convert-form-mapping-label')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    const path = e.target.value;
-                    STORAGE.set('mappingPath', path);
-                    if (path !== '') {
-                      STORAGE.set('cached-mappingPath', path);
-                    }
-                    onChange(e);
-                  }}
-                  placeholder='./mapping_table.txt'
-                  sx={{ width: '100%' }}
-                  value={value}
-                  variant='outlined'
-                />
-              </Grid>
+          <Grid columnSpacing={1} container={true} gap={2} sx={{ width: '100%' }}>
+            {modInfoFields.map((props) => {
+              return <InputModInfoField key={props.name} {...props} />;
+            })}
 
-              <Grid size={2}>
-                <SelectPathButton
-                  path={value === '' ? (STORAGE.get('cached-mappingPath') ?? '') : value}
-                  setPath={(value) => {
-                    STORAGE.set('cached-mappingPath', value);
-                    setStorage('mappingPath')(value);
-                  }}
-                />
-              </Grid>
-            </Grid>
-          )}
-        />
-
-        <Controller
-          control={control}
-          name='mapping1personPath'
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <Grid container={true} spacing={2}>
-              <Grid size={10}>
-                <TextField
-                  error={Boolean(error)}
-                  helperText={t('convert-form-mapping-helper')}
-                  label={t('convert-form-mapping-1st-label')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    const path = e.target.value;
-                    STORAGE.set('mapping1personPath', path);
-                    if (path !== '') {
-                      STORAGE.set('cached-mapping1personPath', path);
-                    }
-                    onChange(e);
-                  }}
-                  placeholder='./mapping_table_for_1st_person.txt'
-                  sx={{ minWidth: '100%' }}
-                  value={value}
-                  variant='outlined'
-                />
-              </Grid>
-
-              <Grid size={2}>
-                <SelectPathButton
-                  path={value === '' ? (STORAGE.get('cached-mapping1personPath') ?? '') : value}
-                  setPath={setStorage('mapping1personPath')}
-                />
-              </Grid>
-            </Grid>
-          )}
-        />
-
-        <Grid container={true} spacing={2}>
-          <Grid size={3}>
-            <Controller
-              control={control}
-              name='modName'
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <TextField
-                  error={Boolean(error)}
-                  helperText={t('convert-form-mod-name-helper')}
-                  label={t('convert-form-mod-name')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    STORAGE.set('modName', e.target.value);
-                    onChange(e);
-                  }}
-                  placeholder={t('convert-form-mod-name')}
-                  value={value}
-                  variant='outlined'
-                />
-              )}
-            />
+            {checkFields.map((props) => {
+              return (
+                <Grid key={props.name} size={1.5} sx={{ display: 'flex', placeItems: 'center' }}>
+                  <CheckboxField {...props} />
+                </Grid>
+              );
+            })}
           </Grid>
+          <ConvertNavPadding />
+        </FormGroup>
 
-          <Grid size={3}>
-            <Controller
-              control={control}
-              name='modAuthor'
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <TextField
-                  error={Boolean(error)}
-                  helperText={t('convert-form-author-name-helper')}
-                  label={t('convert-form-author-name')}
-                  margin='dense'
-                  onBlur={onBlur}
-                  onChange={(e) => {
-                    STORAGE.set('modAuthor', e.target.value);
-                    onChange(e);
-                  }}
-                  placeholder={t('convert-form-author-placeholder')}
-                  value={value}
-                  variant='outlined'
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid size={2}>
-            <LogLevelList />
-          </Grid>
-
-          <Grid size={2}>
-            <LogFileButton />
-          </Grid>
-
-          <Grid size={2}>
-            <LogDirButton />
-          </Grid>
-        </Grid>
-
-        <Grid container={true} sx={{ alignItems: 'center' }}>
-          <Grid size={3}>
-            <Controller
-              control={control}
-              name='hideDar'
-              render={({ field: { value } }) => (
-                <Tooltip
-                  title={
-                    <p>
-                      {t('hide-dar-btn-tooltip')} <br />
-                      {t('hide-dar-btn-tooltip2')}
-                    </p>
-                  }
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        aria-label='Hide DAR'
-                        checked={value}
-                        onClick={() => {
-                          STORAGE.set('hideDar', `${!value}`);
-                          setValue('hideDar', !value);
-                        }}
-                      />
-                    }
-                    label={
-                      <Box component='div' sx={{ display: 'flex' }}>
-                        <VisibilityOffIcon />
-                        {t('hide-dar-btn')}
-                      </Box>
-                    }
-                  />
-                </Tooltip>
-              )}
-            />
-          </Grid>
-
-          <Grid size={3}>
-            <Controller
-              control={control}
-              name='showProgress'
-              render={({ field: { value } }) => (
-                <Tooltip title={t('progress-btn-tooltip')}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        aria-label='Show Progress'
-                        checked={value}
-                        onClick={() => {
-                          setValue('showProgress', !value);
-                          STORAGE.set('showProgress', `${!value}`);
-                        }}
-                      />
-                    }
-                    label={
-                      <Box component='div' sx={{ display: 'flex' }}>
-                        <SlideshowIcon />
-                        {t('progress-btn')}
-                      </Box>
-                    }
-                  />
-                </Tooltip>
-              )}
-            />
-          </Grid>
-
-          <Grid size={3}>
-            <Controller
-              control={control}
-              name='runParallel'
-              render={({ field: { value } }) => (
-                <Tooltip
-                  title={
-                    <p>
-                      {t('run-parallel-btn-tooltip')} <br />
-                      {t('run-parallel-btn-tooltip2')}
-                    </p>
-                  }
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        aria-label='Run Parallel'
-                        checked={value}
-                        onClick={() => {
-                          STORAGE.set('runParallel', `${!value}`);
-                          setValue('runParallel', !value);
-                        }}
-                      />
-                    }
-                    label={t('run-parallel-label')}
-                  />
-                </Tooltip>
-              )}
-            />
-          </Grid>
-        </Grid>
-
-        <Grid container={true} spacing={2}>
-          <Grid size={3}>
-            <UnhideDarButton path={watchFields[0]} />
-          </Grid>
-          <Grid size={3}>
-            <RemoveOarButton darPath={watchFields[0]} oarPath={watchFields[1]} />
-          </Grid>
-        </Grid>
-
-        <Controller
-          control={control}
-          name='loading'
-          render={({ field: { value } }) => (
-            <Box sx={{ width: '100%', paddingTop: '10px' }}>
-              <ConvertButton loading={value} type='submit' />
-            </Box>
-          )}
-        />
-
-        <Controller
-          control={control}
-          name='progress'
-          render={({ field: { value } }) => <LinearWithValueLabel progress={value} />}
-        />
-      </FormGroup>
-    </Grid>
-  );
-}
-
-function MappingHelpBtn() {
-  const { t } = useTranslation();
-  const href = `https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`;
-  const handleMappingClick: MouseEventHandler<HTMLButtonElement> = (_e) => {
-    start(href);
-  };
-
-  return (
-    <>
-      {t('convert-form-mapping-helper')}
-      <br />
-      {t('convert-form-mapping-helper2')}
-      <Button onClick={handleMappingClick} style={{ fontSize: 'small' }} type='button'>
-        [{t('convert-form-mapping-help-link-name')}]
-      </Button>
-    </>
+        <ConvertNav />
+      </Grid>
+    </FormProvider>
   );
 }

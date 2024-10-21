@@ -39,7 +39,7 @@ export const LogLevelList = () => {
   );
 
   return (
-    <Tooltip placement='top' title={tooltip}>
+    <Tooltip placement='right-start' title={tooltip}>
       <SelectWithLabel
         label={t('log-level-list-label')}
         menuItems={menuItems}

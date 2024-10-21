@@ -4,12 +4,15 @@ const FORM_PUB_CACHE_KEYS_OBJ = {
   hideDar: 'hideDar',
   runParallel: 'runParallel',
   showProgress: 'showProgress',
+  inferPath: 'inferPath',
 } as const;
 
 const FORM_PRIVATE_CACHE_KEYS_OBJ = {
   cachedDst: 'cached-dst',
   cachedMapping1PersonPath: 'cached-mapping1personPath',
   cachedMappingPath: 'cached-mappingPath',
+  cachedModAuthor: 'cached-modName',
+  cachedModName: 'cached-modAuthor',
   cachedSrc: 'cached-src',
   dst: 'dst',
   mapping1personPath: 'mapping1personPath',
