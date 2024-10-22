@@ -949,7 +949,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_cli"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "clap",
  "dar2oar_core",
@@ -962,7 +962,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_core"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "annotate-snippets",
  "async-walkdir",
@@ -1527,7 +1527,7 @@ dependencies = [
 
 [[package]]
 name = "g_dar2oar"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "chrono",
  "dar2oar_core",
