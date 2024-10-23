@@ -54,7 +54,8 @@ export function ConvertButton({ loading, progress, ...props }: Props) {
                 left: 0,
                 width: `${progress}%`, // Progress-based width
                 height: '100%',
-                backgroundColor: '#1e1f1e57',
+                // backgroundColor: '#1e1f1e57',
+                backgroundColor: 'var(--theme-color)',
                 zIndex: 0,
                 transition: 'width 0.5s ease-in-out',
                 transform: `scaleX(${progress / 100})`,
