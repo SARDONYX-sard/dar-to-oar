@@ -48,6 +48,7 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "18.3.1",
     "@vitejs/plugin-react-swc": "3.7.1",
+    "better-typescript-lib": "^2.9.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "jsdom": "25.0.1",
