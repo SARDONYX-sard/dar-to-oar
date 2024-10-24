@@ -1,3 +1,5 @@
+/// The reason for the key value pairs is to simplify refactoring of the language server.
+/// If we leave them as strings, we cannot automate symbol changes.
 import { OBJECT } from '@/lib/object-utils';
 
 const FORM_PUB_CACHE_KEYS_OBJ = {
