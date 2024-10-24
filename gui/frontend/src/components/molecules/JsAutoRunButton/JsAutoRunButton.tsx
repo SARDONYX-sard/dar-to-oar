@@ -11,7 +11,7 @@ type Props = Omit<FormControlLabelProps, 'control' | 'label'>;
 
 export const JsAutoRunButton = ({ ...props }: Props) => {
   const { t } = useTranslation();
-  const [runScript, setRunScript] = useStorageState(HIDDEN_CACHE_OBJ.runScript, false);
+  const [runScript, setRunScript] = useStorageState<boolean>(HIDDEN_CACHE_OBJ.runScript, false);
 
   const title = (
     <>

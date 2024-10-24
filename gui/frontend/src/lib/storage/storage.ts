@@ -29,6 +29,14 @@ export const createStorage = <
      * Retrieves the value from localStorage for the given cache key.
      * @param key - The cache key to retrieve.
      * @example
+     * storage.get('snackbar-limit');
+     */
+    getSome: (key: CacheKey<K> | HiddenCacheKey<H>) => localStorage.getItem(key),
+
+    /**
+     * Retrieves the value from localStorage for the given cache key.
+     * @param key - The cache key to retrieve.
+     * @example
      * assert(storage.getOrDefault('snackbar-limit') === '');
      */
     getOrDefault: (key: CacheKey<K>) => localStorage.getItem(key) ?? '',
@@ -66,6 +74,17 @@ export const createStorage = <
      * storage.set('snackbar-limit', '5');
      */
     set(key: CacheKey<K>, value: string) {
+      localStorage.setItem(key, value);
+    },
+
+    /**
+     * Sets a value in localStorage for a given cache key.
+     * @param key - The cache key to set.
+     * @param value - The value to store.
+     * @example
+     * storage.set('snackbar-limit', '5');
+     */
+    setSome(key: CacheKey<K> | HiddenCacheKey<H>, value: string) {
       localStorage.setItem(key, value);
     },
 

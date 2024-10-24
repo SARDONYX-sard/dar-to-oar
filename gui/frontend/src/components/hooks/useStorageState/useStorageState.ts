@@ -1,16 +1,16 @@
 import { useCallback, useState } from 'react';
 
-import type { WithHideCacheKey } from '@/lib/storage';
+import { STORAGE, type WithHideCacheKey } from '@/lib/storage';
 
 // Helper function to retrieve the cache value and parse it from localStorage
 const getCacheValue = <T>(key: WithHideCacheKey, fallback: T): T => {
-  const cached = localStorage.getItem(key);
+  const cached = STORAGE.getSome(key);
   if (cached === null) {
     return fallback;
   }
 
   try {
-    return JSON.parse(cached);
+    return JSON.parse(cached) as T; // FIXME: unsafe type conversion
   } catch {
     return fallback;
   }
@@ -43,7 +43,11 @@ export function useStorageState<T>(keyName: WithHideCacheKey, fallbackState: T) 
   const setState = useCallback(
     (newValue: T) => {
       setValue(newValue);
-      localStorage.setItem(keyName, JSON.stringify(newValue));
+
+      const jsonStr = JSON.stringify(newValue);
+      if (typeof jsonStr === 'string') {
+        STORAGE.setSome(keyName, jsonStr);
+      }
     },
     [keyName],
   );

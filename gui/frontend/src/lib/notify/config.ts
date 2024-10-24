@@ -1,4 +1,5 @@
 import { NOTIFY } from '@/lib/notify';
+import { OBJECT } from '@/lib/object-utils';
 import { STORAGE } from '@/lib/storage';
 
 import type { SnackbarOrigin } from 'notistack';
@@ -58,10 +59,21 @@ export const NOTIFY_CONFIG = {
    */
   getOrDefault() {
     const anchorOrigin = (() => {
-      const position: Partial<SnackbarOrigin> = NOTIFY.try(() => {
-        const jsonStr = STORAGE.get('snackbar-position');
-        return jsonStr ? JSON.parse(jsonStr) : {};
-      });
+      const position: Partial<SnackbarOrigin> =
+        NOTIFY.try(() => {
+          const jsonStr = STORAGE.get('snackbar-position');
+          if (jsonStr === null) {
+            return {};
+          }
+
+          const json = JSON.parse(jsonStr);
+          if (OBJECT.isPropertyAccessible(json)) {
+            return json;
+          }
+
+          return {};
+        }) ?? {};
+
       return normalize(position) satisfies NotifyConfig['anchorOrigin'];
     })();
 

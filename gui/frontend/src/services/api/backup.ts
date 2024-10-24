@@ -1,16 +1,12 @@
 import { save } from '@tauri-apps/plugin-dialog';
 
+import { OBJECT } from '@/lib/object-utils';
 import { CACHE_KEYS, type Cache, STORAGE } from '@/lib/storage';
 import { PRIVATE_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
 import { readFile, writeFile } from './fs';
 
 const SETTINGS_FILE_NAME = 'settings';
-
-/** ref: [better-typescript-lib article(ja)](https://zenn.dev/uhyo/articles/better-typescript-lib-v2#better-typescript-lib-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6) */
-function isPropertyAccessible(obj: unknown): obj is Record<string, unknown> {
-  return obj !== null;
-}
 
 export const BACKUP = {
   /** @throws Error */
@@ -21,7 +17,7 @@ export const BACKUP = {
     }
 
     const json = JSON.parse(settings);
-    if (!isPropertyAccessible(json)) {
+    if (!OBJECT.isPropertyAccessible(json)) {
       return null;
     }
 

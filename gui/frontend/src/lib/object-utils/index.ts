@@ -66,4 +66,9 @@ export const OBJECT = {
   entries: <T extends { [key: string]: T[keyof T] }>(obj: T): [keyof T, T[keyof T]][] => {
     return Object.entries(obj);
   },
+
+  /** ref: [better-typescript-lib article(ja)](https://zenn.dev/uhyo/articles/better-typescript-lib-v2#better-typescript-lib-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6) */
+  isPropertyAccessible(obj: unknown): obj is Record<string, unknown> {
+    return obj !== null;
+  },
 } as const;

@@ -4,6 +4,7 @@ import { type Resource, use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { NOTIFY } from '@/lib/notify';
+import { OBJECT } from '@/lib/object-utils';
 import { STORAGE } from '@/lib/storage';
 import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
@@ -19,7 +20,20 @@ const RESOURCES = {
   'ja-JP': {
     translation: dictJaJp,
   },
-  custom: { translation: NOTIFY.try(() => JSON.parse(STORAGE.get('custom-translation-dict') ?? '{}')) },
+  custom: {
+    translation:
+      NOTIFY.try(() => {
+        const dictStr = STORAGE.get('custom-translation-dict');
+        if (dictStr === null) {
+          return null;
+        }
+
+        const json = JSON.parse(dictStr);
+        if (OBJECT.isPropertyAccessible(json)) {
+          return json;
+        }
+      }) ?? {},
+  },
 } as const satisfies Resource;
 
 /**
