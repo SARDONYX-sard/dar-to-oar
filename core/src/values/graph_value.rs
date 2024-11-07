@@ -1,14 +1,15 @@
 //! Pair str & Int | Float | Bool
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Pair str & Int | Float | Bool
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct GraphValue {
+pub struct GraphValue<'a> {
     /// string
     ///
     /// TODO: Unknown variable
     #[serde(rename = "graphVariable")]
-    pub graph_variable: String,
+    pub graph_variable: Cow<'a, str>,
     /// Float | Int | Bool
     #[serde(rename = "graphVariableType")]
     pub graph_variable_type: GraphVariableType,

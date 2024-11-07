@@ -1,11 +1,11 @@
 //! Parses a high-level condition set based on the provided syntax.
 use super::actor::parse_actor;
 use super::compare::parse_compare;
-use super::dar_interface::ParseError;
 use super::equip::parse_equip;
+use super::errors::{ParseError, Result};
 use super::faction::parse_faction;
 use super::has::parse_has;
-use super::macros::{gen_cond, get_try_into, GetArg as _};
+use super::macros::gen_cond;
 use crate::conditions::{
     And, Condition, ConditionSet, CurrentGameTime, CurrentWeather, IsClass, IsCombatStyle,
     IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
@@ -17,7 +17,7 @@ use crate::values::{Cmp, DirectionValue};
 /// Parses a high-level condition set based on the provided syntax.
 /// # Errors
 /// Parsing failed.
-pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
+pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet> {
     Ok(match input {
         syntax::Condition::And(conditions) => {
             let mut inner_conditions = vec![];
@@ -46,20 +46,29 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseE
 /// Parses a conditional expression and translates it into a corresponding [`ConditionSet`].
 /// # Errors
 /// Parsing failed.
-fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError> {
+fn parse_condition(condition: Expression) -> Result<ConditionSet> {
     let Expression {
         negated,
         fn_name,
-        args,
+        mut args,
     } = condition;
 
     Ok(match fn_name {
-        "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
-            negated,
-            comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue for CurrentGameTime")?.into(),
-            ..Default::default()
-        }),
+        "CurrentGameTimeLessThan" => {
+            if args.is_empty() {
+                return Err(ParseError::UnexpectedValue(
+                    "At least 1 argument is required, but got 0".into(),
+                    "".into(),
+                ));
+            }
+
+            ConditionSet::CurrentGameTime(CurrentGameTime {
+                negated,
+                comparison: Cmp::Lt,
+                numeric_value: args.swap_remove(0).into(),
+                ..Default::default()
+            })
+        }
         "CurrentWeather" => gen_cond!(
             CurrentWeather(weather, negated),
             args,
@@ -79,24 +88,42 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             parse_faction(fn_name, args, negated)?
         }
         "IsInLocation" => gen_cond!(IsInLocation(location, negated), args, "IsInLocation"),
-        "IsLevelLessThan" => ConditionSet::Level(Level {
-            negated,
-            comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue for Level")?.into(),
-            ..Default::default()
-        }),
+        "IsLevelLessThan" => {
+            if args.is_empty() {
+                return Err(ParseError::UnexpectedValue(
+                    "At least 1 argument is required, but got 0".into(),
+                    "".into(),
+                ));
+            }
+
+            ConditionSet::Level(Level {
+                negated,
+                comparison: Cmp::Lt,
+                numeric_value: args.swap_remove(0).into(),
+                ..Default::default()
+            })
+        }
         "IsParentCell" => gen_cond!(
             IsParentCell(cell, negated),
             args,
             "PluginValue for IsParentCell"
         ),
-        "IsMovementDirection" => ConditionSet::IsDirectionMovement(IsMovementDirection {
-            negated,
-            direction: DirectionValue {
-                value: get_try_into!(args[0], "Direction: 0..=4")?,
-            },
-            ..Default::default()
-        }),
+        "IsMovementDirection" => {
+            if args.is_empty() {
+                return Err(ParseError::UnexpectedValue(
+                    "At least 1 argument is required, but got 0".into(),
+                    "".into(),
+                ));
+            }
+
+            ConditionSet::IsDirectionMovement(IsMovementDirection {
+                negated,
+                direction: DirectionValue {
+                    value: args.swap_remove(0).try_into()?,
+                },
+                ..Default::default()
+            })
+        }
         "IsRace" => gen_cond!(IsRace(race, negated), args, "PluginValue for IsRace"),
         "IsVoiceType" => {
             gen_cond!(
@@ -118,12 +145,21 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             into
         ),
         has_cond if fn_name.starts_with("Has") => parse_has(has_cond, args, negated)?,
-        "Random" => ConditionSet::RandomCondition(RandomCondition {
-            negated,
-            comparison: Cmp::Le,
-            numeric_value: args.try_get(0, "NumericValue in Random")?.into(),
-            ..Default::default()
-        }),
+        "Random" => {
+            if args.is_empty() {
+                return Err(ParseError::UnexpectedValue(
+                    "At least 1 argument is required, but got 0".into(),
+                    "".into(),
+                ));
+            }
+
+            ConditionSet::RandomCondition(RandomCondition {
+                negated,
+                comparison: Cmp::Le,
+                numeric_value: args.swap_remove(0).into(),
+                ..Default::default()
+            })
+        }
         "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
 
         // Conditional expressions without any arguments

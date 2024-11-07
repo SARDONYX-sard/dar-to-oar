@@ -1,18 +1,18 @@
 //! Represents a condition to check if an entity has a specific keyword.
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if an entity has a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct HasKeyword {
+pub struct HasKeyword<'a> {
     /// The name of the condition, which is "`HasKeyword`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,10 +21,10 @@ pub struct HasKeyword {
     /// The keyword to check for in the entity.
     #[serde(default)]
     #[serde(rename = "Keyword")]
-    pub keyword: Keyword,
+    pub keyword: Keyword<'a>,
 }
 
-impl Default for HasKeyword {
+impl Default for HasKeyword<'_> {
     fn default() -> Self {
         Self {
             condition: "HasKeyword".into(),
@@ -72,7 +72,7 @@ mod tests {
 
         let expected = HasKeyword {
             keyword: Keyword::Literal(LiteralValue {
-                editor_id: "SomeKeyword".to_string(),
+                editor_id: "SomeKeyword".into(),
             }),
             ..Default::default()
         };

@@ -4,12 +4,13 @@ mod compare;
 mod conditions;
 mod dar_interface;
 mod equip;
+mod errors;
 mod faction;
 mod has;
 mod macros;
 
 use self::conditions::parse_conditions;
-pub use self::dar_interface::ParseError;
+pub use self::errors::ParseError;
 use crate::conditions::ConditionSet;
 use crate::dar_syntax::parse_dar_syntax;
 use crate::error::{ConvertError, Result};

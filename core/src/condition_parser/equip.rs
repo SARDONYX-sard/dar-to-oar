@@ -1,6 +1,5 @@
 //! Parses equipment-related conditions based on the provided arguments and condition name.
-use super::macros::{gen_cond, get_try_into};
-use super::{dar_interface::ParseError, macros::GetArg as _};
+use super::errors::{ParseError, Result};
 use crate::{
     conditions::{ConditionSet, IsEquipped, IsEquippedHasKeyword, IsEquippedShout, IsEquippedType},
     dar_syntax::syntax::FnArg,
@@ -11,20 +10,27 @@ use crate::{
 ///
 /// # Errors
 /// If parsing fails.
-pub(super) fn parse_equip(
-    condition_name: &str,
-    args: Vec<FnArg<'_>>,
+pub(super) fn parse_equip<'a>(
+    condition_name: &'a str,
+    mut args: Vec<FnArg<'a>>,
     negated: bool,
-) -> Result<ConditionSet, ParseError> {
+) -> Result<ConditionSet<'a>> {
+    if args.is_empty() {
+        return Err(ParseError::UnexpectedValue(
+            "At least 1 argument is required, but got 0".into(),
+            "".into(),
+        ));
+    }
+
     Ok(match condition_name {
         "IsEquippedRight" | "IsEquippedLeft" => ConditionSet::IsEquipped(IsEquipped {
             negated,
-            form: get_try_into!(args[0], "PluginValue")?,
+            form: args.swap_remove(0).try_into()?,
             left_hand: condition_name == "IsEquippedLeft",
             ..Default::default()
         }),
         "IsEquippedRightType" | "IsEquippedLeftType" => {
-            let numeric_value: NumericLiteral = get_try_into!(args[0], "WeaponType -1..18")?;
+            let numeric_value: NumericLiteral = args.swap_remove(0).try_into()?;
             let type_value = TypeValue {
                 value: numeric_value.try_into().map_err(|_err| {
                     ParseError::UnexpectedValue("-1..18".into(), "Unknown value".into())
@@ -41,18 +47,18 @@ pub(super) fn parse_equip(
             ConditionSet::IsEquippedHasKeyword(IsEquippedHasKeyword {
                 negated,
                 left_hand: condition_name == "IsEquippedLeftHasKeyword",
-                keyword: args.try_get(0, "Keyword")?.into(),
+                keyword: args.swap_remove(0).into(),
                 ..Default::default()
             })
         }
-        "IsEquippedShout" => gen_cond!(
-            IsEquippedShout(shout, negated),
-            args,
-            "shout(PluginValue) in IsEquippedShout"
-        ),
+        "IsEquippedShout" => ConditionSet::IsEquippedShout(IsEquippedShout {
+            shout: args.swap_remove(0).try_into()?,
+            negated,
+            ..Default::default()
+        }),
         _ => {
             return Err(ParseError::UnexpectedValue(
-                "IsEquipped prefix condition unexpected to come in: ".into(),
+                "`IsEquipped` prefix condition: ".into(),
                 condition_name.into(),
             ))
         }

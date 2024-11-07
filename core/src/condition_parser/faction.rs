@@ -1,6 +1,5 @@
 //! Parses faction-related conditions based on the provided arguments and condition name.
-use super::dar_interface::ParseError;
-use super::macros::{get_try_into, GetArg as _};
+use super::errors::{ParseError, Result};
 use crate::{
     conditions::{ConditionSet, FactionRank, IsInFaction},
     dar_syntax::syntax::FnArg,
@@ -11,17 +10,40 @@ use crate::{
 ///
 /// # Errors
 /// If parsing fails.
-pub(super) fn parse_faction(
-    condition_name: &str,
-    args: Vec<FnArg<'_>>,
+pub(super) fn parse_faction<'a>(
+    condition_name: &'a str,
+    mut args: Vec<FnArg<'a>>,
     negated: bool,
-) -> Result<ConditionSet, ParseError> {
-    let create_cond = |comparison: Cmp| -> Result<ConditionSet, ParseError> {
+) -> Result<ConditionSet<'a>> {
+    let args_len = args.len();
+    if args_len < 2 {
+        return Err(ParseError::UnexpectedValue(
+            "At least 2 argument is required, but got {arg_len}".into(),
+            "".into(),
+        ));
+    }
+
+    let mut create_cond = |comparison: Cmp| -> Result<ConditionSet, ParseError> {
+        let numeric_value = args
+            .pop()
+            .ok_or(ParseError::NotEnoughArguments {
+                expected: 2,
+                actual: args_len,
+            })?
+            .into();
+        let faction = args
+            .pop()
+            .ok_or(ParseError::NotEnoughArguments {
+                expected: 2,
+                actual: args_len,
+            })?
+            .try_into()?;
+
         Ok(ConditionSet::FactionRank(FactionRank {
             negated,
-            faction: get_try_into!(args[0], "PluginValue")?,
+            faction,
             comparison,
-            numeric_value: args.try_get(1, "NumericValue")?.into(),
+            numeric_value,
             ..Default::default()
         }))
     };
@@ -29,7 +51,7 @@ pub(super) fn parse_faction(
     Ok(match condition_name {
         "IsInFaction" => ConditionSet::IsInFaction(IsInFaction {
             negated,
-            faction: get_try_into!(args[0], "PluginValue")?,
+            faction: args.swap_remove(0).try_into()?,
             ..Default::default()
         }),
         "IsFactionRankEqualTo" => create_cond(Cmp::Eq)?,

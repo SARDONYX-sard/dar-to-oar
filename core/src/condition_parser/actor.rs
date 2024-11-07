@@ -1,6 +1,5 @@
 //! Parses an actor-related condition based on the provided arguments and condition name.
-use super::dar_interface::ParseError;
-use super::macros::get_try_into;
+use super::errors::{ParseError, Result};
 use crate::{
     conditions::{CompareValues, ConditionSet, IsActorBase},
     dar_syntax::syntax::FnArg,
@@ -10,24 +9,48 @@ use crate::{
 /// Parses an actor-related condition based on the provided arguments and condition name.
 /// # Errors
 /// If parsing fails.
-pub(super) fn parse_actor(
-    condition_name: &str,
-    args: Vec<FnArg<'_>>,
+pub(super) fn parse_actor<'a>(
+    condition_name: &'a str,
+    mut args: Vec<FnArg<'a>>,
     negated: bool,
-) -> Result<ConditionSet, ParseError> {
-    let create_actor_cond =
-        |comparison: Cmp, actor_value_type: ActorValueType| -> Result<ConditionSet, ParseError> {
-            Ok(ConditionSet::CompareValues(CompareValues {
-                negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: get_try_into!(args[0], "Hex | Decimal | Float")?,
-                    actor_value_type,
-                }),
-                comparison,
-                value_b: NumericValue::StaticValue(get_try_into!(args[1], "Float")?),
-                ..Default::default()
-            }))
-        };
+) -> Result<ConditionSet<'a>> {
+    let mut create_actor_cond = |comparison: Cmp,
+                                 actor_value_type: ActorValueType|
+     -> Result<ConditionSet<'a>, ParseError> {
+        let args_len = args.len();
+        if args_len < 2 {
+            return Err(ParseError::UnexpectedValue(
+                "At least 2 argument is required, but got {arg_len}".into(),
+                "".into(),
+            ));
+        }
+
+        let value_b = args
+            .pop()
+            .ok_or(ParseError::NotEnoughArguments {
+                expected: 2,
+                actual: args_len,
+            })?
+            .try_into()?;
+        let actor_value = args
+            .pop()
+            .ok_or(ParseError::NotEnoughArguments {
+                expected: 2,
+                actual: args_len,
+            })?
+            .try_into()?;
+
+        Ok(ConditionSet::CompareValues(CompareValues {
+            negated,
+            value_a: NumericValue::ActorValue(ActorValue {
+                actor_value,
+                actor_value_type,
+            }),
+            comparison,
+            value_b: NumericValue::StaticValue(value_b),
+            ..Default::default()
+        }))
+    };
 
     Ok(match condition_name {
         "IsActorValueEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::ActorValue)?,
@@ -38,8 +61,8 @@ pub(super) fn parse_actor(
         "IsActorValuePercentageEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::Percentage)?,
         "IsActorValuePercentageLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::Percentage)?,
         "IsActorBase" => ConditionSet::IsActorBase(IsActorBase {
+            actor_base: args.swap_remove(0).try_into()?,
             negated,
-            actor_base: get_try_into!(args[0], "PluginValue")?,
             ..Default::default()
         }),
         unknown_condition => {

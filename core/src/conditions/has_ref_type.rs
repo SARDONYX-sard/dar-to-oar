@@ -1,18 +1,18 @@
 //! Represents a condition to check if a reference has a specific type.
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if a reference has a specific type.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct HasRefType {
+pub struct HasRefType<'a> {
     /// The name of the condition, which is "`HasRefType`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,10 +21,10 @@ pub struct HasRefType {
     /// The reference type to check for.
     #[serde(default)]
     #[serde(rename = "Location ref type")]
-    pub location_ref_type: Keyword,
+    pub location_ref_type: Keyword<'a>,
 }
 
-impl Default for HasRefType {
+impl Default for HasRefType<'_> {
     fn default() -> Self {
         Self {
             condition: "HasRefType".into(),

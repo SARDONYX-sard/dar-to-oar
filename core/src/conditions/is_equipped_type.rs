@@ -1,18 +1,18 @@
 //! Represents a condition to check if a specific type is equipped.
 use super::{condition::default_required_version, is_false};
 use crate::values::TypeValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if a specific type is equipped.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct IsEquippedType {
+pub struct IsEquippedType<'a> {
     /// The name of the condition, which is "`IsEquippedType`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -28,7 +28,7 @@ pub struct IsEquippedType {
     pub left_hand: bool,
 }
 
-impl Default for IsEquippedType {
+impl Default for IsEquippedType<'_> {
     fn default() -> Self {
         Self {
             condition: "IsEquippedType".into(),

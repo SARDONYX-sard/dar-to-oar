@@ -1,19 +1,19 @@
 //! Represents a condition based on whether an entity is worn and has a specific keyword.
 use super::{condition::default_required_version, is_false};
 use crate::values::Keyword;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition based on whether an entity is worn and has a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct IsWornHasKeyword {
+pub struct IsWornHasKeyword<'a> {
     /// The name of the condition, which is "`IsWornHasKeyword`".
-    pub condition: CompactString,
-    /// The required version for compatibility with this condition.
+    pub condition: Cow<'a, str>,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
-    /// Indicates whether the condition is negated.
+    pub required_version: Cow<'a, str>,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -21,10 +21,10 @@ pub struct IsWornHasKeyword {
     /// The keyword associated with the condition.
     #[serde(default)]
     #[serde(rename = "Keyword")]
-    pub keyword: Keyword,
+    pub keyword: Keyword<'a>,
 }
 
-impl Default for IsWornHasKeyword {
+impl Default for IsWornHasKeyword<'_> {
     fn default() -> Self {
         Self {
             condition: "IsWornHasKeyword".into(),

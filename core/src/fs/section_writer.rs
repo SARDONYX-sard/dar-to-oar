@@ -16,7 +16,10 @@ where
 }
 
 /// Write config.json for a dir with each motion file with priority.
-pub(crate) async fn write_section_config<P>(oar_dir: P, config_json: ConditionsConfig) -> Result<()>
+pub(crate) async fn write_section_config<P>(
+    oar_dir: P,
+    config_json: ConditionsConfig<'_>,
+) -> Result<()>
 where
     P: AsRef<Path>,
 {

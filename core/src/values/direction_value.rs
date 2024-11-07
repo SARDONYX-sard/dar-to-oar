@@ -3,6 +3,8 @@ use serde::de::Unexpected;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_untagged::UntaggedEnumVisitor;
 
+use super::ValueError;
+
 /// Actor's Direction
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct DirectionValue {
@@ -27,7 +29,7 @@ pub enum Direction {
 }
 
 impl TryFrom<f64> for Direction {
-    type Error = &'static str;
+    type Error = ValueError;
 
     fn try_from(value: f64) -> Result<Self, Self::Error> {
         Ok(match value {
@@ -36,7 +38,12 @@ impl TryFrom<f64> for Direction {
             x if (2.0..3.0).contains(&x) => Self::Right,
             x if (3.0..4.0).contains(&x) => Self::Back,
             x if (4.0..5.0).contains(&x) => Self::Left,
-            _ => return Err("Invalid value for Direction"),
+            invalid_value => {
+                return Err(ValueError::CastError {
+                    expected: "1.0..=5.0".into(),
+                    actual: invalid_value.to_string(),
+                })
+            }
         })
     }
 }

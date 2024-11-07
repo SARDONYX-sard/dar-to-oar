@@ -1,18 +1,18 @@
 //! Structure comparing two A and two B
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue};
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Structure comparing A and B
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CompareValues {
+pub struct CompareValues<'a> {
     /// Condition name "`CompareValues`"
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for compatibility with this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,7 +21,7 @@ pub struct CompareValues {
     /// Comparison object A
     #[serde(default)]
     #[serde(rename = "Value A")]
-    pub value_a: NumericValue,
+    pub value_a: NumericValue<'a>,
     #[serde(rename = "Comparison")]
     #[serde(default)]
     /// == | != | > | >= | < | <=
@@ -29,10 +29,10 @@ pub struct CompareValues {
     /// Comparison object B
     #[serde(default)]
     #[serde(rename = "Value B")]
-    pub value_b: NumericValue,
+    pub value_b: NumericValue<'a>,
 }
 
-impl Default for CompareValues {
+impl Default for CompareValues<'_> {
     fn default() -> Self {
         Self {
             condition: "CompareValues".into(),
@@ -118,12 +118,12 @@ mod tests {
     fn should_stringify_compare_values_with_graph_variable() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::GraphVariable(GraphValue {
-                graph_variable: "true".to_string(),
+                graph_variable: "true".into(),
                 graph_variable_type: GraphVariableType::Bool,
             }),
             value_b: NumericValue::GraphVariable(GraphValue {
                 // This is invalid as an Int, but valid as a syntax (any string will do since text is expected).
-                graph_variable: "another_variable".to_string(),
+                graph_variable: "another_variable".into(),
                 graph_variable_type: GraphVariableType::Int,
             }),
             comparison: Cmp::Ne,

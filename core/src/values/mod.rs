@@ -31,17 +31,18 @@ pub use self::type_value::{TypeValue, WeaponType};
 use serde::{Deserialize, Serialize};
 
 /// DAR variable set
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub(crate) enum ValueSet {
+pub enum Value<'a> {
     /// Person and its internal value
     ActorValue(ActorValue),
     /// Keyword ID
-    KeywordValue(LiteralValue),
+    KeywordValue(LiteralValue<'a>),
     /// Just f32 value
     NumericValue(StaticValue),
     /// Pair plugin name & ID
-    PluginValue(PluginValue),
+    PluginValue(PluginValue<'a>),
     /// A value with a range, used for randomization.
     RandomValue(RandomValue),
     /// Weapon type
@@ -49,4 +50,17 @@ pub(crate) enum ValueSet {
     /// Unknown value
     #[default]
     Unknown,
+}
+
+/// Represents an error that can occur while working with conditions.
+#[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
+pub enum ValueError {
+    /// Error indicating failure to cast to Vec.
+    #[error("Expected {expected}, but got {actual}")]
+    CastError {
+        /// Expected value
+        expected: String,
+        /// Actual value
+        actual: String,
+    },
 }

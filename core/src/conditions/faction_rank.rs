@@ -1,18 +1,18 @@
 //! Represents a condition to test the reference's faction rank against a specified rank.
 use super::{condition::default_required_version, is_false};
 use crate::values::{Cmp, NumericValue, PluginValue};
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to test the reference's faction rank against a specified rank.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FactionRank {
+pub struct FactionRank<'a> {
     /// The name of the condition, which is "`FactionRank`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,18 +21,17 @@ pub struct FactionRank {
     /// The faction to test against the reference's faction rank.
     #[serde(default)]
     #[serde(rename = "Faction")]
-    pub faction: PluginValue,
+    pub faction: PluginValue<'a>,
     /// The comparison operator to use in the faction rank comparison.
     #[serde(default)]
     #[serde(rename = "Comparison")]
     pub comparison: Cmp,
     /// The numeric value to compare the faction rank against.
-    #[serde(default)]
     #[serde(rename = "Numeric value")]
-    pub numeric_value: NumericValue,
+    pub numeric_value: NumericValue<'a>,
 }
 
-impl Default for FactionRank {
+impl Default for FactionRank<'_> {
     fn default() -> Self {
         Self {
             condition: "FactionRank".into(),
@@ -102,7 +101,7 @@ mod tests {
 
         let expected = FactionRank {
             faction: PluginValue {
-                plugin_name: String::new(),
+                plugin_name: "".into(),
                 form_id: "".into(),
             },
             comparison: Cmp::Eq,

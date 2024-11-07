@@ -1,21 +1,13 @@
 //! Type conversion definitions to change from DAR syntax to OAR json
 
+use super::errors::{ParseError, Result};
 use crate::{
     dar_syntax::syntax::{FnArg, NumberLiteral},
     values::{
-        Direction, DirectionValue, FormValue, Keyword, NumericLiteral, NumericValue, PluginValue,
+        Direction, FormValue, Keyword, LiteralValue, NumericLiteral, NumericValue, PluginValue,
         StaticValue,
     },
 };
-
-/// Couldn't parse in DAR to OAR processing Errors
-#[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
-pub enum ParseError {
-    /// - 1st arg: Expected value
-    /// - 2nd arg: Actual value
-    #[error("Expected {0}. but got {1}")]
-    UnexpectedValue(String, String),
-}
 
 impl From<NumberLiteral> for NumericLiteral {
     fn from(value: NumberLiteral) -> Self {
@@ -60,8 +52,8 @@ impl TryFrom<&FnArg<'_>> for NumericLiteral {
     }
 }
 
-impl From<&FnArg<'_>> for NumericValue {
-    fn from(value: &FnArg) -> Self {
+impl<'a> From<FnArg<'a>> for NumericValue<'a> {
+    fn from(value: FnArg<'a>) -> Self {
         match value {
             FnArg::PluginValue {
                 plugin_name,
@@ -73,7 +65,7 @@ impl From<&FnArg<'_>> for NumericValue {
                 }
                 .into(),
             ),
-            FnArg::Number(num) => match *num {
+            FnArg::Number(num) => match num {
                 NumberLiteral::Float(value) => Self::StaticValue(value.into()),
                 NumberLiteral::Decimal(value) => Self::StaticValue((value as f32).into()),
                 NumberLiteral::Hex(value) => Self::StaticValue((value as f32).into()),
@@ -118,10 +110,10 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
     }
 }
 
-impl TryFrom<FnArg<'_>> for PluginValue {
+impl<'a> TryFrom<FnArg<'a>> for PluginValue<'a> {
     type Error = ParseError;
 
-    fn try_from(value: FnArg) -> Result<Self, Self::Error> {
+    fn try_from(value: FnArg<'a>) -> Result<Self, Self::Error> {
         match value {
             FnArg::PluginValue {
                 plugin_name,
@@ -138,28 +130,8 @@ impl TryFrom<FnArg<'_>> for PluginValue {
     }
 }
 
-impl TryFrom<&FnArg<'_>> for PluginValue {
-    type Error = ParseError;
-
-    fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
-        match value {
-            FnArg::PluginValue {
-                plugin_name,
-                form_id,
-            } => Ok(Self {
-                plugin_name: (*plugin_name).into(),
-                form_id: NumericLiteral::from(form_id).into(),
-            }),
-            FnArg::Number(num) => Err(ParseError::UnexpectedValue(
-                "plugin_name, form_id (in cast &FnArg to PluginValue)".into(),
-                num.to_string(),
-            )),
-        }
-    }
-}
-
-impl From<&FnArg<'_>> for Keyword {
-    fn from(value: &FnArg<'_>) -> Self {
+impl<'a> From<FnArg<'a>> for Keyword<'a> {
+    fn from(value: FnArg<'a>) -> Self {
         match value {
             FnArg::PluginValue {
                 plugin_name,
@@ -170,43 +142,27 @@ impl From<&FnArg<'_>> for Keyword {
                     form_id: NumericLiteral::from(form_id).into(),
                 },
             }),
-            FnArg::Number(num) => Self::Literal(crate::values::LiteralValue {
-                editor_id: NumericLiteral::from(num).to_string(),
+            FnArg::Number(num) => Self::Literal(LiteralValue {
+                editor_id: NumericLiteral::from(num).to_string().into(),
             }),
         }
     }
 }
 
-impl TryFrom<&FnArg<'_>> for Direction {
+impl TryFrom<FnArg<'_>> for Direction {
     type Error = ParseError;
 
-    fn try_from(value: &FnArg<'_>) -> Result<Self, Self::Error> {
+    fn try_from(value: FnArg<'_>) -> Result<Self, Self::Error> {
         match value {
-            FnArg::Number(num) => Ok(match *num {
-                NumberLiteral::Hex(num) => (num as f64)
-                    .try_into()
-                    .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
-                NumberLiteral::Decimal(num) => (num as f64)
-                    .try_into()
-                    .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
-                NumberLiteral::Float(num) => (num as f64)
-                    .try_into()
-                    .map_err(|e: &str| ParseError::UnexpectedValue(e.into(), "0..=4".into()))?,
+            FnArg::Number(num) => Ok(match num {
+                NumberLiteral::Hex(num) => (num as f64).try_into()?,
+                NumberLiteral::Decimal(num) => (num as f64).try_into()?,
+                NumberLiteral::Float(num) => (num as f64).try_into()?,
             }),
             other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
                 "1..=4(in Cast &FnArg to Direction)".into(),
                 format!("{other:?}"),
             )),
         }
-    }
-}
-
-impl TryFrom<&FnArg<'_>> for DirectionValue {
-    type Error = ParseError;
-
-    fn try_from(value: &FnArg<'_>) -> Result<Self, Self::Error> {
-        Ok(Self {
-            value: value.try_into()?,
-        })
     }
 }

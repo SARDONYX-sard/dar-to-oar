@@ -1,18 +1,19 @@
 //! Represents a condition to check if the current weather matches a specified weather.
+use std::borrow::Cow;
+
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
 
 /// Represents a condition to check if the current weather matches a specified weather.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CurrentWeather {
+pub struct CurrentWeather<'a> {
     /// The name of the condition, which is "`CurrentWeather`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,10 +22,10 @@ pub struct CurrentWeather {
     /// The specific weather condition to check for.
     #[serde(default)]
     #[serde(rename = "Weather")]
-    pub weather: PluginValue,
+    pub weather: PluginValue<'a>,
 }
 
-impl Default for CurrentWeather {
+impl Default for CurrentWeather<'_> {
     fn default() -> Self {
         Self {
             condition: "CurrentWeather".into(),

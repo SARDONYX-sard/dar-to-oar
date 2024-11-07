@@ -1,19 +1,19 @@
 //! Represents a condition based on the movement direction of an entity.
 use super::{condition::default_required_version, is_false};
 use crate::values::DirectionValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition based on the movement direction of an entity.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct IsMovementDirection {
+pub struct IsMovementDirection<'a> {
     /// The name of the condition, which is "`IsMovementDirection`".
-    pub condition: CompactString,
-    /// The required version for compatibility with this condition.
+    pub condition: Cow<'a, str>,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
-    /// Indicates whether the condition is negated.
+    pub required_version: Cow<'a, str>,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -24,7 +24,7 @@ pub struct IsMovementDirection {
     pub direction: DirectionValue,
 }
 
-impl Default for IsMovementDirection {
+impl Default for IsMovementDirection<'_> {
     fn default() -> Self {
         Self {
             condition: "IsMovementDirection".into(),

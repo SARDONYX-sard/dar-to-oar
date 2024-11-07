@@ -1,57 +1,21 @@
 //! Trigger keywords
 use super::{FormValue, LiteralValue};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
+// NOTE: Changing the order of enums will cause Deserialize to error.
 /// Trigger keywords
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum Keyword {
-    /// Single numeric type
-    Literal(LiteralValue),
+pub enum Keyword<'a> {
     /// plugin value
-    Form(FormValue),
+    Form(FormValue<'a>),
+    /// Single numeric type
+    Literal(LiteralValue<'a>),
 }
 
-impl Default for Keyword {
+impl Default for Keyword<'_> {
     fn default() -> Self {
         Self::Literal(LiteralValue::default())
-    }
-}
-
-impl<'de> Deserialize<'de> for Keyword {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value: Value = Deserialize::deserialize(deserializer)?;
-
-        if let Value::Object(map) = &value {
-            if map.contains_key("editorID") {
-                // If the "editorID" field is present, assume it's a Literal
-                let keyword_value: LiteralValue = match serde_json::from_value(value) {
-                    Ok(keyword) => keyword,
-                    Err(err) => return Err(serde::de::Error::custom(err)),
-                };
-                Ok(Self::Literal(keyword_value))
-            } else if map.contains_key("form") {
-                // If both "pluginName" and "formID" fields are present, assume it's a Form
-                let form_value: FormValue = match serde_json::from_value(value) {
-                    Ok(form) => form,
-                    Err(err) => return Err(serde::de::Error::custom(err)),
-                };
-                Ok(Self::Form(form_value))
-            } else {
-                Err(serde::de::Error::custom(
-                    "Unable to determine Keyword variant",
-                ))
-            }
-        } else {
-            Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Other("Expected an object"),
-                &"a map",
-            ))
-        }
     }
 }
 
@@ -80,7 +44,7 @@ mod tests {
 }"#;
         let deserialized: Keyword = serde_json::from_str(input)?;
         let expected = Keyword::Literal(LiteralValue {
-            editor_id: "SomeKeyword".to_string(),
+            editor_id: "SomeKeyword".into(),
         });
 
         assert_eq!(deserialized, expected);

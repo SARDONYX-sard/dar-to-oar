@@ -1,26 +1,27 @@
 //! Represents a generic condition.
 use super::is_false;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Representing the default required version.
 pub const REQUIRED_VERSION: &str = "1.0.0.0";
 
 /// Create a default required version as a [`CompactString`].
-pub fn default_required_version() -> CompactString {
-    REQUIRED_VERSION.into()
+#[inline]
+pub const fn default_required_version() -> Cow<'static, str> {
+    Cow::Borrowed(REQUIRED_VERSION)
 }
 
 /// Represents a generic condition.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Condition {
+pub struct Condition<'a> {
     /// The name of the condition (e.g., "`IsWornHasKeyword`").
     #[serde(default)]
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not (default: `false`).
     ///
     /// # NOTE
@@ -30,19 +31,19 @@ pub struct Condition {
     pub negated: bool,
 }
 
-impl Default for Condition {
+impl Default for Condition<'_> {
     fn default() -> Self {
         Self {
-            condition: CompactString::default(),
+            condition: Default::default(),
             required_version: default_required_version(),
             negated: false,
         }
     }
 }
 
-impl Condition {
+impl<'a> Condition<'a> {
     /// Creates a new `Condition` with the specified name.
-    pub fn new(condition: &str) -> Self {
+    pub fn new(condition: &'a str) -> Self {
         Self {
             condition: condition.into(),
             ..Default::default()
