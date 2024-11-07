@@ -252,5 +252,5 @@ pub(super) const fn handle_conversion_results(is_converted_once: bool) -> Result
 pub(super) fn is_contain_dar(path: impl AsRef<Path>) -> Option<usize> {
     path.as_ref()
         .iter()
-        .position(|os_str| os_str == std::ffi::OsStr::new("DynamicAnimationReplacer"))
+        .position(|os_str| os_str.eq_ignore_ascii_case("DynamicAnimationReplacer"))
 }
