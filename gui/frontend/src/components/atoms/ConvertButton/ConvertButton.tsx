@@ -74,7 +74,7 @@ export function ConvertButton({ loading, progress, ...props }: Props) {
       variant='contained'
       {...props}
     >
-      <span>{loading ? `${t('converting-btn')} ${progress}%` : isComplete ? 'OK' : t('convert-btn')}</span>
+      <span>{loading ? t('converting-btn') : isComplete ? 'OK' : t('convert-btn')}</span>
     </LoadingButton>
   );
 }

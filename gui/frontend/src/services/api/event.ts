@@ -63,14 +63,12 @@ export async function progressListener(
   const eventHandler: EventCallback<Payload> = (event) => {
     /** file count to % */
     const toPercentage = (num: number) => (num * 100) / maxNum;
-    /** To 0 ~ 100 */
-    const clamped = (progress: number) => Math.max(0, Math.min(100, progress));
 
     if (maxNum === 0) {
       maxNum = event.payload.index;
     } else {
       const percent = toPercentage(event.payload.index);
-      setProgress(clamped(percent));
+      setProgress(percent);
     }
   };
 
