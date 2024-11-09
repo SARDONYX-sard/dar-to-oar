@@ -131,12 +131,12 @@ where
                 #[cfg(feature = "tracing")]
                 tracing::debug!("This path is ActorBase: {path:?}");
 
-                let esp_dir = esp_dir
-                    .as_ref()
-                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
-                let base_id = base_id
-                    .as_ref()
-                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
+                let esp_dir = esp_dir.as_ref().ok_or(ConvertError::MissingBaseId {
+                    path: path.to_path_buf(),
+                })?;
+                let base_id = base_id.as_ref().ok_or(ConvertError::MissingBaseId {
+                    path: path.to_path_buf(),
+                })?;
 
                 let content = format!("IsActorBase ( \"{esp_dir}\" | 0x{base_id} )");
                 #[cfg(feature = "tracing")]

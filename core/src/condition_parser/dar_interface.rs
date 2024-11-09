@@ -2,7 +2,7 @@
 
 use super::errors::{ParseError, Result};
 use crate::{
-    dar_syntax::syntax::{FnArg, NumberLiteral},
+    dar_syntax::{FnArg, NumberLiteral},
     values::{
         Direction, FormValue, Keyword, LiteralValue, NumericLiteral, NumericValue, PluginValue,
         StaticValue,
@@ -44,10 +44,10 @@ impl TryFrom<&FnArg<'_>> for NumericLiteral {
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
             FnArg::Number(num) => Ok(num.into()),
-            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
-                "Number(e.g. 3.0)".into(),
-                format!("{other:?}",),
-            )),
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue {
+                expected: "Number(e.g. 3.0)".into(),
+                actual: other.to_string(),
+            }),
         }
     }
 }
@@ -102,10 +102,10 @@ impl TryFrom<&FnArg<'_>> for StaticValue {
     fn try_from(value: &FnArg) -> Result<Self, Self::Error> {
         match value {
             FnArg::Number(num) => Ok(num.into()),
-            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
-                "StaticValue(e.g. 3.0)".to_owned(),
-                format!("{other:?}",),
-            )),
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue {
+                expected: "StaticValue(e.g. 3.0)".to_string(),
+                actual: other.to_string(),
+            }),
         }
     }
 }
@@ -122,10 +122,10 @@ impl<'a> TryFrom<FnArg<'a>> for PluginValue<'a> {
                 plugin_name: plugin_name.into(),
                 form_id: NumericLiteral::from(form_id).into(),
             }),
-            FnArg::Number(num) => Err(ParseError::UnexpectedValue(
-                "plugin_name, form_id (in cast FnArg to PluginValue)".into(),
-                num.to_string(),
-            )),
+            FnArg::Number(num) => Err(ParseError::UnexpectedValue {
+                expected: "plugin_name, form_id (in cast FnArg to PluginValue)".into(),
+                actual: num.to_string(),
+            }),
         }
     }
 }
@@ -159,10 +159,10 @@ impl TryFrom<FnArg<'_>> for Direction {
                 NumberLiteral::Decimal(num) => (num as f64).try_into()?,
                 NumberLiteral::Float(num) => (num as f64).try_into()?,
             }),
-            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue(
-                "1..=4(in Cast &FnArg to Direction)".into(),
-                format!("{other:?}"),
-            )),
+            other @ FnArg::PluginValue { .. } => Err(ParseError::UnexpectedValue {
+                expected: "1..=4(in Cast &FnArg to Direction)".into(),
+                actual: other.to_string(),
+            }),
         }
     }
 }

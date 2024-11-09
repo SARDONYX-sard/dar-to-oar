@@ -4,7 +4,7 @@ use core::ops::Range;
 use winnow::error::{ContextError, ParseError};
 
 /// Error struct to represent parsing errors in a more user-friendly way.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReadableError {
     /// Title(e.g. Error tittle, Path)
     pub title: String,

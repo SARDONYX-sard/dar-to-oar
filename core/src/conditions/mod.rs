@@ -4,6 +4,7 @@ mod compare_values;
 mod condition;
 mod condition_config;
 mod current_weather;
+mod errors;
 mod faction_rank;
 mod has_keyword;
 mod has_magic_effect;
@@ -19,6 +20,7 @@ mod namespace_config;
 mod or;
 mod random;
 
+pub use self::errors::ConditionError;
 pub use self::{
     and::And, compare_values::CompareValues, condition::Condition,
     condition_config::ConditionsConfig, current_weather::CurrentWeather, faction_rank::FactionRank,
@@ -249,12 +251,4 @@ impl<'a> TryFrom<ConditionSet<'a>> for Vec<ConditionSet<'a>> {
             _ => return Err(ConditionError::CastError),
         })
     }
-}
-
-/// Represents an error that can occur while working with conditions.
-#[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
-pub enum ConditionError {
-    /// Error indicating failure to cast to Vec.
-    #[error("Only And or Or can be converted to Vec.")]
-    CastError,
 }

@@ -11,15 +11,15 @@ use crate::conditions::{
     IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
     IsWornHasKeyword, Level, Or, RandomCondition,
 };
-use crate::dar_syntax::syntax::{self, Expression};
+use crate::dar_syntax::{Condition as DarCondition, Expression};
 use crate::values::{Cmp, DirectionValue};
 
 /// Parses a high-level condition set based on the provided syntax.
 /// # Errors
 /// Parsing failed.
-pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet> {
+pub fn parse_conditions(input: DarCondition) -> Result<ConditionSet> {
     Ok(match input {
-        syntax::Condition::And(conditions) => {
+        DarCondition::And(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -29,7 +29,7 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet> {
                 ..Default::default()
             })
         }
-        syntax::Condition::Or(conditions) => {
+        DarCondition::Or(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -39,7 +39,7 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet> {
                 ..Default::default()
             })
         }
-        syntax::Condition::Exp(expression) => parse_condition(expression)?,
+        DarCondition::Exp(expression) => parse_condition(expression)?,
     })
 }
 
@@ -54,21 +54,12 @@ fn parse_condition(condition: Expression) -> Result<ConditionSet> {
     } = condition;
 
     Ok(match fn_name {
-        "CurrentGameTimeLessThan" => {
-            if args.is_empty() {
-                return Err(ParseError::UnexpectedValue(
-                    "At least 1 argument is required, but got 0".into(),
-                    "".into(),
-                ));
-            }
-
-            ConditionSet::CurrentGameTime(CurrentGameTime {
-                negated,
-                comparison: Cmp::Lt,
-                numeric_value: args.swap_remove(0).into(),
-                ..Default::default()
-            })
-        }
+        "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
+            negated,
+            comparison: Cmp::Lt,
+            numeric_value: args.pop_front()?.into(),
+            ..Default::default()
+        }),
         "CurrentWeather" => gen_cond!(
             CurrentWeather(weather, negated),
             args,
@@ -88,42 +79,24 @@ fn parse_condition(condition: Expression) -> Result<ConditionSet> {
             parse_faction(fn_name, args, negated)?
         }
         "IsInLocation" => gen_cond!(IsInLocation(location, negated), args, "IsInLocation"),
-        "IsLevelLessThan" => {
-            if args.is_empty() {
-                return Err(ParseError::UnexpectedValue(
-                    "At least 1 argument is required, but got 0".into(),
-                    "".into(),
-                ));
-            }
-
-            ConditionSet::Level(Level {
-                negated,
-                comparison: Cmp::Lt,
-                numeric_value: args.swap_remove(0).into(),
-                ..Default::default()
-            })
-        }
+        "IsLevelLessThan" => ConditionSet::Level(Level {
+            negated,
+            comparison: Cmp::Lt,
+            numeric_value: args.pop_front()?.into(),
+            ..Default::default()
+        }),
         "IsParentCell" => gen_cond!(
             IsParentCell(cell, negated),
             args,
             "PluginValue for IsParentCell"
         ),
-        "IsMovementDirection" => {
-            if args.is_empty() {
-                return Err(ParseError::UnexpectedValue(
-                    "At least 1 argument is required, but got 0".into(),
-                    "".into(),
-                ));
-            }
-
-            ConditionSet::IsDirectionMovement(IsMovementDirection {
-                negated,
-                direction: DirectionValue {
-                    value: args.swap_remove(0).try_into()?,
-                },
-                ..Default::default()
-            })
-        }
+        "IsMovementDirection" => ConditionSet::IsDirectionMovement(IsMovementDirection {
+            negated,
+            direction: DirectionValue {
+                value: args.pop_front()?.try_into()?,
+            },
+            ..Default::default()
+        }),
         "IsRace" => gen_cond!(IsRace(race, negated), args, "PluginValue for IsRace"),
         "IsVoiceType" => {
             gen_cond!(
@@ -145,21 +118,12 @@ fn parse_condition(condition: Expression) -> Result<ConditionSet> {
             into
         ),
         has_cond if fn_name.starts_with("Has") => parse_has(has_cond, args, negated)?,
-        "Random" => {
-            if args.is_empty() {
-                return Err(ParseError::UnexpectedValue(
-                    "At least 1 argument is required, but got 0".into(),
-                    "".into(),
-                ));
-            }
-
-            ConditionSet::RandomCondition(RandomCondition {
-                negated,
-                comparison: Cmp::Le,
-                numeric_value: args.swap_remove(0).into(),
-                ..Default::default()
-            })
-        }
+        "Random" => ConditionSet::RandomCondition(RandomCondition {
+            negated,
+            comparison: Cmp::Le,
+            numeric_value: args.pop_front()?.into(),
+            ..Default::default()
+        }),
         "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
 
         // Conditional expressions without any arguments
@@ -172,10 +136,10 @@ fn parse_condition(condition: Expression) -> Result<ConditionSet> {
             ..Default::default()
         }),
         unknown_condition => {
-            return Err(ParseError::UnexpectedValue(
-                "Unknown condition: ".into(),
-                unknown_condition.into(),
-            ))
+            return Err(ParseError::UnexpectedValue {
+                expected: "Unknown condition: ".into(),
+                actual: unknown_condition.into(),
+            })
         }
     })
 }
@@ -185,7 +149,7 @@ mod tests {
     use super::*;
     use crate::{
         conditions::{And, IsActorBase, IsEquippedType},
-        dar_syntax::syntax::{FnArg, NumberLiteral},
+        dar_syntax::{ast::fn_args::fn_args, FnArg, NumberLiteral},
         values::{PluginValue, TypeValue, WeaponType},
     };
     use pretty_assertions::assert_eq;
@@ -195,7 +159,7 @@ mod tests {
         let actor = Expression {
             negated: false,
             fn_name: "IsActorBase",
-            args: vec![FnArg::PluginValue {
+            args: fn_args![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Hex(0x0000_0007),
             }],
@@ -203,27 +167,24 @@ mod tests {
         let player = Expression {
             negated: false,
             fn_name: "IsPlayerTeammate",
-            args: vec![],
+            args: fn_args![],
         };
         let equip_r3 = Expression {
             negated: false,
             fn_name: "IsEquippedLeftType",
-            args: vec![FnArg::Number(NumberLiteral::Decimal(3))],
+            args: fn_args![FnArg::Number(NumberLiteral::Decimal(3))],
         };
         let equip_r4 = Expression {
             negated: true,
             fn_name: "IsEquippedRightType",
-            args: vec![FnArg::Number(NumberLiteral::Decimal(4))],
+            args: fn_args![FnArg::Number(NumberLiteral::Decimal(4))],
         };
 
-        let input = syntax::Condition::And(vec![
-            syntax::Condition::Or(vec![
-                syntax::Condition::Exp(actor),
-                syntax::Condition::Exp(player),
-            ]),
-            syntax::Condition::Or(vec![
-                syntax::Condition::Exp(equip_r3),
-                syntax::Condition::Exp(equip_r4),
+        let input = DarCondition::And(vec![
+            DarCondition::Or(vec![DarCondition::Exp(actor), DarCondition::Exp(player)]),
+            DarCondition::Or(vec![
+                DarCondition::Exp(equip_r3),
+                DarCondition::Exp(equip_r4),
             ]),
         ]);
 

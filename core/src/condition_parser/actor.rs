@@ -2,7 +2,7 @@
 use super::errors::{ParseError, Result};
 use crate::{
     conditions::{CompareValues, ConditionSet, IsActorBase},
-    dar_syntax::syntax::FnArg,
+    dar_syntax::FnArgs,
     values::{ActorValue, ActorValueType, Cmp, NumericValue},
 };
 
@@ -11,46 +11,25 @@ use crate::{
 /// If parsing fails.
 pub(super) fn parse_actor<'a>(
     condition_name: &'a str,
-    mut args: Vec<FnArg<'a>>,
+    mut args: FnArgs<'a>,
     negated: bool,
 ) -> Result<ConditionSet<'a>> {
-    let mut create_actor_cond = |comparison: Cmp,
-                                 actor_value_type: ActorValueType|
-     -> Result<ConditionSet<'a>, ParseError> {
-        let args_len = args.len();
-        if args_len < 2 {
-            return Err(ParseError::UnexpectedValue(
-                "At least 2 argument is required, but got {arg_len}".into(),
-                "".into(),
-            ));
-        }
+    let mut create_actor_cond =
+        |comparison: Cmp, actor_value_type: ActorValueType| -> Result<ConditionSet<'a>> {
+            let actor_value = args.pop_front()?.try_into()?;
+            let value_b = args.pop_front()?.try_into()?;
 
-        let value_b = args
-            .pop()
-            .ok_or(ParseError::NotEnoughArguments {
-                expected: 2,
-                actual: args_len,
-            })?
-            .try_into()?;
-        let actor_value = args
-            .pop()
-            .ok_or(ParseError::NotEnoughArguments {
-                expected: 2,
-                actual: args_len,
-            })?
-            .try_into()?;
-
-        Ok(ConditionSet::CompareValues(CompareValues {
-            negated,
-            value_a: NumericValue::ActorValue(ActorValue {
-                actor_value,
-                actor_value_type,
-            }),
-            comparison,
-            value_b: NumericValue::StaticValue(value_b),
-            ..Default::default()
-        }))
-    };
+            Ok(ConditionSet::CompareValues(CompareValues {
+                negated,
+                value_a: NumericValue::ActorValue(ActorValue {
+                    actor_value,
+                    actor_value_type,
+                }),
+                comparison,
+                value_b: NumericValue::StaticValue(value_b),
+                ..Default::default()
+            }))
+        };
 
     Ok(match condition_name {
         "IsActorValueEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::ActorValue)?,
@@ -61,15 +40,15 @@ pub(super) fn parse_actor<'a>(
         "IsActorValuePercentageEqualTo" => create_actor_cond(Cmp::Eq, ActorValueType::Percentage)?,
         "IsActorValuePercentageLessThan" => create_actor_cond(Cmp::Lt, ActorValueType::Percentage)?,
         "IsActorBase" => ConditionSet::IsActorBase(IsActorBase {
-            actor_base: args.swap_remove(0).try_into()?,
+            actor_base: args.pop_front()?.try_into()?,
             negated,
             ..Default::default()
         }),
         unknown_condition => {
-            return Err(ParseError::UnexpectedValue(
-                "IsActor(Value|Base|Max|Percentage)(EqualTo|LessThan)".into(),
-                unknown_condition.into(),
-            ))
+            return Err(ParseError::UnexpectedValue {
+                expected: "IsActor(Value|Base|Max|Percentage)(EqualTo|LessThan)".into(),
+                actual: unknown_condition.into(),
+            })
         }
     })
 }
@@ -78,7 +57,7 @@ pub(super) fn parse_actor<'a>(
 mod tests {
     use super::*;
     use crate::{
-        dar_syntax::syntax::NumberLiteral,
+        dar_syntax::{ast::fn_args::fn_args, FnArg, NumberLiteral},
         values::{ActorValue, Cmp, NumericLiteral, NumericValue, PluginValue, StaticValue},
     };
     use pretty_assertions::assert_eq;
@@ -87,7 +66,7 @@ mod tests {
     fn test_parse_actor_is_actor_value_equal_to() {
         // test inputs
         let condition_name = "IsActorValueEqualTo";
-        let args = vec![
+        let args = fn_args![
             FnArg::Number(NumberLiteral::Float(3.3)), // actor_value
             FnArg::Number(NumberLiteral::Float(3.5)), // compare value
         ];
@@ -117,7 +96,7 @@ mod tests {
     #[test]
     fn test_parse_actor_is_actor_base() {
         let condition_name = "IsActorBase";
-        let args = vec![FnArg::PluginValue {
+        let args = fn_args![FnArg::PluginValue {
             plugin_name: "Skyrim.esm",
             form_id: NumberLiteral::Hex(0x0000_0007),
         }];

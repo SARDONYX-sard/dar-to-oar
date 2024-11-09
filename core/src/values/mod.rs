@@ -12,7 +12,9 @@ mod plugin_value;
 mod random_value;
 mod static_value;
 mod type_value;
+mod errors;
 
+pub use self::errors::ValueError;
 pub use self::actor_value::{ActorValue, ActorValueType};
 pub use self::comparison::Cmp;
 pub use self::direction_value::{Direction, DirectionValue};
@@ -50,17 +52,4 @@ pub enum Value<'a> {
     /// Unknown value
     #[default]
     Unknown,
-}
-
-/// Represents an error that can occur while working with conditions.
-#[derive(Debug, Clone, thiserror::Error, PartialEq, Eq)]
-pub enum ValueError {
-    /// Error indicating failure to cast to Vec.
-    #[error("Expected {expected}, but got {actual}")]
-    CastError {
-        /// Expected value
-        expected: String,
-        /// Actual value
-        actual: String,
-    },
 }

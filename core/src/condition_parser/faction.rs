@@ -2,7 +2,7 @@
 use super::errors::{ParseError, Result};
 use crate::{
     conditions::{ConditionSet, FactionRank, IsInFaction},
-    dar_syntax::syntax::FnArg,
+    dar_syntax::FnArgs,
     values::Cmp,
 };
 
@@ -12,32 +12,12 @@ use crate::{
 /// If parsing fails.
 pub(super) fn parse_faction<'a>(
     condition_name: &'a str,
-    mut args: Vec<FnArg<'a>>,
+    mut args: FnArgs<'a>,
     negated: bool,
 ) -> Result<ConditionSet<'a>> {
-    let args_len = args.len();
-    if args_len < 2 {
-        return Err(ParseError::UnexpectedValue(
-            "At least 2 argument is required, but got {arg_len}".into(),
-            "".into(),
-        ));
-    }
-
     let mut create_cond = |comparison: Cmp| -> Result<ConditionSet, ParseError> {
-        let numeric_value = args
-            .pop()
-            .ok_or(ParseError::NotEnoughArguments {
-                expected: 2,
-                actual: args_len,
-            })?
-            .into();
-        let faction = args
-            .pop()
-            .ok_or(ParseError::NotEnoughArguments {
-                expected: 2,
-                actual: args_len,
-            })?
-            .try_into()?;
+        let faction = args.pop_front()?.try_into()?;
+        let numeric_value = args.pop_front()?.into();
 
         Ok(ConditionSet::FactionRank(FactionRank {
             negated,
@@ -51,16 +31,16 @@ pub(super) fn parse_faction<'a>(
     Ok(match condition_name {
         "IsInFaction" => ConditionSet::IsInFaction(IsInFaction {
             negated,
-            faction: args.swap_remove(0).try_into()?,
+            faction: args.pop_front()?.try_into()?,
             ..Default::default()
         }),
         "IsFactionRankEqualTo" => create_cond(Cmp::Eq)?,
         "IsFactionRankLessThan" => create_cond(Cmp::Lt)?,
         _ => {
-            return Err(ParseError::UnexpectedValue(
-                "IsInFaction, IsFactionRankEqualTo or IsFactionRankLessThan".to_string(),
-                condition_name.to_string(),
-            ))
+            return Err(ParseError::UnexpectedValue {
+                expected: "IsInFaction, IsFactionRankEqualTo or IsFactionRankLessThan".to_string(),
+                actual: condition_name.to_string(),
+            })
         }
     })
 }
@@ -68,14 +48,15 @@ pub(super) fn parse_faction<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dar_syntax::syntax::NumberLiteral;
+    use crate::dar_syntax::ast::fn_args::fn_args;
+    use crate::dar_syntax::{FnArg, NumberLiteral};
     use crate::values::{NumericValue, PluginValue};
     use pretty_assertions::assert_eq;
 
     #[test]
     fn should_parse_is_in_faction() {
         let condition_name = "IsInFaction";
-        let args = vec![
+        let args = fn_args![
             FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Decimal(7),
@@ -101,7 +82,7 @@ mod tests {
     #[test]
     fn should_parse_is_faction_rank_equal_to() {
         let condition_name = "IsFactionRankEqualTo";
-        let args = vec![
+        let args = fn_args![
             FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Decimal(7),

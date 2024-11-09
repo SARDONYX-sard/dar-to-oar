@@ -4,7 +4,7 @@ use crate::conditions::{
     ConditionSet, HasKeyword, HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType,
     HasSpell,
 };
-use crate::dar_syntax::syntax::FnArg;
+use crate::dar_syntax::FnArgs;
 
 /// Parses has-prefix conditions based on the provided arguments and condition name.
 ///
@@ -12,17 +12,10 @@ use crate::dar_syntax::syntax::FnArg;
 /// If parsing fails.
 pub(super) fn parse_has<'a>(
     condition_name: &'a str,
-    mut args: Vec<FnArg<'a>>,
+    mut args: FnArgs<'a>,
     negated: bool,
 ) -> Result<ConditionSet<'a>> {
-    if args.is_empty() {
-        return Err(ParseError::UnexpectedValue(
-            "At least 1 argument is required, but got 0".into(),
-            "".into(),
-        ));
-    }
-
-    let arg = args.swap_remove(0);
+    let arg = args.pop_front()?;
 
     Ok(match condition_name {
         "HasKeyword" => ConditionSet::HasKeyword(HasKeyword {
@@ -57,12 +50,11 @@ pub(super) fn parse_has<'a>(
             negated,
             ..Default::default()
         }),
-        unknown_condition => {
-            return Err(ParseError::UnexpectedValue(
+        unknown_condition => return Err(ParseError::UnexpectedValue {
+            expected:
                 "HasKeyword|HasPerk|HasSpell|HasMagicEffect|HasMagicEffectWithKeyword|HasRefType"
                     .into(),
-                unknown_condition.into(),
-            ))
-        }
+            actual: unknown_condition.into(),
+        }),
     })
 }
