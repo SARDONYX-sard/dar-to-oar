@@ -55,7 +55,7 @@ where
     };
 
     // character, falmer, etc.
-    let actor_name = actor_name.as_deref().unwrap_or({
+    let actor_name = actor_name.as_deref().unwrap_or_else(|| {
         #[cfg(feature = "tracing")]
         tracing::warn!(
             "actor_name could not be inferred from the dir name. Use the default value \"character\"."
@@ -173,7 +173,7 @@ where
             if file_name == "_conditions.txt" {
                 let content = fs::read_to_string(path).await?;
                 #[cfg(feature = "tracing")]
-                tracing::debug!("{path:?} Content:\n{}", content);
+                tracing::debug!("{} Content:\n{content}", path.display());
 
                 let config_json = ConditionsConfig {
                     name: section_name.into(),
