@@ -2,6 +2,7 @@
 mod actor_value;
 mod comparison;
 mod direction_value;
+mod errors;
 mod form_value;
 mod graph_value;
 mod keyword_value;
@@ -12,12 +13,11 @@ mod plugin_value;
 mod random_value;
 mod static_value;
 mod type_value;
-mod errors;
 
-pub use self::errors::ValueError;
 pub use self::actor_value::{ActorValue, ActorValueType};
 pub use self::comparison::Cmp;
 pub use self::direction_value::{Direction, DirectionValue};
+pub use self::errors::ValueError;
 pub use self::form_value::FormValue;
 #[allow(unused)]
 pub use self::graph_value::{GraphValue, GraphVariableType};
