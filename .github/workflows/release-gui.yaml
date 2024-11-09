@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -34,7 +34,7 @@ jobs:
           prefix-key: cargo-${{ matrix.platform }}
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v4.0.4
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: 'lts/*'
           cache: 'npm'
