@@ -75,11 +75,19 @@ export function ConvertButton({ loading, progress, ...props }: Props) {
       {...props}
     >
       <span>
-        {loading
-          ? `${t('converting-btn')} ${<CircularProgressWithLabel value={progress} />}`
-          : isComplete
-            ? `OK ${<CircularProgressWithLabel value={progress} />}`
-            : t('convert-btn')}
+        {loading ? (
+          <>
+            {t('converting-btn')}
+            <CircularProgressWithLabel value={progress} />
+          </>
+        ) : isComplete ? (
+          <>
+            OK
+            <CircularProgressWithLabel value={progress} />
+          </>
+        ) : (
+          t('convert-btn')
+        )}
       </span>
     </LoadingButton>
   );
