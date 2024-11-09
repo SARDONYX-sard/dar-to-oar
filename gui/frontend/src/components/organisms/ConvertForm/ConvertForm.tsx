@@ -5,13 +5,12 @@ import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertNav';
+import { parseDarPath } from '@/lib/path/parseDarPath';
 import { STORAGE } from '@/lib/storage';
 import { PRIVATE_CACHE_OBJ, PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { convertDar2oar } from '@/services/api/convert';
 import { progressListener } from '@/services/api/event';
 import { LOG, type LogLevel } from '@/services/api/log';
-
-import { parseDarPath } from '../../../lib/path/parseDarPath';
 
 import { CheckboxField } from './CheckboxField';
 import { InputModInfoField } from './InputModInfoField';
@@ -120,6 +119,7 @@ export function ConvertForm() {
 
           {pathFields.map((props) => {
             let onChange: ComponentPropsWithRef<typeof InputPathField>['onChange'] | undefined;
+            let setPathHook: ((path: string) => void) | undefined;
 
             if (props.name === 'src') {
               onChange = (e) => {
@@ -129,8 +129,15 @@ export function ConvertForm() {
                   setValue('modName', parsedPath.modName ?? '');
                 }
               };
+              setPathHook = (path: string) => {
+                if (getValues('inferPath')) {
+                  const parsedPath = parseDarPath(path);
+                  setValue('dst', parsedPath.oarRoot);
+                  setValue('modName', parsedPath.modName ?? '');
+                }
+              };
             }
-            return <InputPathField key={props.name} onChange={onChange} {...props} />;
+            return <InputPathField key={props.name} onChange={onChange} setPathHook={setPathHook} {...props} />;
           })}
 
           <Grid columnSpacing={1} container={true} gap={2} sx={{ width: '100%' }}>

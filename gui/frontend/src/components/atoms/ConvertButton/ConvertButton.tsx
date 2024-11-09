@@ -36,7 +36,7 @@ export function ConvertButton({ loading, progress, ...props }: Props) {
   return (
     <LoadingButton
       disabled={loading || isComplete}
-      endIcon={loading || isComplete ? <CircularProgressWithLabel value={progress} /> : <ConvertIcon />}
+      endIcon={loading || isComplete ? undefined : <ConvertIcon />}
       loading={loading}
       loadingPosition='end'
       sx={{
@@ -74,7 +74,13 @@ export function ConvertButton({ loading, progress, ...props }: Props) {
       variant='contained'
       {...props}
     >
-      <span>{loading ? t('converting-btn') : isComplete ? 'OK' : t('convert-btn')}</span>
+      <span>
+        {loading
+          ? `${t('converting-btn')} ${<CircularProgressWithLabel value={progress} />}`
+          : isComplete
+            ? `OK ${<CircularProgressWithLabel value={progress} />}`
+            : t('convert-btn')}
+      </span>
     </LoadingButton>
   );
 }
