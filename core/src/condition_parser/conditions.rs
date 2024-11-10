@@ -1,25 +1,25 @@
 //! Parses a high-level condition set based on the provided syntax.
 use super::actor::parse_actor;
 use super::compare::parse_compare;
-use super::dar_interface::ParseError;
 use super::equip::parse_equip;
+use super::errors::{ParseError, Result};
 use super::faction::parse_faction;
 use super::has::parse_has;
-use super::macros::{gen_cond, get_try_into, GetArg as _};
+use super::macros::gen_cond;
 use crate::conditions::{
     And, Condition, ConditionSet, CurrentGameTime, CurrentWeather, IsClass, IsCombatStyle,
     IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
     IsWornHasKeyword, Level, Or, RandomCondition,
 };
-use crate::dar_syntax::syntax::{self, Expression};
+use crate::dar_syntax::{Condition as DarCondition, Expression};
 use crate::values::{Cmp, DirectionValue};
 
 /// Parses a high-level condition set based on the provided syntax.
 /// # Errors
 /// Parsing failed.
-pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseError> {
+pub fn parse_conditions(input: DarCondition) -> Result<ConditionSet> {
     Ok(match input {
-        syntax::Condition::And(conditions) => {
+        DarCondition::And(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -29,7 +29,7 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseE
                 ..Default::default()
             })
         }
-        syntax::Condition::Or(conditions) => {
+        DarCondition::Or(conditions) => {
             let mut inner_conditions = vec![];
             for condition in conditions {
                 inner_conditions.push(parse_conditions(condition)?);
@@ -39,25 +39,25 @@ pub fn parse_conditions(input: syntax::Condition) -> Result<ConditionSet, ParseE
                 ..Default::default()
             })
         }
-        syntax::Condition::Exp(expression) => parse_condition(expression)?,
+        DarCondition::Exp(expression) => parse_condition(expression)?,
     })
 }
 
 /// Parses a conditional expression and translates it into a corresponding [`ConditionSet`].
 /// # Errors
 /// Parsing failed.
-fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError> {
+fn parse_condition(condition: Expression) -> Result<ConditionSet> {
     let Expression {
         negated,
         fn_name,
-        args,
+        mut args,
     } = condition;
 
     Ok(match fn_name {
         "CurrentGameTimeLessThan" => ConditionSet::CurrentGameTime(CurrentGameTime {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue for CurrentGameTime")?.into(),
+            numeric_value: args.pop_front()?.into(),
             ..Default::default()
         }),
         "CurrentWeather" => gen_cond!(
@@ -82,7 +82,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "IsLevelLessThan" => ConditionSet::Level(Level {
             negated,
             comparison: Cmp::Lt,
-            numeric_value: args.try_get(0, "NumericValue for Level")?.into(),
+            numeric_value: args.pop_front()?.into(),
             ..Default::default()
         }),
         "IsParentCell" => gen_cond!(
@@ -93,7 +93,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "IsMovementDirection" => ConditionSet::IsDirectionMovement(IsMovementDirection {
             negated,
             direction: DirectionValue {
-                value: get_try_into!(args[0], "Direction: 0..=4")?,
+                value: args.pop_front()?.try_into()?,
             },
             ..Default::default()
         }),
@@ -121,7 +121,7 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
         "Random" => ConditionSet::RandomCondition(RandomCondition {
             negated,
             comparison: Cmp::Le,
-            numeric_value: args.try_get(0, "NumericValue in Random")?.into(),
+            numeric_value: args.pop_front()?.into(),
             ..Default::default()
         }),
         "ValueEqualTo" | "ValueLessThan" => parse_compare(fn_name, args, negated)?,
@@ -136,10 +136,10 @@ fn parse_condition(condition: Expression<'_>) -> Result<ConditionSet, ParseError
             ..Default::default()
         }),
         unknown_condition => {
-            return Err(ParseError::UnexpectedValue(
-                "Unknown condition: ".into(),
-                unknown_condition.into(),
-            ))
+            return Err(ParseError::UnexpectedValue {
+                expected: "Unknown condition: ".into(),
+                actual: unknown_condition.into(),
+            })
         }
     })
 }
@@ -149,7 +149,7 @@ mod tests {
     use super::*;
     use crate::{
         conditions::{And, IsActorBase, IsEquippedType},
-        dar_syntax::syntax::{FnArg, NumberLiteral},
+        dar_syntax::{ast::fn_args::fn_args, FnArg, NumberLiteral},
         values::{PluginValue, TypeValue, WeaponType},
     };
     use pretty_assertions::assert_eq;
@@ -159,7 +159,7 @@ mod tests {
         let actor = Expression {
             negated: false,
             fn_name: "IsActorBase",
-            args: vec![FnArg::PluginValue {
+            args: fn_args![FnArg::PluginValue {
                 plugin_name: "Skyrim.esm",
                 form_id: NumberLiteral::Hex(0x0000_0007),
             }],
@@ -167,27 +167,24 @@ mod tests {
         let player = Expression {
             negated: false,
             fn_name: "IsPlayerTeammate",
-            args: vec![],
+            args: fn_args![],
         };
         let equip_r3 = Expression {
             negated: false,
             fn_name: "IsEquippedLeftType",
-            args: vec![FnArg::Number(NumberLiteral::Decimal(3))],
+            args: fn_args![FnArg::Number(NumberLiteral::Decimal(3))],
         };
         let equip_r4 = Expression {
             negated: true,
             fn_name: "IsEquippedRightType",
-            args: vec![FnArg::Number(NumberLiteral::Decimal(4))],
+            args: fn_args![FnArg::Number(NumberLiteral::Decimal(4))],
         };
 
-        let input = syntax::Condition::And(vec![
-            syntax::Condition::Or(vec![
-                syntax::Condition::Exp(actor),
-                syntax::Condition::Exp(player),
-            ]),
-            syntax::Condition::Or(vec![
-                syntax::Condition::Exp(equip_r3),
-                syntax::Condition::Exp(equip_r4),
+        let input = DarCondition::And(vec![
+            DarCondition::Or(vec![DarCondition::Exp(actor), DarCondition::Exp(player)]),
+            DarCondition::Or(vec![
+                DarCondition::Exp(equip_r3),
+                DarCondition::Exp(equip_r4),
             ]),
         ]);
 

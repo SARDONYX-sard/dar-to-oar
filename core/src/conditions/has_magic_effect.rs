@@ -1,18 +1,18 @@
 //! Represents a condition to check if an entity has a specific magic effect.
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if an entity has a specific magic effect.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct HasMagicEffect {
+pub struct HasMagicEffect<'a> {
     /// The name of the condition, which is "`HasMagicEffect`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,14 +21,14 @@ pub struct HasMagicEffect {
     /// The magic effect to check for in the entity.
     #[serde(default)]
     #[serde(rename = "Magic effect")]
-    pub magic_effect: PluginValue,
+    pub magic_effect: PluginValue<'a>,
     /// Indicates whether to consider only active effects.
     #[serde(default)]
     #[serde(rename = "Active effects only")]
     pub active_effects_only: bool,
 }
 
-impl Default for HasMagicEffect {
+impl Default for HasMagicEffect<'_> {
     fn default() -> Self {
         Self {
             condition: "HasMagicEffect".into(),

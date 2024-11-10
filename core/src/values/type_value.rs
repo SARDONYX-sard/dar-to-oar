@@ -1,8 +1,8 @@
 //! Wrapper for [`WeaponType`]
+use super::NumericLiteral;
+use crate::conditions::ConditionError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_untagged::UntaggedEnumVisitor;
-
-use super::NumericLiteral;
 
 /// Wrapper for [`WeaponType`]
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -58,7 +58,7 @@ pub enum WeaponType {
 }
 
 impl TryFrom<i64> for WeaponType {
-    type Error = &'static str;
+    type Error = ConditionError;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         Ok(match value {
@@ -82,31 +82,18 @@ impl TryFrom<i64> for WeaponType {
             16 => Self::RestorationSpell,
             17 => Self::Scroll,
             18 => Self::Torch,
-            _ => return Err("Invalid value for WeaponType"),
+            invalid => {
+                return Err(ConditionError::UnexpectedValue {
+                    expected: "-1..18".into(),
+                    actual: invalid.to_string(),
+                })
+            }
         })
     }
 }
 
-impl TryFrom<NumericLiteral> for WeaponType {
-    type Error = &'static str;
-
-    fn try_from(value: NumericLiteral) -> Result<Self, Self::Error> {
-        match value {
-            NumericLiteral::Hex(num) => match num {
-                1..=18 => Ok((num as i64).try_into()?),
-                _ => Err("Got hex, Out of range 1..=18"),
-            },
-            NumericLiteral::Decimal(num) => match num {
-                -1..=18 => Ok((num as i64).try_into()?),
-                _ => Err("Got Decimal, Out of range -1..=18"),
-            },
-            NumericLiteral::Float(num) => Ok(num.try_into()?),
-        }
-    }
-}
-
 impl TryFrom<f32> for WeaponType {
-    type Error = &'static str;
+    type Error = ConditionError;
 
     fn try_from(float: f32) -> Result<Self, Self::Error> {
         Ok(match float {
@@ -130,7 +117,12 @@ impl TryFrom<f32> for WeaponType {
             x if (16.0..17.0).contains(&x) => Self::RestorationSpell,
             x if (17.0..18.0).contains(&x) => Self::Scroll,
             x if (18.0..19.0).contains(&x) => Self::Torch,
-            _ => return Err("Expected -1.0..=18.0"),
+            invalid => {
+                return Err(ConditionError::UnexpectedValue {
+                    expected: "-1..18".into(),
+                    actual: invalid.to_string(),
+                })
+            }
         })
     }
 }
@@ -158,6 +150,18 @@ impl From<WeaponType> for f64 {
             WeaponType::RestorationSpell => 16.0,
             WeaponType::Scroll => 17.0,
             WeaponType::Torch => 18.0,
+        }
+    }
+}
+
+impl TryFrom<NumericLiteral> for WeaponType {
+    type Error = ConditionError;
+
+    fn try_from(value: NumericLiteral) -> Result<Self, Self::Error> {
+        match value {
+            NumericLiteral::Hex(num) => (num as i64).try_into(),
+            NumericLiteral::Decimal(num) => (num as i64).try_into(),
+            NumericLiteral::Float(num) => num.try_into(),
         }
     }
 }

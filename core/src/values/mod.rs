@@ -2,6 +2,7 @@
 mod actor_value;
 mod comparison;
 mod direction_value;
+mod errors;
 mod form_value;
 mod graph_value;
 mod keyword_value;
@@ -16,6 +17,7 @@ mod type_value;
 pub use self::actor_value::{ActorValue, ActorValueType};
 pub use self::comparison::Cmp;
 pub use self::direction_value::{Direction, DirectionValue};
+pub use self::errors::ValueError;
 pub use self::form_value::FormValue;
 #[allow(unused)]
 pub use self::graph_value::{GraphValue, GraphVariableType};
@@ -31,17 +33,18 @@ pub use self::type_value::{TypeValue, WeaponType};
 use serde::{Deserialize, Serialize};
 
 /// DAR variable set
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub(crate) enum ValueSet {
+pub enum Value<'a> {
     /// Person and its internal value
     ActorValue(ActorValue),
     /// Keyword ID
-    KeywordValue(LiteralValue),
+    KeywordValue(LiteralValue<'a>),
     /// Just f32 value
     NumericValue(StaticValue),
     /// Pair plugin name & ID
-    PluginValue(PluginValue),
+    PluginValue(PluginValue<'a>),
     /// A value with a range, used for randomization.
     RandomValue(RandomValue),
     /// Weapon type

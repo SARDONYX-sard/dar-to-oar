@@ -1,69 +1,27 @@
 //! A set of f32 | `PluginValue` | Form | Pair str, number
 use super::{actor_value::ActorValue, static_value::StaticValue, FormValue, GraphValue};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
 /// f32 | `PluginValue` | Form | Pair str, number
 ///
 /// In fact, it can be variously accepted rather than Numeric,
 /// but the GUI description of OAR says Numeric Value, so we follow it.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum NumericValue {
+pub enum NumericValue<'a> {
     /// Just f32 value
     StaticValue(StaticValue),
     /// Pair plugin name & ID
-    GlobalVariable(FormValue),
+    GlobalVariable(FormValue<'a>),
     /// Person and its internal value
     ActorValue(ActorValue),
     /// Pair str & Int | Float | Bool
-    GraphVariable(GraphValue),
+    GraphVariable(GraphValue<'a>),
 }
 
-impl Default for NumericValue {
+impl Default for NumericValue<'_> {
     fn default() -> Self {
         Self::StaticValue(StaticValue::default())
-    }
-}
-
-impl<'de> Deserialize<'de> for NumericValue {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        /// Macro to change from [`serde_json`] error to [`serde`] custom error
-        macro_rules! deserialize_json {
-            ($value:expr) => {
-                serde_json::from_value($value).map_err(|e| serde::de::Error::custom(e))
-            };
-        }
-
-        let value: Value = Deserialize::deserialize(deserializer)?;
-
-        if let Value::Object(map) = &value {
-            if map.contains_key("value") {
-                // If the "value" field is present, assume it's a StaticValue
-                let static_value: StaticValue = deserialize_json!(value)?;
-                Ok(Self::StaticValue(static_value))
-            } else if map.contains_key("form") {
-                let global_variable = deserialize_json!(value)?;
-                Ok(Self::GlobalVariable(global_variable))
-            } else if map.contains_key("actorValue") {
-                let actor_value: ActorValue = deserialize_json!(value)?;
-                Ok(Self::ActorValue(actor_value))
-            } else if map.contains_key("graphValue") {
-                Ok(Self::GraphVariable(deserialize_json!(value)?))
-            } else {
-                Err(serde::de::Error::custom(
-                    "Unable to determine NumericValue variant",
-                ))
-            }
-        } else {
-            Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Other("Expected an object"),
-                &"a map",
-            ))
-        }
     }
 }
 

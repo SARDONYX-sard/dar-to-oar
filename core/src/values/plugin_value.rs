@@ -1,15 +1,15 @@
 //! A combination of the plugin name and the ID in it.
 use super::NumericLiteral;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// A combination of the plugin name and the ID in it.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct PluginValue {
+pub struct PluginValue<'a> {
     /// e.g. `Skyrim.esm`
     #[serde(rename = "pluginName")]
     #[serde(default)]
-    pub plugin_name: String,
+    pub plugin_name: Cow<'a, str>,
     /// - OAR: Non prefix(0x) hexadecimal
     /// - DAR: Decimal or Hex
     ///
@@ -26,17 +26,17 @@ pub struct PluginValue {
     /// - OAR can read hexes that are not filled with zeros.
     #[serde(rename = "formID")]
     #[serde(default)]
-    pub form_id: FormID,
+    pub form_id: FormID<'a>,
 }
 
 /// Non prefix(0x) hexadecimal ID
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct FormID(CompactString);
+pub struct FormID<'a>(Cow<'a, str>);
 
-impl From<&str> for FormID {
+impl<'a> From<&'a str> for FormID<'a> {
     /// Clone into
     /// - NOTE: non cast to hex
-    fn from(value: &str) -> Self {
+    fn from(value: &'a str) -> Self {
         Self(value.into())
     }
 }
@@ -45,7 +45,7 @@ impl From<&str> for FormID {
 macro_rules! from {
     ($($_type:ident),+ $(,)?) => {
         $(
-            impl From<$_type> for FormID {
+            impl From<$_type> for FormID<'_> {
                 fn from(value: $_type) -> Self {
                     NumericLiteral::from(value).into()
                 }
@@ -56,12 +56,12 @@ macro_rules! from {
 
 from!(usize, isize, f32);
 
-impl From<NumericLiteral> for FormID {
+impl From<NumericLiteral> for FormID<'_> {
     fn from(value: NumericLiteral) -> Self {
         Self(match value {
             NumericLiteral::Hex(hex_value) => format!("{hex_value:x}").into(),
             NumericLiteral::Decimal(decimal_value) => match decimal_value == 0 {
-                true => CompactString::default(),
+                true => Default::default(),
                 false => format!("{decimal_value:x}").into(),
             },
             NumericLiteral::Float(float_value) => format!("{:x}", float_value as usize).into(),
@@ -107,17 +107,5 @@ mod tests {
 
         assert_eq!(deserialized, expected);
         Ok(())
-    }
-
-    #[test]
-    fn should_default_plugin_value() {
-        let default_plugin_value = PluginValue::default();
-
-        let expected = PluginValue {
-            plugin_name: String::new(),
-            form_id: "".into(),
-        };
-
-        assert_eq!(default_plugin_value, expected);
     }
 }

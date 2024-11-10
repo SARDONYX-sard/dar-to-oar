@@ -1,23 +1,23 @@
 //! Represents a condition to check if an entity has a magic effect with a specific keyword.
 use super::{condition::default_required_version, is_false};
 use crate::values::{FormValue, Keyword};
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if an entity has a magic effect with a specific keyword.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct HasMagicEffectWithKeyword {
+pub struct HasMagicEffectWithKeyword<'a> {
     /// The name of the condition, which is "`HasMagicEffectWithKeyword`".
     ///
     /// # Note
     /// This condition name is 25 bytes.
     /// Optimization by [`CompactString`] is limited to 24 bytes, the size of a [`String`] structure.
     /// Therefore, this field cannot be SSO (Small String Optimization).
-    pub condition: String,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -26,14 +26,14 @@ pub struct HasMagicEffectWithKeyword {
     /// The keyword to check for in the magic effect.
     #[serde(default)]
     #[serde(rename = "Keyword")]
-    pub keyword: Keyword,
+    pub keyword: Keyword<'a>,
     /// Indicates whether to consider only active effects.
     #[serde(default)]
     #[serde(rename = "Active effects only")]
     pub active_effects_only: bool,
 }
 
-impl Default for HasMagicEffectWithKeyword {
+impl Default for HasMagicEffectWithKeyword<'_> {
     fn default() -> Self {
         Self {
             condition: "HasMagicEffectWithKeyword".into(),

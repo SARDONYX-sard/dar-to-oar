@@ -15,9 +15,17 @@ type Props = {
   placeholder: string;
   helperText: string | ReactNode;
   onChange?: TextFieldProps['onChange'];
+  setPathHook?: (path: string) => void;
 };
 
-export const InputPathField = ({ name, label, placeholder, helperText, onChange: onChangeOuter }: Props) => {
+export const InputPathField = ({
+  name,
+  label,
+  placeholder,
+  helperText,
+  onChange: onChangeOuter,
+  setPathHook,
+}: Props) => {
   const { control, getValues, setValue } = useFormContext<FormProps>();
 
   const path = (() => {
@@ -33,6 +41,7 @@ export const InputPathField = ({ name, label, placeholder, helperText, onChange:
   const handleSetPath = (path: string) => {
     setValue(name, path);
     setPathToStorage(name, path);
+    setPathHook?.(path);
   };
 
   return (

@@ -1,96 +1,118 @@
 //! Error types for Converter
 
-/// It is used to represent different types of errors that can occur during the conversion process.
-/// Each variant of the enum represents a specific type of error,
-/// and it can contain additional data associated with the error,
-/// such as error messages or other relevant information.
-#[derive(Debug, thiserror::Error)]
-pub enum ConvertError {
-    /// Failed to write section config target.
-    #[error(
-        "Path was interpreted as the path to ActorBase, but the ID directory is missing. expected: [..]/DynamicAnimationReplacer/{{ESP name}}/{{ID Number}}, actual: {0}"
-    )]
-    MissingBaseId(String),
+use snafu::Snafu;
+use std::path::PathBuf;
 
-    /// Failed to write section config target.
-    #[error("Failed to write section config target: {0}")]
-    FailedWriteSectionConfig(String),
+/// Represents different types of errors that can occur during the conversion process.
+#[derive(Debug, Snafu)]
+pub enum ConvertError {
+    /// Path interpreted as the path to `ActorBase`, but the ID directory is missing.
+    #[snafu(display("Path was interpreted as the path to ActorBase, but the ID directory is missing. expected: [..]/DynamicAnimationReplacer/{{ESP name}}/{{ID Number}}, actual: {}", path.display()))]
+    MissingBaseId {
+        /// path
+        path: PathBuf,
+    },
 
     /// Never converted.
-    #[error("Never converted.")]
     NeverConverted,
 
     /// No such paths exist.
-    #[error("No such paths exist: \"{0}\"")]
-    NonExistPath(String),
+    #[snafu(display("No such paths exist: \"{}\"", path.display()))]
+    NonExistPath {
+        /// path
+        path: PathBuf,
+    },
 
     /// Nothing in the specified path.
-    #[error("Nothing in the specified path")]
     NotFoundEntry,
+
     /// Could not find files with ".mohidden" extension.
-    #[error("Could not find files with \".mohidden\" extension")]
     NotFoundUnhideTarget,
+
     /// Not found `DynamicAnimationReplacer` directory.
-    #[error("Not found \"DynamicAnimationReplacer\" directory")]
     NotFoundDarDir,
+
     /// Not found file name.
-    #[error("Not found file name")]
     NotFoundFileName,
+
     /// Not found `OpenAnimationReplacer` directory.
-    #[error("Not found \"OpenAnimationReplacer\" directory")]
     NotFoundOarDir,
-    /// Not found DAR priority(Number) directory.
-    #[error("Not found DAR priority(Number) directory")]
+
+    /// Not found DAR priority (Number) directory.
     NotFoundPriorityDir,
 
-    /// DAR syntax error.
-    #[error("[DAR Syntax Error]\n{0}")]
-    InvalidDarSyntax(String),
-
-    /// This is not valid utf8.
-    #[error("This is not valid utf8")]
+    /// This is not valid UTF-8.
     InvalidUtf8,
 
-    /// Condition error.
-    #[error(transparent)]
-    ConditionError(#[from] crate::conditions::ConditionError),
+    /// DAR syntax error with path.
+    #[snafu(display("[DAR Syntax Error] {}\n{}", path.display(), source))]
+    InvalidDarSyntax {
+        /// path
+        path: PathBuf,
+        /// transparent
+        source: crate::dar_syntax::errors::DarError,
+    },
 
-    /// Parse error.
-    #[error(transparent)]
-    ParseError(#[from] crate::condition_parser::ParseError),
+    /// OAR condition error
+    #[snafu(transparent)]
+    ConditionError {
+        /// transparent
+        source: crate::conditions::ConditionError,
+    },
 
-    /// Convert json error.
-    #[error(transparent)]
-    JsonError(#[from] serde_json::Error),
+    /// Parse error
+    #[snafu(transparent)]
+    ParseError {
+        /// transparent
+        source: crate::condition_parser::ParseError,
+    },
+
+    /// JSON conversion error.
+    #[snafu(transparent)]
+    JsonError {
+        /// transparent
+        source: serde_json::Error,
+    },
 
     /// Parse integer error.
-    #[error(transparent)]
-    ParseIntError(#[from] core::num::ParseIntError),
+    #[snafu(transparent)]
+    ParseIntError {
+        /// transparent
+        source: core::num::ParseIntError,
+    },
 
-    /// Represents all other cases of `std::io::Error`.
-    #[error(transparent)]
-    IOError(#[from] std::io::Error),
+    /// I/O error.
+    #[snafu(transparent)]
+    IOError {
+        /// transparent
+        source: std::io::Error,
+    },
 
     /// Async walkdir error.
-    #[error(transparent)]
-    AsyncWalkDirError(#[from] async_walkdir::Error),
+    #[snafu(transparent)]
+    AsyncWalkDirError {
+        /// transparent
+        source: async_walkdir::Error,
+    },
 
     /// Thread join error.
-    #[error(transparent)]
-    JoinError(#[from] tokio::task::JoinError),
+    #[snafu(transparent)]
+    JoinError {
+        /// transparent
+        source: tokio::task::JoinError,
+    },
 }
 
-//? Implemented to facilitate testing with the `assert_eq!` macro.
+// Implemented to facilitate testing with the `assert_eq!` macro.
 impl PartialEq for ConvertError {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::FailedWriteSectionConfig(l0), Self::FailedWriteSectionConfig(r0))
-            | (Self::InvalidDarSyntax(l0), Self::InvalidDarSyntax(r0)) => l0 == r0,
-            (Self::ConditionError(l0), Self::ConditionError(r0)) => l0 == r0,
-            (Self::ParseError(l0), Self::ParseError(r0)) => l0 == r0,
-            (Self::JsonError(l0), Self::JsonError(r0)) => l0.to_string() == r0.to_string(),
-            (Self::ParseIntError(l0), Self::ParseIntError(r0)) => l0 == r0,
-            (Self::IOError(l0), Self::IOError(r0)) => l0.kind() == r0.kind(),
+            (Self::ParseError { source: l0 }, Self::ParseError { source: r0 }) => l0 == r0,
+            (Self::JsonError { source: l0 }, Self::JsonError { source: r0 }) => {
+                l0.to_string() == r0.to_string()
+            }
+            (Self::ParseIntError { source: l0 }, Self::ParseIntError { source: r0 }) => l0 == r0,
+            (Self::IOError { source: l0 }, Self::IOError { source: r0 }) => l0.kind() == r0.kind(),
             _ => core::mem::discriminant(self) == core::mem::discriminant(other),
         }
     }

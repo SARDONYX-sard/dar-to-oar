@@ -64,9 +64,9 @@ pub async fn convert_dar_to_oar(
 ) -> Result<()> {
     let dar_dir = std::path::Path::new(&options.dar_dir);
     if !dar_dir.exists() {
-        return Err(crate::error::ConvertError::NonExistPath(format!(
-            "{dar_dir:?}"
-        )));
+        return Err(crate::error::ConvertError::NonExistPath {
+            path: dar_dir.to_path_buf(),
+        })?;
     };
 
     match options.run_parallel {

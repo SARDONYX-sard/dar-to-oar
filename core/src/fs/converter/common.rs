@@ -55,7 +55,7 @@ where
     };
 
     // character, falmer, etc.
-    let actor_name = actor_name.as_deref().unwrap_or({
+    let actor_name = actor_name.as_deref().unwrap_or_else(|| {
         #[cfg(feature = "tracing")]
         tracing::warn!(
             "actor_name could not be inferred from the dir name. Use the default value \"character\"."
@@ -131,12 +131,12 @@ where
                 #[cfg(feature = "tracing")]
                 tracing::debug!("This path is ActorBase: {path:?}");
 
-                let esp_dir = esp_dir
-                    .as_ref()
-                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
-                let base_id = base_id
-                    .as_ref()
-                    .ok_or(ConvertError::MissingBaseId(path.display().to_string()))?;
+                let esp_dir = esp_dir.as_ref().ok_or(ConvertError::MissingBaseId {
+                    path: path.to_path_buf(),
+                })?;
+                let base_id = base_id.as_ref().ok_or(ConvertError::MissingBaseId {
+                    path: path.to_path_buf(),
+                })?;
 
                 let content = format!("IsActorBase ( \"{esp_dir}\" | 0x{base_id} )");
                 #[cfg(feature = "tracing")]
@@ -173,7 +173,7 @@ where
             if file_name == "_conditions.txt" {
                 let content = fs::read_to_string(path).await?;
                 #[cfg(feature = "tracing")]
-                tracing::debug!("{path:?} Content:\n{}", content);
+                tracing::debug!("{} Content:\n{content}", path.display());
 
                 let config_json = ConditionsConfig {
                     name: section_name.into(),
@@ -252,5 +252,5 @@ pub(super) const fn handle_conversion_results(is_converted_once: bool) -> Result
 pub(super) fn is_contain_dar(path: impl AsRef<Path>) -> Option<usize> {
     path.as_ref()
         .iter()
-        .position(|os_str| os_str == std::ffi::OsStr::new("DynamicAnimationReplacer"))
+        .position(|os_str| os_str.eq_ignore_ascii_case("DynamicAnimationReplacer"))
 }

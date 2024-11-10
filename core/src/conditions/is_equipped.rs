@@ -1,19 +1,19 @@
 //! Represents a condition based on whether an entity is equipped with a specific form.
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition based on whether an entity is equipped with a specific form.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct IsEquipped {
+pub struct IsEquipped<'a> {
     /// The name of the condition, which is "`IsEquipped`".
-    pub condition: CompactString,
-    /// The required version for compatibility with this condition.
+    pub condition: Cow<'a, str>,
+    /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
-    /// Indicates whether the condition is negated.
+    pub required_version: Cow<'a, str>,
+    /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
     pub negated: bool,
@@ -21,14 +21,14 @@ pub struct IsEquipped {
     /// The form associated with the condition.
     #[serde(default)]
     #[serde(rename = "Form")]
-    pub form: PluginValue,
+    pub form: PluginValue<'a>,
     /// Indicates whether the entity is equipped in the left hand.
     #[serde(default)]
     #[serde(rename = "Left hand")]
     pub left_hand: bool,
 }
 
-impl Default for IsEquipped {
+impl Default for IsEquipped<'_> {
     fn default() -> Self {
         Self {
             condition: "IsEquipped".into(),

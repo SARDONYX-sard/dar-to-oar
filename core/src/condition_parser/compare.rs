@@ -1,9 +1,8 @@
 //! Parses a comparison-based condition for plugin values.
-use super::dar_interface::ParseError;
-use super::macros::get_try_into;
+use super::errors::{ParseError, Result};
 use crate::{
     conditions::{CompareValues, ConditionSet},
-    dar_syntax::syntax::FnArg,
+    dar_syntax::FnArgs,
     values::{Cmp, NumericValue, PluginValue},
 };
 
@@ -12,21 +11,13 @@ use crate::{
 ///
 /// # Errors
 /// Parsing failed.
-pub(super) fn parse_compare(
-    condition_name: &str,
-    args: Vec<FnArg<'_>>,
+pub(super) fn parse_compare<'a>(
+    condition_name: &'a str,
+    mut args: FnArgs<'a>,
     negated: bool,
-) -> Result<ConditionSet, ParseError> {
-    let plugin_value: PluginValue = get_try_into!(
-        args[0],
-        "Plugin value: in ValueEqualTo | ValueLessThan 1st arg",
-        "None"
-    )?;
-    let static_value = get_try_into!(
-        args[1],
-        " float(e.g. 1.0): in ValueEqualTo | ValueLessThan 2nd arg",
-        "None"
-    )?;
+) -> Result<ConditionSet<'a>> {
+    let plugin_value: PluginValue = args.pop_front()?.try_into()?;
+    let static_value = args.pop_front()?.try_into()?;
 
     let create_compare = |comparison: Cmp| {
         ConditionSet::CompareValues(CompareValues {
@@ -42,10 +33,10 @@ pub(super) fn parse_compare(
         "ValueEqualTo" => create_compare(Cmp::Eq),
         "ValueLessThan" => create_compare(Cmp::Lt),
         _ => {
-            return Err(ParseError::UnexpectedValue(
-                "ValueEqualTo or ValueLessThan".into(),
-                condition_name.into(),
-            ))
+            return Err(ParseError::UnexpectedValue {
+                expected: "ValueEqualTo or ValueLessThan".into(),
+                actual: condition_name.into(),
+            })
         }
     })
 }

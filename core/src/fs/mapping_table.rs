@@ -26,7 +26,9 @@ pub async fn read_mapping_table(
 ) -> Result<HashMap<CompactString, String>> {
     let table_path = table_path.as_ref();
     if !table_path.exists() {
-        return Err(ConvertError::NonExistPath(format!("{table_path:?}")));
+        return Err(ConvertError::NonExistPath {
+            path: table_path.to_path_buf(),
+        });
     };
 
     let contents = read_to_string(table_path).await?;

@@ -1,18 +1,18 @@
 //! Represents a condition to check if an entity has a specific perk.
 use super::{condition::default_required_version, is_false};
 use crate::values::PluginValue;
-use compact_str::CompactString;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// Represents a condition to check if an entity has a specific perk.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct HasPerk {
+pub struct HasPerk<'a> {
     /// The name of the condition, which is "`HasPerk`".
-    pub condition: CompactString,
+    pub condition: Cow<'a, str>,
     /// The required version for this condition.
     #[serde(default = "default_required_version")]
     #[serde(rename = "requiredVersion")]
-    pub required_version: CompactString,
+    pub required_version: Cow<'a, str>,
     /// Indicates whether the condition is negated or not.
     #[serde(default)]
     #[serde(skip_serializing_if = "is_false")]
@@ -21,10 +21,10 @@ pub struct HasPerk {
     /// The perk to check for in the entity.
     #[serde(default)]
     #[serde(rename = "Perk")]
-    pub perk: PluginValue,
+    pub perk: PluginValue<'a>,
 }
 
-impl Default for HasPerk {
+impl Default for HasPerk<'_> {
     fn default() -> Self {
         Self {
             condition: "HasPerk".into(),
