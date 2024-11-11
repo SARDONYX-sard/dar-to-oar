@@ -15,6 +15,7 @@ type Props = {
   placeholder: string;
   helperText: string | ReactNode;
   onChange?: TextFieldProps['onChange'];
+  isDir: boolean;
   setPathHook?: (path: string) => void;
 };
 
@@ -25,6 +26,7 @@ export const InputPathField = ({
   helperText,
   onChange: onChangeOuter,
   setPathHook,
+  isDir,
 }: Props) => {
   const { control, getValues, setValue } = useFormContext<FormProps>();
 
@@ -73,7 +75,7 @@ export const InputPathField = ({
             </Grid>
 
             <Grid size={2}>
-              <SelectPathButton isDir={true} path={path} setPath={handleSetPath} />
+              <SelectPathButton isDir={isDir} path={path} setPath={handleSetPath} />
             </Grid>
           </Grid>
         );

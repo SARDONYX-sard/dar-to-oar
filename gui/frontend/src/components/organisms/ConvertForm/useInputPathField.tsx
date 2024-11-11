@@ -1,12 +1,17 @@
+import { useFormContext } from 'react-hook-form';
+
 import { useTranslation } from '@/components/hooks/useTranslation';
+import { parseDarPath } from '@/lib/path/parseDarPath';
 
 import { MappingHelpButton } from './MappingHelpButton';
 
+import type { FormProps } from './ConvertForm';
 import type { InputPathField } from './InputPathField';
 import type { ComponentPropsWithRef } from 'react';
 
 export const useInputPathFields = () => {
   const { t } = useTranslation();
+  const { setValue, getValues } = useFormContext<FormProps>();
 
   return [
     {
@@ -20,6 +25,21 @@ export const useInputPathFields = () => {
       label: t('convert-form-dar-label'),
       name: 'src',
       placeholder: '[...]/<MOD NAME>',
+      isDir: true,
+      onChange(e) {
+        if (getValues('inferPath')) {
+          const parsedPath = parseDarPath(e.target.value);
+          setValue('dst', parsedPath.oarRoot);
+          setValue('modName', parsedPath.modName ?? '');
+        }
+      },
+      setPathHook(path: string) {
+        if (getValues('inferPath')) {
+          const parsedPath = parseDarPath(path);
+          setValue('dst', parsedPath.oarRoot);
+          setValue('modName', parsedPath.modName ?? '');
+        }
+      },
     },
     {
       helperText: (
@@ -31,6 +51,7 @@ export const useInputPathFields = () => {
       label: t('convert-form-oar-label'),
       name: 'dst',
       placeholder: '[...]/<MOD NAME>',
+      isDir: true,
     },
 
     {
@@ -38,12 +59,14 @@ export const useInputPathFields = () => {
       label: t('convert-form-mapping-label'),
       name: 'mapping1personPath',
       placeholder: './mapping_table.txt',
+      isDir: false,
     },
     {
       helperText: t('convert-form-mapping-helper'),
       label: t('convert-form-mapping-1st-label'),
       name: 'mappingPath',
       placeholder: './mapping_table_for_1st_person.txt',
+      isDir: false,
     },
   ] satisfies ComponentPropsWithRef<typeof InputPathField>[];
 };

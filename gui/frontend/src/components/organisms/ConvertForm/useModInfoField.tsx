@@ -1,6 +1,7 @@
 import { useTranslation } from '@/components/hooks/useTranslation';
 
-import type { InputPathField } from './InputPathField';
+import { InputModInfoField } from './InputModInfoField';
+
 import type { ComponentPropsWithRef } from 'react';
 
 export const useModInfoFields = () => {
@@ -19,5 +20,5 @@ export const useModInfoFields = () => {
       label: t('convert-form-author-name'),
       placeholder: t('convert-form-author-placeholder'),
     },
-  ] satisfies ComponentPropsWithRef<typeof InputPathField>[];
+  ] satisfies ComponentPropsWithRef<typeof InputModInfoField>[];
 };

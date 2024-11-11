@@ -14,7 +14,7 @@
     "dev:front": "next ./gui/frontend",
     "fmt": "biome format --write ./ && prettier --cache --write \"**/*.{yaml,yml}\" --ignore-path ./.gitignore && cargo fmt --all",
     "lint": "next lint ./gui/frontend && biome lint ./ && cargo clippy --workspace",
-    "lint:fix": "npm run fmt && next lint ./gui/frontend --fix && biome check --write ./  && cargo clippy --workspace --fix --allow-staged --allow-dirty",
+    "lint:fix": "npm run fmt && biome check --write ./ && next lint ./gui/frontend --fix && cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "tauri": "tauri",
     "test": "vitest run",
     "test:all": "npm test && npm run test:back",
@@ -40,7 +40,7 @@
     "react-i18next": "15.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "^1.9.4",
     "@tauri-apps/cli": "2.0.3",
     "@testing-library/jest-dom": "6.6.2",
     "@testing-library/react": "16.0.1",

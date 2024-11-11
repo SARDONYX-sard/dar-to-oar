@@ -5,7 +5,6 @@ import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertNav';
-import { parseDarPath } from '@/lib/path/parseDarPath';
 import { STORAGE } from '@/lib/storage';
 import { PRIVATE_CACHE_OBJ, PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { convertDar2oar } from '@/services/api/convert';
@@ -18,8 +17,6 @@ import { InputPathField } from './InputPathField';
 import { useCheckFields } from './useCheckField';
 import { useInputPathFields } from './useInputPathField';
 import { useModInfoFields } from './useModInfoField';
-
-import type { ComponentPropsWithRef } from 'react';
 
 export type FormProps = {
   src: string;
@@ -37,7 +34,7 @@ export type FormProps = {
   progress: number;
 };
 
-const getInitialFormValues = (): FormProps => ({
+const defaultFormValues = (): FormProps => ({
   src: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.src),
   dst: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.dst),
   modName: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modName),
@@ -73,9 +70,9 @@ export function ConvertForm() {
     mode: 'onBlur',
     criteriaMode: 'all',
     shouldFocusError: false,
-    defaultValues: getInitialFormValues(),
+    defaultValues: defaultFormValues(),
   });
-  const { setValue, getValues } = methods;
+  const { setValue } = methods;
 
   const handleAllClear = () => {
     for (const key of PATH_FORM_VALUES) {
@@ -118,26 +115,7 @@ export function ConvertForm() {
           </Button>
 
           {pathFields.map((props) => {
-            let onChange: ComponentPropsWithRef<typeof InputPathField>['onChange'] | undefined;
-            let setPathHook: ((path: string) => void) | undefined;
-
-            if (props.name === 'src') {
-              onChange = (e) => {
-                if (getValues('inferPath')) {
-                  const parsedPath = parseDarPath(e.target.value);
-                  setValue('dst', parsedPath.oarRoot);
-                  setValue('modName', parsedPath.modName ?? '');
-                }
-              };
-              setPathHook = (path: string) => {
-                if (getValues('inferPath')) {
-                  const parsedPath = parseDarPath(path);
-                  setValue('dst', parsedPath.oarRoot);
-                  setValue('modName', parsedPath.modName ?? '');
-                }
-              };
-            }
-            return <InputPathField key={props.name} onChange={onChange} setPathHook={setPathHook} {...props} />;
+            return <InputPathField key={props.name} {...props} />;
           })}
 
           <Grid columnSpacing={1} container={true} gap={2} sx={{ width: '100%' }}>
