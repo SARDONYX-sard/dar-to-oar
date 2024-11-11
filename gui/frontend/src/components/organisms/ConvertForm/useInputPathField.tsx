@@ -9,6 +9,7 @@ import type { FormProps } from './ConvertForm';
 import type { InputPathField } from './InputPathField';
 import type { ComponentPropsWithRef } from 'react';
 
+/** NOTE: Must be called in `FormProvider` as it calls `useFormContext` internally */
 export const useInputPathFields = () => {
   const { t } = useTranslation();
   const { setValue, getValues } = useFormContext<FormProps>();

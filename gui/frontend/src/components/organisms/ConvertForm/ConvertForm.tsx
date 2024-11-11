@@ -92,7 +92,6 @@ export function ConvertForm() {
     });
   };
 
-  const pathFields = useInputPathFields();
   const modInfoFields = useModInfoFields();
   const checkFields = useCheckFields();
 
@@ -114,9 +113,7 @@ export function ConvertForm() {
             {t('all-clear-btn')}
           </Button>
 
-          {pathFields.map((props) => {
-            return <InputPathField key={props.name} {...props} />;
-          })}
+          <InputPathFields />
 
           <Grid columnSpacing={1} container={true} gap={2} sx={{ width: '100%' }}>
             {modInfoFields.map((props) => {
@@ -138,4 +135,16 @@ export function ConvertForm() {
       </Grid>
     </FormProvider>
   );
+}
+
+// NOTE: It is necessary to call `useFormContext` in `FormProvider` since it is called internally.
+//       This avoids the wrapper component wrapping inaccessibility error.
+const InputPathFields = () => {
+  const pathFields = useInputPathFields();
+
+  return (
+    pathFields.map((props) => {
+      return <InputPathField key={props.name} {...props} />
+    })
+  )
 }
