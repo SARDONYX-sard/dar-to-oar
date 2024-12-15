@@ -12,7 +12,7 @@ pub enum Condition<'input> {
     Exp(Expression<'input>),
 }
 
-impl<'input> Condition<'input> {
+impl Condition<'_> {
     /// push to inner vec
     ///
     /// # panics

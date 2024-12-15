@@ -1,7 +1,6 @@
 import { useTranslation } from '@/components/hooks/useTranslation';
 
-import { InputModInfoField } from './InputModInfoField';
-
+import type { InputModInfoField } from './InputModInfoField';
 import type { ComponentPropsWithRef } from 'react';
 
 export const useModInfoFields = () => {

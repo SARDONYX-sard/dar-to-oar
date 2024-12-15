@@ -142,9 +142,7 @@ export function ConvertForm() {
 const InputPathFields = () => {
   const pathFields = useInputPathFields();
 
-  return (
-    pathFields.map((props) => {
-      return <InputPathField key={props.name} {...props} />
-    })
-  )
-}
+  return pathFields.map((props) => {
+    return <InputPathField key={props.name} {...props} />;
+  });
+};

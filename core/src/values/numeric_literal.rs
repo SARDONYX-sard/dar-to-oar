@@ -76,7 +76,7 @@ impl<'de> Deserialize<'de> for NumericLiteral {
         /// Inner deserialization struct
         struct NumericLiteralVisitor;
 
-        impl<'de> serde::de::Visitor<'de> for NumericLiteralVisitor {
+        impl serde::de::Visitor<'_> for NumericLiteralVisitor {
             type Value = NumericLiteral;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
