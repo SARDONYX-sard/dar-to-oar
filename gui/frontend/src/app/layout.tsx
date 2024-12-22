@@ -1,8 +1,8 @@
 import dynamic from 'next/dynamic';
 
 export { metadata } from '@/components/meta/meta';
-import { inter } from '@/components/meta/font';
 import Loading from '@/components/templates/Loading';
+import '@fontsource/inter'
 
 import type { ReactNode } from 'react';
 
@@ -19,7 +19,7 @@ type Props = Readonly<{
 export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
