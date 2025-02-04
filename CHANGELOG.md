@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2025-02-04
+### :sparkles: New Features
+- [`61f2c8b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/61f2c8bdedbaaaa8ed03b8da0c2382705c4c5c6d) - **front**: use `theme-color` for `ConvertButton` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`7c47112`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7c4711288f1c4a0e06b4f1ec656adc4add714311) - **front-import**: change to type safe json parse *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8f4aa9f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8f4aa9fd504fb4c791ae6189309c4b98d225757b) - use easy pattern *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b5adee3`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b5adee34ac6456099914f18ddedf44b91554afc2) - **front**: let it also be inferred when selecting a path from a button *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`2fcf897`](https://github.com/SARDONYX-sard/dar-to-oar/commit/2fcf89737f5139cfef8fc31b928ce801f6ea64b4) - **front**: clamp percent progress *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`63f7890`](https://github.com/SARDONYX-sard/dar-to-oar/commit/63f7890be161dcf765b9221b80f1d6cdb6f187cf) - **front-json**: fix type safe json parser *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c3fc423`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c3fc423428ca8b5fa752d269e29ebff75b1c280a) - try to fix the issue that logs show warn even when Some *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`fa1d9d5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/fa1d9d5dc8f606982fb3533ddb89e48a06ccd686) - **front**: fix progress display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`6c91805`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6c918054d89974246fc2d57087cb7cb6d519494b) - **front**: fix progress display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`825e079`](https://github.com/SARDONYX-sard/dar-to-oar/commit/825e07953b3f80421e879e8c7a1a38f95fa0461d) - **front**: fix problem with table selection being in dir mode *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`4700f54`](https://github.com/SARDONYX-sard/dar-to-oar/commit/4700f54a69b3c51d90b4ac83ba04114732efd682) - **front**: fix provider access error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`de94009`](https://github.com/SARDONYX-sard/dar-to-oar/commit/de94009fe0a93fe572b7abc635c238713be8914e) - **backend**: update parser functions to use ModalResult for improved error handling *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`de1f60f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/de1f60ff3195eb92f56bc91f25cfe96b15799b53) - **frontend**: fix build errors caused by updates *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`da9870a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/da9870aed275f3ee3758287b60eb1e9212ee5f14) - **frontend**: update ClientLayout to use dynamic import for improved loading handling *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8732914`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8732914f24482843e1d2f3893b9bd14ca43ad954) - **i18n**: disable eslint warning for third-party library naming in init function *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :zap: Performance Improvements
+- [`897b51c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/897b51c6ce34e696ad61d04a731aee837b85ce30) - **core**: stop unnecessary alloc *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :recycle: Refactors
+- [`d4a0dd8`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d4a0dd8a46dab6c8e1db6a8d0464505c8bb44ee7) - separate modules *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`dd4c6b1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/dd4c6b1cffde883009417ce1d6977934a1bf0d21) - **frontend**: rename CodeEditor to CodeEditorTab and introduce MonacoEditor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`97d94ee`](https://github.com/SARDONYX-sard/dar-to-oar/commit/97d94eea2f2b64aa2e645809e4954c815588e2a1) - **settings**: update my settings *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`30b4bab`](https://github.com/SARDONYX-sard/dar-to-oar/commit/30b4bab8fb986fa888f27fb9d1dc304f62865c77) - remove meanless lint *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`8d7d5cf`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8d7d5cfb149411eeb45ccadfb692151e79a0d064) - **frontend-deps**: update dependencies to latest versions for improved stability and features *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`589aa85`](https://github.com/SARDONYX-sard/dar-to-oar/commit/589aa85438e892761b4daef0d16c20deb739b8d1) - **workflows**: update action versions in lint-and-test and release-gui workflows *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.9.0] - 2024-10-21
 ### :sparkles: New Features
 - [`cef2f5c`](https://github.com/SARDONYX-sard/dar-to-oar/commit/cef2f5cd6b2b40abac94de71a4809e38e066671a) - **front**: change log catch any *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -473,3 +507,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.7.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.6.0...0.7.0
 [0.8.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.7.0...0.8.0
 [0.9.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.8.0...0.9.0
+[0.10.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.9.0...0.10.0
