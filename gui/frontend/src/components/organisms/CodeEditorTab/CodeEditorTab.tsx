@@ -10,13 +10,13 @@ import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
 import { type EditorInfo, EditorInitializer } from './EditorInitializer';
 
-export const CodeEditor = () => {
+export const CodeEditorTab = () => {
   const { js, setJs } = useJsContext();
   const { css, setCss, setPreset } = useCssContext();
   const { t } = useTranslation();
 
   const [value, setValue] = useStorageState<'javascript' | 'css'>(PUB_CACHE_OBJ.editorTabSelect, 'javascript');
-  const handleTabChange: TabListProps['onChange'] = (_event, newValue) => {
+  const handleTabChange: TabListProps['onChange'] = (_, newValue) => {
     setValue(newValue);
   };
 

@@ -1,10 +1,10 @@
-'use client';
+'use client'; // If this directive is not present on each page, a build error will occur.
 import { Box, type SxProps, type Theme } from '@mui/material';
 import { Grid2 as Grid } from '@mui/material';
 
 import { Help } from '@/components/atoms/Help';
 import { useInjectJs } from '@/components/hooks/useInjectJs';
-import { CodeEditor } from '@/components/organisms/CodeEditor';
+import { CodeEditorTab } from '@/components/organisms/CodeEditorTab';
 import { Tabs } from '@/components/organisms/Tabs';
 import { useTabContext } from '@/components/providers/TabProvider';
 import { start } from '@/services/api/shell';
@@ -31,11 +31,11 @@ export const Settings = () => {
       {tabPos === 'top' ? (
         <>
           <TabsMenu />
-          <CodeEditor />
+          <CodeEditorTab />
         </>
       ) : (
         <>
-          <CodeEditor />
+          <CodeEditorTab />
           <TabsMenu />
         </>
       )}

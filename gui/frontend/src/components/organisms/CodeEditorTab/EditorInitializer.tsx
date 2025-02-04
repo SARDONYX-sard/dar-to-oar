@@ -1,8 +1,7 @@
-import { InputLabel } from '@mui/material';
+import { Typography } from '@mui/material';
 
+import { MonacoEditor } from '@/components/organisms/MonacoEditor';
 import { useEditorModeContext } from '@/components/providers/EditorModeProvider';
-
-import { MonacoEditorWrapper } from './MonacoEditorWrapper';
 
 import type { ComponentPropsWithoutRef } from 'react';
 
@@ -18,18 +17,19 @@ type Props = {
   fileName: string;
   label: string;
   language: string;
-  onChange: ComponentPropsWithoutRef<typeof MonacoEditorWrapper>['onChange'];
+  onChange: ComponentPropsWithoutRef<typeof MonacoEditor>['onChange'];
 };
 
 export const EditorInitializer = ({ value, fileName, label, language, onChange }: Props) => {
   const { editorMode } = useEditorModeContext();
+  const isVimMode = editorMode === 'vim';
 
   return (
     <>
-      <InputLabel sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
+      <Typography sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
         {label}
-      </InputLabel>
-      <MonacoEditorWrapper
+      </Typography>
+      <MonacoEditor
         height='500px'
         language={language}
         onChange={onChange}
@@ -39,12 +39,10 @@ export const EditorInitializer = ({ value, fileName, label, language, onChange }
           hover: { above: true },
         }}
         path={fileName}
-        theme='vs-dark'
         value={value}
-        vimMode={editorMode === 'vim'}
+        vimMode={isVimMode}
         width='95%'
       />
-      <InputLabel id='status-node' sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
     </>
   );
 };
