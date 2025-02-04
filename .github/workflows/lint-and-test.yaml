@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Rust cache
-        uses: Swatinem/rust-cache@v2.7.5
+        uses: Swatinem/rust-cache@v2.7.7
         with:
           prefix-key: cargo-debug-${{ matrix.platform }}
       - name: Install dependencies (ubuntu only)
@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Rust cache
-        uses: Swatinem/rust-cache@v2.7.5
+        uses: Swatinem/rust-cache@v2.7.7
         with:
           prefix-key: cargo-release-${{ matrix.platform }}
 
@@ -82,7 +82,7 @@ jobs:
         run: cargo build --release
 
       - name: Node.js cache
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4.2.0
         with:
           path: ${{ github.workspace }}/gui/frontend/.next/cache
           # Generate a new cache whenever packages or source files change.
@@ -93,7 +93,7 @@ jobs:
         run: npm ci
 
       - name: Sync node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -126,7 +126,7 @@ jobs:
           mv ./target/release/dar2oar ./build
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: DAR_to_OAR_Converter-${{runner.os}}-Portable
           path: |
