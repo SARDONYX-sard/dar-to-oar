@@ -12,11 +12,11 @@ use winnow::{
         StrContextValue::{Description, StringLiteral},
     },
     token::take,
-    PResult, Parser as _,
+    ModalResult, Parser as _,
 };
 
 /// Replace a prefixed radix number such as `0x` with Replace with hexadecimal number without prefix.
-fn radix_digits<'i, E>(input: &mut Stream<'i>) -> PResult<NumberLiteral, E>
+fn radix_digits<'i, E>(input: &mut Stream<'i>) -> ModalResult<NumberLiteral, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>
@@ -42,7 +42,7 @@ where
 }
 
 /// Parse a number(e.g. "0x123", "123", "12.3")
-pub fn number<'i, E>(input: &mut Stream<'i>) -> PResult<NumberLiteral, E>
+pub fn number<'i, E>(input: &mut Stream<'i>) -> ModalResult<NumberLiteral, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>

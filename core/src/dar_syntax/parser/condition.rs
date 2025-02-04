@@ -9,7 +9,7 @@ use winnow::{
     ascii::multispace0,
     combinator::{eof, opt},
     error::{
-        AddContext, FromExternalError, PResult, ParserError,
+        AddContext, FromExternalError, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::Description,
     },
@@ -17,7 +17,7 @@ use winnow::{
 };
 
 /// Parse DAR syntax
-pub fn parse_condition<'i, E>(input: &mut Stream<'i>) -> PResult<Condition<'i>, E>
+pub fn parse_condition<'i, E>(input: &mut Stream<'i>) -> ModalResult<Condition<'i>, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>

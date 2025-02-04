@@ -4,7 +4,7 @@ use winnow::{
     ascii::{multispace0, till_line_ending},
     combinator::{delimited, preceded, repeat},
     error::{
-        AddContext, PResult, ParserError,
+        AddContext, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::Description,
     },
@@ -12,7 +12,7 @@ use winnow::{
 };
 
 /// Comments starting with ';' until newline. 0 or more.
-pub fn line_comments0<'i, E>(input: &mut Stream<'i>) -> PResult<Vec<Stream<'i>>, E>
+pub fn line_comments0<'i, E>(input: &mut Stream<'i>) -> ModalResult<Vec<Stream<'i>>, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {
@@ -20,7 +20,7 @@ where
 }
 
 /// Comment starting with ';' until newline
-fn line_comment<'i, E>(input: &mut Stream<'i>) -> PResult<Stream<'i>, E>
+fn line_comment<'i, E>(input: &mut Stream<'i>) -> ModalResult<Stream<'i>, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {

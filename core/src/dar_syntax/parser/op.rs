@@ -5,7 +5,7 @@ use winnow::{
     ascii::{multispace0, Caseless},
     combinator::{alt, preceded},
     error::{
-        AddContext, PResult, ParserError,
+        AddContext, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::StringLiteral,
     },
@@ -14,7 +14,7 @@ use winnow::{
 
 /// - Expect an AND or OR string.
 /// - After AND or OR comes Expression with a line break in between, so the line break is also checked.
-pub fn parse_operator<'i, E>(input: &mut Stream<'i>) -> PResult<Operator, E>
+pub fn parse_operator<'i, E>(input: &mut Stream<'i>) -> ModalResult<Operator, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {

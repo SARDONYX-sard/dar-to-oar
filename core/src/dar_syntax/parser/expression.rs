@@ -6,7 +6,7 @@ use winnow::{
     ascii::{multispace0, Caseless},
     combinator::opt,
     error::{
-        AddContext, FromExternalError, PResult, ParserError,
+        AddContext, FromExternalError, ModalResult, ParserError,
         StrContext::{self, Expected},
         StrContextValue::StringLiteral,
     },
@@ -18,7 +18,7 @@ use winnow::{
 /// ```txt
 /// NOT IsInCombat()
 /// ```
-pub fn parse_expression<'i, E>(input: &mut Stream<'i>) -> PResult<Expression<'i>, E>
+pub fn parse_expression<'i, E>(input: &mut Stream<'i>) -> ModalResult<Expression<'i>, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>

@@ -11,7 +11,7 @@ use winnow::{
     ascii::multispace0,
     combinator::{delimited, opt, separated},
     error::{
-        AddContext, FromExternalError, PResult, ParserError,
+        AddContext, FromExternalError, ModalResult, ParserError,
         StrContext::{self, Label},
     },
     seq, Parser,
@@ -27,7 +27,7 @@ use winnow::{
 /// ; Pattern2
 /// IsActorValueEqualTo(0x00000007, 30)
 /// ```
-pub fn fn_call<'i, E>(input: &mut Stream<'i>) -> PResult<(&'i str, FnArgs<'i>), E>
+pub fn fn_call<'i, E>(input: &mut Stream<'i>) -> ModalResult<(&'i str, FnArgs<'i>), E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>
