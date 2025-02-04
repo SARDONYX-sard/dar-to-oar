@@ -1,6 +1,6 @@
 'use client';
 import { Box, type SxProps, type Theme } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Grid2 as Grid } from '@mui/material';
 
 import { Help } from '@/components/atoms/Help';
 import { useInjectJs } from '@/components/hooks/useInjectJs';

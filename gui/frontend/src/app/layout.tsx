@@ -1,17 +1,9 @@
-import dynamic from 'next/dynamic';
-
 export { metadata } from '@/components/meta/meta';
-import Loading from '@/components/templates/Loading';
-import '@fontsource/inter'
+import ClientLayout from '@/components/layout/ClientLayout';
 
 import type { ReactNode } from 'react';
 
 import '@/app/globals.css';
-
-const ClientLayout = dynamic(() => import('@/components/layout/ClientLayout'), {
-  loading: () => <Loading />,
-  ssr: false,
-});
 
 type Props = Readonly<{
   children: ReactNode;

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 /** HACK: To prevents the conversion button from being hidden because the menu is fixed. */
 const MenuPadding = () => <div style={{ height: '56px' }} />;
 
-export function Footer() {
+export function PageNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const [value, setValue] = useState(0);
