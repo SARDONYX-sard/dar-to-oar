@@ -2,7 +2,7 @@
 use super::Stream;
 use winnow::{
     error::{
-        AddContext, PResult, ParserError,
+        AddContext, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::Description,
     },
@@ -11,7 +11,7 @@ use winnow::{
 };
 
 /// Parse identifier
-pub fn ident<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
+pub fn ident<'i, E>(input: &mut Stream<'i>) -> ModalResult<&'i str, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {

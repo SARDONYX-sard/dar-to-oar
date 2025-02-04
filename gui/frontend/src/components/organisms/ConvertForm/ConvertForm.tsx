@@ -1,6 +1,5 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import { Button, FormGroup } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Button, FormGroup, Grid2 as Grid } from '@mui/material';
 import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 
 import { useTranslation } from '@/components/hooks/useTranslation';

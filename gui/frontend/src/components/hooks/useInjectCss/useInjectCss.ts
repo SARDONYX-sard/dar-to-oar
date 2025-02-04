@@ -27,7 +27,7 @@ export function useInjectCss() {
 
     if (!style.current) {
       styleElement.id = CSS.css.id; // Assign ID so that user can edit
-      styleElement.innerHTML = css;
+      styleElement.innerHTML = css; // NOTE: It is said that there is a risk of XSS, but this css is set by the user in the first place.
       style.current = styleElement;
       NOTIFY.try(() => document.head.appendChild(styleElement));
     }

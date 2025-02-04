@@ -4,7 +4,7 @@ use winnow::{
     ascii::take_escaped,
     combinator::{alt, delimited},
     error::{
-        AddContext, PResult, ParserError,
+        AddContext, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::Description,
     },
@@ -13,7 +13,7 @@ use winnow::{
 };
 
 /// single or double quote string
-pub fn string<'i, E>(input: &mut Stream<'i>) -> PResult<&'i str, E>
+pub fn string<'i, E>(input: &mut Stream<'i>) -> ModalResult<&'i str, E>
 where
     E: ParserError<Stream<'i>> + AddContext<Stream<'i>, StrContext>,
 {

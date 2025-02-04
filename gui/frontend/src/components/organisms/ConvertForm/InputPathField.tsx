@@ -1,4 +1,4 @@
-import { Grid2 as Grid, TextField, type TextFieldProps } from '@mui/material';
+import { Grid2 as Grid, TextField } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { SelectPathButton } from '@/components/molecules/SelectPathButton';
@@ -7,6 +7,7 @@ import { STORAGE } from '@/lib/storage';
 
 import { type FormProps, type PathFormKeys, setPathToStorage } from './ConvertForm';
 
+import type { TextFieldProps } from '@mui/material/TextField';
 import type { ReactNode } from 'react';
 
 type Props = {

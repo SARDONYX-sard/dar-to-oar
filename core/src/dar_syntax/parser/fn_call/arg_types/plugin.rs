@@ -6,7 +6,7 @@ use winnow::{
     ascii::multispace0,
     combinator::{delimited, separated_pair},
     error::{
-        AddContext, FromExternalError, PResult, ParserError,
+        AddContext, FromExternalError, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::Description,
     },
@@ -14,7 +14,7 @@ use winnow::{
 };
 
 /// Parse plugin value(e.g. `"Skyrim.esm" | 0x007`)
-pub fn parse_plugin<'i, E>(input: &mut Stream<'i>) -> PResult<FnArg<'i>, E>
+pub fn parse_plugin<'i, E>(input: &mut Stream<'i>) -> ModalResult<FnArg<'i>, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>

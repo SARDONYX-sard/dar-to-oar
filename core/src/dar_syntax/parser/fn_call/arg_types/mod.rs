@@ -9,7 +9,7 @@ use std::num::ParseIntError;
 use winnow::{
     combinator::{alt, fail},
     error::{
-        AddContext, FromExternalError, PResult, ParserError,
+        AddContext, FromExternalError, ModalResult, ParserError,
         StrContext::{self, Expected, Label},
         StrContextValue::{Description, StringLiteral},
     },
@@ -17,7 +17,7 @@ use winnow::{
 };
 
 /// Parse function arguments.
-pub fn parse_fn_arg<'i, E>(input: &mut Stream<'i>) -> PResult<FnArg<'i>, E>
+pub fn parse_fn_arg<'i, E>(input: &mut Stream<'i>) -> ModalResult<FnArg<'i>, E>
 where
     E: ParserError<Stream<'i>>
         + AddContext<Stream<'i>, StrContext>

@@ -28,7 +28,7 @@ export function useInjectJs() {
     isMounted.current = true;
 
     const scriptElement = document.createElement('script');
-    scriptElement.innerHTML = js;
+    scriptElement.innerHTML = js; // NOTE: It is said that there is a risk of XSS, but this js is set by the user in the first place.
     document.body.appendChild(scriptElement); // Throw `DOMException`
     script.current = scriptElement;
 
