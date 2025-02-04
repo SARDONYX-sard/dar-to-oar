@@ -61,6 +61,8 @@ export const LANG = {
    * - ref: https://react.i18next.com/guides/quick-start#configure-i18next
    */
   init() {
+    // Turn off warning for eslint@8 error in naming 3rd party library for some reason.
+    /* eslint react-hooks/rules-of-hooks: off */
     use(initReactI18next) // passes i18n down to react-i18next
       .init({
         resources: RESOURCES,
