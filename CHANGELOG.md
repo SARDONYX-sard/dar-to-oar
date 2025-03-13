@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2025-03-13
+### :sparkles: New Features
+- [`5758b2b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5758b2b04f1ec83d379e2590eecc5e514709c328) - **condition_parser**: support for argument inversion *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`ab568cc`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ab568cc9a43d61f5bda52ac24dacaf80c921d732) - **condition_parser**: change comparison operator from Le to Lt *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.10.0] - 2025-02-04
 ### :sparkles: New Features
 - [`61f2c8b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/61f2c8bdedbaaaa8ed03b8da0c2382705c4c5c6d) - **front**: use `theme-color` for `ConvertButton` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -508,3 +516,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.8.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.7.0...0.8.0
 [0.9.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.8.0...0.9.0
 [0.10.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.9.0...0.10.0
+[0.10.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.0...0.10.1
