@@ -68,7 +68,7 @@ mod tests {
         let expected = ConditionSet::CompareValues(CompareValues {
             negated: false,
             value_a: NumericValue::StaticValue(StaticValue { value: 3.5 }),
-            comparison: Cmp::Le,
+            comparison: Cmp::Lt,
             value_b: NumericValue::GlobalVariable(
                 PluginValue {
                     plugin_name: "Skyrim.esm".into(),
