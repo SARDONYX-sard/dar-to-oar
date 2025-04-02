@@ -917,7 +917,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_cli"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "clap",
  "dar2oar_core",
@@ -930,7 +930,7 @@ dependencies = [
 
 [[package]]
 name = "dar2oar_core"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "annotate-snippets",
  "async-walkdir",
@@ -1522,7 +1522,7 @@ dependencies = [
 
 [[package]]
 name = "g_dar2oar"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "chrono",
  "dar2oar_core",
@@ -2456,7 +2456,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc2f4eb4bc735547cfed7c0a4922cbd04a4655978c09b54f1f7b228750664c34"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -4639,9 +4639,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-shell"
-version = "2.2.0"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb2c50a63e60fb8925956cc5b7569f4b750ac197a4d39f13b8dd46ea8e2bad79"
+checksum = "69d5eb3368b959937ad2aeaf6ef9a8f5d11e01ffe03629d3530707bbcb27ff5d"
 dependencies = [
  "encoding_rs",
  "log",
