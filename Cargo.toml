@@ -18,7 +18,7 @@ resolver = "2"
 serde = { version = "1.0.217", features = ["derive"] } # Implement (De)Serialize
 serde_json = "1.0.138"                                 # core: To json/GUI: To avoid generate_context error.
 snafu = "0.8.5"
-tokio = { version = "1.43.0" }                         # Async runtime
+tokio = { version = "1.44.2" }                         # Async runtime
 tracing = { version = "0.1.41" }                       # logger
 tracing-subscriber = "0.3.19"
 tracing-appender = "0.2.3"
