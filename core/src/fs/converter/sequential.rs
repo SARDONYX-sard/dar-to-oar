@@ -75,9 +75,8 @@ async fn get_dar_file_count(root: impl AsRef<Path>) -> Result<usize> {
         let path = entry?.path();
         #[cfg(feature = "tracing")]
         tracing::trace!("Calculate walk_len[{}]: {:?}", walk_len, &path);
-        match is_contain_dar(path) {
-            Some(_) => walk_len += 1,
-            None => continue,
+        if is_contain_dar(path).is_some() {
+            walk_len += 1;
         }
     }
     Ok(walk_len)
