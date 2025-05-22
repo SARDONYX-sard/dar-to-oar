@@ -1,6 +1,7 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 use dar2oar_core::fs::converter::{parallel, sequential};
 use dar2oar_core::{read_mapping_table, remove_oar, Closure, ConvertOptions};
+use std::hint::black_box;
 use std::time::Duration;
 
 const REMOVE_TARGET: &str =

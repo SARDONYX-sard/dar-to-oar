@@ -59,7 +59,7 @@ pub fn parse_dar_syntax(input: Stream<'_>) -> Result<Condition<'_>> {
     let syntax = input;
     Ok(parse_condition::<ContextError>
         .parse(syntax)
-        .map_err(|error| ReadableError::from_parse(error, input))?)
+        .map_err(|error| ReadableError::from_parse(error))?)
 }
 
 #[cfg(test)]
@@ -69,7 +69,7 @@ macro_rules! parse_assert {
             Ok(actual) => pretty_assertions::assert_eq!(actual, $expected),
             Err(err) => panic!(
                 "{}",
-                crate::dar_syntax::errors::readable_error::ReadableError::from_parse(err, $input)
+                crate::dar_syntax::errors::readable_error::ReadableError::from_parse(err)
             ),
         }
     };
