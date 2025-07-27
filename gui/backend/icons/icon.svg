@@ -1,0 +1,26 @@
+<svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" role="img"
+  aria-label="TXT to JSON transform">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1168cb" />
+      <stop offset="100%" stop-color="rgba(166,184,194,0.452)52)" />
+    </linearGradient>
+
+    <linearGradient id="gradientStrokeFill" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7442b1" />
+      <stop offset="25%" stop-color="#8e44ad" />
+      <stop offset="50%" stop-color="#5b2c6f" />
+      <stop offset="75%" stop-color="#c71585" />
+      <stop offset="100%" stop-color="#ff6f91" />
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="150" height="150" rx="50" ry="50" fill="url(#grad)" />
+
+  <!-- leaf to center -->
+  <g transform="translate(20 20) scale(1.7)">
+    <path d="M32 2C24 18 10 26 10 38C10 50 24 62 32 62C40 62 54 50 54 38C54 26 40 18 32 2Z"
+      fill="url(#gradientStrokeFill)" stroke="url(#gradientStrokeFill)" stroke-width="3" stroke-linejoin="round" />
+  </g>
+</svg>
