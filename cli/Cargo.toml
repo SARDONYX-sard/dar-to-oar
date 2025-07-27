@@ -16,6 +16,8 @@ name = "dar2oar"
 path = "./src/main.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[build-dependencies]
+winres = "0.1.12" # Meta information can be added to the exe.
 
 [dependencies]
 clap = { version = "4.5.28", features = ["derive"] } # For CLI
