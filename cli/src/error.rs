@@ -1,5 +1,4 @@
 //! errors of `This crate`
-use std::{io, path::PathBuf};
 
 /// GUI Error
 #[derive(Debug, snafu::Snafu)]
@@ -7,7 +6,7 @@ use std::{io, path::PathBuf};
 pub enum Error {
     /// Standard io error
     #[snafu(transparent)]
-    FailedIo { source: io::Error },
+    FailedIo { source: std::io::Error },
 
     #[snafu(transparent)]
     FailedConvert {
