@@ -1,17 +1,12 @@
 //! errors of `This crate`
-use std::{io, path::PathBuf};
 
 /// GUI Error
 #[derive(Debug, snafu::Snafu)]
 #[snafu(visibility(pub))]
 pub enum Error {
-    /// Failed to read file from
-    #[snafu(display("{source}: {}", path.display()))]
-    FailedReadFile { source: io::Error, path: PathBuf },
-
     /// Standard io error
     #[snafu(transparent)]
-    FailedIo { source: io::Error },
+    FailedIo { source: std::io::Error },
 
     #[snafu(transparent)]
     FailedConvert {

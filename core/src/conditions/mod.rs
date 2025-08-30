@@ -90,7 +90,7 @@ gen_cmp_num_struct!(
     /// - Condition name "Level"
     Level,
     /// Compare current game time and numeric value.
-    /// - Condition name "CurrentGameTime"
+    /// - Condition name `CurrentGameTime`
     CurrentGameTime
 );
 

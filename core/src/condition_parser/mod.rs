@@ -24,7 +24,7 @@ use std::path::Path;
 ///
 /// # Info
 /// Now, `path` is only used in case of errors.
-pub fn parse_dar2oar<P>(path: P, input: &str) -> Result<Vec<ConditionSet>>
+pub fn parse_dar2oar<P>(path: P, input: &'_ str) -> Result<Vec<ConditionSet<'_>>>
 where
     P: AsRef<Path>,
 {

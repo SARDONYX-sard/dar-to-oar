@@ -19,12 +19,12 @@ default = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-annotate-snippets = "0.11.5" # Error reporting display
+annotate-snippets = "0.12.0" # Error reporting display
 async-walkdir = "2.1.0" # To traverse dir recursivly(Single thiread)
 compact_str = { version = "0.9.0", features = ["serde"] }
 jwalk = "0.8.1" # To parallel traverse dir recursivly
 serde = { workspace = true } # Implement (De)Serializer
-serde-untagged = "0.1.7"
+serde-untagged = "0.1.8"
 serde_json = { workspace = true } # Json converter
 snafu = { workspace = true } # define errors type
 tokio = { workspace = true, features = [
@@ -36,7 +36,7 @@ tokio = { workspace = true, features = [
 ] } # Async Executor
 tokio-stream = "0.1.17" # Async next() method
 tracing = { workspace = true, optional = true } # Logger
-winnow = "0.7.12" # Parser combinator
+winnow = "0.7.13" # Parser combinator
 
 [dev-dependencies]
 criterion = { version = "0.7.0", features = [
