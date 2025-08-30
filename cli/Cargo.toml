@@ -20,7 +20,7 @@ path = "./src/main.rs"
 winres = "0.1.12" # Meta information can be added to the exe.
 
 [dependencies]
-clap = { version = "4.5.41", features = ["derive"] } # For CLI
+clap = { version = "4.5.46", features = ["derive"] } # For CLI
 dar2oar_core = { workspace = true, features = ["tracing"] }
 snafu = { workspace = true }
 tokio = { workspace = true, features = [
