@@ -82,16 +82,22 @@ impl ReadableError {
 
 impl core::fmt::Display for ReadableError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        let message = annotate_snippets::Level::Error.title(&self.title).snippet(
-            annotate_snippets::Snippet::source(&self.input)
-                .fold(true)
-                .annotation(
-                    annotate_snippets::Level::Error
-                        .span(self.span.clone())
-                        .label(&self.message),
-                ),
-        );
-        let renderer = annotate_snippets::Renderer::plain();
+        // https://docs.rs/annotate-snippets/0.12.0/annotate_snippets/index.html
+        use annotate_snippets::{AnnotationKind, Group, Level, Renderer, Snippet};
+
+        let message = &[
+            Group::with_title(Level::ERROR.primary_title(self.title.clone())).element(
+                Snippet::source(&self.input)
+                    .line_start(self.span.start)
+                    .fold(true)
+                    .annotation(
+                        AnnotationKind::Primary
+                            .span(self.span.clone())
+                            .label(&self.message),
+                    ),
+            ),
+        ];
+        let renderer = Renderer::plain();
         let rendered = renderer.render(message);
         rendered.fmt(f)
     }

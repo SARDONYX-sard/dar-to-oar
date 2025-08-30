@@ -5,10 +5,6 @@ use std::{io, path::PathBuf};
 #[derive(Debug, snafu::Snafu)]
 #[snafu(visibility(pub))]
 pub enum Error {
-    /// Failed to read file from
-    #[snafu(display("{source}: {}", path.display()))]
-    FailedReadFile { source: io::Error, path: PathBuf },
-
     /// Standard io error
     #[snafu(transparent)]
     FailedIo { source: io::Error },
