@@ -78,7 +78,6 @@
     clippy::unnested_or_patterns,
     clippy::unseparated_literal_suffix,
     clippy::unused_self,
-    clippy::unwrap_in_result,
     clippy::unwrap_used,
     clippy::used_underscore_binding,
     clippy::useless_let_if_seq,

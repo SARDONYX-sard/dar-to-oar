@@ -137,8 +137,7 @@ mod test {
         quick_tracing::try_init(test = "convert_non_mpsc", level = "DEBUG")
     )]
     async fn convert_non_mpsc() -> Result<()> {
-        convert_dar_to_oar(create_options().await?, |_| {}).await?;
-        Ok(())
+        convert_dar_to_oar(create_options().await?, |_| {}).await
     }
 
     #[ignore = "need MOD data"]
