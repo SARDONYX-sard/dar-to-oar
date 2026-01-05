@@ -2,14 +2,13 @@
 
 import { type Resource, use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-
 import { NOTIFY } from '@/lib/notify';
 import { OBJECT } from '@/lib/object-utils';
 import { STORAGE } from '@/lib/storage';
 import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 
-import dictEnUs from '@/../../locales/en-US.json';
-import dictJaJp from '@/../../locales/ja-JP.json';
+import dictEnUs from '../../../../../locales/en-US.json';
+import dictJaJp from '../../../../../locales/ja-JP.json';
 
 /** The keys in RESOURCE are language tags according to the BCP-47 standard.
     - See: https://partnerhub.warnermediagroup.com/metadata/languages */

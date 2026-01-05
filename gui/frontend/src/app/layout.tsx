@@ -1,7 +1,7 @@
 export { metadata } from '@/components/meta/meta';
-import ClientLayout from '@/components/layout/ClientLayout';
 
 import type { ReactNode } from 'react';
+import ClientLayout from '@/components/layout/ClientLayout';
 
 import '@/app/globals.css';
 

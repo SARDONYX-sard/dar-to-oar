@@ -12,10 +12,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.sortJSON": "never",
-    "source.organizeImports.biome": "never"
+    "source.fixAll.biome": "explicit"
   },
   "evenBetterToml.formatter.alignComments": true,
   // "rust-analyzer.checkOnSave": false,

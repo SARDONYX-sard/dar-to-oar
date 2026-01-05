@@ -1,16 +1,16 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "extends": [],
   "files": {
-    "ignore": [
-      "**/gen",
-      "./test",
-      ".next",
-      "cspell.jsonc",
-      "monaco-vim.d.ts", //Automatic generation by devtool and LM, so any is used
-      "node_modules",
-      "out",
-      "target"
+    "includes": [
+      "**",
+      "!cspell.jsonc",
+      "!gui/backend/gen",
+      "!gui/frontend/.next",
+      "!gui/frontend/**/*.d.ts",
+      "!gui/frontend/out",
+      "!node_modules",
+      "!target"
     ],
     "ignoreUnknown": true
   },
@@ -40,15 +40,10 @@
     }
   },
   "linter": {
-    "ignore": ["./tools/version_up.js"],
     "rules": {
-      "all": true,
       "correctness": {
         "noUndeclaredDependencies": "off",
         "useImportExtensions": "off"
-      },
-      "nursery": {
-        "all": false
       },
       "performance": {
         "noBarrelFile": "off",
@@ -58,24 +53,10 @@
         "noDefaultExport": "off"
       },
       "suspicious": {
-        "noConsoleLog": "off", // Configuration to be removed in due course.
+        "noDuplicateJsxProps": "error",
+        "noConsole": "off", // Configuration to be removed in due course.
         "noReactSpecificProps": "off" // Too many false positives.
       }
     }
-  },
-  "organizeImports": {
-    "enabled": true
-  },
-  "overrides": [
-    {
-      "include": ["./gui/frontend/src/components/**/*"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useFilenamingConvention": "off" // Because we want to use PascalCase for the React component file name.
-          }
-        }
-      }
-    }
-  ]
+  }
 }

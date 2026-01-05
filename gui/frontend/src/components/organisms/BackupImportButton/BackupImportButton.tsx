@@ -1,5 +1,4 @@
 import FileOpen from '@mui/icons-material/FileOpen';
-import {} from '@mui/material';
 import { useState } from 'react';
 
 import { useTranslation } from '@/components/hooks/useTranslation';

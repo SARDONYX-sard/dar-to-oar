@@ -1,4 +1,4 @@
-import { open } from '@tauri-apps/plugin-shell';
+import { openPath as tauriOpenPath, openUrl as tauriOpenUrl } from '@tauri-apps/plugin-opener';
 
 import { NOTIFY } from '@/lib/notify';
 
@@ -12,6 +12,24 @@ import { NOTIFY } from '@/lib/notify';
  * @param {string} path
  * @param {string} [openWith]
  */
-export async function start(path: string, openWith?: string) {
-  await NOTIFY.asyncTry(async () => await open(path, openWith));
+export async function openUrl(path: string) {
+  await NOTIFY.asyncTry(async () => {
+    await tauriOpenUrl(path);
+  });
+}
+
+/**
+ * Wrapper tauri's `openPath` with `notify.error`
+ *
+ * # Why need this?
+ * Use the backend api to jump to the link so that it can be opened in the default browser without opening it in the webview.
+ *
+ * @export
+ * @param {string} path
+ * @param {string} [openWith]
+ */
+export async function openPath(path: string) {
+  await NOTIFY.asyncTry(async () => {
+    await tauriOpenPath(path);
+  });
 }

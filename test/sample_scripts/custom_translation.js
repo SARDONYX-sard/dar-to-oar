@@ -125,6 +125,7 @@
     localStorage.setItem('locale', 'custom');
   }
 
+  // biome-ignore lint/correctness/noUnusedVariables: ignore
   function clearCustomTranslation() {
     localStorage.removeItem('custom-translation-dict');
   }

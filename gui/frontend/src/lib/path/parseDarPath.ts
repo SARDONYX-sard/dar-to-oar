@@ -1,3 +1,5 @@
+// biome-ignore-all lint/suspicious/noControlCharactersInRegex: For strict ASCII
+
 // The information necessary for the conversion
 export type ParsedPath = {
   oarRoot: string;
@@ -5,9 +7,7 @@ export type ParsedPath = {
 };
 
 const PATH_SEP = /\\|\//g;
-// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
 const ASCII0 = /^[\x00-\x7F]*$/;
-// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
 const NON_ASCII = /[^\x00-\x7F]+/;
 
 // Check if a string is ASCII

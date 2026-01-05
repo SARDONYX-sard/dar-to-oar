@@ -1,17 +1,13 @@
 'use client'; // If this directive is not present on each page, a build error will occur.
-import { Box, type SxProps, type Theme } from '@mui/material';
-import { Grid } from '@mui/material';
-
+import { Box, Grid, type SxProps, type Theme } from '@mui/material';
+import type { MouseEventHandler } from 'react';
 import { Help } from '@/components/atoms/Help';
 import { useInjectJs } from '@/components/hooks/useInjectJs';
+import { HELP_INFO } from '@/components/meta/meta';
 import { CodeEditorTab } from '@/components/organisms/CodeEditorTab';
 import { Tabs } from '@/components/organisms/Tabs';
 import { useTabContext } from '@/components/providers/TabProvider';
-import { start } from '@/services/api/shell';
-
-import packageJson from '@/../../package.json';
-
-import type { MouseEventHandler } from 'react';
+import { openUrl } from '@/services/api/shell';
 
 const sx: SxProps<Theme> = {
   alignItems: 'center',
@@ -45,7 +41,7 @@ export const Settings = () => {
 
 const TabsMenu = () => {
   const handleHelpClick: MouseEventHandler<HTMLButtonElement> = (_event) => {
-    start(packageJson.homepage); // jump by backend api
+    openUrl(HELP_INFO.homepage); // jump by backend api
   };
 
   return (
@@ -54,7 +50,7 @@ const TabsMenu = () => {
         <Tabs />
       </Grid>
       <Grid size={4} sx={{ overflowX: 'auto' }}>
-        <Help onClick={handleHelpClick} version={packageJson.version} />
+        <Help onClick={handleHelpClick} version={HELP_INFO.version} />
       </Grid>
     </Grid>
   );

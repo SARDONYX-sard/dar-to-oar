@@ -1,10 +1,9 @@
 import { app } from '@tauri-apps/api';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import { appLogDir } from '@tauri-apps/api/path';
-import { open } from '@tauri-apps/plugin-shell';
-
 import { STORAGE } from '@/lib/storage';
 import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
+import { openPath } from '@/services/api/shell';
 
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
 
@@ -36,7 +35,7 @@ export const LOG = {
    */
   async openFile() {
     const logFile = `${await appLogDir()}/${await app.getName()}.log`;
-    await open(logFile);
+    await openPath(logFile);
   },
 
   /**
@@ -44,7 +43,7 @@ export const LOG = {
    * @throws - if not found path
    */
   async openDir() {
-    await open(await appLogDir());
+    await openPath(await appLogDir());
   },
 
   /**
@@ -53,7 +52,9 @@ export const LOG = {
    * @returns A promise that resolves when the log level is changed.
    */
   async changeLevel(logLevel?: LogLevel) {
-    await invoke('change_log_level', { logLevel });
+    if (isTauri()) {
+      await invoke('change_log_level', { logLevel });
+    }
   },
 
   normalize,

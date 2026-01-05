@@ -1,4 +1,7 @@
+/** biome-ignore-all lint/nursery/noUnnecessaryConditions: To configurable  */
+/** biome-ignore-all lint/nursery/noUnresolvedImports: To use Node.js */
 //@ts-check
+
 function usage() {
   return `
   Usage:
@@ -21,11 +24,8 @@ const defaultVersion = '2'; // 2: Bump up `minor` version is default
 const useGpg = true; // Verified commit with GPG key.
 
 // import modules
-// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const fs = require('node:fs');
-// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const path = require('node:path');
-// biome-ignore lint/correctness/noNodejsModules: <explanation>
 const { execSync } = require('node:child_process');
 // paths
 const basePath = path.resolve(__dirname, '..');
@@ -34,29 +34,25 @@ const cargoTomlPath = path.join(basePath, 'Cargo.toml');
 const issueTemplatePath = path.join(basePath, '.github', 'ISSUE_TEMPLATE', 'bug-report.yaml');
 // Constants by path
 const packageJson = require(packageJsonPath);
-const currentVersion = packageJson.version;
+const CURRENT_VERSION = packageJson.version;
 
 if (isDebug) {
-  // biome-ignore lint/suspicious/noConsole: <explanation>
   console.log(packageJsonPath);
-  // biome-ignore lint/suspicious/noConsole: <explanation>
   console.log(cargoTomlPath);
-  // biome-ignore lint/suspicious/noConsole: <explanation>
   console.log(issueTemplatePath);
 }
 main();
 
 function main() {
   const versionType = process.argv[2] || defaultVersion;
-  const newVersion = updateVersion(currentVersion, versionType);
+  const newVersion = updateVersion(CURRENT_VERSION, versionType);
 
   updatePackageJson(newVersion);
   updateCargoToml(newVersion);
   updateIssueTemplate(newVersion);
-  gitCommitAndTag(currentVersion, newVersion);
+  gitCommitAndTag(CURRENT_VERSION, newVersion);
 
-  // biome-ignore lint/suspicious/noConsole: <explanation>
-  console.log(`Updated version: ${currentVersion} => ${newVersion}`);
+  console.log(`Updated version: ${CURRENT_VERSION} => ${newVersion}`);
 }
 
 /**
@@ -86,16 +82,17 @@ function updateVersion(currentVersion, versionType) {
  * @param {string} newVersion
  */
 function updatePackageJson(newVersion) {
-  const packageJson = require(packageJsonPath);
-  packageJson.version = newVersion;
-  fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+  const newPackageJson = {
+    ...packageJson,
+    version: newVersion,
+  };
+  fs.writeFileSync(packageJsonPath, `${JSON.stringify(newPackageJson, null, 2)}\n`);
 }
 
 /**
  * @param {string} newVersion
  */
 function updateCargoToml(newVersion) {
-  // biome-ignore lint/performance/useTopLevelRegex: <explanation>
   const workSpaceRegExp = /\[workspace\.package\]\nversion = "(.*)"/;
   let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
   cargoToml = cargoToml.replace(workSpaceRegExp, `[workspace.package]\nversion = "${newVersion}"`);
@@ -106,11 +103,10 @@ function updateCargoToml(newVersion) {
  * @param {string} newVersion
  */
 function updateIssueTemplate(newVersion) {
-  // biome-ignore lint/performance/useTopLevelRegex: <explanation>
   const issueRexExp = /options:\n((\s+- .*\n)+)/;
   let issueTemplate = fs.readFileSync(issueTemplatePath, 'utf8');
   const versionList = issueTemplate.match(issueRexExp)?.[1];
-  if (versionList == null) {
+  if (!versionList) {
     throw new Error('Invalid version');
   }
 
@@ -143,7 +139,6 @@ function gitCommitAndTag(currentVersion, newVersion) {
     // Create Git tag
     execSync(`git tag ${newVersion} ${tagFlags} -m "Version ${newVersion}"`);
 
-    // biome-ignore lint/suspicious/noConsole: <explanation>
     console.log('Git commit and tag created successfully.');
   } catch (error) {
     throw new Error(`Failed to create Git commit and tag: ${error}`);

@@ -1,13 +1,11 @@
+import type { ComponentPropsWithRef } from 'react';
 import { useFormContext } from 'react-hook-form';
-
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { parseDarPath } from '@/lib/path/parseDarPath';
 
-import { MappingHelpButton } from './MappingHelpButton';
-
 import type { FormProps } from './ConvertForm';
 import type { InputPathField } from './InputPathField';
-import type { ComponentPropsWithRef } from 'react';
+import { MappingHelpButton } from './MappingHelpButton';
 
 /** NOTE: Must be called in `FormProvider` as it calls `useFormContext` internally */
 export const useInputPathFields = () => {

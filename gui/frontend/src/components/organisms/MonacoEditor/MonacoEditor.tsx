@@ -4,19 +4,16 @@
 // issue: https://github.com/suren-atoyan/monaco-react/issues/136#issuecomment-731420078
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { isTauri } from '@tauri-apps/api/core';
-import { type ComponentPropsWithoutRef, type MutableRefObject, memo, useCallback, useEffect, useRef } from 'react';
-
-import { start } from '@/services/api/shell';
-
+import type monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type { VimAdapterInstance } from 'monaco-vim';
+import { type ComponentPropsWithoutRef, memo, type RefObject, useCallback, useEffect, useRef } from 'react';
+import { openUrl } from '@/services/api/shell';
 import { atomOneDarkPro } from './atom_onedark_pro';
 import { loadVimKeyBindings } from './vim_key_bindings';
 
-import type monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import type { VimEnvironment } from 'monaco-vim';
-
 export type MonacoEditor = monaco.editor.IStandaloneCodeEditor;
-export type VimModeRef = MutableRefObject<VimEnvironment | null>;
-export type VimStatusRef = MutableRefObject<HTMLDivElement | null>;
+export type VimModeRef = RefObject<VimAdapterInstance | null>;
+export type VimStatusRef = RefObject<HTMLDivElement | null>;
 
 type Props = ComponentPropsWithoutRef<typeof Editor> & {
   id?: string;
@@ -31,9 +28,10 @@ export const MonacoEditor = memo(function MonacoEditor({ id, vimMode = false, on
 
   const handleDidMount: OnMount = useCallback(
     (editor, monaco) => {
-      setLangCustomConfig(monaco);
-
       editorRef.current = editor;
+
+      setLangCustomConfig(editor, monaco);
+
       if (vimMode) {
         loadVimKeyBindings({ editor, vimModeRef, vimStatusRef });
       }
@@ -75,12 +73,13 @@ export const MonacoEditor = memo(function MonacoEditor({ id, vimMode = false, on
  * - javascript: enable inlay-hint
  * - json: enable schema
  * */
-const setLangCustomConfig = (monacoEnv: typeof monaco) => {
+const setLangCustomConfig: OnMount = (_, monacoEnv) => {
+
   // NOTE: By default, the URL is opened in the app, so prevent this and call the backend API to open the URL in the browser of each PC.
   if (isTauri()) {
     monacoEnv.editor.registerLinkOpener({
       open(url) {
-        start(url.toString());
+        openUrl(url.toString());
         //? False is for hooks, but true replaces the function.
         //? In this case, it is a replacement because it opens the URL with its own API.
         return true;
