@@ -1,14 +1,14 @@
 import { Button } from '@mui/material';
 
 import { useTranslation } from '@/components/hooks/useTranslation';
-import { start } from '@/services/api/shell';
+import { openUrl } from '@/services/api/shell';
 
 import type { MouseEventHandler } from 'react';
 export const MappingHelpButton = () => {
   const { t } = useTranslation();
   const href = `https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`;
   const handleMappingClick: MouseEventHandler<HTMLButtonElement> = (_e) => {
-    start(href);
+    openUrl(href);
   };
 
   return (

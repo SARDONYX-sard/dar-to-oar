@@ -17,20 +17,20 @@ dist = false # To run CI and build separately from CLI (cargo dist)
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.4.0", features = [] }
+tauri-build = { version = "2.5.3", features = [] }
 
 [dependencies]
-chrono = "0.4.41"
+chrono = "0.4.42"
 dar2oar_core = { workspace = true, features = ["tracing"] }
 once_cell = "1.21.3"
 serde = { workspace = true, features = ["derive"] }                  # Implement (De)Serializer
 serde_json = { workspace = true }                                    # To avoid generate_context error.
 snafu = { workspace = true }                                         # Implement error types
-tauri = { version = "2.8.4", features = ["devtools", "native-tls"] } # For GUI
-tauri-plugin-dialog = "2.3.3"                                        # https://github.com/tauri-apps/plugins-workspace
-tauri-plugin-fs = "2.4.2"
-tauri-plugin-shell = "2.3.1"
-tauri-plugin-window-state = "2.4.0"
+tauri = { version = "2.9.5", features = ["devtools", "native-tls"] } # For GUI
+tauri-plugin-dialog = "2.4.2"                                        # https://github.com/tauri-apps/plugins-workspace
+tauri-plugin-fs = "2.4.4"
+tauri-plugin-opener = "2.5.2"
+tauri-plugin-window-state = "2.4.1"
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
