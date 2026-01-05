@@ -1,7 +1,7 @@
 {
   "name": "dar-to-oar",
   "description": "Converter",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "license": "MIT",
   "homepage": "https://github.com/SARDONYX-sard/dar-to-oar",
   "private": true,
