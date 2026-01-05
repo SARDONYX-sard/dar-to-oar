@@ -1,5 +1,6 @@
 import type MonacoVim from 'monaco-vim';
 import type { Vim } from 'monaco-vim';
+import type { MappedOmit } from '@/lib/object-utils';
 import type { MonacoEditor, VimModeRef, VimStatusRef } from './MonacoEditor';
 
 type DefineVimExCommand = {
@@ -31,7 +32,7 @@ const setCustomVimKeyConfig = (editor: MonacoEditor, vim: Vim) => {
     { actionId: 'editor.action.revealDefinition', key: 'gd' },
     { actionId: 'editor.action.showDefinitionPreviewHover', key: 'KK' }, // For some reason, it doesn't work.
     { actionId: 'editor.action.showHover', key: 'K' },
-  ] as const satisfies Omit<DefineVimExCommand, 'vim' | 'editor'>[];
+  ] as const satisfies MappedOmit<DefineVimExCommand, 'vim' | 'editor'>[];
 
   for (const command of vimExCommands) {
     defineVimExCommand({ ...command, vim, editor });

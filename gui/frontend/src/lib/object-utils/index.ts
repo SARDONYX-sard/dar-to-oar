@@ -72,3 +72,8 @@ export const OBJECT = {
     return obj !== null;
   },
 } as const;
+
+/** Instead of `Omit`
+ * @see https://github.com/microsoft/TypeScript/issues/54451
+ */
+export type MappedOmit<T, K extends keyof T> = { [P in keyof T as P extends K ? never : P]: T[P] };
