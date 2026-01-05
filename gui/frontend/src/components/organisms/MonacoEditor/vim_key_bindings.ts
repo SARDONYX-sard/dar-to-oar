@@ -1,5 +1,8 @@
 import { initVimMode, type Vim, VimMode } from 'monaco-vim';
+import type { MappedOmit } from '@/lib/object-utils';
 import type { MonacoEditor, VimModeRef, VimStatusRef } from './MonacoEditor';
+
+// HACK: Using `getAction` for hover and `trigger` for everything else somehow enables hover with the `K` key.
 
 /**
  * Handles single vs double 'K' presses:
@@ -17,7 +20,7 @@ const hover = async (editor: MonacoEditor) => {
 
   if (isHoverVisible) {
     // Double press detected → show definition preview hover
-    return await editor.getAction('editor.action.showDefinitionPreviewHover')?.run();
+    await editor.getAction('editor.action.showDefinitionPreviewHover')?.run();
   }
 
   await editor.getAction('editor.action.showHover')?.run();
@@ -36,7 +39,7 @@ type DefineVimExCommand = {
 const defineVimExCommand = ({ vim, exCommand, editor, actionId, key, mode }: DefineVimExCommand) => {
   const cmd = exCommand ?? actionId.split('.').at(-1) ?? actionId;
   vim.defineEx(cmd, cmd, async () => {
-    await editor.getAction(actionId)?.run();
+    await editor.trigger('source', actionId, null);
   });
   vim.map(key, `:${cmd}`, mode ?? 'normal');
 };
@@ -49,8 +52,9 @@ const setCustomVimKeyConfig = (editor: MonacoEditor, vim: Vim) => {
   const vimExCommands = [
     { actionId: 'editor.action.jumpToBracket', key: '%' },
     { actionId: 'editor.action.openLink', key: 'gx' },
+    { actionId: 'editor.action.goToReferences', key: 'gf' },
     { actionId: 'editor.action.revealDefinition', key: 'gd' },
-  ] as const satisfies Omit<DefineVimExCommand, 'vim' | 'editor'>[];
+  ] as const satisfies MappedOmit<DefineVimExCommand, 'vim' | 'editor'>[];
 
   for (const command of vimExCommands) {
     defineVimExCommand({ ...command, vim, editor });
