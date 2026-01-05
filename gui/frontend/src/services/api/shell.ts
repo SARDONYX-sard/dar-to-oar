@@ -14,7 +14,7 @@ import { NOTIFY } from '@/lib/notify';
  */
 export async function openUrl(path: string) {
   await NOTIFY.asyncTry(async () => {
-      await tauriOpenUrl(path);
+    await tauriOpenUrl(path);
   });
 }
 

@@ -1,8 +1,7 @@
+import type { SnackbarOrigin } from 'notistack';
 import { NOTIFY } from '@/lib/notify';
 import { OBJECT } from '@/lib/object-utils';
 import { STORAGE } from '@/lib/storage';
-
-import type { SnackbarOrigin } from 'notistack';
 
 /**
  * Type representing the configuration for the notification system.

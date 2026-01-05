@@ -44,7 +44,7 @@ export const LOG = {
    * @throws - if not found path
    */
   async openDir() {
-    await openPath(await  appLogDir());
+    await openPath(await appLogDir());
   },
 
   /**

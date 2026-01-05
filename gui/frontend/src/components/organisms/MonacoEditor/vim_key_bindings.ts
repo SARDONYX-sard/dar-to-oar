@@ -1,6 +1,6 @@
-import type { MonacoEditor, VimModeRef, VimStatusRef } from './MonacoEditor';
 import type MonacoVim from 'monaco-vim';
 import type { Vim } from 'monaco-vim';
+import type { MonacoEditor, VimModeRef, VimStatusRef } from './MonacoEditor';
 
 type DefineVimExCommand = {
   actionId: string;
@@ -40,13 +40,13 @@ const setCustomVimKeyConfig = (editor: MonacoEditor, vim: Vim) => {
 
 type VimKeyLoader = (props: { editor: MonacoEditor; vimModeRef: VimModeRef; vimStatusRef: VimStatusRef }) => void;
 export const loadVimKeyBindings: VimKeyLoader = ({ editor, vimModeRef, vimStatusRef }) => {
-  // @ts-ignore
+  // @ts-expect-error
   window.require.config({
     paths: {
       'monaco-vim': 'https://unpkg.com/monaco-vim/dist/monaco-vim',
     },
   });
-  // @ts-ignore
+  // @ts-expect-error
   window.require(['monaco-vim'], (monacoVim: typeof MonacoVim) => {
     const { Vim } = monacoVim.VimMode;
     setCustomVimKeyConfig(editor, Vim);

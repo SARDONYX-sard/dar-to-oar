@@ -1,10 +1,8 @@
 import { Box, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
-import { Controller, useFormContext } from 'react-hook-form';
-
-import { STORAGE } from '@/lib/storage';
-
-import type { FormProps } from './ConvertForm';
 import type { ReactNode } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import { STORAGE } from '@/lib/storage';
+import type { FormProps } from './ConvertForm';
 
 type PickBooleans<T> = {
   [K in keyof T as T[K] extends boolean ? K : never]: T[K];

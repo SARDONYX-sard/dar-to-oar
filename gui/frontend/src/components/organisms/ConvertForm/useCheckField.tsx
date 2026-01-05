@@ -2,11 +2,9 @@ import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
-import { useTranslation } from '@/components/hooks/useTranslation';
-
-import type { CheckboxField } from './CheckboxField';
 import type { ComponentPropsWithRef } from 'react';
+import { useTranslation } from '@/components/hooks/useTranslation';
+import type { CheckboxField } from './CheckboxField';
 
 export const useCheckFields = () => {
   const { t } = useTranslation();

@@ -1,11 +1,10 @@
 'use client';
-import { Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 
+import type { FormControlLabelProps } from '@mui/material';
+import { Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 import { useStorageState } from '@/components/hooks/useStorageState/useStorageState';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { HIDDEN_CACHE_OBJ } from '@/lib/storage/cacheKeys';
-
-import type { FormControlLabelProps } from '@mui/material';
 
 type Props = Omit<FormControlLabelProps, 'control' | 'label'>;
 
