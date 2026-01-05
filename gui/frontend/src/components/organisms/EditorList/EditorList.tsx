@@ -14,7 +14,6 @@ export const EditorList = () => {
   const handleOnChange = useCallback<OnChangeHandler>(
     ({ target }) => {
       setEditorMode(EDITOR_MODE.normalize(target.value));
-      window.location.reload();
     },
     [setEditorMode],
   );

@@ -1,7 +1,6 @@
 import { app } from '@tauri-apps/api';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import { appLogDir } from '@tauri-apps/api/path';
-
 import { STORAGE } from '@/lib/storage';
 import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { openPath } from '@/services/api/shell';
@@ -53,7 +52,9 @@ export const LOG = {
    * @returns A promise that resolves when the log level is changed.
    */
   async changeLevel(logLevel?: LogLevel) {
-    await invoke('change_log_level', { logLevel });
+    if (isTauri()) {
+      await invoke('change_log_level', { logLevel });
+    }
   },
 
   normalize,
