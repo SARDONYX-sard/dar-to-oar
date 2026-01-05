@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.3] - 2025-01-6
+### :sparkles: New Features
+- [`9154aec`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9154aec71ec588b047b39a8084b0205003a86f0b) - create new icon *(commit by @SARDONYX-sard)*
+- [`054dbc5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/054dbc55bb229091617cb0ff926a0f1ec95323fa) - create new icon2 *(commit by @SARDONYX-sard)*
+- [`c244bbd`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c244bbdf808b2921e3aaad3e4becc176ab3a476d) - **cli**: add icon *(commit by @SARDONYX-sard)*
+
+### :bug: Bug Fixes
+- [`a96f85b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a96f85b78e60ba2981c204464376b6a1b18cf2ac) - correct import path for SelectChangeEvent type *(commit by @SARDONYX-sard)*
+- [`e7b1b9e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/e7b1b9e06c6fcb761a3101716e8d998ab0c4c718) - update import paths to use relative paths for package.json and locale files *(commit by @SARDONYX-sard)*
+- [`74dda04`](https://github.com/SARDONYX-sard/dar-to-oar/commit/74dda04fb1dbf7f9146e8379af7d21335c94c6ea) - **frontend**: fix `monaco-vim` *(commit by @SARDONYX-sard)*
+- [`0633719`](https://github.com/SARDONYX-sard/dar-to-oar/commit/0633719d58b2b5668384bf70d5977d00827370ba) - **frontend**: fix `monaco-vim` *(commit by @SARDONYX-sard)*
+- [`00ca3e5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/00ca3e5980344cd668d9eb407f18d1fa4ac5e9c2) - **vim**: improve hover functionality and update command execution *(commit by @SARDONYX-sard)*
+
+### :recycle: Refactors
+- [`2030af9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/2030af9bfd804ec892b45cbd4f33042fc98c32db) - remove unused code *(commit by @SARDONYX-sard)*
+- [`b017ae4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b017ae4996df8af35e0df7acecc70b6014cfae07) - remove unused imports and clean up code *(commit by @SARDONYX-sard)*
+
+### :wrench: Chores
+- [`fac6de6`](https://github.com/SARDONYX-sard/dar-to-oar/commit/fac6de65a3f16d02f5dd32c4c0e26045e896947e) - **cspell**: add `winres` *(commit by @SARDONYX-sard)*
+- [`1442d5b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1442d5b0190b2f1c8efca303541c78884109ce5a) - **clippy**: remove duplicate lint *(commit by @SARDONYX-sard)*
+- [`6f0af46`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6f0af4687c1d6cc57685c63e91a16b3120190621) - **clippy**: remove duplicate lint *(commit by @SARDONYX-sard)*
+- [`a4030a1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a4030a1ea453f66be42d21b3a999c03968ff8432) - update dependencies and improve version management script *(commit by @SARDONYX-sard)*
+- [`d51b663`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d51b6637de75ae04ae77300c87eeec1e7f4883ab) - update dependencies and remove unused packages in Cargo.toml and Cargo.lock *(commit by @SARDONYX-sard)*
+- [`db34417`](https://github.com/SARDONYX-sard/dar-to-oar/commit/db34417f30ae8c6fcc5cc7ca031c7ab892ecbfea) - **npm**: update lock file *(commit by @SARDONYX-sard)*
+
+
 ## [0.10.1] - 2025-03-13
 ### :sparkles: New Features
 - [`5758b2b`](https://github.com/SARDONYX-sard/dar-to-oar/commit/5758b2b04f1ec83d379e2590eecc5e514709c328) - **condition_parser**: support for argument inversion *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -203,8 +229,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### :boom: BREAKING CHANGES
 - due to [`1f1433e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1f1433e22b863d490f8eac1842786721f316caf4) - change from `dist` to `dst` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*:
 
-  dist -> dst  
-  dist == distribution  
+  dist -> dst
+  dist == distribution
   dst == destination
 
 
@@ -251,9 +277,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### :boom: BREAKING CHANGES
 - due to [`026c438`](https://github.com/SARDONYX-sard/dar-to-oar/commit/026c4384992218560dc95c0be160855a8d66df2b) - implement cli sub commands *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*:
 
-  Subcommands have been added, so command usage has changed.  
-  - Implement `unhide-dar` command  
-  - Implement `remove-oar` command  
+  Subcommands have been added, so command usage has changed.
+  - Implement `unhide-dar` command
+  - Implement `remove-oar` command
   - Color CLI(Implemented by downgrading clap to v3.)
 
 
