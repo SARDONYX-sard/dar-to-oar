@@ -53,6 +53,7 @@
         "noDefaultExport": "off"
       },
       "suspicious": {
+        "noDuplicateJsxProps": "error",
         "noConsole": "off", // Configuration to be removed in due course.
         "noReactSpecificProps": "off" // Too many false positives.
       }
