@@ -9,7 +9,6 @@
     clippy::disallowed_script_idents,
     clippy::doc_link_with_quotes,
     clippy::doc_markdown,
-    clippy::empty_enum,
     clippy::empty_line_after_outer_attr,
     clippy::empty_structs_with_brackets,
     clippy::enum_glob_use,
