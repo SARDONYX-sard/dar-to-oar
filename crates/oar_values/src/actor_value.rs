@@ -7,7 +7,7 @@ pub struct ActorValue {
     /// default: 0
     #[serde(default)]
     #[serde(rename = "actorValue")]
-    pub actor_value: u64,
+    pub actor_value: i64, // FIXME?: correct?
     /// OAR GUI selection => config.json value
     /// - Actor Value => "Value"
     /// - Base Actor Value => "Base"

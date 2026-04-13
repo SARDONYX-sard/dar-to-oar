@@ -145,7 +145,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::ActorValue,
                 }),
                 comparison: Cmp::Lt,
@@ -157,7 +157,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::Base,
                 }),
                 comparison: Cmp::Lt,
@@ -169,7 +169,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::Max,
                 }),
                 comparison: Cmp::Eq,
@@ -181,7 +181,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::Max,
                 }),
                 comparison: Cmp::Lt,
@@ -193,7 +193,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::Percentage,
                 }),
                 comparison: Cmp::Eq,
@@ -205,7 +205,7 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as u64,
+                    actor_value: actor_value.value as i64,
                     actor_value_type: ActorValueType::Percentage,
                 }),
                 comparison: Cmp::Lt,
