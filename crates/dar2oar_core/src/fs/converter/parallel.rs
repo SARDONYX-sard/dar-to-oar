@@ -35,7 +35,7 @@ pub async fn convert_dar_to_oar(
     let entires = get_dar_files(dar_dir).into_iter();
     let options = Arc::new(options);
     let is_converted_once = Arc::new(AtomicBool::new(false));
-    let mut task_handles: Vec<tokio::task::JoinHandle<Result<()>>> = Vec::new();
+    let mut task_handles = tokio::task::JoinSet::new();
 
     for entry in entires {
         let path = entry.map_err(|_err| ConvertError::NotFoundEntry)?.path();
@@ -48,7 +48,7 @@ pub async fn convert_dar_to_oar(
         });
         let path = Arc::new(path);
 
-        task_handles.push(tokio::spawn({
+        task_handles.spawn({
             let path = Arc::clone(&path);
             let parsed_path = Arc::clone(&parsed_path);
             let options = Arc::clone(&options);
@@ -63,18 +63,36 @@ pub async fn convert_dar_to_oar(
                 .await?;
                 Ok(())
             }
-        }));
+        });
     }
 
-    for (idx, task_handle) in task_handles.into_iter().enumerate() {
-        task_handle.await??;
+    let mut errors = vec![];
+    let mut idx = 0;
+    while let Some(result) = task_handles.join_next().await {
         progress_fn(idx);
+        idx += 1;
+
+        match result {
+            Ok(Ok(())) => {}
+            Ok(Err(err)) => {
+                errors.push(err);
+            }
+            Err(err) => {
+                errors.push(ConvertError::JoinError { source: err });
+            }
+        }
     }
 
     // # Ordering validity:
     // Since all processing threads are loaded after they have finished, ordering relationships are not a concern.
     // Therefore, there is no problem in using `Relaxed`.
-    handle_conversion_results(is_converted_once.load(Ordering::Relaxed))
+    handle_conversion_results(is_converted_once.load(Ordering::Relaxed))?;
+
+    if errors.is_empty() {
+        return Ok(());
+    }
+
+    Err(ConvertError::NestedError { errors })
 }
 
 /// Get DAR files using a custom filter.
@@ -101,7 +119,7 @@ pub(crate) fn get_dar_files(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bo
 pub(super) fn is_contain_oar(path: impl AsRef<Path>) -> Option<usize> {
     path.as_ref()
         .iter()
-        .position(|os_str| os_str == std::ffi::OsStr::new("OpenAnimationReplacer"))
+        .position(|os_str| os_str.eq_ignore_ascii_case("OpenAnimationReplacer"))
 }
 
 /// Get OAR files using a custom filter.

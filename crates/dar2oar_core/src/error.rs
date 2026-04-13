@@ -97,6 +97,10 @@ pub enum ConvertError {
         /// transparent
         source: tokio::task::JoinError,
     },
+
+    #[allow(clippy::use_self)]
+    #[snafu(display("Errors: \n{}", errors.iter().map(|e| e.to_string()).collect::<Vec<_>>().join(",\n\n")))]
+    NestedError { errors: Vec<ConvertError> },
 }
 
 // Implemented to facilitate testing with the `assert_eq!` macro.
