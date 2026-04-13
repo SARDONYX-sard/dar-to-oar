@@ -1,6 +1,5 @@
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { Button } from '@mui/material';
-
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { NOTIFY } from '@/lib/notify';
 import { openPath } from '@/services/api/dialog';

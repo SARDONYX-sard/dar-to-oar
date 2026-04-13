@@ -18,7 +18,7 @@ snafu = { workspace = true } # define errors type
 
 
 [dev-dependencies]
-serde_json = { workspace = true }        # Json converter
+serde_json = { workspace = true } # Json converter
 pretty_assertions = { workspace = true }
 
 

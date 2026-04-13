@@ -4,12 +4,13 @@
 // issue: https://github.com/suren-atoyan/monaco-react/issues/136#issuecomment-731420078
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { isTauri } from '@tauri-apps/api/core';
-import type monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import type { VimAdapterInstance } from 'monaco-vim';
 import { type ComponentPropsWithoutRef, memo, type RefObject, useCallback, useEffect, useRef } from 'react';
-import { openUrl } from '@/services/api/shell';
 import { atomOneDarkPro } from './atom_onedark_pro';
 import { loadVimKeyBindings } from './vim_key_bindings';
+import { openUrl } from '@/services/api/shell';
+
+import type monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type { VimAdapterInstance } from 'monaco-vim';
 
 export type MonacoEditor = monaco.editor.IStandaloneCodeEditor;
 export type VimModeRef = RefObject<VimAdapterInstance | null>;
@@ -74,7 +75,6 @@ export const MonacoEditor = memo(function MonacoEditor({ id, vimMode = false, on
  * - json: enable schema
  * */
 const setLangCustomConfig: OnMount = (_, monacoEnv) => {
-
   // NOTE: By default, the URL is opened in the app, so prevent this and call the backend API to open the URL in the browser of each PC.
   if (isTauri()) {
     monacoEnv.editor.registerLinkOpener({

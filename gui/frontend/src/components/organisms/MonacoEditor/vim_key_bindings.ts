@@ -1,6 +1,7 @@
 import { initVimMode, type Vim, VimMode } from 'monaco-vim';
-import type { MappedOmit } from '@/lib/object-utils';
+
 import type { MonacoEditor, VimModeRef, VimStatusRef } from './MonacoEditor';
+import type { MappedOmit } from '@/lib/object-utils';
 
 // HACK: Using `getAction` for hover and `trigger` for everything else somehow enables hover with the `K` key.
 

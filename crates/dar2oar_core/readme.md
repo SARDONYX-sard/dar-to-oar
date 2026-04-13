@@ -105,7 +105,6 @@ cargo doc --open
 ## How to run bench
 
 1. Requirements
-
    - test mod: `../test/data/EVG Conditional Idles`
    - `mapping_table`:
      `../test/settings/EVG Conditional Idles_v1.4.2_mapping_table.txt`

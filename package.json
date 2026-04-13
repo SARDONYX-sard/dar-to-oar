@@ -1,15 +1,15 @@
 {
   "name": "dar-to-oar",
-  "description": "Converter",
   "version": "0.10.3",
-  "license": "MIT",
-  "homepage": "https://github.com/SARDONYX-sard/dar-to-oar",
   "private": true,
-  "types": "modules",
+  "description": "Converter",
+  "homepage": "https://github.com/SARDONYX-sard/dar-to-oar",
+  "license": "MIT",
   "workspaces": [
     "gui/frontend"
   ],
   "type": "module",
+  "types": "modules",
   "scripts": {
     "build": "rimraf ./gui/frontend/out && tauri build --no-bundle -- --profile release-no-lto",
     "build:release": "rimraf ./gui/frontend/out && tauri build --no-bundle -- --profile release",

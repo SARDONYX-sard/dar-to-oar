@@ -1,9 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-
-import { type Cache, STORAGE } from '@/lib/storage';
-
 import { useStorageState } from './useStorageState';
+import { type Cache, STORAGE } from '@/lib/storage';
 
 const mockKey = 'log-level' satisfies keyof Cache;
 

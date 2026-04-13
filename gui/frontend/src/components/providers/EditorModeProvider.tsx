@@ -1,5 +1,4 @@
 import { createContext, type ReactNode, useContext, useState } from 'react';
-
 import { EDITOR_MODE, type EditorMode } from '@/lib/editor-mode';
 
 type ContextType = {

@@ -1,6 +1,7 @@
-import type { ComponentPropsWithRef } from 'react';
 import { useTranslation } from '@/components/hooks/useTranslation';
+
 import type { InputModInfoField } from './InputModInfoField';
+import type { ComponentPropsWithRef } from 'react';
 
 export const useModInfoFields = () => {
   const { t } = useTranslation();

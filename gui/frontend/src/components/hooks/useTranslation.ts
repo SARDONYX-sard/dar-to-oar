@@ -1,6 +1,7 @@
-import type { FlatNamespace, KeyPrefix } from 'i18next';
 import { type FallbackNs, type UseTranslationOptions, useTranslation as useI18n } from 'react-i18next';
+
 import type { I18nKeys } from '@/lib/i18n';
+import type { FlatNamespace, KeyPrefix } from 'i18next';
 
 type $Tuple<T> = readonly [T?, ...T[]];
 type UseTranslation = <

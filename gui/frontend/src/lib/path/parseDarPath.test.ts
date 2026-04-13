@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { parseDarPath } from './parseDarPath';
 
 describe('parseDarPath', () => {

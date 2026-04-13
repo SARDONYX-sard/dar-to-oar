@@ -1,6 +1,5 @@
 'use client'; // If this directive is not present on each page, a build error will occur.
 import { Box, Grid, type SxProps, type Theme } from '@mui/material';
-import type { MouseEventHandler } from 'react';
 import { Help } from '@/components/atoms/Help';
 import { useInjectJs } from '@/components/hooks/useInjectJs';
 import { HELP_INFO } from '@/components/meta/meta';
@@ -8,6 +7,8 @@ import { CodeEditorTab } from '@/components/organisms/CodeEditorTab';
 import { Tabs } from '@/components/organisms/Tabs';
 import { useTabContext } from '@/components/providers/TabProvider';
 import { openUrl } from '@/services/api/shell';
+
+import type { MouseEventHandler } from 'react';
 
 const sx: SxProps<Theme> = {
   alignItems: 'center',

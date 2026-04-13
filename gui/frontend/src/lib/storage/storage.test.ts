@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-
 import { createStorage } from './storage';
 
 describe('Storage Utility', () => {

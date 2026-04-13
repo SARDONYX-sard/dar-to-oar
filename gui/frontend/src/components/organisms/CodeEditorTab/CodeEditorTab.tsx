@@ -1,14 +1,12 @@
 import { TabContext, TabList, type TabListProps } from '@mui/lab';
 import { Box, type SxProps, Tab, type Theme } from '@mui/material';
-
+import { type EditorInfo, EditorInitializer } from './EditorInitializer';
 import { useStorageState } from '@/components/hooks/useStorageState/useStorageState';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { useCssContext } from '@/components/providers/CssProvider';
 import { useJsContext } from '@/components/providers/JsProvider';
 import { CSS } from '@/lib/css';
 import { PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
-
-import { type EditorInfo, EditorInitializer } from './EditorInitializer';
 
 export const CodeEditorTab = () => {
   const { js, setJs } = useJsContext();

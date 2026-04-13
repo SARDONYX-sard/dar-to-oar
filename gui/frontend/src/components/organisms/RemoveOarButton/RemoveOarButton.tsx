@@ -1,7 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCallback, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-
 import { ButtonWithToolTip } from '@/components/atoms/ButtonWithToolTip';
 import { CircularProgressWithLabel } from '@/components/atoms/CircularProgressWithLabel';
 import { useTranslation } from '@/components/hooks/useTranslation';

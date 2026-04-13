@@ -25,13 +25,7 @@ jwalk = "0.8.1" # To parallel traverse dir recursivly
 serde = { workspace = true } # Implement (De)Serializer
 serde_json = { workspace = true } # Json converter
 snafu = { workspace = true } # define errors type
-tokio = { workspace = true, features = [
-  "fs",
-  "io-util",
-  "macros",
-  "rt",
-  "rt-multi-thread",
-] } # Async Executor
+tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt", "rt-multi-thread"] } # Async Executor
 tokio-stream = "0.1.17" # Async next() method
 tracing = { workspace = true, optional = true } # Logger
 
@@ -41,11 +35,7 @@ dar_syntax = { workspace = true }
 
 
 [dev-dependencies]
-criterion = { version = "0.7.0", features = [
-  "async_futures",
-  "async_tokio",
-  "html_reports",
-] }
+criterion = { version = "0.7.0", features = ["async_futures", "async_tokio", "html_reports"] }
 pretty_assertions = { workspace = true }
 quick_tracing = { workspace = true, features = ["derive"] }
 temp-dir = { workspace = true }

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-
 import { Help } from './Help';
 
 describe('Help Component', () => {

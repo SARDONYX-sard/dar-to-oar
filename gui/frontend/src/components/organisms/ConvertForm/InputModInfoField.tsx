@@ -1,9 +1,9 @@
 import { Grid, TextField } from '@mui/material';
-import type { ReactNode } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { setPathToStorage } from './ConvertForm';
 
 import type { FormProps } from './ConvertForm';
-import { setPathToStorage } from './ConvertForm';
+import type { ReactNode } from 'react';
 
 type Props = {
   name: 'modName' | 'modAuthor';
