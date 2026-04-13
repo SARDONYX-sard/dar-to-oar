@@ -1,14 +1,13 @@
 //! Person and its internal value
-use super::numeric_literal::NumericLiteral;
 use serde::{Deserialize, Serialize};
 
 /// Person and its internal value
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct ActorValue<'a> {
+pub struct ActorValue {
     /// default: 0
-    #[serde(default, borrow)]
+    #[serde(default)]
     #[serde(rename = "actorValue")]
-    pub actor_value: NumericLiteral<'a>,
+    pub actor_value: u64,
     /// OAR GUI selection => config.json value
     /// - Actor Value => "Value"
     /// - Base Actor Value => "Base"

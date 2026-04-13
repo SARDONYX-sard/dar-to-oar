@@ -72,7 +72,7 @@ mod tests {
     fn should_serialize_plugin_value() -> Result<(), serde_json::Error> {
         let actual = serde_json::to_string_pretty(&PluginValue {
             plugin_name: "MyPlugin".into(),
-            form_id: FormID(Cow::Borrowed("12345")),
+            form_id: FormID(Cow::Borrowed("3039")),
         })?;
 
         // NOTE: 0x3039 == 12345

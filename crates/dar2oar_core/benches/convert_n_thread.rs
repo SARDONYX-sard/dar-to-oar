@@ -1,6 +1,6 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 use dar2oar_core::fs::converter::{parallel, sequential};
-use dar2oar_core::{read_mapping_table, remove_oar, Closure, ConvertOptions};
+use dar2oar_core::{Closure, ConvertOptions, read_mapping_table, remove_oar};
 use std::hint::black_box;
 use std::time::Duration;
 

@@ -1,13 +1,13 @@
 //! Multi thread converter
 use super::common::is_contain_dar;
 use crate::error::{ConvertError, Result};
-use crate::fs::converter::common::{convert_inner, handle_conversion_results};
 use crate::fs::converter::ConvertOptions;
+use crate::fs::converter::common::{convert_inner, handle_conversion_results};
 use crate::fs::path_changer::parse_dar_path;
 use jwalk::WalkDirGeneric;
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Multi thread converter
 ///

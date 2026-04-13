@@ -1,7 +1,7 @@
 //! Single thread converter
 use crate::error::Result;
-use crate::fs::converter::common::{convert_inner, handle_conversion_results, is_contain_dar};
 use crate::fs::converter::ConvertOptions;
+use crate::fs::converter::common::{convert_inner, handle_conversion_results, is_contain_dar};
 use crate::fs::path_changer::parse_dar_path;
 use async_walkdir::{Filtering, WalkDir};
 use std::path::Path;

@@ -3,8 +3,8 @@ use crate::error::{ConvertError, Result};
 use crate::fs::converter::parallel::{get_dar_files, get_oar, is_contain_oar};
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::fs;
 
 /// A parallel search will find the `DynamicAnimationReplacer` directory in the path passed as the argument
@@ -85,41 +85,41 @@ pub async fn remove_oar(
 
     for (idx, entry) in get_oar(search_dir).into_iter().enumerate() {
         let path = Arc::new(entry.map_err(|_err| ConvertError::NotFoundEntry)?.path());
-        if path.is_dir() {
-            if let Some(oar_start_idx) = is_contain_oar(path.as_ref()) {
-                let paths: Vec<&OsStr> = path.iter().collect();
+        if path.is_dir()
+            && let Some(oar_start_idx) = is_contain_oar(path.as_ref())
+        {
+            let paths: Vec<&OsStr> = path.iter().collect();
 
-                if let Some(oar_dir) = paths
-                    .get(0..=oar_start_idx)
-                    .map(|str_paths| str_paths.join(OsStr::new("/")))
-                {
-                    if prev_dir == oar_dir {
-                        continue;
+            if let Some(oar_dir) = paths
+                .get(0..=oar_start_idx)
+                .map(|str_paths| str_paths.join(OsStr::new("/")))
+            {
+                if prev_dir == oar_dir {
+                    continue;
+                }
+                prev_dir.clone_from(&oar_dir);
+
+                task_handles.push(tokio::spawn({
+                    let found_once = Arc::clone(&found_once);
+
+                    async move {
+                        #[cfg(feature = "tracing")]
+                        tracing::debug!("Try to remove oar dir: {:?}\n", &oar_dir);
+                        fs::remove_dir_all(oar_dir).await?;
+                        // # Ordering validity:
+                        // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
+                        // so that other threads read after writing true to memory to prevent unnecessary file writing.
+                        // - In case of cas failure, use `Relaxed` because the order is unimportant.
+                        let _ = found_once.compare_exchange(
+                            false,
+                            true,
+                            Ordering::AcqRel,
+                            Ordering::Relaxed,
+                        );
+                        Ok(())
                     }
-                    prev_dir.clone_from(&oar_dir);
-
-                    task_handles.push(tokio::spawn({
-                        let found_once = Arc::clone(&found_once);
-
-                        async move {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("Try to remove oar dir: {:?}\n", &oar_dir);
-                            fs::remove_dir_all(oar_dir).await?;
-                            // # Ordering validity:
-                            // Use `AcqRel` to `happened before relationship`(form a memory read/write order between threads) of cas(compare_and_swap),
-                            // so that other threads read after writing true to memory to prevent unnecessary file writing.
-                            // - In case of cas failure, use `Relaxed` because the order is unimportant.
-                            let _ = found_once.compare_exchange(
-                                false,
-                                true,
-                                Ordering::AcqRel,
-                                Ordering::Relaxed,
-                            );
-                            Ok(())
-                        }
-                    }));
-                };
-            }
+                }));
+            };
         };
         progress_fn(idx);
     }
@@ -139,7 +139,7 @@ mod test {
     use super::*;
     use crate::error::Result;
     use temp_dir::TempDir;
-    use tokio::fs::{create_dir_all, File};
+    use tokio::fs::{File, create_dir_all};
 
     macro_rules! sender {
         () => {

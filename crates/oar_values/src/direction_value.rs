@@ -66,12 +66,12 @@ impl Serialize for Direction {
         S: Serializer,
     {
         // Serialize the variant as a floating-point number.
-        serializer.serialize_str(match self {
-            Self::None => "0.0",
-            Self::Forward => "1.0",
-            Self::Right => "2.0",
-            Self::Back => "3.0",
-            Self::Left => "4.0",
+        serializer.serialize_f64(match self {
+            Self::None => 0.0,
+            Self::Forward => 1.0,
+            Self::Right => 2.0,
+            Self::Back => 3.0,
+            Self::Left => 4.0,
         })
     }
 }

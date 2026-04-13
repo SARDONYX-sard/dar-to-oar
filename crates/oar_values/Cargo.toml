@@ -3,6 +3,7 @@ name = "oar_values"
 version.workspace = true
 description.workspace = true
 categories.workspace = true
+keywords = ["skyrim"]
 authors.workspace = true
 license.workspace = true
 repository.workspace = true

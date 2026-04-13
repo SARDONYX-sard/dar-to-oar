@@ -1,31 +1,34 @@
 [package]
-name = "oar_conditions"
+name = "dar_syntax"
 version.workspace = true
 description.workspace = true
 categories.workspace = true
-keywords = ["skyrim"]
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 readme.workspace = true
+keywords = ["skyrim"]
 edition.workspace = true
 rust-version.workspace = true
 
 
 [dependencies]
-rayon = { version = "1.11.0" }
-serde = { workspace = true } # Implement (De)Serializer
-snafu = { workspace = true } # define errors type
-tracing = { workspace = true, optional = true } # Logger
+tracing = { workspace = true, optional = true }
+winnow = { workspace = true } # Parser combinator
+
+quick_tracing = { workspace = true, optional = true } # For Debug
 
 # workspace members
 oar_values = { workspace = true }
-dar_syntax = { workspace = true }
+winnow_ext = { workspace = true }
 
 
 [dev-dependencies]
-serde_json = { workspace = true } # Json converter
 pretty_assertions = { workspace = true }
+
+[features]
+# default = ["tracing"] # For debug
+tracing = ["dep:tracing", "dep:quick_tracing"]
 
 
 [lints]

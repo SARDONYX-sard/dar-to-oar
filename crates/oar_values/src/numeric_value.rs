@@ -10,20 +10,18 @@ use serde::{Deserialize, Serialize};
 #[serde(untagged)]
 pub enum NumericValue<'a> {
     /// Just f32 value
-    #[serde(borrow)]
-    StaticValue(StaticValue<'a>),
+    StaticValue(StaticValue),
     /// Pair plugin name & ID
     GlobalVariable(FormValue<'a>),
     /// Person and its internal value
-    #[serde(borrow)]
-    ActorValue(ActorValue<'a>),
+    ActorValue(ActorValue),
     /// Pair str & Int | Float | Bool
     GraphVariable(GraphValue<'a>),
 }
 
-impl<'a> From<StaticValue<'a>> for NumericValue<'a> {
+impl From<StaticValue> for NumericValue<'_> {
     #[inline]
-    fn from(value: StaticValue<'a>) -> Self {
+    fn from(value: StaticValue) -> Self {
         Self::StaticValue(value)
     }
 }
@@ -74,9 +72,7 @@ mod tests {
         }"#;
 
         let deserialized: NumericValue = serde_json::from_str(json_str)?;
-        let expected = NumericValue::StaticValue(StaticValue {
-            value: "42.0".into(),
-        });
+        let expected = NumericValue::StaticValue(StaticValue { value: 42.0 });
 
         assert_eq!(deserialized, expected);
         Ok(())

@@ -2,7 +2,7 @@ mod cli;
 mod error;
 mod logger;
 
-use crate::cli::{run_cli, Cli};
+use crate::cli::{Cli, run_cli};
 use clap::Parser;
 use std::process::exit;
 use tokio::time::Instant;

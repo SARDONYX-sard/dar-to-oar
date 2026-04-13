@@ -183,7 +183,9 @@ mod test {
 
     #[test]
     fn should_parse_dar_path_1st_person() -> Result<()> {
-        let path = Path::new("../ModName/Meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer/_CustomConditions/8107000/_conditions.txt");
+        let path = Path::new(
+            "../ModName/Meshes/actors/character/_1stperson/animations/DynamicAnimationReplacer/_CustomConditions/8107000/_conditions.txt",
+        );
         let result = parse_dar_path(path);
 
         assert!(result.is_ok());
@@ -220,7 +222,9 @@ mod test {
 
     #[test]
     fn should_parse_dar_path_3rd_person() -> Result<()> {
-        let path = Path::new("../ModName/meshes/actors/falmer/animations/DynamicAnimationReplacer/_CustomConditions/8107000/InnerDir/_conditions.txt");
+        let path = Path::new(
+            "../ModName/meshes/actors/falmer/animations/DynamicAnimationReplacer/_CustomConditions/8107000/InnerDir/_conditions.txt",
+        );
         let result = parse_dar_path(path);
 
         assert!(result.is_ok());
@@ -258,7 +262,9 @@ mod test {
 
     #[test]
     fn should_parse_actor_base_path() -> Result<()> {
-        let path = Path::new("../ModName/meshes/actors/character/animations/DynamicAnimationReplacer/Mod.esp/00123456/male/1hm.hkx");
+        let path = Path::new(
+            "../ModName/meshes/actors/character/animations/DynamicAnimationReplacer/Mod.esp/00123456/male/1hm.hkx",
+        );
         let result = parse_dar_path(path);
         let parsed_path = result?;
 

@@ -1,4 +1,4 @@
-use dar2oar_core::{convert_dar_to_oar, error::Result, get_mapping_table, Closure, ConvertOptions};
+use dar2oar_core::{Closure, ConvertOptions, convert_dar_to_oar, error::Result, get_mapping_table};
 use std::path::PathBuf;
 
 pub(crate) async fn dar2oar(args: Convert) -> Result<()> {

@@ -8,7 +8,7 @@ keywords = ["converter", "skyrim"]
 readme = "./readme.md"
 license.workspace = true
 repository.workspace = true
-edition = "2021"
+edition.workspace = true
 rust-version.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -19,9 +19,9 @@ default = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-async-walkdir = "2.1.0" # To traverse dir recursivly(Single thiread)
+async-walkdir = "2.1.0" # To traverse dir recursively(Single thread)
 compact_str = { version = "0.9.0", features = ["serde"] }
-jwalk = "0.8.1" # To parallel traverse dir recursivly
+jwalk = "0.8.1" # To parallel traverse dir recursively
 serde = { workspace = true } # Implement (De)Serializer
 serde_json = { workspace = true } # Json converter
 snafu = { workspace = true } # define errors type

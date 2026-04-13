@@ -1,6 +1,6 @@
 //! Common parts for sequential and parallel conversions
 use crate::error::{ConvertError, Result};
-use crate::fs::converter::{parallel::is_contain_oar, ConvertOptions};
+use crate::fs::converter::{ConvertOptions, parallel::is_contain_oar};
 use crate::fs::path_changer::ParsedPath;
 use crate::fs::section_writer::{write_name_space_config, write_section_config};
 use crate::parser::parse_dar2oar;

@@ -1,7 +1,4 @@
 //! A static value within a certain range.
-use std::borrow::Cow;
-
-use serde::{Deserialize, Serialize};
 
 /// A static value within a certain range.
 /// # NOTE
@@ -17,25 +14,11 @@ use serde::{Deserialize, Serialize};
 ///   "Value A": {
 ///       "
 /// ```
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct StaticValue<'a> {
+#[derive(Debug, Clone, Default, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct StaticValue {
+    // NOTE: Even if you change this to Cow<'a, str>, during JSON serialization
+    // we cannot insert the value as a number without quotes.
+    // Therefore, trying to avoid heap allocation by using Cow has no real benefit here.
     /// The value of the static value.
-    #[serde(borrow)]
-    pub value: Cow<'a, str>,
-}
-
-impl<'de> serde::Deserialize<'de> for StaticValue<'de> {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let s: Cow<'de, str> = Deserialize::deserialize(deserializer)?;
-
-        let v: f32 = s.parse().map_err(serde::de::Error::custom)?;
-        if !v.is_finite() {
-            return Err(serde::de::Error::custom("value must be finite"));
-        }
-
-        Ok(Self { value: s })
-    }
+    pub value: f64,
 }

@@ -1,5 +1,5 @@
 use dar2oar_core::error::Result;
-use dar2oar_core::{read_mapping_table, ConvertOptions};
+use dar2oar_core::{ConvertOptions, read_mapping_table};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

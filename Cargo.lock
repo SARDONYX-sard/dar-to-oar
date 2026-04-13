@@ -946,6 +946,7 @@ version = "0.10.3"
 dependencies = [
  "oar_values",
  "pretty_assertions",
+ "quick_tracing",
  "tracing",
  "winnow 1.0.1",
  "winnow_ext",

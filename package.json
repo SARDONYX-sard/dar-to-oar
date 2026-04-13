@@ -11,8 +11,8 @@
   "type": "module",
   "types": "modules",
   "scripts": {
-    "build": "rimraf ./gui/frontend/out && tauri build --no-bundle -- --profile release-no-lto",
-    "build:release": "rimraf ./gui/frontend/out && tauri build --no-bundle -- --profile release",
+    "build": "rimraf ./gui/frontend/dist && tauri build --no-bundle -- --profile release-no-lto",
+    "build:release": "rimraf ./gui/frontend/dist && tauri build --no-bundle -- --profile release",
     "build:front": "npm --workspace gui/frontend run build:front",
     "build:icons": "tauri icon ./gui/backend/icons/icon.svg",
     "dev": "tauri dev",

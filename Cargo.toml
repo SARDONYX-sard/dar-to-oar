@@ -11,14 +11,14 @@ rust-version = "1.94"
 
 [workspace]
 members = [
-  "crates/dar2oar_core",
   "cli",
-  "gui/backend",
+  "crates/dar2oar_core",
   "crates/dar_syntax",
+  "crates/oar_conditions",
   "crates/oar_values",
   "crates/tracing_rotation",
   "crates/winnow_ext",
-  "crates/oar_conditions",
+  "gui/backend",
 ]
 default-members = ["cli"]
 resolver = "3"

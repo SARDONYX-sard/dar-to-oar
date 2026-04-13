@@ -85,7 +85,7 @@ pub mod fs;
 
 #[doc = include_str!("../readme.md")]
 pub use crate::fs::converter::support_cmd::{remove_oar, unhide_dar};
-pub use crate::fs::converter::{convert_dar_to_oar, Closure, ConvertOptions};
+pub use crate::fs::converter::{Closure, ConvertOptions, convert_dar_to_oar};
 pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};
 
 #[cfg(test)]

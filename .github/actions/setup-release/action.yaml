@@ -16,6 +16,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    # Since upload-artifact cannot include empty directories, put the files in
+    - name: Ensure ./build/ is retained
+      shell: bash
+      run: |
+        mkdir -p ./build
+
     - name: Compress outputs (Windows)
       if: runner.os == 'Windows'
       shell: pwsh

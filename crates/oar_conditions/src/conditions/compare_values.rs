@@ -50,20 +50,16 @@ mod tests {
     use super::*;
     use crate::error::Result;
     use oar_values::{
-        ActorValue, ActorValueType, FormID, GraphValue, GraphVariableType, NumericLiteral,
-        NumericValue, PluginValue, StaticValue,
+        ActorValue, ActorValueType, FormID, GraphValue, GraphVariableType, NumericValue,
+        PluginValue, StaticValue,
     };
     use pretty_assertions::assert_eq;
 
     #[test]
     fn should_stringify_compare_values() -> Result<()> {
         let compare_values = CompareValues {
-            value_a: NumericValue::StaticValue(StaticValue {
-                value: "42.0".into(),
-            }),
-            value_b: NumericValue::StaticValue(StaticValue {
-                value: "42.0".into(),
-            }),
+            value_a: NumericValue::StaticValue(StaticValue { value: 42.0 }),
+            value_b: NumericValue::StaticValue(StaticValue { value: 42.0 }),
             ..Default::default()
         };
         let serialized = serde_json::to_string_pretty(&compare_values)?;
@@ -88,11 +84,11 @@ mod tests {
     fn should_stringify_compare_values_with_actor_value() -> Result<()> {
         let compare_values = CompareValues {
             value_a: NumericValue::ActorValue(ActorValue {
-                actor_value: NumericLiteral::Hex(Cow::Borrowed("123")),
+                actor_value: 123,
                 actor_value_type: ActorValueType::Base,
             }),
             value_b: NumericValue::ActorValue(ActorValue {
-                actor_value: NumericLiteral::Hex(Cow::Borrowed("456")),
+                actor_value: 456,
                 actor_value_type: ActorValueType::Max,
             }),
             comparison: Cmp::Ge,

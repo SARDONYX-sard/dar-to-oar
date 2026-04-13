@@ -5,7 +5,7 @@ mod convert;
 use crate::error::Result;
 use crate::logger::LogLevel;
 use convert::dar2oar;
-use dar2oar_core::{remove_oar, unhide_dar, Closure};
+use dar2oar_core::{Closure, remove_oar, unhide_dar};
 use std::path::PathBuf;
 
 pub(crate) async fn run_cli(args: Cli) -> Result<()> {

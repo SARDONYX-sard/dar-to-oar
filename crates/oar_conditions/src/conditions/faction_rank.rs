@@ -60,9 +60,7 @@ mod tests {
                 form_id: "54321".into(),
             },
             comparison: Cmp::Lt,
-            numeric_value: NumericValue::StaticValue(StaticValue {
-                value: "75.0".into(),
-            }),
+            numeric_value: NumericValue::StaticValue(StaticValue { value: 75.0 }),
             ..Default::default()
         };
         let serialized = serde_json::to_string_pretty(&faction_rank)?;
@@ -108,9 +106,7 @@ mod tests {
                 form_id: "".into(),
             },
             comparison: Cmp::Eq,
-            numeric_value: NumericValue::StaticValue(StaticValue {
-                value: "0.0".into(),
-            }),
+            numeric_value: NumericValue::StaticValue(StaticValue { value: 0.0 }),
             ..Default::default()
         };
 

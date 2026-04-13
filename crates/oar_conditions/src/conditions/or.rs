@@ -1,5 +1,5 @@
 //! OR condition
-use super::{condition::default_required_version, is_false, Oar};
+use super::{Oar, condition::default_required_version, is_false};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
