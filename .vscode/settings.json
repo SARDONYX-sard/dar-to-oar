@@ -1,25 +1,21 @@
 {
-  "[css]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
   "[javascript][javascriptreact][typescript][typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "[json][jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "[css][json][jsonc][toml][yaml]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit"
+    "source.fixAll.oxc": "explicit",
+    "source.fixAll.sortJSON": "never"
   },
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
   "evenBetterToml.formatter.alignComments": true,
-  // "rust-analyzer.checkOnSave": false,
-  // "editor.formatOnSave": false,
   "files.exclude": {
     ".swc": true,
-    "**/node_modules": true // optional
+    "**/node_modules": true,
+    "**/.tanstack": true
   },
   "files.watcherExclude": {
     "**/.git/objects/**": true,

@@ -1,5 +1,5 @@
 [package]
-name = "dar2oar_cli"
+name = "dar2oar"
 version.workspace = true
 description = "DAR to OAR Converter CLI"
 authors.workspace = true
@@ -23,17 +23,9 @@ winres = "0.1.12" # Meta information can be added to the exe.
 clap = { version = "4.5.54", features = ["derive"] } # For CLI
 dar2oar_core = { workspace = true, features = ["tracing"] }
 snafu = { workspace = true }
-tokio = { workspace = true, features = [
-  "fs",
-  "rt",
-  "rt-multi-thread",
-  "macros",
-] }
+tokio = { workspace = true, features = ["fs", "rt", "rt-multi-thread", "macros"] }
 tracing = { workspace = true } # Logger
 tracing-subscriber = { workspace = true }
-
-[dev-dependencies]
-pretty_assertions = { workspace = true }
 
 
 [features]

@@ -17,11 +17,6 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": ["./src/*"]
     },
@@ -30,12 +25,8 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../vitest.config.ts",
-    "./out/types/**/*.ts",
-    ".next/types/**/*.ts",
-    "next-env.d.ts",
-    "out/types/**/*.ts",
-    "out/dev/types/**/*.ts"
+    "./vitest.config.ts",
+    "./vitest.setup.mts" // ref: https://github.com/testing-library/jest-dom/issues/515#issuecomment-1682870017
   ],
   "exclude": ["node_modules"]
 }

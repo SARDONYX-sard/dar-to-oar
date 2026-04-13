@@ -1,7 +1,7 @@
 :root {
   --font-mono:
-    ui-monospace, Menlo, Monaco, "Cascadia·Mono", "Segoe·UI·Mono", "Roboto·Mono", "Oxygen·Mono",
-    "Ubuntu·Monospace", "Source·Code·Pro", "Fira·Mono", "Droid·Sans·Mono", "Courier·New", monospace;
+    ui-monospace, Menlo, Monaco, 'Cascadia·Mono', 'Segoe·UI·Mono', 'Roboto·Mono', 'Oxygen·Mono', 'Ubuntu·Monospace',
+    'Source·Code·Pro', 'Fira·Mono', 'Droid·Sans·Mono', 'Courier·New', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +18,6 @@
 
 html,
 body {
-  font-family: "Inter", sans-serif;
   max-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;

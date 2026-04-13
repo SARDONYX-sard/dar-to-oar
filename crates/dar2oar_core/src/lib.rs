@@ -1,35 +1,4 @@
 // See: https://rust-unofficial.github.io/patterns/anti_patterns/deny-warnings.html#alternatives
-#![deny(
-    bad_style,
-    dead_code,
-    future_incompatible,
-    improper_ctypes,
-    keyword_idents,
-    missing_debug_implementations,
-    missing_docs,
-    no_mangle_generic_items,
-    non_ascii_idents,
-    non_shorthand_field_patterns,
-    nonstandard_style,
-    noop_method_call,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    renamed_and_removed_lints,
-    trivial_casts,
-    trivial_numeric_casts,
-    unconditional_recursion,
-    unsafe_code,
-    unused,
-    unused_allocation,
-    unused_comparisons,
-    unused_crate_dependencies,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_parens,
-    unused_results,
-    while_true
-)]
 //! # `dar2oar_core`
 //!
 //! `dar2oar_core` is a Rust crate that provides functionality for converting Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR) files. The crate includes modules for parsing conditions, handling DAR syntax, managing values, and dealing with file systems.

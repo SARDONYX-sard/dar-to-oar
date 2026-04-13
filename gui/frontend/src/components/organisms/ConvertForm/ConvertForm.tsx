@@ -1,7 +1,12 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { Button, FormGroup, Grid } from '@mui/material';
 import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
-
+import { CheckboxField } from './CheckboxField';
+import { InputModInfoField } from './InputModInfoField';
+import { InputPathField } from './InputPathField';
+import { useCheckFields } from './useCheckField';
+import { useInputPathFields } from './useInputPathField';
+import { useModInfoFields } from './useModInfoField';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertNav';
 import { STORAGE } from '@/lib/storage';
@@ -9,13 +14,6 @@ import { PRIVATE_CACHE_OBJ, PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { convertDar2oar } from '@/services/api/convert';
 import { progressListener } from '@/services/api/event';
 import { LOG, type LogLevel } from '@/services/api/log';
-
-import { CheckboxField } from './CheckboxField';
-import { InputModInfoField } from './InputModInfoField';
-import { InputPathField } from './InputPathField';
-import { useCheckFields } from './useCheckField';
-import { useInputPathFields } from './useInputPathField';
-import { useModInfoFields } from './useModInfoField';
 
 export type FormProps = {
   src: string;
@@ -114,7 +112,7 @@ export function ConvertForm() {
 
           <InputPathFields />
 
-          <Grid columnSpacing={1} container={true} gap={2} sx={{ width: '100%' }}>
+          <Grid columnSpacing={1} container={true} sx={{ width: '100%' }}>
             {modInfoFields.map((props) => {
               return <InputModInfoField key={props.name} {...props} />;
             })}
