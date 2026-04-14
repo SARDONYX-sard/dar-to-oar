@@ -55,6 +55,8 @@ pub async fn convert_dar_to_oar(
         });
     }
 
+    let task_handle_is_empty = task_handles.is_empty(); // Need call before `.join_next()`
+
     let mut errors = vec![];
     let mut idx = 0;
     while let Some(result) = task_handles.join_next().await {
@@ -72,7 +74,7 @@ pub async fn convert_dar_to_oar(
         }
     }
 
-    if task_handles.is_empty() {
+    if task_handle_is_empty {
         return Err(ConvertError::NeverConverted);
     }
 
