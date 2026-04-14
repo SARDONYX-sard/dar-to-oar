@@ -12,6 +12,7 @@
     "core:window:allow-show",
     "dialog:allow-open",
     "dialog:allow-save",
+    { "identifier": "cli:allow-cli-matches", "allow": [{ "path": "**" }, { "path": "**/*" }, { "path": "/**/*" }] },
     { "identifier": "fs:allow-exists", "allow": [{ "path": "**" }, { "path": "**/*" }, { "path": "/**/*" }] },
     { "identifier": "fs:allow-read-text-file", "allow": [{ "path": "**" }, { "path": "**/*" }, { "path": "/**/*" }] },
     { "identifier": "opener:allow-open-path", "allow": [{ "path": "**" }, { "path": "**/*" }, { "path": "/**/*" }] },

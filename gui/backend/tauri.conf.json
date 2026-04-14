@@ -56,7 +56,101 @@
     }
   },
   "identifier": "SARDONYX.oar-converter",
-  "plugins": {},
-  "productName": "g_dar2oar",
-  "version": "../../package.json"
+  "productName": "dar2oar",
+  "version": "../../package.json",
+
+  "plugins": {
+    "cli": {
+      "description": "Converter CLI version",
+      "args": [
+        {
+          "name": "stdout",
+          "description": "Enable standard output of the log"
+        },
+        {
+          "name": "log_level",
+          "takesValue": true,
+          "description": "Log level to be recorded in logger"
+        },
+        {
+          "name": "log_file",
+          "takesValue": true,
+          "description": "Output path of log file"
+        }
+      ],
+      "subcommands": [
+        {
+          "name": "convert",
+          "description": "Convert DAR to OAR",
+          "args": [
+            {
+              "name": "source",
+              "required": true,
+              "description": "Path containing the \"DynamicAnimationReplacer\" directory"
+            },
+            {
+              "name": "destination",
+              "takesValue": true,
+              "description": "\"OpenAnimationReplacer\" directory output destination (if none, inferred from DAR path)"
+            },
+            {
+              "name": "name",
+              "takesValue": true,
+              "description": "Mod name in config.json & directory name (if none, inferred from DAR path)"
+            },
+            {
+              "name": "author",
+              "takesValue": true,
+              "description": "Mod author in config.json"
+            },
+            {
+              "name": "description",
+              "takesValue": true,
+              "description": "Mod description in config.json"
+            },
+            {
+              "name": "mapping_file",
+              "takesValue": true,
+              "description": "Path to section name table (see wiki)"
+            },
+            {
+              "name": "mapping_1person_file",
+              "takesValue": true,
+              "description": "Path to section name table (for 1st person)"
+            },
+            {
+              "name": "run_parallel",
+              "description": "Use multi thread (faster but logs become unordered)"
+            },
+            {
+              "name": "hide_dar",
+              "description": "After conversion, add \".mohidden\" to all DAR files (for MO2)"
+            }
+          ]
+        },
+        {
+          "name": "unhide-dar",
+          "description": "Unhide all files by removing the .mohidden extension",
+          "args": [
+            {
+              "name": "dar_dir",
+              "required": true,
+              "description": "DAR directory containing files with .mohidden extension"
+            }
+          ]
+        },
+        {
+          "name": "remove-oar",
+          "description": "Find and delete OpenAnimationReplacer directory",
+          "args": [
+            {
+              "name": "target_path",
+              "required": true,
+              "description": "Path containing the OpenAnimationReplacer directory"
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "g_dar2oar"
+name = "dar2oar"
 version.workspace = true
 description = "DAR to OAR Converter GUI"
 authors.workspace = true
@@ -22,16 +22,23 @@ tauri-build = { version = "2.5.6", features = [] }
 [dependencies]
 dar2oar_core = { workspace = true, features = ["tracing"] }
 serde = { workspace = true, features = ["derive"] } # Implement (De)Serializer
+serde_json = { workspace = true }
 snafu = { workspace = true } # Implement error types
 tauri = { version = "2.10.3", features = ["devtools", "native-tls"] } # For GUI
 tauri-plugin-dialog = "2.7.0" # https://github.com/tauri-apps/plugins-workspace
 tauri-plugin-fs = "2.5.0"
 tauri-plugin-opener = "2.5.3"
 tauri-plugin-window-state = "2.4.1"
+tokio = { workspace = true }
 tracing = { workspace = true }
 
 # workspace members
 tracing_rotation = { workspace = true }
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-cli = "2.4.1"
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_System_Console"] }
 
 
 [features]

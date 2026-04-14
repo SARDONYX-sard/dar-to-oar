@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod cli;
 mod cmd;
 mod convert_option;
 mod error;
@@ -28,7 +29,21 @@ fn main() {
             crate::cmd::remove_oar_dir,
             crate::cmd::unhide_dar_dir,
         ])
-        .setup(|app| Ok(crate::log::init(app)?))
+        .setup(|app| {
+            crate::log::init(app)?;
+
+            #[cfg(desktop)]
+            app.handle().plugin(tauri_plugin_cli::init())?;
+            match cli::handler::handle_cli(app) {
+                Ok(true) => std::process::exit(0),
+                Ok(false) => {}
+                Err(e) => {
+                    tracing::error!(error = %e, "CLI failed");
+                    std::process::exit(1);
+                }
+            }
+            Ok(())
+        })
         .run(tauri::generate_context!())
     {
         tracing::error!("Error: {err}");
