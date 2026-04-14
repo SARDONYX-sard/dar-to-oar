@@ -368,11 +368,22 @@ fn plugin_number<'i>(input: &mut &'i str) -> ModalResult<PluginNumber<'i>> {
             }
         },
     ))
+    .context(StrContext::Label(
+        "PluginValue + Number arguments",
+    ))
+    .context(StrContext::Expected(StrContextValue::Description(
+        r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
+    )))
     .parse_next(input)
 }
 
 fn number_pair(input: &mut &str) -> ModalResult<(StaticValue, StaticValue)> {
-    separated_pair(static_value, delimited_multispace0(","), static_value).parse_next(input)
+    separated_pair(static_value, delimited_multispace0(","), static_value)
+        .context(StrContext::Label("Number + Number arguments"))
+        .context(StrContext::Expected(StrContextValue::Description(
+            r#"(Number, Number): e.g. `(30.0, 10)`, `(63, 50)`"#,
+        )))
+        .parse_next(input)
 }
 
 #[cfg(test)]
