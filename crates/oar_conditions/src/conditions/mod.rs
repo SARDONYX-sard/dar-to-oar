@@ -244,8 +244,10 @@ pub enum Oar<'a> {
 }
 
 impl<'a> Oar<'a> {
+    /// Into inner [`Vec`]
+    ///
     /// # Errors
-    /// If Oar::Exp
+    /// If `Oar::Exp`
     #[inline]
     pub fn into_vec(self) -> Result<Vec<Self>, crate::error::Error> {
         Ok(match self {

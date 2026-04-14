@@ -17,21 +17,32 @@ pub fn parse_dar2oar<P>(path: P, input: &'_ str) -> Result<Vec<Oar<'_>>, Convert
 where
     P: AsRef<Path>,
 {
+    let path = path.as_ref();
+
     let dar_ast = parse_dar_syntax(input).map_err(|err| ConvertError::InvalidDarSyntax {
-        path: path.as_ref().to_path_buf(),
+        path: path.to_path_buf(),
         source: err,
     })?;
 
     #[cfg(feature = "tracing")]
-    tracing::debug!("Input => Parsed DAR:\n{:#?}", dar_ast);
+    tracing::debug!(
+        "Path: {}
+txt -> DAR ast:
+{:#?}",
+        path.display(),
+        dar_ast
+    );
 
-    let oar_ast = dar_ast.try_into()?;
+    let oar_ast: Oar = dar_ast.try_into()?;
+
     #[cfg(feature = "tracing")]
-    tracing::debug!("Parsed DAR => Serialized OAR:\n{:#?}", &oar_ast);
+    tracing::debug!(
+        "Path: {}
+DAR ast -> OAR ast:
+{:#?}",
+        path.display(),
+        oar_ast
+    );
 
-    Ok(match oar_ast {
-        Oar::And(and) => and.conditions,
-        Oar::Or(or) => or.conditions,
-        _ => return Err(ConvertError::CastError {}),
-    })
+    Ok(oar_ast.into_vec()?)
 }
