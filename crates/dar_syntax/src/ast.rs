@@ -1,3 +1,4 @@
+//! DAR abstract syntax tree
 use oar_values::{
     ActorValueType, Direction, FormValue, NumericValue, PluginValue, StaticValue, WeaponType,
 };

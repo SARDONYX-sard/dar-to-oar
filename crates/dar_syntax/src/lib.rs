@@ -3,14 +3,12 @@ mod parser;
 
 pub use winnow_ext::ReadableError;
 
-use crate::parser::condition::parse_dar;
-
 /// Parse DAR syntax.
 ///
 /// # Errors
 /// - Invalid as DAR Syntax
 pub fn parse_dar_syntax(input: &str) -> Result<ast::Dar<'_>, ReadableError> {
-    winnow::Parser::parse(&mut parse_dar, input)
+    winnow::Parser::parse(&mut crate::parser::parse_dar, input)
         .map_err(|error| winnow_ext::ReadableError::from_parse(error))
 }
 
