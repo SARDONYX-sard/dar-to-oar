@@ -1,14 +1,16 @@
 //! Parses a high-level condition set based on the provided syntax.
 use crate::{
     conditions::{
-        And, CompareValues, Condition, CurrentGameTime, CurrentWeather, IsClass, IsCombatStyle,
-        IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
-        IsWornHasKeyword, Level, Oar, Or, RandomCondition,
+        And, CompareValues, Condition, CurrentGameTime, CurrentWeather, FactionRank, HasKeyword,
+        HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType, HasSpell, IsActorBase,
+        IsClass, IsCombatStyle, IsEquipped, IsEquippedHasKeyword, IsEquippedShout, IsEquippedType,
+        IsInFaction, IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType,
+        IsWorldSpace, IsWorn, IsWornHasKeyword, Level, Oar, Or, RandomCondition,
     },
     error::Error,
 };
 use dar_syntax::ast::{Dar, Expression, Function, HandType};
-use oar_values::{ActorValue, ActorValueType, Cmp, DirectionValue, NumericValue};
+use oar_values::{ActorValueType, Cmp, DirectionValue};
 use rayon::prelude::*;
 
 impl<'input> TryFrom<Dar<'input>> for Oar<'input> {
@@ -128,86 +130,60 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
         }),
 
         // ---------------- actor ----------------
-        Function::IsActorBase { actor_base } => Oar::IsActorBase(crate::conditions::IsActorBase {
+        Function::IsActorBase { actor_base } => Oar::IsActorBase(IsActorBase {
             negated,
             actor_base,
             ..Default::default()
         }),
 
-        Function::IsActorValueEqualTo { actor_value, value } => Oar::CompareValues(CompareValues {
+        Function::IsActorValueEqualTo { id, value } => Oar::CompareValues(CompareValues {
             negated,
-            value_a: actor_value.into(),
+            value_a: id.into(),
             comparison: Cmp::Eq,
             value_b: value.into(),
             ..Default::default()
         }),
-        Function::IsActorValueLessThan { actor_value, value } => {
+        Function::IsActorValueLessThan { id, value } => Oar::CompareValues(CompareValues {
+            negated,
+            value_a: id.into_actor_value(ActorValueType::ActorValue),
+            comparison: Cmp::Lt,
+            value_b: value.into(),
+            ..Default::default()
+        }),
+        Function::IsActorValueBaseLessThan { id, value } => Oar::CompareValues(CompareValues {
+            negated,
+            value_a: id.into_actor_value(ActorValueType::Base),
+            comparison: Cmp::Lt,
+            value_b: value.into(),
+            ..Default::default()
+        }),
+        Function::IsActorValueMaxEqualTo { id, value } => Oar::CompareValues(CompareValues {
+            negated,
+            value_a: id.into_actor_value(ActorValueType::Max),
+            comparison: Cmp::Eq,
+            value_b: value.into(),
+            ..Default::default()
+        }),
+        Function::IsActorValueMaxLessThan { id, value } => Oar::CompareValues(CompareValues {
+            negated,
+            value_a: id.into_actor_value(ActorValueType::Max),
+            comparison: Cmp::Lt,
+            value_b: value.into(),
+            ..Default::default()
+        }),
+        Function::IsActorValuePercentageEqualTo { id, value } => {
             Oar::CompareValues(CompareValues {
                 negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::ActorValue,
-                }),
-                comparison: Cmp::Lt,
-                value_b: value.into(),
-                ..Default::default()
-            })
-        }
-        Function::IsActorValueBaseLessThan { actor_value, value } => {
-            Oar::CompareValues(CompareValues {
-                negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::Base,
-                }),
-                comparison: Cmp::Lt,
-                value_b: value.into(),
-                ..Default::default()
-            })
-        }
-        Function::IsActorValueMaxEqualTo { actor_value, value } => {
-            Oar::CompareValues(CompareValues {
-                negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::Max,
-                }),
+                value_a: id.into_actor_value(ActorValueType::Percentage),
                 comparison: Cmp::Eq,
                 value_b: value.into(),
                 ..Default::default()
             })
         }
-        Function::IsActorValueMaxLessThan { actor_value, value } => {
+        Function::IsActorValuePercentageLessThan { id, value } => {
             Oar::CompareValues(CompareValues {
                 negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::Max,
-                }),
-                comparison: Cmp::Lt,
-                value_b: value.into(),
-                ..Default::default()
-            })
-        }
-        Function::IsActorValuePercentageEqualTo { actor_value, value } => {
-            Oar::CompareValues(CompareValues {
-                negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::Percentage,
-                }),
-                comparison: Cmp::Eq,
-                value_b: value.into(),
-                ..Default::default()
-            })
-        }
-        Function::IsActorValuePercentageLessThan { actor_value, value } => {
-            Oar::CompareValues(CompareValues {
-                negated,
-                value_a: NumericValue::ActorValue(ActorValue {
-                    actor_value: actor_value.value as i64,
-                    actor_value_type: ActorValueType::Percentage,
-                }),
+                value_a: id.into_actor_value(ActorValueType::Percentage),
                 comparison: Cmp::Lt,
                 value_b: value.into(),
                 ..Default::default()
@@ -215,115 +191,103 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
         }
 
         // ---------------- equipped ----------------
-        Function::IsEquipped { form, hand_type } => {
-            Oar::IsEquipped(crate::conditions::IsEquipped {
-                negated,
-                form,
-                left_hand: hand_type == HandType::Left,
-                ..Default::default()
-            })
-        }
+        Function::IsEquipped { form, hand_type } => Oar::IsEquipped(IsEquipped {
+            negated,
+            form,
+            left_hand: hand_type == HandType::Left,
+            ..Default::default()
+        }),
         Function::IsEquippedType {
-            weapon_type,
+            value: weapon_type,
             hand_type,
-        } => Oar::IsEquippedType(crate::conditions::IsEquippedType {
+        } => Oar::IsEquippedType(IsEquippedType {
             negated,
             type_value: weapon_type.into(),
             left_hand: hand_type == HandType::Left,
             ..Default::default()
         }),
         Function::IsEquippedHasKeyword { keyword, hand_type } => {
-            Oar::IsEquippedHasKeyword(crate::conditions::IsEquippedHasKeyword {
+            Oar::IsEquippedHasKeyword(IsEquippedHasKeyword {
                 negated,
                 keyword: keyword.into(),
                 left_hand: hand_type == HandType::Left,
                 ..Default::default()
             })
         }
-        Function::IsEquippedShout { shout } => {
-            Oar::IsEquippedShout(crate::conditions::IsEquippedShout {
-                negated,
-                shout,
-                ..Default::default()
-            })
-        }
+        Function::IsEquippedShout { shout } => Oar::IsEquippedShout(IsEquippedShout {
+            negated,
+            shout,
+            ..Default::default()
+        }),
 
         // ---------------- faction ----------------
-        Function::IsInFaction { faction } => Oar::IsInFaction(crate::conditions::IsInFaction {
+        Function::IsInFaction { faction } => Oar::IsInFaction(IsInFaction {
             negated,
             faction,
             ..Default::default()
         }),
-        Function::IsFactionRankEqualTo { faction, rank } => {
-            Oar::FactionRank(crate::conditions::FactionRank {
-                negated,
-                faction,
-                comparison: Cmp::Eq,
-                numeric_value: rank.into(),
-                ..Default::default()
-            })
-        }
-        Function::IsFactionRankLessThan { faction, rank } => {
-            Oar::FactionRank(crate::conditions::FactionRank {
-                negated,
-                faction,
-                comparison: Cmp::Lt,
-                numeric_value: rank.into(),
-                ..Default::default()
-            })
-        }
+        Function::IsFactionRankEqualTo { faction, rank } => Oar::FactionRank(FactionRank {
+            negated,
+            faction,
+            comparison: Cmp::Eq,
+            numeric_value: rank.into(),
+            ..Default::default()
+        }),
+        Function::IsFactionRankLessThan { faction, rank } => Oar::FactionRank(FactionRank {
+            negated,
+            faction,
+            comparison: Cmp::Lt,
+            numeric_value: rank.into(),
+            ..Default::default()
+        }),
 
         // ---------------- has ----------------
-        Function::HasKeyword { keyword } => Oar::HasKeyword(crate::conditions::HasKeyword {
+        Function::HasKeyword { keyword } => Oar::HasKeyword(HasKeyword {
             negated,
             keyword: keyword.into(),
             ..Default::default()
         }),
-        Function::HasPerk { perk } => Oar::HasPerk(crate::conditions::HasPerk {
+        Function::HasPerk { perk } => Oar::HasPerk(HasPerk {
             negated,
             perk,
             ..Default::default()
         }),
-        Function::HasSpell { spell } => Oar::HasSpell(crate::conditions::HasSpell {
+        Function::HasSpell { spell } => Oar::HasSpell(HasSpell {
             negated,
             spell,
             ..Default::default()
         }),
-        Function::HasMagicEffect { magic_effect } => {
-            Oar::HasMagicEffect(crate::conditions::HasMagicEffect {
-                negated,
-                magic_effect,
-                ..Default::default()
-            })
-        }
+        Function::HasMagicEffect { magic_effect } => Oar::HasMagicEffect(HasMagicEffect {
+            negated,
+            magic_effect,
+            ..Default::default()
+        }),
         Function::HasMagicEffectWithKeyword { keyword } => {
-            Oar::HasMagicEffectWithKeyword(crate::conditions::HasMagicEffectWithKeyword {
+            Oar::HasMagicEffectWithKeyword(HasMagicEffectWithKeyword {
                 negated,
                 keyword: keyword.into(),
                 ..Default::default()
             })
         }
-        Function::HasRefType { location_ref_type } => {
-            Oar::HasRefType(crate::conditions::HasRefType {
-                negated,
-                location_ref_type: location_ref_type.into(),
-                ..Default::default()
-            })
-        }
-
-        // ---------------- misc compare ----------------
-        Function::ValueEqualTo { lhs, rhs } => Oar::CompareValues(CompareValues {
+        Function::HasRefType { location_ref_type } => Oar::HasRefType(HasRefType {
             negated,
-            value_a: lhs.into(),
-            comparison: Cmp::Eq,
-            value_b: rhs.into(),
+            location_ref_type: location_ref_type.into(),
             ..Default::default()
         }),
-        Function::ValueLessThan { lhs, rhs } => Oar::CompareValues(CompareValues {
+
+        // ---------------- misc compare ----------------
+        Function::ValueEqualTo { value_a, value_b } => Oar::CompareValues(CompareValues {
             negated,
-            value_a: lhs.into(),
+            value_a: value_a.into(),
+            comparison: Cmp::Eq,
+            value_b: value_b.into(),
+            ..Default::default()
+        }),
+        Function::ValueLessThan { value_a, value_b } => Oar::CompareValues(CompareValues {
+            negated,
+            value_a: value_a.into(),
             comparison: Cmp::Lt,
-            value_b: rhs.into(),
+            value_b: value_b.into(),
             ..Default::default()
         }),
 

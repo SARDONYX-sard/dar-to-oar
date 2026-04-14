@@ -1,4 +1,6 @@
-use oar_values::{Direction, PluginValue, StaticValue, WeaponType};
+use oar_values::{
+    ActorValueType, Direction, FormValue, NumericValue, PluginValue, StaticValue, WeaponType,
+};
 
 /// Represents a top-level condition, which can be an AND combination, OR combination, or a leaf expression.
 #[derive(Debug, Clone, PartialEq)]
@@ -35,7 +37,7 @@ pub struct Expression<'input> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Function<'input> {
-    /// `CurrentGameTimeLessThan(float)`
+    /// `CurrentGameTimeLessThan(time: float)`
     CurrentGameTimeLessThan { value: StaticValue },
 
     /// `CurrentWeather(plugin)`
@@ -50,44 +52,44 @@ pub enum Function<'input> {
     // ---------------- Actor ----------------
     /// `IsActorValueEqualTo(actor_value, Number<'input>)`
     IsActorValueEqualTo {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValueLessThan(actor_value, Number<'input>)`
     IsActorValueLessThan {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValueBaseLessThan(actor_value, Number<'input>)`
     IsActorValueBaseLessThan {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValueMaxEqualTo(actor_value, Number<'input>)`
     IsActorValueMaxEqualTo {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValueMaxLessThan(actor_value, Number<'input>)`
     IsActorValueMaxLessThan {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValuePercentageEqualTo(actor_value, Number<'input>)`
     IsActorValuePercentageEqualTo {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorValuePercentageLessThan(actor_value, Number<'input>)`
     IsActorValuePercentageLessThan {
-        actor_value: StaticValue,
-        value: StaticValue,
+        id: GlobalVariable<'input>,
+        value: GlobalVariable<'input>,
     },
 
     /// `IsActorBase(plugin)`
@@ -104,7 +106,7 @@ pub enum Function<'input> {
     /// - `IsEquippedRightType(Number<'input>)`
     /// - `IsEquippedLeftType(Number<'input>)`
     IsEquippedType {
-        weapon_type: WeaponType,
+        value: WeaponType,
         hand_type: HandType,
     },
 
@@ -122,16 +124,16 @@ pub enum Function<'input> {
     /// `IsInFaction(plugin)`
     IsInFaction { faction: PluginValue<'input> },
 
-    /// `IsFactionRankEqualTo(plugin, Number<'input>)`
+    /// `IsFactionRankEqualTo(variable, plugin)`
     IsFactionRankEqualTo {
+        rank: GlobalVariable<'input>,
         faction: PluginValue<'input>,
-        rank: StaticValue,
     },
 
-    /// `IsFactionRankLessThan(plugin, Number<'input>)`
+    /// `IsFactionRankLessThan(variable, plugin)`
     IsFactionRankLessThan {
+        rank: GlobalVariable<'input>,
         faction: PluginValue<'input>,
-        rank: StaticValue,
     },
 
     /// `IsInLocation(plugin)`
@@ -183,14 +185,20 @@ pub enum Function<'input> {
     },
 
     // ---------------- Misc ----------------
-    /// `Random(Number<'input>)`
+    /// `Random(Number<'input>)`: 0..=1
     Random { value: StaticValue },
 
-    /// `ValueEqualTo(Number, Number)`
-    ValueEqualTo { lhs: StaticValue, rhs: StaticValue },
+    /// `ValueEqualTo(PluginValue, Number)`, `ValueEqualTo(Number, PluginValue)`
+    ValueEqualTo {
+        value_a: GlobalVariable<'input>,
+        value_b: GlobalVariable<'input>,
+    },
 
-    /// `ValueLessThan(Number, Number)`
-    ValueLessThan { lhs: StaticValue, rhs: StaticValue },
+    /// `ValueLessThan(PluginValue, Number)`, `ValueLessThan(Number, PluginValue)`
+    ValueLessThan {
+        value_a: GlobalVariable<'input>,
+        value_b: GlobalVariable<'input>,
+    },
 
     // ---------------- No-arg ----------------
     /// `IsFemale()`
@@ -228,6 +236,47 @@ pub enum Function<'input> {
 
     /// `IsWeaponDrawn()`
     IsWeaponDrawn,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum GlobalVariable<'i> {
+    /// e.g., `"Skyrim.esm" | 0x00007`
+    Plugin(PluginValue<'i>),
+    /// e.g., 1.0
+    StaticValue(StaticValue),
+}
+
+impl<'i> GlobalVariable<'i> {
+    /// Converts a [`GlobalVariable`] into a [`NumericValue`] using the given [`ActorValueType`].
+    ///
+    /// - [`GlobalVariable::Plugin`] → [`NumericValue::GlobalVariable`] wrapping the plugin's form value.
+    /// - [`GlobalVariable::StaticValue`] → [`NumericValue::ActorValue`] using the static value as the actor value index.
+    #[inline]
+    pub fn into_actor_value(self, actor_value_type: ActorValueType) -> NumericValue<'i> {
+        match self {
+            GlobalVariable::Plugin(plugin_value) => {
+                NumericValue::GlobalVariable(oar_values::FormValue { form: plugin_value })
+            }
+            GlobalVariable::StaticValue(static_value) => {
+                NumericValue::ActorValue(oar_values::ActorValue {
+                    actor_value: static_value.value as i64,
+                    actor_value_type,
+                })
+            }
+        }
+    }
+}
+
+impl<'i> From<GlobalVariable<'i>> for NumericValue<'i> {
+    #[inline]
+    fn from(value: GlobalVariable<'i>) -> Self {
+        match value {
+            GlobalVariable::Plugin(plugin_value) => {
+                NumericValue::GlobalVariable(FormValue { form: plugin_value })
+            }
+            GlobalVariable::StaticValue(static_value) => NumericValue::StaticValue(static_value),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

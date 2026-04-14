@@ -5,9 +5,7 @@ use std::borrow::Cow;
 /// Pair str & Int | Float | Bool
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GraphValue<'a> {
-    /// string
-    ///
-    /// TODO: Unknown variable
+    /// string (`hkbBehaviorGraphStringData.variableNames`)
     #[serde(rename = "graphVariable")]
     pub graph_variable: Cow<'a, str>,
     /// Float | Int | Bool
@@ -48,13 +46,13 @@ mod tests {
     #[test]
     fn should_deserialize_graph_value() -> Result<(), serde_json::Error> {
         let actual = r#"{
-  "graphVariable": "",
+  "graphVariable": "FNISaa_sprint",
   "graphVariableType": "Int"
 }"#;
         let actual: GraphValue = serde_json::from_str(actual)?;
 
         let expected = GraphValue {
-            graph_variable: "".into(),
+            graph_variable: "FNISaa_sprint".into(),
             graph_variable_type: GraphVariableType::Int,
         };
 
