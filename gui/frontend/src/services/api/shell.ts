@@ -1,3 +1,4 @@
+import { exists } from '@tauri-apps/plugin-fs';
 import { openPath as tauriOpenPath, openUrl as tauriOpenUrl } from '@tauri-apps/plugin-opener';
 import { NOTIFY } from '@/lib/notify';
 
@@ -29,6 +30,10 @@ export async function openUrl(path: string) {
  */
 export async function openPath(path: string) {
   await NOTIFY.asyncTry(async () => {
-    await tauriOpenPath(path);
+    if (await exists(path)) {
+      await tauriOpenPath(path);
+    } else {
+      throw new Error(`No such file or directory: ${path}`);
+    }
   });
 }

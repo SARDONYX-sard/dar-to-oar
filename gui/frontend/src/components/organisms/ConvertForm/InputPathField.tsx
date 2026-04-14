@@ -1,11 +1,11 @@
-import { Grid, TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { type FormProps, type PathFormKeys, setPathToStorage } from './ConvertForm';
+import { OpenIcon } from './OpenIcon';
 import { SelectPathButton } from '@/components/molecules/SelectPathButton';
 import { getParent } from '@/lib/path';
-import { STORAGE } from '@/lib/storage';
 
-import type { TextFieldProps } from '@mui/material/TextField';
+import type { SelectVariants, TextFieldProps } from '@mui/material';
 import type { ReactNode } from 'react';
 
 type Props = {
@@ -16,6 +16,7 @@ type Props = {
   onChange?: TextFieldProps['onChange'];
   isDir: boolean;
   setPathHook?: (path: string) => void;
+  textFieldVariant?: SelectVariants;
 };
 
 export const InputPathField = ({
@@ -26,16 +27,15 @@ export const InputPathField = ({
   onChange: onChangeOuter,
   setPathHook,
   isDir,
+  textFieldVariant,
 }: Props) => {
   const { control, getValues, setValue } = useFormContext<FormProps>();
 
   const path = (() => {
     const path = getParent(getValues(name));
-
     if (path === '') {
-      return STORAGE.get(`cached-${name}`) ?? path;
+      return localStorage.getItem(`cached-${name}`) ?? path;
     }
-
     return path;
   })();
 
@@ -57,26 +57,29 @@ export const InputPathField = ({
         };
 
         return (
-          <Grid container={true} spacing={2}>
-            <Grid size={10}>
+          <Box sx={{ '& > :not(style)': { marginBottom: 2 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+              <OpenIcon path={path} />
+
               <TextField
                 error={Boolean(error)}
                 helperText={helperText}
                 label={label}
-                margin='dense'
                 onBlur={onBlur}
                 onChange={handleChange}
                 placeholder={placeholder}
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', paddingRight: '10px' }}
                 value={value}
-                variant='outlined'
+                variant={textFieldVariant ?? 'outlined'}
               />
-            </Grid>
-
-            <Grid size={2}>
-              <SelectPathButton isDir={isDir} path={path} setPath={handleSetPath} />
-            </Grid>
-          </Grid>
+              <SelectPathButton
+                isDir={isDir}
+                path={path}
+                setPath={handleSetPath}
+                sx={{ height: '50px', width: '125px' }}
+              />
+            </Box>
+          </Box>
         );
       }}
     />

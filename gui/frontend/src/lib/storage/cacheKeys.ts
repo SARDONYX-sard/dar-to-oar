@@ -20,6 +20,7 @@ const FORM_PRIVATE_CACHE_KEYS_OBJ = {
   mapping1personPath: 'mapping1personPath',
   mappingPath: 'mappingPath',
   modAuthor: 'modAuthor',
+  modDescription: 'modDescription',
   modName: 'modName',
   src: 'src',
 } as const;

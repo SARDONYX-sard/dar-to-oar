@@ -2,13 +2,13 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { Button, FormGroup, Grid } from '@mui/material';
 import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { CheckboxField } from './CheckboxField';
+import { useCheckFields } from './hooks/useCheckField';
+import { useInputPathFields } from './hooks/useInputPathField';
+import { useModInfoFields } from './hooks/useModInfoField';
 import { InputModInfoField } from './InputModInfoField';
 import { InputPathField } from './InputPathField';
-import { useCheckFields } from './useCheckField';
-import { useInputPathFields } from './useInputPathField';
-import { useModInfoFields } from './useModInfoField';
 import { useTranslation } from '@/components/hooks/useTranslation';
-import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertNav';
+import { ConvertNav, ConvertNavPadding } from '@/components/organisms/ConvertForm/ConvertNav';
 import { STORAGE } from '@/lib/storage';
 import { PRIVATE_CACHE_OBJ, PUB_CACHE_OBJ } from '@/lib/storage/cacheKeys';
 import { convertDar2oar } from '@/services/api/convert';
@@ -20,6 +20,7 @@ export type FormProps = {
   dst: string;
   modName: string;
   modAuthor: string;
+  modDescription: string;
   mappingPath: string;
   mapping1personPath: string;
   loading: boolean;
@@ -36,6 +37,7 @@ const defaultFormValues = (): FormProps => ({
   dst: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.dst),
   modName: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modName),
   modAuthor: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modAuthor),
+  modDescription: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.modDescription),
   mappingPath: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.mappingPath),
   mapping1personPath: STORAGE.getOrDefault(PRIVATE_CACHE_OBJ.mapping1personPath),
   loading: false,
@@ -47,14 +49,22 @@ const defaultFormValues = (): FormProps => ({
   progress: 0,
 });
 
-const PATH_FORM_VALUES = ['src', 'dst', 'mapping1personPath', 'mappingPath', 'modAuthor', 'modName'] as const;
+const PATH_FORM_VALUES = [
+  'src',
+  'dst',
+  'mapping1personPath',
+  'mappingPath',
+  'modAuthor',
+  'modName',
+  'modDescription',
+] as const;
 
 export type PathFormKeys = (typeof PATH_FORM_VALUES)[number];
 
 export const setPathToStorage = (name: PathFormKeys, path: string) => {
   STORAGE.set(name, path);
   if (path !== '') {
-    STORAGE.set(`cached-${name}`, path);
+    localStorage.setItem(`cached-${name}`, path);
     return;
   }
   STORAGE.remove(name);
@@ -82,10 +92,11 @@ export function ConvertForm() {
     const setLoading = (loading: boolean) => setValue('loading', loading);
     const task = async () => await convertDar2oar(formProps);
 
+    const start = Date.now();
     await progressListener('/dar2oar/progress/converter', task, {
       setLoading,
       setProgress: (percentage: number) => setValue('progress', percentage),
-      success: t('conversion-complete'),
+      success: t('conversion-complete') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
     });
   };
 
@@ -112,19 +123,25 @@ export function ConvertForm() {
 
           <InputPathFields />
 
-          <Grid columnSpacing={1} container={true} sx={{ width: '100%' }}>
+          <Grid columnSpacing={2} container={true} sx={{ width: '100%' }}>
             {modInfoFields.map((props) => {
               return <InputModInfoField key={props.name} {...props} />;
             })}
-
-            {checkFields.map((props) => {
-              return (
-                <Grid key={props.name} size={1.5} sx={{ display: 'flex', placeItems: 'center' }}>
-                  <CheckboxField {...props} />
-                </Grid>
-              );
-            })}
           </Grid>
+
+          <Grid
+            columnSpacing={1}
+            container={true}
+            sx={{
+              width: '100%',
+              justifyContent: 'flex-end',
+            }}
+          >
+            {checkFields.map((props) => (
+              <CheckboxField {...props} />
+            ))}
+          </Grid>
+
           <ConvertNavPadding />
         </FormGroup>
 

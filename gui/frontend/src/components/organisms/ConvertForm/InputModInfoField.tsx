@@ -6,7 +6,7 @@ import type { FormProps } from './ConvertForm';
 import type { ReactNode } from 'react';
 
 type Props = {
-  name: 'modName' | 'modAuthor';
+  name: 'modName' | 'modAuthor' | 'modDescription';
   label: string;
   placeholder: string;
   helperText: ReactNode;
@@ -31,7 +31,7 @@ export const InputModInfoField = ({ name, ...props }: Props) => {
             }}
             sx={{ width: '100%' }}
             value={value}
-            variant='outlined'
+            variant='standard'
             {...props}
           />
         )}
