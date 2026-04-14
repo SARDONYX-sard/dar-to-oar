@@ -91,12 +91,12 @@ export function ConvertForm() {
   const onSubmit: SubmitHandler<FormProps> = async (formProps) => {
     const setLoading = (loading: boolean) => setValue('loading', loading);
     const task = async () => await convertDar2oar(formProps);
-
     const start = Date.now();
+
     await progressListener('/dar2oar/progress/converter', task, {
       setLoading,
       setProgress: (percentage: number) => setValue('progress', percentage),
-      success: t('conversion-complete') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
+      success: () => t('conversion-complete') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
     });
   };
 

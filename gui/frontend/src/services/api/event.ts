@@ -7,7 +7,11 @@ import type { ReactNode } from 'react';
 type ListenerProps = {
   setLoading: (loading: boolean) => void;
   setProgress: (percentage: number) => void;
-  success: string | ReactNode;
+  /**
+   * lazy call success message handler
+   * @returns success message
+   */
+  success: () => string | ReactNode;
   /** @default Error */
   error?: string | ReactNode;
 };
@@ -77,7 +81,7 @@ export async function progressListener(
 
     await promiseFn();
 
-    NOTIFY.success(success);
+    NOTIFY.success(success());
     setProgress(100);
   } catch (err) {
     setProgress(0); // To avoid display `NaN`

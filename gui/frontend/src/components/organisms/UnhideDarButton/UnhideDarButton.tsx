@@ -21,6 +21,7 @@ export const UnhideDarButton = () => {
       NOTIFY.error(t('unhide-dar-specify-error'));
       return;
     }
+    const start = Date.now();
 
     await progressListener(
       '/dar2oar/progress/unhide-dar',
@@ -30,7 +31,7 @@ export const UnhideDarButton = () => {
       {
         setLoading,
         setProgress,
-        success: t('unhide-dar-success'),
+        success: () => t('unhide-dar-success') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
         error: `${path}:\n${t('unhide-dar-failed')}`,
       },
     );
