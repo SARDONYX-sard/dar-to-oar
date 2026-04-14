@@ -4,7 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { usePageRedirect } from './usePageRedirect';
+import { usePageRouter } from './usePageRedirect';
 
 import type { SxProps, Theme } from '@mui/material/styles';
 import type { JSX } from 'react';
@@ -22,7 +22,7 @@ const pathLabels: Record<(typeof validPaths)[number], string> = {
 };
 
 export const PageNavigation = () => {
-  const { selectedIndex, navigateTo } = usePageRedirect(validPaths);
+  const { selectedIndex, navigateTo } = usePageRouter(validPaths);
   // height: Use z-index to occupy the space it occupies so it doesn't appear on top of other pages.
   return (
     <>
