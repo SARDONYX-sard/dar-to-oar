@@ -58,15 +58,29 @@ pub(crate) fn global_pair<'i>(
     .parse_next(input)
 }
 
+pub(crate) struct GlobalPlugin<'i> {
+    pub(crate) faction: PluginValue<'i>,
+    pub(crate) rank: GlobalVariable<'i>,
+}
+
 /// (global_variable, plugin)
-pub(crate) fn global_plugin<'i>(
-    input: &mut &'i str,
-) -> ModalResult<(GlobalVariable<'i>, PluginValue<'i>)> {
-    seq! {
-        global_variable,
-        _: delimited_multispace0(","),
-        plugin_value
-    }
+pub(crate) fn global_plugin<'i>(input: &mut &'i str) -> ModalResult<GlobalPlugin<'i>> {
+    alt((
+        seq! {
+            GlobalPlugin {
+                faction: plugin_value,
+                _: delimited_multispace0(","),
+                rank: global_variable,
+            }
+        },
+        seq! {
+            GlobalPlugin {
+                rank: global_variable,
+                _: delimited_multispace0(","),
+                faction: plugin_value,
+            }
+        },
+    ))
     .parse_next(input)
 }
 

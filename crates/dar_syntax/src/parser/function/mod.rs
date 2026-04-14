@@ -8,7 +8,7 @@ use crate::{
     parser::function::{
         arg_types::{
             number::{direction, static_value},
-            plugin::{global_pair, global_plugin, plugin_value, weapon_type},
+            plugin::{GlobalPlugin, global_pair, global_plugin, plugin_value, weapon_type},
         },
         ident::fn_kind::FnKind,
     },
@@ -236,11 +236,11 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .parse_next(input),
 
         FnKind::IsFactionRankEqualTo => parse_paren(global_plugin)
-            .map(|(rank, faction)| Function::IsFactionRankEqualTo { rank, faction })
+            .map(|GlobalPlugin { rank, faction }| Function::IsFactionRankEqualTo { rank, faction })
             .parse_next(input),
 
         FnKind::IsFactionRankLessThan => parse_paren(global_plugin)
-            .map(|(rank, faction)| Function::IsFactionRankLessThan { rank, faction })
+            .map(|GlobalPlugin { rank, faction }| Function::IsFactionRankLessThan { rank, faction })
             .parse_next(input),
 
         FnKind::ValueEqualTo => parse_paren(global_pair)
