@@ -10,27 +10,14 @@ pub enum Error {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Logger
-    /// Not found log dir
+    /// Not found log dir. {source}
     NotFoundLogDir { source: tauri::Error },
-
-    /// Failed to initialize logger.
-    FailedInitLog,
-
-    /// Uninitialized logger.
-    UninitLog,
 
     /// Tracing log error
     #[snafu(transparent)]
-    FailedSetTracing {
-        source: tracing::subscriber::SetGlobalDefaultError,
-    },
-
-    /// Tracing subscriber reload error
-    #[snafu(transparent)]
     FailedReloadTracingSub {
-        source: tracing_subscriber::reload::Error,
+        source: tracing_rotation::error::Error,
     },
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 /// `Result` for this crate.

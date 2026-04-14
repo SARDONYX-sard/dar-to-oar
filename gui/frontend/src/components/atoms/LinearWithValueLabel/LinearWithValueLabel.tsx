@@ -8,7 +8,7 @@ type Props = {
 
 export function LinearWithValueLabel({ progress }: Readonly<Props>) {
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '99%' }}>
       <LinearProgressWithLabel value={progress} />
     </Box>
   );

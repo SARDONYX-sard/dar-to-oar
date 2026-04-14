@@ -1,5 +1,5 @@
 use dar2oar_core::error::Result;
-use dar2oar_core::{read_mapping_table, ConvertOptions};
+use dar2oar_core::{ConvertOptions, read_mapping_table};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9,6 +9,7 @@ pub(crate) struct GuiConverterOptions {
     pub(crate) oar_dir: Option<String>,
     pub(crate) mod_name: Option<String>,
     pub(crate) mod_author: Option<String>,
+    pub(crate) mod_description: Option<String>,
     pub(crate) mapping_path: Option<String>,
     pub(crate) mapping_1person_path: Option<String>,
     pub(crate) run_parallel: Option<bool>,
@@ -23,6 +24,7 @@ impl GuiConverterOptions {
             oar_dir,
             mod_name,
             mod_author: author,
+            mod_description: description,
             mapping_path,
             mapping_1person_path,
             run_parallel,
@@ -43,6 +45,7 @@ impl GuiConverterOptions {
             oar_dir,
             mod_name,
             author,
+            description,
             section_table,
             section_1person_table,
             run_parallel: run_parallel.unwrap_or(false),

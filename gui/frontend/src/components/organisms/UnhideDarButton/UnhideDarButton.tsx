@@ -1,7 +1,6 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useCallback, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-
 import { ButtonWithToolTip } from '@/components/atoms/ButtonWithToolTip';
 import { CircularProgressWithLabel } from '@/components/atoms/CircularProgressWithLabel';
 import { useTranslation } from '@/components/hooks/useTranslation';
@@ -22,6 +21,7 @@ export const UnhideDarButton = () => {
       NOTIFY.error(t('unhide-dar-specify-error'));
       return;
     }
+    const start = Date.now();
 
     await progressListener(
       '/dar2oar/progress/unhide-dar',
@@ -31,7 +31,7 @@ export const UnhideDarButton = () => {
       {
         setLoading,
         setProgress,
-        success: t('unhide-dar-success'),
+        success: () => t('unhide-dar-success') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
         error: `${path}:\n${t('unhide-dar-failed')}`,
       },
     );

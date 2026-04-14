@@ -1,5 +1,4 @@
 import { type SelectChangeEvent, Tooltip } from '@mui/material';
-
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { SelectWithLabel } from '@/components/molecules/SelectWithLabel';
 import { useCssContext } from '@/components/providers/CssProvider';

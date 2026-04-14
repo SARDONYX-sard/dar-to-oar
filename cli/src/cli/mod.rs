@@ -5,7 +5,7 @@ mod convert;
 use crate::error::Result;
 use crate::logger::LogLevel;
 use convert::dar2oar;
-use dar2oar_core::{remove_oar, unhide_dar, Closure};
+use dar2oar_core::{Closure, remove_oar, unhide_dar};
 use std::path::PathBuf;
 
 pub(crate) async fn run_cli(args: Cli) -> Result<()> {
@@ -49,7 +49,7 @@ pub(crate) struct Cli {
 enum Commands {
     /// Convert DAR to OAR
     #[clap(arg_required_else_help = true)]
-    Convert(convert::Convert),
+    Convert(convert::CliArgs),
 
     #[clap(arg_required_else_help = true)]
     /// Unhide all files in the `DynamicAnimationReplacer` directory

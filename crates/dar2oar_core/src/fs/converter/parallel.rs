@@ -1,0 +1,132 @@
+//! Multi thread converter
+use super::common::is_contain_dar;
+use crate::error::{ConvertError, Result};
+use crate::fs::converter::ConvertOptions;
+use crate::fs::converter::common::common_process;
+use crate::fs::path_changer::parse_dar_path;
+use jwalk::WalkDirGeneric;
+use std::path::Path;
+use std::sync::Arc;
+
+/// Multi thread converter
+///
+/// # Parameters
+/// - `options`: Convert options
+/// - `progress_fn`: For progress callback(1st time: max contents count, 2nd~: index)
+///
+/// # Errors
+/// Failed to convert
+///
+/// # NOTE
+/// For library reasons, you get the number of DAR dirs and files, not the number of DAR files only
+/// (i.e., the count is different from the Sequential version)
+pub async fn convert_dar_to_oar(
+    options: ConvertOptions,
+    mut progress_fn: impl FnMut(usize),
+) -> Result<()> {
+    let dar_dir = options.dar_dir.as_str();
+
+    let walk_len = get_dar_files(dar_dir).into_iter().count();
+    #[cfg(feature = "tracing")]
+    tracing::info!("Parallel Converter/DAR dir & file counts: {}", walk_len);
+    progress_fn(walk_len);
+
+    let entires = get_dar_files(dar_dir).into_iter();
+    let options = Arc::new(options);
+    let mut task_handles = tokio::task::JoinSet::new();
+
+    for entry in entires {
+        let path = entry.map_err(|_err| ConvertError::NotFoundEntry)?.path();
+        if !path.is_file() {
+            continue;
+        }
+        let parsed_path = Arc::new(match parse_dar_path(&path) {
+            Ok(p) => p,
+            Err(_) => continue,
+        });
+        let path = Arc::new(path);
+
+        task_handles.spawn({
+            let path = Arc::clone(&path);
+            let parsed_path = Arc::clone(&parsed_path);
+            let options = Arc::clone(&options);
+
+            async move { common_process(&options, path.as_ref(), parsed_path.as_ref()).await }
+        });
+    }
+
+    let task_handle_is_empty = task_handles.is_empty(); // Need call before `.join_next()`
+
+    let mut errors = vec![];
+    let mut idx = 0;
+    while let Some(result) = task_handles.join_next().await {
+        progress_fn(idx);
+        idx += 1;
+
+        match result {
+            Ok(Ok(())) => {}
+            Ok(Err(err)) => {
+                errors.push(err);
+            }
+            Err(err) => {
+                errors.push(ConvertError::JoinError { source: err });
+            }
+        }
+    }
+
+    if task_handle_is_empty {
+        return Err(ConvertError::NeverConverted);
+    }
+
+    if errors.is_empty() {
+        return Ok(());
+    }
+    Err(ConvertError::NestedError { errors })
+}
+
+/// Get DAR files using a custom filter.
+pub(crate) fn get_dar_files(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bool)> {
+    WalkDirGeneric::<(usize, bool)>::new(root).process_read_dir(
+        |_depth, _path, _read_dir_state, children| {
+            children.retain(|dir_entry_result| {
+                dir_entry_result
+                    .as_ref()
+                    .map(|dir_entry| {
+                        let path = dir_entry.path();
+                        // NOTE: If false is set at the dir stage, the internal file search is skipped,
+                        // so only the file cannot be extracted.
+                        is_contain_oar(path).is_none()
+                    })
+                    .unwrap_or(false)
+            });
+        },
+    )
+}
+
+/// Check if a path contains the directory `OpenAnimationReplacer`.
+#[inline]
+pub(super) fn is_contain_oar(path: impl AsRef<Path>) -> Option<usize> {
+    path.as_ref()
+        .iter()
+        .position(|os_str| os_str.eq_ignore_ascii_case("OpenAnimationReplacer"))
+}
+
+/// Get OAR files using a custom filter.
+pub(crate) fn get_oar(root: impl AsRef<Path>) -> WalkDirGeneric<(usize, bool)> {
+    WalkDirGeneric::<(usize, bool)>::new(root).process_read_dir(
+        |_depth, _path, _read_dir_state, children| {
+            // Custom filter
+            children.retain(|dir_entry_result| {
+                dir_entry_result
+                    .as_ref()
+                    .map(|dir_entry| {
+                        let path = dir_entry.path();
+                        // NOTE: If false is set at the dir stage, the internal file search is skipped,
+                        // so only the file cannot be extracted.
+                        is_contain_dar(path).is_none()
+                    })
+                    .unwrap_or(false)
+            });
+        },
+    )
+}

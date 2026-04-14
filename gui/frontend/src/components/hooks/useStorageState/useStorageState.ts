@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-
 import { STORAGE, type WithHideCacheKey } from '@/lib/storage';
 
 // Helper function to retrieve the cache value and parse it from localStorage

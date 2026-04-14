@@ -1,22 +1,36 @@
-use dar2oar_core::{convert_dar_to_oar, error::Result, get_mapping_table, Closure, ConvertOptions};
+use dar2oar_core::{Closure, ConvertOptions, convert_dar_to_oar, error::Result, get_mapping_table};
 use std::path::PathBuf;
 
-pub(crate) async fn dar2oar(args: Convert) -> Result<()> {
+pub(crate) async fn dar2oar(args: CliArgs) -> Result<()> {
+    let CliArgs {
+        source,
+        destination,
+        name,
+        author,
+        description,
+        mapping_file,
+        mapping_1person_file,
+        run_parallel,
+        hide_dar,
+    } = args;
+
     let config = ConvertOptions {
-        dar_dir: args.source,
-        oar_dir: args.destination,
-        mod_name: args.name,
-        author: args.author,
-        section_table: get_mapping_table(args.mapping_file).await,
-        section_1person_table: get_mapping_table(args.mapping_1person_file).await,
-        run_parallel: args.run_parallel,
-        hide_dar: args.hide_dar,
+        dar_dir: source,
+        oar_dir: destination,
+        mod_name: name,
+        author,
+        description,
+        section_table: get_mapping_table(mapping_file).await,
+        section_1person_table: get_mapping_table(mapping_1person_file).await,
+        run_parallel,
+        hide_dar,
     };
+
     convert_dar_to_oar(config, Closure::default).await
 }
 
 #[derive(Debug, clap::Args)]
-pub(crate) struct Convert {
+pub(crate) struct CliArgs {
     #[clap(value_parser)]
     /// Path containing the "DynamicAnimationReplacer" directory
     source: String,
@@ -29,6 +43,9 @@ pub(crate) struct Convert {
     #[clap(long)]
     /// Mod author in config.json
     author: Option<String>,
+    #[clap(long)]
+    /// Mod author in config.json
+    description: Option<String>,
     #[clap(long)]
     /// Path to section name table
     ///

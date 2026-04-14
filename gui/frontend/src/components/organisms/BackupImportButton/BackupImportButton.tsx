@@ -1,12 +1,12 @@
 import FileOpen from '@mui/icons-material/FileOpen';
 import { useState } from 'react';
-
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { BackupButton } from '@/components/organisms/BackupButton';
-import type { DialogClickHandler } from '@/components/organisms/BackupMenuDialog';
 import { NOTIFY } from '@/lib/notify';
-import type { Cache } from '@/lib/storage';
 import { BACKUP } from '@/services/api/backup';
+
+import type { DialogClickHandler } from '@/components/organisms/BackupMenuDialog';
+import type { Cache } from '@/lib/storage';
 
 export const BackupImportButton = () => {
   const { t } = useTranslation();

@@ -1,5 +1,5 @@
 use crate::convert_option::GuiConverterOptions;
-use dar2oar_core::{convert_dar_to_oar, remove_oar, unhide_dar, Closure};
+use dar2oar_core::{Closure, convert_dar_to_oar, remove_oar, unhide_dar};
 use std::time::Instant;
 use tauri::{Emitter as _, Window};
 
@@ -78,7 +78,7 @@ pub(crate) async fn convert_dar2oar_with_progress(
 #[tauri::command]
 pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), String> {
     tracing::debug!("Selected log level: {:?}", log_level);
-    crate::log::change_level(log_level.unwrap_or("error")).or_else(|err| bail!(err))
+    tracing_rotation::change_level(log_level.unwrap_or("error")).or_else(|err| bail!(err))
 }
 
 /// Define our own `writeTextFile` api for tauri,

@@ -1,12 +1,10 @@
 import { type SelectChangeEvent, Tooltip } from '@mui/material';
 import { useCallback } from 'react';
-
+import { useLogLevelContext } from '../../providers/LogLevelProvider';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { SelectWithLabel } from '@/components/molecules/SelectWithLabel';
 import { NOTIFY } from '@/lib/notify';
 import { LOG } from '@/services/api/log';
-
-import { useLogLevelContext } from '../../providers/LogLevelProvider';
 
 export const LogLevelList = () => {
   const { logLevel, setLogLevel } = useLogLevelContext();

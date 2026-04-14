@@ -1,5 +1,4 @@
 import { type ComponentPropsWithRef, useCallback } from 'react';
-
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { SelectWithLabel } from '@/components/molecules/SelectWithLabel';
 import { useEditorModeContext } from '@/components/providers/EditorModeProvider';

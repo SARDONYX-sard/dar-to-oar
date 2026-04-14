@@ -29,7 +29,7 @@
     "beforeDevCommand": "npm run dev:front",
     "devUrl": "http://localhost:3000",
     "features": [],
-    "frontendDist": "../frontend/out"
+    "frontendDist": "../frontend/dist"
   },
   "bundle": {
     "active": true,

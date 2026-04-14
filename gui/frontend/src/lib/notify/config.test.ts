@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-
-import { STORAGE } from '@/lib/storage';
-
 import { NOTIFY_CONFIG } from './config';
+import { STORAGE } from '@/lib/storage';
 
 // Clear localStorage before each test to ensure isolation
 beforeEach(() => {

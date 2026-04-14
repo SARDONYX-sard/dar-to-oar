@@ -1,7 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCallback, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-
 import { ButtonWithToolTip } from '@/components/atoms/ButtonWithToolTip';
 import { CircularProgressWithLabel } from '@/components/atoms/CircularProgressWithLabel';
 import { useTranslation } from '@/components/hooks/useTranslation';
@@ -23,6 +22,7 @@ export const RemoveOarButton = () => {
       return;
     }
     const path = oarPath === '' ? darPath : oarPath;
+    const start = Date.now();
 
     await progressListener(
       '/dar2oar/progress/remove-oar',
@@ -32,7 +32,7 @@ export const RemoveOarButton = () => {
       {
         setLoading,
         setProgress,
-        success: t('remove-oar-success'),
+        success: () => t('remove-oar-success') + ` (${((Date.now() - start) / 1000).toFixed(2)}s)`,
         error: `${path}:\n${t('remove-oar-failed')}`,
       },
     );

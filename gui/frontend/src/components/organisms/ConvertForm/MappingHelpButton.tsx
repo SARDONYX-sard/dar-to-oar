@@ -1,12 +1,13 @@
 import { Button } from '@mui/material';
-import type { MouseEventHandler } from 'react';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { openUrl } from '@/services/api/shell';
+
+import type { MouseEventHandler } from 'react';
 export const MappingHelpButton = () => {
   const { t } = useTranslation();
   const href = `https://github.com/SARDONYX-sard/dar-to-oar/${t('mapping-wiki-url-leaf')}`;
-  const handleMappingClick: MouseEventHandler<HTMLButtonElement> = (_e) => {
-    openUrl(href);
+  const handleMappingClick: MouseEventHandler<HTMLButtonElement> = async (_e) => {
+    await openUrl(href);
   };
 
   return (

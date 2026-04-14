@@ -4,7 +4,6 @@
  * - ref: https://vitest.dev/config/#environment
  */
 import { describe, expect, it } from 'vitest';
-
 import { OBJECT } from './';
 
 describe('OBJECT.keys', () => {

@@ -1,6 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
-import type { SxProps, Theme } from '@mui/system';
 import { type ComponentPropsWithRef, forwardRef, type JSX, type Ref, useId } from 'react';
+
+import type { SxProps, Theme } from '@mui/system';
 
 type MenuItems<V extends string> = {
   label: string;

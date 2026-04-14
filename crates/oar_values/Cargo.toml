@@ -1,0 +1,27 @@
+[package]
+name = "oar_values"
+version.workspace = true
+description.workspace = true
+categories.workspace = true
+keywords = ["skyrim"]
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+
+[dependencies]
+serde = { workspace = true } # Implement (De)Serializer
+serde-untagged = "0.1.8"
+snafu = { workspace = true } # define errors type
+
+
+[dev-dependencies]
+serde_json = { workspace = true } # Json converter
+pretty_assertions = { workspace = true }
+
+
+[lints]
+workspace = true

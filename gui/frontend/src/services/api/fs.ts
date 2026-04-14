@@ -1,9 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { readTextFile } from '@tauri-apps/plugin-fs';
-
-import { type CacheKey, STORAGE } from '@/lib/storage';
-
 import { openPath } from './dialog';
+import { type CacheKey, STORAGE } from '@/lib/storage';
 
 /**
  * Read the entire contents of a file into a string.

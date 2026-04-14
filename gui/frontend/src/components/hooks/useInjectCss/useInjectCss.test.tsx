@@ -1,9 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-
-import { CSS } from '@/lib/css';
-
 import { useInjectCss } from './useInjectCss';
+import { CSS } from '@/lib/css';
 
 describe('useInjectCss hook', () => {
   beforeEach(() => {

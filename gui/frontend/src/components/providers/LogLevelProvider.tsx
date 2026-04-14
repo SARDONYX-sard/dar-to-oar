@@ -1,5 +1,4 @@
 import { createContext, type ReactNode, useContext, useState } from 'react';
-
 import { LOG, type LogLevel } from '@/services/api/log';
 
 type ContextType = {

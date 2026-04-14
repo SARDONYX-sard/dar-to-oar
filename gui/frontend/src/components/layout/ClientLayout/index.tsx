@@ -1,9 +1,9 @@
 'use client'; // If this directive is not present on each page, a build error will occur.
-
 // NOTE: From next15, { ssr: false } can only be called by the Client component.
 import dynamic from 'next/dynamic';
-import type { ReactNode } from 'react';
 import Loading from '@/components/templates/Loading';
+
+import type { ReactNode } from 'react';
 
 const DynClientLayout = dynamic(() => import('@/components/layout/ClientLayout/ClientLayout'), {
   loading: () => <Loading />,

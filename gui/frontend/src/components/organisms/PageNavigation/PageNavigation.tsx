@@ -1,49 +1,61 @@
 'use client';
+
+import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
-import TransformIcon from '@mui/icons-material/Transform';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePageRouter } from './usePageRedirect';
 
-/** HACK: To prevents the conversion button from being hidden because the menu is fixed. */
-const MenuPadding = () => <div style={{ height: '56px' }} />;
+import type { SxProps, Theme } from '@mui/material/styles';
+import type { JSX } from 'react';
 
-export function PageNavigation() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [value, setValue] = useState(0);
+export const validPaths = ['/', '/settings'] as const;
 
-  useEffect(() => {
-    if (pathname === '/') {
-      setValue(0);
-    } else if (pathname === '/settings') {
-      setValue(1);
-    }
-  }, [pathname]);
+const pathIcons: Record<(typeof validPaths)[number], JSX.Element> = {
+  '/': <HomeIcon />,
+  '/settings': <SettingsIcon />,
+};
 
+const pathLabels: Record<(typeof validPaths)[number], string> = {
+  '/': 'Home',
+  '/settings': 'Settings',
+};
+
+export const PageNavigation = () => {
+  const { selectedIndex, navigateTo } = usePageRouter(validPaths);
+  // height: Use z-index to occupy the space it occupies so it doesn't appear on top of other pages.
   return (
     <>
-      <MenuPadding />
-      <BottomNavigation
-        onChange={(_event, newValue) => {
-          setValue(newValue);
-        }}
-        showLabels={true}
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          width: '100%',
-          zIndex: '100', // Because Ace-editor uses z-index and without it, it would be covered.
-          '.Mui-selected': {
-            color: '#99e4ee',
-          },
-        }}
-        value={value}
-      >
-        <BottomNavigationAction icon={<TransformIcon />} label='Convert' onClick={() => router.push('/')} />
-        <BottomNavigationAction icon={<SettingsIcon />} label='Settings' onClick={() => router.push('/settings')} />
+      <div style={{ height: '56px' }} />
+      <BottomNavigation showLabels sx={navStyles} onChange={(_e, idx) => navigateTo(idx)} value={selectedIndex}>
+        {validPaths.map((path) => (
+          <BottomNavigationAction key={path} icon={pathIcons[path]} label={pathLabels[path]} />
+        ))}
       </BottomNavigation>
     </>
   );
-}
+};
+
+const navStyles = (theme: Theme) =>
+  ({
+    position: 'fixed',
+    bottom: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '100%',
+    zIndex: '100',
+    backdropFilter: 'blur(4px)',
+    bgcolor: theme.palette.mode === 'dark' ? 'rgba(20, 20, 20, 0.8)' : 'rgba(255, 255, 255, 0.7)',
+    boxShadow: theme.palette.mode === 'dark' ? '0 2px 8px rgba(0,0,0,0.4)' : '0 2px 8px rgba(0,0,0,0.1)',
+    transition: 'background-color 0.3s, box-shadow 0.3s, transform 0.3s',
+    '& .MuiBottomNavigationAction-root': {
+      transition: 'transform 0.2s, color 0.2s',
+      '&:hover': {
+        transform: 'translateY(-2px) scale(1.05)',
+        color: 'var(--mui-palette-primary-main)',
+      },
+    },
+    '.Mui-selected': {
+      color: 'var(--mui-palette-primary-main)',
+    },
+  }) as const satisfies SxProps<Theme>;

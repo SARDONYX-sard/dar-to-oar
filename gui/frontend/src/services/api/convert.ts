@@ -1,5 +1,4 @@
 import { invoke } from '@tauri-apps/api/core';
-
 import { LOG } from './log';
 
 type ConverterOptions = {
