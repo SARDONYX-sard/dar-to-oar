@@ -59,7 +59,7 @@ export const InputPathField = ({
         return (
           <Box sx={{ '& > :not(style)': { marginBottom: 2 } }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-              <OpenIcon path={path} />
+              <OpenIcon path={value} />
 
               <TextField
                 error={Boolean(error)}
