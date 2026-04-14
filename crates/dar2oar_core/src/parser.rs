@@ -33,7 +33,7 @@ txt -> DAR ast:
         dar_ast
     );
 
-    let oar_ast: Oar = dar_ast.try_into()?;
+    let oar_ast: Oar = dar_ast.into();
 
     #[cfg(feature = "tracing")]
     tracing::debug!(

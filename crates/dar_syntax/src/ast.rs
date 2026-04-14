@@ -100,21 +100,18 @@ pub enum Function<'input> {
     /// `IsEquippedLeft(plugin)`
     IsEquipped {
         form: PluginValue<'input>,
-        hand_type: HandType,
+        is_left: bool,
     },
 
     /// - `IsEquippedRightType(Number<'input>)`
     /// - `IsEquippedLeftType(Number<'input>)`
-    IsEquippedType {
-        value: WeaponType,
-        hand_type: HandType,
-    },
+    IsEquippedType { value: WeaponType, is_left: bool },
 
     /// - `IsEquippedRightHasKeyword(keyword)`
     /// - `IsEquippedLeftHasKeyword(keyword)`
     IsEquippedHasKeyword {
         keyword: PluginValue<'input>,
-        hand_type: HandType,
+        is_left: bool,
     },
 
     /// `IsEquippedShout(plugin)`
@@ -277,10 +274,4 @@ impl<'i> From<GlobalVariable<'i>> for NumericValue<'i> {
             GlobalVariable::StaticValue(static_value) => NumericValue::StaticValue(static_value),
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum HandType {
-    Left,
-    Right,
 }

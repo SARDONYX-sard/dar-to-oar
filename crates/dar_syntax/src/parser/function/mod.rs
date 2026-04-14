@@ -4,7 +4,7 @@ pub mod ident;
 
 use self::ident::ident;
 use crate::{
-    ast::{Function, HandType},
+    ast::Function,
     parser::function::{
         arg_types::{
             number::{direction, static_value},
@@ -252,49 +252,27 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .parse_next(input),
 
         // ---------------- left/right plugin ----------------
-        FnKind::IsEquippedRight | FnKind::IsEquippedLeft => {
-            let left = matches!(kind, FnKind::IsEquippedLeft);
-
-            parse_paren(plugin_value)
-                .map(move |form| Function::IsEquipped {
-                    form,
-                    hand_type: if left {
-                        HandType::Left
-                    } else {
-                        HandType::Right
-                    },
-                })
-                .parse_next(input)
-        }
+        FnKind::IsEquippedRight | FnKind::IsEquippedLeft => parse_paren(plugin_value)
+            .map(move |form| Function::IsEquipped {
+                form,
+                is_left: matches!(kind, FnKind::IsEquippedLeft),
+            })
+            .parse_next(input),
 
         // ---------------- left/right number ----------------
-        FnKind::IsEquippedRightType | FnKind::IsEquippedLeftType => {
-            let left = matches!(kind, FnKind::IsEquippedLeftType);
-
-            parse_paren(weapon_type)
-                .map(move |value| Function::IsEquippedType {
-                    value,
-                    hand_type: if left {
-                        HandType::Left
-                    } else {
-                        HandType::Right
-                    },
-                })
-                .parse_next(input)
-        }
+        FnKind::IsEquippedRightType | FnKind::IsEquippedLeftType => parse_paren(weapon_type)
+            .map(move |value| Function::IsEquippedType {
+                value,
+                is_left: matches!(kind, FnKind::IsEquippedLeftType),
+            })
+            .parse_next(input),
 
         // ---------------- left/right keyword ----------------
         FnKind::IsEquippedRightHasKeyword | FnKind::IsEquippedLeftHasKeyword => {
-            let left = matches!(kind, FnKind::IsEquippedLeftHasKeyword);
-
             parse_paren(plugin_value)
                 .map(move |keyword| Function::IsEquippedHasKeyword {
                     keyword,
-                    hand_type: if left {
-                        HandType::Left
-                    } else {
-                        HandType::Right
-                    },
+                    is_left: matches!(kind, FnKind::IsEquippedLeftHasKeyword),
                 })
                 .parse_next(input)
         }

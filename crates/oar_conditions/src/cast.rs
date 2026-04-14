@@ -1,55 +1,36 @@
 //! Parses a high-level condition set based on the provided syntax.
-use crate::{
-    conditions::{
-        And, CompareValues, Condition, CurrentGameTime, CurrentWeather, FactionRank, HasKeyword,
-        HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType, HasSpell, IsActorBase,
-        IsClass, IsCombatStyle, IsEquipped, IsEquippedHasKeyword, IsEquippedShout, IsEquippedType,
-        IsInFaction, IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType,
-        IsWorldSpace, IsWorn, IsWornHasKeyword, Level, Oar, Or, RandomCondition,
-    },
-    error::Error,
+use crate::conditions::{
+    And, CompareValues, Condition, CurrentGameTime, CurrentWeather, FactionRank, HasKeyword,
+    HasMagicEffect, HasMagicEffectWithKeyword, HasPerk, HasRefType, HasSpell, IsActorBase, IsClass,
+    IsCombatStyle, IsEquipped, IsEquippedHasKeyword, IsEquippedShout, IsEquippedType, IsInFaction,
+    IsInLocation, IsMovementDirection, IsParentCell, IsRace, IsVoiceType, IsWorldSpace, IsWorn,
+    IsWornHasKeyword, Level, Oar, Or, RandomCondition,
 };
-use dar_syntax::ast::{Dar, Expression, Function, HandType};
+use dar_syntax::ast::{Dar, Expression, Function};
 use oar_values::{ActorValueType, Cmp, DirectionValue};
 use rayon::prelude::*;
 
-impl<'input> TryFrom<Dar<'input>> for Oar<'input> {
-    type Error = Error;
-
-    fn try_from(dar: Dar<'input>) -> Result<Self, Self::Error> {
-        fn oar_to<'input>(conditions: Vec<Dar<'input>>) -> Result<Vec<Oar<'input>>, Error> {
-            let (oar, errors): (Vec<Oar<'input>>, Vec<Error>) = conditions
-                .into_par_iter()
-                .partition_map(|condition| match condition.try_into() {
-                    Ok(oar) => rayon::iter::Either::Left(oar),
-                    Err(err) => rayon::iter::Either::Right(err),
-                });
-
-            if errors.is_empty() {
-                return Ok(oar);
-            }
-
-            Err(Error::NestedError { errors })
-        }
-
-        Ok(match dar {
+impl<'input> From<Dar<'input>> for Oar<'input> {
+    #[inline]
+    fn from(dar: Dar<'input>) -> Self {
+        match dar {
             Dar::And(conditions) => Oar::And(And {
-                conditions: oar_to(conditions)?,
+                conditions: conditions.into_par_iter().map(Into::into).collect(),
                 ..Default::default()
             }),
             Dar::Or(conditions) => Oar::Or(Or {
-                conditions: oar_to(conditions)?,
+                conditions: conditions.into_par_iter().map(Into::into).collect(),
                 ..Default::default()
             }),
-            Dar::Exp(expression) => expr_to_oar(expression)?,
-        })
+            Dar::Exp(expression) => expr_to_oar(expression),
+        }
     }
 }
 
-fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
+fn expr_to_oar(expr: Expression) -> Oar {
     let Expression { negated, function } = expr;
 
-    Ok(match function {
+    match function {
         // ---------------- simple number ----------------
         Function::CurrentGameTimeLessThan { value } => Oar::CurrentGameTime(CurrentGameTime {
             negated,
@@ -191,29 +172,33 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
         }
 
         // ---------------- equipped ----------------
-        Function::IsEquipped { form, hand_type } => Oar::IsEquipped(IsEquipped {
+        Function::IsEquipped {
+            form,
+            is_left: left_hand,
+        } => Oar::IsEquipped(IsEquipped {
             negated,
             form,
-            left_hand: hand_type == HandType::Left,
+            left_hand,
             ..Default::default()
         }),
         Function::IsEquippedType {
             value: weapon_type,
-            hand_type,
+            is_left: left_hand,
         } => Oar::IsEquippedType(IsEquippedType {
             negated,
             type_value: weapon_type.into(),
-            left_hand: hand_type == HandType::Left,
+            left_hand,
             ..Default::default()
         }),
-        Function::IsEquippedHasKeyword { keyword, hand_type } => {
-            Oar::IsEquippedHasKeyword(IsEquippedHasKeyword {
-                negated,
-                keyword: keyword.into(),
-                left_hand: hand_type == HandType::Left,
-                ..Default::default()
-            })
-        }
+        Function::IsEquippedHasKeyword {
+            keyword,
+            is_left: left_hand,
+        } => Oar::IsEquippedHasKeyword(IsEquippedHasKeyword {
+            negated,
+            keyword: keyword.into(),
+            left_hand,
+            ..Default::default()
+        }),
         Function::IsEquippedShout { shout } => Oar::IsEquippedShout(IsEquippedShout {
             negated,
             shout,
@@ -352,5 +337,5 @@ fn expr_to_oar(expr: Expression) -> Result<Oar, Error> {
             negated,
             ..Default::default()
         }),
-    })
+    }
 }

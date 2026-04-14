@@ -28,7 +28,7 @@ macro_rules! parse_assert {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::{Dar, Expression, Function, GlobalVariable, HandType};
+    use crate::ast::{Dar, Expression, Function, GlobalVariable};
     use oar_values::{FormID, PluginValue, StaticValue, WeaponType};
     use pretty_assertions::assert_eq;
 
@@ -112,14 +112,14 @@ NOT IsActorValueLessThan(30, 60)
                 Dar::Exp(Expression {
                     function: Function::IsEquippedType {
                         value: WeaponType::WarAxe, // 3.0
-                        hand_type: HandType::Right,
+                        is_left: false,
                     },
                     negated: false,
                 }),
                 Dar::Exp(Expression {
                     function: Function::IsEquippedType {
                         value: WeaponType::Mace, // 4.0
-                        hand_type: HandType::Right,
+                        is_left: false,
                     },
                     negated: false,
                 }),
