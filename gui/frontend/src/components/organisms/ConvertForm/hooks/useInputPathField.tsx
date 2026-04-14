@@ -39,7 +39,6 @@ export const useInputPathFields = () => {
           setValue('modName', parsedPath.modName ?? '');
         }
       },
-      textFieldVariant: 'filled',
     },
     {
       helperText: (
@@ -52,6 +51,7 @@ export const useInputPathFields = () => {
       name: 'dst',
       placeholder: '[...]/<MOD NAME>',
       isDir: true,
+      textFieldVariant: 'filled',
     },
 
     {
@@ -60,6 +60,7 @@ export const useInputPathFields = () => {
       name: 'mapping1personPath',
       placeholder: './mapping_table.txt',
       isDir: false,
+      textFieldVariant: 'filled',
     },
     {
       helperText: t('convert-form-mapping-helper'),
@@ -67,6 +68,7 @@ export const useInputPathFields = () => {
       name: 'mappingPath',
       placeholder: './mapping_table_for_1st_person.txt',
       isDir: false,
+      textFieldVariant: 'filled',
     },
   ] satisfies ComponentPropsWithRef<typeof InputPathField>[];
 };
