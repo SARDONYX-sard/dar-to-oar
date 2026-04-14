@@ -1,11 +1,10 @@
 //! Single thread converter
-use crate::error::Result;
+use crate::error::{ConvertError, Result};
 use crate::fs::converter::ConvertOptions;
-use crate::fs::converter::common::{convert_inner, handle_conversion_results, is_contain_dar};
+use crate::fs::converter::common::{common_process, is_contain_dar};
 use crate::fs::path_changer::parse_dar_path;
 use async_walkdir::{Filtering, WalkDir};
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
 use tokio_stream::StreamExt;
 
 /// Single thread converter
@@ -27,7 +26,6 @@ pub async fn convert_dar_to_oar(
     tracing::info!("Sequential Converter/DAR file counts: {}", walk_len);
     progress_fn(walk_len);
 
-    let is_converted_once = AtomicBool::new(false);
     let mut entries = get_dar_files(dar_dir).await;
     let mut idx = 0;
     while let Some(entry) = entries.next().await {
@@ -43,17 +41,18 @@ pub async fn convert_dar_to_oar(
 
         #[cfg(feature = "tracing")]
         tracing::debug!("[Start {}th conversion]\n{:?}", idx, &parsed_path);
-        convert_inner(&options, path, &parsed_path, &is_converted_once).await?;
+        common_process(&options, path, &parsed_path).await?;
         progress_fn(idx);
         #[cfg(feature = "tracing")]
         tracing::debug!("[End {}th conversion]\n\n", idx);
         idx += 1;
     }
 
-    // # Ordering validity:
-    // The order is irrelevant because `tokio::spawn` is not used in the while loop.
-    // Therefore, there is no problem in using `Relaxed`.
-    handle_conversion_results(is_converted_once.load(Ordering::Relaxed))
+    if idx == 0 {
+        return Err(ConvertError::NeverConverted);
+    }
+
+    Ok(())
 }
 
 /// Get files in `DynamicAnimationReplacer` directly.

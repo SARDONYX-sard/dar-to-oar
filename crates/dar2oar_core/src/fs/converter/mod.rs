@@ -95,6 +95,8 @@ pub struct ConvertOptions {
     pub mod_name: Option<String>,
     /// mod author in config.json
     pub author: Option<String>,
+    /// mod description in config.json
+    pub description: Option<String>,
     /// path to section name table
     pub section_table: Option<HashMap<CompactString, String>>,
     /// path to section name table(For `_1st_person`)

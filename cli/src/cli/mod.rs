@@ -49,7 +49,7 @@ pub(crate) struct Cli {
 enum Commands {
     /// Convert DAR to OAR
     #[clap(arg_required_else_help = true)]
-    Convert(convert::Convert),
+    Convert(convert::CliArgs),
 
     #[clap(arg_required_else_help = true)]
     /// Unhide all files in the `DynamicAnimationReplacer` directory

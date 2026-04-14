@@ -34,10 +34,13 @@ pub(crate) async fn write_name_space_config<P>(
     oar_name_space_path: P,
     mod_name: &str,
     author: Option<&str>,
+    description: Option<&str>,
 ) -> Result<()>
 where
     P: AsRef<Path>,
 {
+    fs::create_dir_all(&oar_name_space_path).await?;
+
     let target_file = oar_name_space_path.as_ref().join("config.json");
     if target_file.exists() {
         return Ok(());
@@ -46,8 +49,8 @@ where
     let config_json = MainConfig {
         name: mod_name,
         author: author.unwrap_or_default(),
-        ..Default::default()
+        description: description.unwrap_or_default(),
     };
-    fs::create_dir_all(&oar_name_space_path).await?;
+
     write_json_to(target_file, &config_json).await
 }

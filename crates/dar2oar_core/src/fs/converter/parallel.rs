@@ -2,12 +2,11 @@
 use super::common::is_contain_dar;
 use crate::error::{ConvertError, Result};
 use crate::fs::converter::ConvertOptions;
-use crate::fs::converter::common::{convert_inner, handle_conversion_results};
+use crate::fs::converter::common::common_process;
 use crate::fs::path_changer::parse_dar_path;
 use jwalk::WalkDirGeneric;
 use std::path::Path;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Multi thread converter
 ///
@@ -34,7 +33,6 @@ pub async fn convert_dar_to_oar(
 
     let entires = get_dar_files(dar_dir).into_iter();
     let options = Arc::new(options);
-    let is_converted_once = Arc::new(AtomicBool::new(false));
     let mut task_handles = tokio::task::JoinSet::new();
 
     for entry in entires {
@@ -52,17 +50,8 @@ pub async fn convert_dar_to_oar(
             let path = Arc::clone(&path);
             let parsed_path = Arc::clone(&parsed_path);
             let options = Arc::clone(&options);
-            let is_converted_once = Arc::clone(&is_converted_once);
-            async move {
-                convert_inner(
-                    &options,
-                    path.as_ref(),
-                    parsed_path.as_ref(),
-                    is_converted_once.as_ref(),
-                )
-                .await?;
-                Ok(())
-            }
+
+            async move { common_process(&options, path.as_ref(), parsed_path.as_ref()).await }
         });
     }
 
@@ -83,15 +72,13 @@ pub async fn convert_dar_to_oar(
         }
     }
 
-    // # Ordering validity:
-    // Since all processing threads are loaded after they have finished, ordering relationships are not a concern.
-    // Therefore, there is no problem in using `Relaxed`.
-    handle_conversion_results(is_converted_once.load(Ordering::Relaxed))?;
+    if task_handles.is_empty() {
+        return Err(ConvertError::NeverConverted);
+    }
 
     if errors.is_empty() {
         return Ok(());
     }
-
     Err(ConvertError::NestedError { errors })
 }
 

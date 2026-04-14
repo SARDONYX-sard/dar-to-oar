@@ -7,10 +7,13 @@ use std::collections::HashMap;
 use std::path::Path;
 use tokio::fs::read_to_string;
 
+pub type MappingTable = HashMap<CompactString, String>;
+
 /// Get mapping table from path
-pub async fn get_mapping_table(
-    mapping_path: Option<impl AsRef<Path>>,
-) -> Option<HashMap<CompactString, String>> {
+pub async fn get_mapping_table<P>(mapping_path: Option<P>) -> Option<MappingTable>
+where
+    P: AsRef<Path>,
+{
     match mapping_path {
         Some(table_path) => read_mapping_table(table_path).await.ok(),
         None => None,
@@ -21,9 +24,10 @@ pub async fn get_mapping_table(
 ///
 /// # Errors
 /// Path is not exist.
-pub async fn read_mapping_table(
-    table_path: impl AsRef<Path>,
-) -> Result<HashMap<CompactString, String>> {
+pub async fn read_mapping_table<P>(table_path: P) -> Result<MappingTable>
+where
+    P: AsRef<Path>,
+{
     let table_path = table_path.as_ref();
     if !table_path.exists() {
         return Err(ConvertError::NonExistPath {
@@ -43,8 +47,8 @@ pub async fn read_mapping_table(
 /// # Information
 /// The key can only be up to [`f32`]`::MAX` due to DAR specifications.
 /// Therefore, [`CompactString`] is used to fit into 24 bytes.
-fn parse_mapping_table(table: &str) -> HashMap<CompactString, String> {
-    let mut map = HashMap::new();
+fn parse_mapping_table(table: &str) -> MappingTable {
+    let mut map = MappingTable::new();
 
     // Sequential numbering of duplicate keys when no key is available.
     let mut current_section_name = "";
