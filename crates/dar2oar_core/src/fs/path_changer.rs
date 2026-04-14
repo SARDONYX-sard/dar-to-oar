@@ -117,11 +117,10 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> Result<ParsedPath> {
     let mod_name = path
         .iter()
         .position(|os_str| os_str.eq_ignore_ascii_case(OsStr::new("meshes")))
-        .and_then(|idx| {
-            paths
-                .get(idx - 1)
-                .and_then(|mod_name| mod_name.to_str().map(str::to_owned))
-        });
+        .and_then(|idx| paths.get(idx - 1).and_then(|mod_name| mod_name.to_str()));
+    let ascii_mod_name = mod_name.map(|s| s.chars().filter(|c| c.is_ascii()).collect::<String>());
+
+    tracing::debug!("Inferred mod_name: {mod_name:?} -> ASCII only: {ascii_mod_name:?}",);
 
     let actor_name = path
         .iter()
@@ -166,7 +165,7 @@ pub fn parse_dar_path(path: impl AsRef<Path>) -> Result<ParsedPath> {
         dar_root,
         oar_root,
         is_1st_person,
-        mod_name,
+        mod_name: ascii_mod_name,
         actor_name,
         priority,
         remain_dir,
