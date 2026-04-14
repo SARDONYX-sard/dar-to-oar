@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { useStorageState } from './useStorageState';
 import { type Cache, STORAGE } from '@/lib/storage';
 
-const mockKey = 'log-level' satisfies keyof Cache;
+const mockKey = 'logLevel' satisfies keyof Cache;
 
 describe('useStorageState', () => {
   beforeEach(() => {
