@@ -6,6 +6,7 @@ type ConverterOptions = {
   dst?: string;
   modName?: string;
   modAuthor?: string;
+  modDescription?: string;
   mappingPath?: string;
   mapping1personPath?: string;
   runParallel?: boolean;
@@ -23,17 +24,20 @@ type ConverterOptions = {
  */
 export async function convertDar2oar(props: ConverterOptions): Promise<void> {
   if (props.src === '') {
-    throw new Error('src must be specified.');
+    throw new Error('darDir must be specified.');
   }
+
+  const emptyToUndefined = (v?: string) => (v === '' ? undefined : v);
 
   const args = {
     options: {
       darDir: props.src,
-      oarDir: props.dst === '' ? undefined : props.dst,
-      modName: props.modName === '' ? undefined : props.modName,
-      modAuthor: props.modAuthor === '' ? undefined : props.modAuthor,
-      mappingPath: props.mappingPath === '' ? undefined : props.mappingPath,
-      mapping1personPath: props.mapping1personPath === '' ? undefined : props.mapping1personPath,
+      oarDir: emptyToUndefined(props.dst),
+      modName: emptyToUndefined(props.modName),
+      modAuthor: emptyToUndefined(props.modAuthor),
+      modDescription: emptyToUndefined(props.modDescription),
+      mappingPath: emptyToUndefined(props.mappingPath),
+      mapping1personPath: emptyToUndefined(props.mapping1personPath),
       runParallel: props.runParallel ?? false,
       hideDar: props.hideDar ?? false,
     },
@@ -41,13 +45,9 @@ export async function convertDar2oar(props: ConverterOptions): Promise<void> {
 
   await LOG.changeLevel(LOG.get());
 
-  const showProgress = props.showProgress ?? false;
   //! Warning! If there is no `return` or `await` in invoke, the progress bar will not work.
-  if (showProgress) {
-    await invoke('convert_dar2oar_with_progress', args);
-  } else {
-    await invoke('convert_dar2oar', args);
-  }
+  const cmd = props.showProgress ? 'convert_dar2oar_with_progress' : 'convert_dar2oar';
+  await invoke(cmd, args);
 }
 
 /**
