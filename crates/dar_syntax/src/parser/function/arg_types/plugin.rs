@@ -40,10 +40,6 @@ pub(crate) fn global_variable<'i>(input: &mut &'i str) -> ModalResult<GlobalVari
         plugin_value.map(GlobalVariable::Plugin),
         static_value.map(GlobalVariable::StaticValue),
     ))
-    .context(StrContext::Label("GlobalVariable"))
-    .context(StrContext::Expected(StrContextValue::Description(
-        r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
-    )))
     .parse_next(input)
 }
 
@@ -55,32 +51,40 @@ pub(crate) fn global_pair<'i>(
         _: delimited_multispace0(","),
         global_variable
     }
+    .context(StrContext::Label("GlobalVariables"))
+    .context(StrContext::Expected(StrContextValue::Description(
+        r#"(GlobalVariable, GlobalVariable): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, 10`)"#,
+    )))
     .parse_next(input)
 }
 
-pub(crate) struct GlobalPlugin<'i> {
+pub(crate) struct FactionArgs<'i> {
     pub(crate) faction: PluginValue<'i>,
     pub(crate) rank: GlobalVariable<'i>,
 }
 
 /// (global_variable, plugin)
-pub(crate) fn global_plugin<'i>(input: &mut &'i str) -> ModalResult<GlobalPlugin<'i>> {
+pub(crate) fn faction_args<'i>(input: &mut &'i str) -> ModalResult<FactionArgs<'i>> {
     alt((
         seq! {
-            GlobalPlugin {
+            FactionArgs {
                 faction: plugin_value,
                 _: delimited_multispace0(","),
                 rank: global_variable,
             }
         },
         seq! {
-            GlobalPlugin {
+            FactionArgs {
                 rank: global_variable,
                 _: delimited_multispace0(","),
                 faction: plugin_value,
             }
         },
     ))
+    .context(StrContext::Label("Faction arguments"))
+    .context(StrContext::Expected(StrContextValue::Description(
+        r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
+    )))
     .parse_next(input)
 }
 
