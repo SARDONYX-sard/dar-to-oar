@@ -42,14 +42,14 @@ jobs:
       - name: Move exe -> ./build
         uses: ./.github/actions/setup-release
         with:
-          app_name: ${{ env.APP_NAME }}
+          app_name: g_${{ env.APP_NAME }}
           build_profile: ${{ env.BUILD_PROFILE }}
 
       - name: Compress outputs(Windows)
         shell: pwsh
         if: runner.os == 'Windows'
         run: |
-          Compress-Archive -Path './build/*' -DestinationPath './${{ env.APP_NAME }}_tauri-${{ runner.os }}-v${{ github.ref_name }}.zip'
+          Compress-Archive -Path './build/*' -DestinationPath './${{ env.APP_NAME }}_gui-${{ runner.os }}-v${{ github.ref_name }}.zip'
 
       - name: Release Portable Version(Windows)
         uses: ncipollo/release-action@v1.21.0
@@ -88,7 +88,7 @@ jobs:
         shell: bash
         if: runner.os != 'Windows'
         run: |
-          tar -czf ./${{ env.APP_NAME }}_tauri-${{ runner.os }}-v${{ github.ref_name }}.tar.gz -C ./build .
+          tar -czf ./${{ env.APP_NAME }}_gui-${{ runner.os }}-v${{ github.ref_name }}.tar.gz -C ./build .
 
       - name: Release Portable Version
         uses: ncipollo/release-action@v1.21.0
@@ -96,5 +96,62 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ./*.tar.gz
-          name: '${{ env.APP_NAME }} v${{ github.ref_name }}'
+          name: 'DAR to OAR v${{ github.ref_name }}'
+          tag: ${{ github.ref_name }}
+
+  release_cli:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Setup environment
+        uses: ./.github/actions/setup-deps
+        with:
+          platform: ${{ matrix.platform }}
+          build_profile: ${{ env.BUILD_PROFILE }}
+
+      - name: Build CLI
+        run: cargo build -p ${{ env.APP_NAME }} --profile ${{ env.BUILD_PROFILE }}
+
+      - name: Move exe -> ./build
+        uses: ./.github/actions/setup-release
+        with:
+          app_name: ${{ env.APP_NAME }}
+          build_profile: release
+
+      - name: Compress outputs(Windows)
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path './build/*' -DestinationPath './${{ env.APP_NAME }}_cli-${{ runner.os }}-v${{ github.ref_name }}.zip'
+      - name: Release cli Version(Windows)
+        uses: ncipollo/release-action@v1.21.0
+        if: runner.os == 'Windows'
+        with:
+          allowUpdates: true
+          artifacts: ./*.zip
+          name: 'DAR to OAR v${{ github.ref_name }}'
+          tag: ${{ github.ref_name }}
+
+      - name: Compress outputs(MacOS/Linux)
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          tar -czf ./${{ env.APP_NAME }}_cli-${{ runner.os }}-v${{ github.ref_name }}.tar.gz -C ./build .
+
+      - name: Release Portable Version(MacOS/Linux)
+        uses: ncipollo/release-action@v1.21.0
+        if: runner.os != 'Windows'
+        with:
+          allowUpdates: true
+          artifacts: ./*.tar.gz
+          name: 'DAR to OAR v${{ github.ref_name }}'
           tag: ${{ github.ref_name }}
