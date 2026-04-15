@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-04-15
+### :sparkles: New Features
+- [`8989f30`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8989f30b960ebdcc5ffb305b75571d43c6da30a5) - implement dar strict parser *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`df9ebd8`](https://github.com/SARDONYX-sard/dar-to-oar/commit/df9ebd8c8771ab2c374fe7a084d6b063d6f91f26) - add nested error *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a5c26a1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a5c26a1b89c8115c8d1273031ff6dc9992cf102f) - new frontend design *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c9486c3`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c9486c3f9f3082568e3031f2ff3fa40b64ff9777) - **core**: support ascii mod name trim *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`805aff5`](https://github.com/SARDONYX-sard/dar-to-oar/commit/805aff5bf51af11dd68744d1bbbab3b48fb75c56) - **frontend**: no  redirect *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`427745e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/427745e42d249bc7de1534b0cc6b9776c0f3319b) - add error reporting *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`634a8c0`](https://github.com/SARDONYX-sard/dar-to-oar/commit/634a8c0fe07ba3b17ff6f8ad8141e2c58f783c37) - **gui**: change display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b4f5ceb`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b4f5ceba95b9ddeeb3d5d85582a9a52226a8d28f) - **core**: change `try_into` ito `into` *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`a2bf6e3`](https://github.com/SARDONYX-sard/dar-to-oar/commit/a2bf6e3ec21ee11d1e5dfc70bdef55d34fa3a2af) - **gui**: no parent dir open *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b0355e2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b0355e20b4a07a688d46eb2f10fd7ed33201b2cd) - **core**: support faction argument inverse pattern *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`823954e`](https://github.com/SARDONYX-sard/dar-to-oar/commit/823954e145c039dc853a8d0bd02186f4090cbc2b) - **dar**: add err ctx *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`7a99912`](https://github.com/SARDONYX-sard/dar-to-oar/commit/7a99912a1d3883d428dd595a8212bb525aecead6) - **build**: fix build *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`80a69b1`](https://github.com/SARDONYX-sard/dar-to-oar/commit/80a69b166836070a35ca42d62fceb5e59775d1bb) - fix actor value *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ac4404a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ac4404ae2d6c4dc0cd0d872605ca173e8e06e40b) - fix is_empty timing *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`4828d32`](https://github.com/SARDONYX-sard/dar-to-oar/commit/4828d3237a2fd42f85597d8ec8e908e7e51f686b) - **gui**: fix time lazy eval *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`f1c129d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/f1c129da299df02ab92cfc80e8a9572965359275) - **core**: fix plugin/number multi args *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :zap: Performance Improvements
+- [`101993d`](https://github.com/SARDONYX-sard/dar-to-oar/commit/101993df17571b8067e84ad172a33ab52b7cb96d) - remove AtomicBool *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`075fff2`](https://github.com/SARDONYX-sard/dar-to-oar/commit/075fff28a61ea0051f31437b28150aa38ea8e131) - update changelog *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`ae1f572`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ae1f5725b294468f7ff7c7e9a30f94cfac881f4d) - **lint**: support rust 1.92.0 *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`c609c1a`](https://github.com/SARDONYX-sard/dar-to-oar/commit/c609c1a9ea73c376a72a2bc8d4882b6b85656f8c) - remove unused test *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`b3064d7`](https://github.com/SARDONYX-sard/dar-to-oar/commit/b3064d7a7f6ca2c5038f2dfb78cd1d0e6f8ea973) - change log display *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [0.10.3] - 2025-01-6
 ### :sparkles: New Features
 - [`9154aec`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9154aec71ec588b047b39a8084b0205003a86f0b) - create new icon *(commit by @SARDONYX-sard)*
@@ -543,3 +574,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.9.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.8.0...0.9.0
 [0.10.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.9.0...0.10.0
 [0.10.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.0...0.10.1
+[1.0.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.3...1.0.0
