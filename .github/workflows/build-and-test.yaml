@@ -2,20 +2,20 @@ name: Build & Test
 
 on:
   push:
-    branches: ['main']
+    branches: ["main"]
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
   pull_request:
-    branches: ['*']
+    branches: ["*"]
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 env:
-  APP_NAME: g_dar2oar
+  APP_NAME: dar2oar
   BUILD_PROFILE: release-no-lto
   CARGO_TERM_COLOR: always
 
@@ -39,10 +39,6 @@ jobs:
       - name: Check format
         run: rustup component add rustfmt;cargo fmt --all -- --check
 
-      - name: Install Python 3.14(To avoid lint error)
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
       - name: Lint Check
         run: rustup component add clippy;cargo clippy --workspace -- -D warnings
 
@@ -92,17 +88,14 @@ jobs:
       - name: Move exe -> ./build
         uses: ./.github/actions/setup-release
         with:
-          app_name: ${{ env.APP_NAME }}
+          app_name: g_${{ env.APP_NAME }}
           build_profile: ${{ env.BUILD_PROFILE }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v7.0.0
         with:
-          name: ${{ env.APP_NAME }}-${{ runner.os }}
-          # to include .keep file
-          include-hidden-files: true
-          path: |
-            ./build/
+          name: ${{ env.APP_NAME }}_gui-${{ runner.os }}
+          path: ./build/
 
   cli:
     strategy:
@@ -119,7 +112,7 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           build_profile: release
-          cache_key_suffix: 'cli'
+          cache_key_suffix: "cli"
           install_front_deps: false
 
       - name: Build GUI
@@ -133,7 +126,5 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v7.0.0
         with:
-          name: ${{ env.APP_NAME }}-${{ runner.os }}-cli
-          include-hidden-files: true # to include .keep file
-          path: |
-            ./build/
+          name: ${{ env.APP_NAME }}_cli-${{ runner.os }}
+          path: ./build/
