@@ -23,25 +23,36 @@ where
         path: path.to_path_buf(),
         source: err,
     })?;
-
     #[cfg(feature = "tracing")]
     tracing::debug!(
-        "Path: {}
+        "
+--- DAR to OAR parsing results ---
+Path: {}
+
+txt:
+{input}
+
 txt -> DAR ast:
-{:#?}",
+{dar_ast:#?}
+
+----------------------------------
+",
         path.display(),
-        dar_ast
     );
 
     let oar_ast: Oar = dar_ast.into();
-
     #[cfg(feature = "tracing")]
     tracing::debug!(
-        "Path: {}
+        "
+--- DAR to OAR parsing results ---
+Path: {}
+
 DAR ast -> OAR ast:
-{:#?}",
+{oar_ast:#?}
+
+----------------------------------
+",
         path.display(),
-        oar_ast
     );
 
     Ok(oar_ast.into_vec()?)

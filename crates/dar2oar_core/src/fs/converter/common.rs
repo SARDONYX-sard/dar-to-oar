@@ -262,8 +262,6 @@ async fn process_conditions(
     description: Option<&str>,
 ) -> Result<()> {
     let content = fs::read_to_string(path).await?;
-    #[cfg(feature = "tracing")]
-    tracing::debug!("{} Content:\n{content}", path.display());
 
     let config_json = ConditionsConfig {
         name: section_name.into(),
