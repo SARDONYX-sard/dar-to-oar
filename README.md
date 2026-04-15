@@ -29,8 +29,8 @@
 
   <!-- Development Badges -->
   <p>
-    <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml">
-      <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/lint-and-test.yaml/badge.svg?style=flat-square" alt="Build & Test Status">
+    <a href="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml">
+      <img src="https://github.com/SARDONYX-sard/dar-to-oar/actions/workflows/build-and-test.yaml/badge.svg?style=flat-square" alt="Build & Test Status">
     </a>
     <a href="https://github.com/SARDONYX-sard/dar-to-oar/issues">
       <img src="https://img.shields.io/github/issues/SARDONYX-sard/dar-to-oar?style=flat-square" alt="Open Issues">
@@ -40,12 +40,6 @@
     </a>
     <a href="https://github.com/SARDONYX-sard/dar-to-oar/commits/main">
       <img src="https://img.shields.io/github/last-commit/SARDONYX-sard/dar-to-oar?style=flat-square" alt="Last Commit">
-    </a>
-    <a href="https://github.com/SARDONYX-sard/dar-to-oar">
-      <img src="https://img.shields.io/github/languages/top/SARDONYX-sard/dar-to-oar?style=flat-square" alt="Top Language">
-    </a>
-    <a href="https://github.com/SARDONYX-sard/dar-to-oar">
-      <img src="https://img.shields.io/github/languages/code-size/SARDONYX-sard/dar-to-oar?style=flat-square" alt="Code Size">
     </a>
   </p>
 </div>
