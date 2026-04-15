@@ -97,6 +97,7 @@ function updateCargoToml(newVersion) {
   let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
   cargoToml = cargoToml.replace(workSpaceRegExp, `[workspace.package]\nversion = "${newVersion}"`);
   fs.writeFileSync(cargoTomlPath, cargoToml);
+  execSync('cargo update');
 }
 
 /**
