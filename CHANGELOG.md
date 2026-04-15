@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-04-15
+### :bug: Bug Fixes
+- [`ad95603`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ad956035d33f137f8c6d87a1950b3f3998a03a65) - **frontend**: fix  forgotten description *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :wrench: Chores
+- [`9be84d4`](https://github.com/SARDONYX-sard/dar-to-oar/commit/9be84d40c409669a7f45dfdc17eeb4ec0023f4d4) - remove unused config *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [1.0.0] - 2026-04-15
 ### :sparkles: New Features
 - [`8989f30`](https://github.com/SARDONYX-sard/dar-to-oar/commit/8989f30b960ebdcc5ffb305b75571d43c6da30a5) - implement dar strict parser *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -575,3 +583,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.10.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.9.0...0.10.0
 [0.10.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.0...0.10.1
 [1.0.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.3...1.0.0
+[1.0.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/1.0.0...1.0.1
