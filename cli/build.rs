@@ -1,18 +1,12 @@
 // ref: https://github.com/mxre/winres/blob/master/example/build.rs
 fn main() {
     // only run if target os is windows
-    if std::env::var("CARGO_CFG_TARGET_OS")
-        .map(|var| var != "windows")
-        .unwrap_or(true)
-    {
+    if std::env::var("CARGO_CFG_TARGET_OS").map_or(true, |var| var != "windows") {
         return;
     }
 
     // only build the resource for release builds as calling rc.exe might be slow
-    if std::env::var("PROFILE")
-        .map(|var| var.starts_with("release"))
-        .unwrap_or_default()
-    {
+    if std::env::var("PROFILE").map_or(false, |var| var.starts_with("release")) {
         let mut res = winres::WindowsResource::new();
         if cfg!(unix) {
             res.set_toolkit_path("/usr/x86_64-w64-mingw32/bin"); // paths for X64 on Arch Linux
