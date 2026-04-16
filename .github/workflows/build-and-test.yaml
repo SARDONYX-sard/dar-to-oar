@@ -2,13 +2,13 @@ name: Build & Test
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
     paths-ignore:
-      - "**/*.md"
+      - '**/*.md'
   pull_request:
-    branches: ["*"]
+    branches: ['*']
     paths-ignore:
-      - "**/*.md"
+      - '**/*.md'
   workflow_dispatch:
 
 permissions:
@@ -112,7 +112,7 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           build_profile: release
-          cache_key_suffix: "cli"
+          cache_key_suffix: 'cli'
           install_front_deps: false
 
       - name: Build GUI

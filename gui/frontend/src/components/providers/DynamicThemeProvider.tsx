@@ -1,5 +1,5 @@
-import { CssBaseline, createTheme, ThemeProvider } from "@mui/material";
-import { type ReactNode, useMemo } from "react";
+import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
+import { type ReactNode, useMemo } from 'react';
 
 type Props = {
   children: ReactNode;
@@ -11,7 +11,7 @@ export const DynamicThemeProvider = ({ children }: Props) => {
       createTheme({
         cssVariables: true,
         palette: {
-          mode: "dark",
+          mode: 'dark',
         },
       }),
     [],
