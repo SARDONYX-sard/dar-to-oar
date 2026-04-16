@@ -121,7 +121,6 @@ fn expr_to_oar(expr: Expression) -> Oar {
         | Function::IsActorValueMaxEqualTo(args)
         | Function::IsActorValuePercentageEqualTo(args) => {
             let (value_a, value_b) = args.into_numeric_values();
-
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a,
@@ -136,7 +135,6 @@ fn expr_to_oar(expr: Expression) -> Oar {
         | Function::IsActorValueMaxLessThan(args)
         | Function::IsActorValuePercentageLessThan(args) => {
             let (value_a, value_b) = args.into_numeric_values();
-
             Oar::CompareValues(CompareValues {
                 negated,
                 value_a,

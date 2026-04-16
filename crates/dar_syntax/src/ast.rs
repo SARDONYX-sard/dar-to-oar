@@ -239,15 +239,15 @@ impl<'i> From<GlobalVariable<'i>> for NumericValue<'i> {
 /// fn(Plugin, Number) / fn(Number, Plugin)
 #[derive(Debug, Clone, PartialEq)]
 pub enum ActorArgs<'i> {
-    /// Plugin, Number
-    PluginFirst {
-        value_a: PluginValue<'i>,
-        value_b: ActorValue,
-    },
-    /// Number, Plugin
-    NumberFirst {
+    /// Actor, Number
+    ActorFirst {
         value_a: ActorValue,
-        value_b: PluginValue<'i>,
+        value_b: GlobalVariable<'i>,
+    },
+    /// Number, Actor
+    GlobalFirst {
+        value_a: GlobalVariable<'i>,
+        value_b: ActorValue,
     },
 }
 
@@ -256,14 +256,12 @@ impl<'i> ActorArgs<'i> {
     #[inline]
     pub fn into_numeric_values(self) -> (NumericValue<'i>, NumericValue<'i>) {
         match self {
-            ActorArgs::PluginFirst { value_a, value_b } => (
-                NumericValue::GlobalVariable(FormValue { form: value_a }),
-                NumericValue::ActorValue(value_b),
-            ),
-            ActorArgs::NumberFirst { value_a, value_b } => (
-                NumericValue::ActorValue(value_a),
-                NumericValue::GlobalVariable(FormValue { form: value_b }),
-            ),
+            ActorArgs::ActorFirst { value_a, value_b } => {
+                (NumericValue::ActorValue(value_a), value_b.into())
+            }
+            ActorArgs::GlobalFirst { value_a, value_b } => {
+                (value_a.into(), NumericValue::ActorValue(value_b))
+            }
         }
     }
 }

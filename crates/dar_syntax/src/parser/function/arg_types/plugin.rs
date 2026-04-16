@@ -38,7 +38,7 @@ pub(crate) fn plugin_value<'i>(input: &mut &'i str) -> ModalResult<PluginValue<'
     .parse_next(input)
 }
 
-pub(crate) fn global_variable<'i>(input: &mut &'i str) -> ModalResult<GlobalVariable<'i>> {
+fn global_variable<'i>(input: &mut &'i str) -> ModalResult<GlobalVariable<'i>> {
     alt((
         plugin_value.map(GlobalVariable::Plugin),
         static_value.map(GlobalVariable::StaticValue),
@@ -56,12 +56,12 @@ pub(crate) fn global_pair<'i>(
     }
     .context(StrContext::Label("GlobalVariables"))
     .context(StrContext::Expected(StrContextValue::Description(
-        r#"(GlobalVariable, GlobalVariable): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, 10`)"#,
+        r#"(GlobalVariable, GlobalVariable): e.g. `("Skyrim.esm" | 0x007, 10)`, `(30.0, 10)`"#,
     )))
     .parse_next(input)
 }
 
-/// (global_variable, plugin)
+/// (global_variable, plugin) / (plugin, global_variable)
 pub(crate) fn actor_args<'i, Error>(
     actor_value_type: ActorValueType,
 ) -> impl Parser<&'i str, ActorArgs<'i>, Error>
@@ -73,8 +73,18 @@ where
     move |input: &mut &'i str| {
         alt((
             seq! {
-                ActorArgs::PluginFirst {
-                    value_a: plugin_value,
+                ActorArgs::ActorFirst {
+                    value_a: static_value.map(|v| ActorValue {
+                        actor_value: v.value as i64,
+                        actor_value_type,
+                    }),
+                    _: delimited_multispace0(","),
+                    value_b: global_variable,
+                }
+            },
+            seq! {
+                ActorArgs::GlobalFirst {
+                    value_a: global_variable,
                     _: delimited_multispace0(","),
                     value_b: static_value.map(|v| ActorValue {
                         actor_value: v.value as i64,
@@ -82,20 +92,10 @@ where
                     }),
                 }
             },
-            seq! {
-                ActorArgs::NumberFirst {
-                    value_a: static_value.map(|v| ActorValue {
-                        actor_value: v.value as i64,
-                        actor_value_type,
-                    }),
-                    _: delimited_multispace0(","),
-                    value_b: plugin_value,
-                }
-            },
         ))
         .context(StrContext::Label("Actor arguments"))
         .context(StrContext::Expected(StrContextValue::Description(
-            r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
+            r#"(ActorValue, PluginValue/Number)/(PluginValue/Number, ActorValue): e.g. `(30, 0.5)`, `(0.1, 10)`, "#,
         )))
         .parse_next(input)
     }
@@ -126,7 +126,7 @@ pub(crate) fn faction_args<'i>(input: &mut &'i str) -> ModalResult<FactionArgs<'
     ))
     .context(StrContext::Label("Faction arguments"))
     .context(StrContext::Expected(StrContextValue::Description(
-        r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
+        r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007, 10)`, `(30.0, "Skyrim.esm" | 0x007)`"#,
     )))
     .parse_next(input)
 }
