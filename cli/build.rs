@@ -6,7 +6,7 @@ fn main() {
     }
 
     // only build the resource for release builds as calling rc.exe might be slow
-    if std::env::var("PROFILE").map_or(false, |var| var.starts_with("release")) {
+    if std::env::var("PROFILE").is_ok_and(|var| var.starts_with("release")) {
         let mut res = winres::WindowsResource::new();
         if cfg!(unix) {
             res.set_toolkit_path("/usr/x86_64-w64-mingw32/bin"); // paths for X64 on Arch Linux
