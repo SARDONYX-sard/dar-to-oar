@@ -1,6 +1,6 @@
 //! DAR abstract syntax tree
 use oar_values::{
-    ActorValueType, Direction, FormValue, NumericValue, PluginValue, StaticValue, WeaponType,
+    ActorValue, Direction, FormValue, NumericValue, PluginValue, StaticValue, WeaponType,
 };
 
 /// Represents a top-level condition, which can be an AND combination, OR combination, or a leaf expression.
@@ -52,46 +52,25 @@ pub enum Function<'input> {
 
     // ---------------- Actor ----------------
     /// `IsActorValueEqualTo(actor_value, Number<'input>)`
-    IsActorValueEqualTo {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValueEqualTo(ActorArgs<'input>),
 
     /// `IsActorValueLessThan(actor_value, Number<'input>)`
-    IsActorValueLessThan {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValueLessThan(ActorArgs<'input>),
 
     /// `IsActorValueBaseLessThan(actor_value, Number<'input>)`
-    IsActorValueBaseLessThan {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValueBaseLessThan(ActorArgs<'input>),
 
     /// `IsActorValueMaxEqualTo(actor_value, Number<'input>)`
-    IsActorValueMaxEqualTo {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValueMaxEqualTo(ActorArgs<'input>),
 
     /// `IsActorValueMaxLessThan(actor_value, Number<'input>)`
-    IsActorValueMaxLessThan {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValueMaxLessThan(ActorArgs<'input>),
 
     /// `IsActorValuePercentageEqualTo(actor_value, Number<'input>)`
-    IsActorValuePercentageEqualTo {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValuePercentageEqualTo(ActorArgs<'input>),
 
     /// `IsActorValuePercentageLessThan(actor_value, Number<'input>)`
-    IsActorValuePercentageLessThan {
-        id: GlobalVariable<'input>,
-        value: GlobalVariable<'input>,
-    },
+    IsActorValuePercentageLessThan(ActorArgs<'input>),
 
     /// `IsActorBase(plugin)`
     IsActorBase { actor_base: PluginValue<'input> },
@@ -186,13 +165,13 @@ pub enum Function<'input> {
     /// `Random(Number<'input>)`: 0..=1
     Random { value: StaticValue },
 
-    /// `ValueEqualTo(PluginValue, Number)`, `ValueEqualTo(Number, PluginValue)`
+    /// `ValueEqualTo(GlobalVariable, GlobalVariable)`
     ValueEqualTo {
         value_a: GlobalVariable<'input>,
         value_b: GlobalVariable<'input>,
     },
 
-    /// `ValueLessThan(PluginValue, Number)`, `ValueLessThan(Number, PluginValue)`
+    /// `ValueLessThan(GlobalVariable, GlobalVariable)`
     ValueLessThan {
         value_a: GlobalVariable<'input>,
         value_b: GlobalVariable<'input>,
@@ -236,33 +215,13 @@ pub enum Function<'input> {
     IsWeaponDrawn,
 }
 
+/// Plugin / Number
 #[derive(Debug, Clone, PartialEq)]
 pub enum GlobalVariable<'i> {
     /// e.g., `"Skyrim.esm" | 0x00007`
     Plugin(PluginValue<'i>),
     /// e.g., 1.0
     StaticValue(StaticValue),
-}
-
-impl<'i> GlobalVariable<'i> {
-    /// Converts a [`GlobalVariable`] into a [`NumericValue`] using the given [`ActorValueType`].
-    ///
-    /// - [`GlobalVariable::Plugin`] → [`NumericValue::GlobalVariable`] wrapping the plugin's form value.
-    /// - [`GlobalVariable::StaticValue`] → [`NumericValue::ActorValue`] using the static value as the actor value index.
-    #[inline]
-    pub fn into_actor_value(self, actor_value_type: ActorValueType) -> NumericValue<'i> {
-        match self {
-            GlobalVariable::Plugin(plugin_value) => {
-                NumericValue::GlobalVariable(oar_values::FormValue { form: plugin_value })
-            }
-            GlobalVariable::StaticValue(static_value) => {
-                NumericValue::ActorValue(oar_values::ActorValue {
-                    actor_value: static_value.value as i64,
-                    actor_value_type,
-                })
-            }
-        }
-    }
 }
 
 impl<'i> From<GlobalVariable<'i>> for NumericValue<'i> {
@@ -273,6 +232,38 @@ impl<'i> From<GlobalVariable<'i>> for NumericValue<'i> {
                 NumericValue::GlobalVariable(FormValue { form: plugin_value })
             }
             GlobalVariable::StaticValue(static_value) => NumericValue::StaticValue(static_value),
+        }
+    }
+}
+
+/// fn(Plugin, Number) / fn(Number, Plugin)
+#[derive(Debug, Clone, PartialEq)]
+pub enum ActorArgs<'i> {
+    /// Plugin, Number
+    PluginFirst {
+        value_a: PluginValue<'i>,
+        value_b: ActorValue,
+    },
+    /// Number, Plugin
+    NumberFirst {
+        value_a: ActorValue,
+        value_b: PluginValue<'i>,
+    },
+}
+
+impl<'i> ActorArgs<'i> {
+    /// Cast to (value_a, value_b)
+    #[inline]
+    pub fn into_numeric_values(self) -> (NumericValue<'i>, NumericValue<'i>) {
+        match self {
+            ActorArgs::PluginFirst { value_a, value_b } => (
+                NumericValue::GlobalVariable(FormValue { form: value_a }),
+                NumericValue::ActorValue(value_b),
+            ),
+            ActorArgs::NumberFirst { value_a, value_b } => (
+                NumericValue::ActorValue(value_a),
+                NumericValue::GlobalVariable(FormValue { form: value_b }),
+            ),
         }
     }
 }

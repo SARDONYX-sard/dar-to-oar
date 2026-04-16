@@ -7,7 +7,7 @@ use crate::conditions::{
     IsWornHasKeyword, Level, Oar, Or, RandomCondition,
 };
 use dar_syntax::ast::{Dar, Expression, Function};
-use oar_values::{ActorValueType, Cmp, DirectionValue};
+use oar_values::{Cmp, DirectionValue};
 use rayon::prelude::*;
 
 impl<'input> From<Dar<'input>> for Oar<'input> {
@@ -117,56 +117,31 @@ fn expr_to_oar(expr: Expression) -> Oar {
             ..Default::default()
         }),
 
-        Function::IsActorValueEqualTo { id, value } => Oar::CompareValues(CompareValues {
-            negated,
-            value_a: id.into(),
-            comparison: Cmp::Eq,
-            value_b: value.into(),
-            ..Default::default()
-        }),
-        Function::IsActorValueLessThan { id, value } => Oar::CompareValues(CompareValues {
-            negated,
-            value_a: id.into_actor_value(ActorValueType::ActorValue),
-            comparison: Cmp::Lt,
-            value_b: value.into(),
-            ..Default::default()
-        }),
-        Function::IsActorValueBaseLessThan { id, value } => Oar::CompareValues(CompareValues {
-            negated,
-            value_a: id.into_actor_value(ActorValueType::Base),
-            comparison: Cmp::Lt,
-            value_b: value.into(),
-            ..Default::default()
-        }),
-        Function::IsActorValueMaxEqualTo { id, value } => Oar::CompareValues(CompareValues {
-            negated,
-            value_a: id.into_actor_value(ActorValueType::Max),
-            comparison: Cmp::Eq,
-            value_b: value.into(),
-            ..Default::default()
-        }),
-        Function::IsActorValueMaxLessThan { id, value } => Oar::CompareValues(CompareValues {
-            negated,
-            value_a: id.into_actor_value(ActorValueType::Max),
-            comparison: Cmp::Lt,
-            value_b: value.into(),
-            ..Default::default()
-        }),
-        Function::IsActorValuePercentageEqualTo { id, value } => {
+        Function::IsActorValueEqualTo(args)
+        | Function::IsActorValueMaxEqualTo(args)
+        | Function::IsActorValuePercentageEqualTo(args) => {
+            let (value_a, value_b) = args.into_numeric_values();
+
             Oar::CompareValues(CompareValues {
                 negated,
-                value_a: id.into_actor_value(ActorValueType::Percentage),
+                value_a,
                 comparison: Cmp::Eq,
-                value_b: value.into(),
+                value_b,
                 ..Default::default()
             })
         }
-        Function::IsActorValuePercentageLessThan { id, value } => {
+
+        Function::IsActorValueLessThan(args)
+        | Function::IsActorValueBaseLessThan(args)
+        | Function::IsActorValueMaxLessThan(args)
+        | Function::IsActorValuePercentageLessThan(args) => {
+            let (value_a, value_b) = args.into_numeric_values();
+
             Oar::CompareValues(CompareValues {
                 negated,
-                value_a: id.into_actor_value(ActorValueType::Percentage),
+                value_a,
                 comparison: Cmp::Lt,
-                value_b: value.into(),
+                value_b,
                 ..Default::default()
             })
         }

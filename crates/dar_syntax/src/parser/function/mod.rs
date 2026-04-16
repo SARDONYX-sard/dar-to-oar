@@ -8,11 +8,14 @@ use crate::{
     parser::function::{
         arg_types::{
             number::{direction, static_value},
-            plugin::{FactionArgs, faction_args, global_pair, plugin_value, weapon_type},
+            plugin::{
+                FactionArgs, actor_args, faction_args, global_pair, plugin_value, weapon_type,
+            },
         },
         ident::fn_kind::FnKind,
     },
 };
+use oar_values::ActorValueType;
 use winnow::{
     Parser,
     combinator::{delimited, opt},
@@ -106,7 +109,7 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             Ok(Function::IsWeaponDrawn)
         }
 
-        // ---------------- number1 ----------------
+        // ---------------- fn(number) ----------------
         FnKind::CurrentGameTimeLessThan => parse_paren(static_value)
             .map(|v| Function::CurrentGameTimeLessThan { value: v })
             .parse_next(input),
@@ -123,7 +126,7 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .map(|direction| Function::IsMovementDirection { direction })
             .parse_next(input),
 
-        // ---------------- plugin1 ----------------
+        // ---------------- fn(plugin) ----------------
         FnKind::IsActorBase => parse_paren(plugin_value)
             .map(|v| Function::IsActorBase { actor_base: v })
             .parse_next(input),
@@ -160,12 +163,23 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .map(|v| Function::IsWorn { form: v })
             .parse_next(input),
 
+        FnKind::IsEquippedRight | FnKind::IsEquippedLeft => parse_paren(plugin_value)
+            .map(move |form| Function::IsEquipped {
+                form,
+                is_left: matches!(kind, FnKind::IsEquippedLeft),
+            })
+            .parse_next(input),
+
         FnKind::IsEquippedShout => parse_paren(plugin_value)
             .map(|v| Function::IsEquippedShout { shout: v })
             .parse_next(input),
 
         FnKind::IsInLocation => parse_paren(plugin_value)
             .map(|v| Function::IsInLocation { location: v })
+            .parse_next(input),
+
+        FnKind::IsInFaction => parse_paren(plugin_value)
+            .map(|v| Function::IsInFaction { faction: v })
             .parse_next(input),
 
         FnKind::HasPerk => parse_paren(plugin_value)
@@ -180,7 +194,7 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .map(|v| Function::HasMagicEffect { magic_effect: v })
             .parse_next(input),
 
-        // ---------------- keyword1 ----------------
+        // ---------------- fn(keyword) ----------------
         FnKind::HasKeyword => parse_paren(plugin_value)
             .map(|v| Function::HasKeyword { keyword: v })
             .parse_next(input),
@@ -199,75 +213,6 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
             .map(|v| Function::HasMagicEffectWithKeyword { keyword: v })
             .parse_next(input),
 
-        // ---------------- number2 ----------------
-        FnKind::IsActorValueEqualTo => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValueEqualTo { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValueLessThan => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValueLessThan { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValueBaseLessThan => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValueBaseLessThan { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValueMaxEqualTo => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValueMaxEqualTo { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValueMaxLessThan => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValueMaxLessThan { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValuePercentageEqualTo => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValuePercentageEqualTo { id: a, value: b })
-            .parse_next(input),
-
-        FnKind::IsActorValuePercentageLessThan => parse_paren(global_pair)
-            .map(|(a, b)| Function::IsActorValuePercentageLessThan { id: a, value: b })
-            .parse_next(input),
-
-        // ---------------- plugin + number ----------------
-
-        // IsInFaction(plugin)
-        FnKind::IsInFaction => parse_paren(plugin_value)
-            .map(|v| Function::IsInFaction { faction: v })
-            .parse_next(input),
-
-        FnKind::IsFactionRankEqualTo => parse_paren(faction_args)
-            .map(|FactionArgs { rank, faction }| Function::IsFactionRankEqualTo { rank, faction })
-            .parse_next(input),
-
-        FnKind::IsFactionRankLessThan => parse_paren(faction_args)
-            .map(|FactionArgs { rank, faction }| Function::IsFactionRankLessThan { rank, faction })
-            .parse_next(input),
-
-        FnKind::ValueEqualTo => parse_paren(global_pair)
-            .map(|(value_a, value_b)| Function::ValueEqualTo { value_a, value_b })
-            .parse_next(input),
-
-        FnKind::ValueLessThan => parse_paren(global_pair)
-            .map(|(value_a, value_b)| Function::ValueLessThan { value_a, value_b })
-            .parse_next(input),
-
-        // ---------------- left/right plugin ----------------
-        FnKind::IsEquippedRight | FnKind::IsEquippedLeft => parse_paren(plugin_value)
-            .map(move |form| Function::IsEquipped {
-                form,
-                is_left: matches!(kind, FnKind::IsEquippedLeft),
-            })
-            .parse_next(input),
-
-        // ---------------- left/right number ----------------
-        FnKind::IsEquippedRightType | FnKind::IsEquippedLeftType => parse_paren(weapon_type)
-            .map(move |value| Function::IsEquippedType {
-                value,
-                is_left: matches!(kind, FnKind::IsEquippedLeftType),
-            })
-            .parse_next(input),
-
-        // ---------------- left/right keyword ----------------
         FnKind::IsEquippedRightHasKeyword | FnKind::IsEquippedLeftHasKeyword => {
             parse_paren(plugin_value)
                 .map(move |keyword| Function::IsEquippedHasKeyword {
@@ -276,6 +221,65 @@ fn parse_by_kind<'i>(kind: FnKind, input: &mut &'i str) -> ModalResult<Function<
                 })
                 .parse_next(input)
         }
+
+        // ---------------- fn(plugin, number) ----------------
+        FnKind::IsActorValueEqualTo => parse_paren(actor_args(ActorValueType::ActorValue))
+            .map(Function::IsActorValueEqualTo)
+            .parse_next(input),
+
+        FnKind::IsActorValueLessThan => parse_paren(actor_args(ActorValueType::ActorValue))
+            .map(Function::IsActorValueLessThan)
+            .parse_next(input),
+
+        FnKind::IsActorValueBaseLessThan => parse_paren(actor_args(ActorValueType::Base))
+            .map(Function::IsActorValueBaseLessThan)
+            .parse_next(input),
+
+        FnKind::IsActorValueMaxEqualTo => parse_paren(actor_args(ActorValueType::Max))
+            .map(Function::IsActorValueMaxEqualTo)
+            .parse_next(input),
+
+        FnKind::IsActorValueMaxLessThan => parse_paren(actor_args(ActorValueType::Max))
+            .map(Function::IsActorValueMaxLessThan)
+            .parse_next(input),
+
+        FnKind::IsActorValuePercentageEqualTo => {
+            parse_paren(actor_args(ActorValueType::Percentage))
+                .map(Function::IsActorValuePercentageEqualTo)
+                .parse_next(input)
+        }
+
+        FnKind::IsActorValuePercentageLessThan => {
+            parse_paren(actor_args(ActorValueType::Percentage))
+                .map(Function::IsActorValuePercentageLessThan)
+                .parse_next(input)
+        }
+
+        // ---------------- fn(plugin, number) / fn(number, plugin) ----------------
+        FnKind::IsFactionRankEqualTo => parse_paren(faction_args)
+            .map(|FactionArgs { rank, faction }| Function::IsFactionRankEqualTo { rank, faction })
+            .parse_next(input),
+
+        FnKind::IsFactionRankLessThan => parse_paren(faction_args)
+            .map(|FactionArgs { rank, faction }| Function::IsFactionRankLessThan { rank, faction })
+            .parse_next(input),
+
+        // ---------------- fn(plugin/number, number/plugin) ----------------
+        FnKind::ValueEqualTo => parse_paren(global_pair)
+            .map(|(value_a, value_b)| Function::ValueEqualTo { value_a, value_b })
+            .parse_next(input),
+
+        FnKind::ValueLessThan => parse_paren(global_pair)
+            .map(|(value_a, value_b)| Function::ValueLessThan { value_a, value_b })
+            .parse_next(input),
+
+        // ---------------- fn(weapon) ----------------
+        FnKind::IsEquippedRightType | FnKind::IsEquippedLeftType => parse_paren(weapon_type)
+            .map(move |value| Function::IsEquippedType {
+                value,
+                is_left: matches!(kind, FnKind::IsEquippedLeftType),
+            })
+            .parse_next(input),
     }
 }
 
@@ -303,10 +307,10 @@ mod tests {
 
     #[test]
     fn should_parse_fn_call() {
-        let input = r#"IsActorValueLessThan(30, 60)"#;
-        let expected = Function::IsActorValueLessThan {
-            id: GlobalVariable::StaticValue(StaticValue { value: 30.0 }),
-            value: GlobalVariable::StaticValue(StaticValue { value: 60.0 }),
+        let input = r#"ValueLessThan(30, 60)"#;
+        let expected = Function::ValueLessThan {
+            value_a: GlobalVariable::StaticValue(StaticValue { value: 30.0 }),
+            value_b: GlobalVariable::StaticValue(StaticValue { value: 60.0 }),
         };
 
         parse_assert!(function(input), expected);

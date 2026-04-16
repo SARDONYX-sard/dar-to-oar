@@ -36,7 +36,7 @@ mod tests {
         let input = r#"
 IsActorBase("Skyrim.esm" | 0X000007) AND
 NOT IsInCombat() AND
-NOT IsActorValueLessThan(30, 60)
+NOT ValueLessThan(33.2, 640)
       "#;
 
         let expected = Dar::And(vec![
@@ -54,9 +54,9 @@ NOT IsActorValueLessThan(30, 60)
                 negated: true,
             }),
             Dar::Exp(Expression {
-                function: Function::IsActorValueLessThan {
-                    id: GlobalVariable::StaticValue(StaticValue { value: 30.0 }),
-                    value: GlobalVariable::StaticValue(StaticValue { value: 60.0 }),
+                function: Function::ValueLessThan {
+                    value_a: GlobalVariable::StaticValue(StaticValue { value: 33.2 }),
+                    value_b: GlobalVariable::StaticValue(StaticValue { value: 640.0 }),
                 },
                 negated: true,
             }),

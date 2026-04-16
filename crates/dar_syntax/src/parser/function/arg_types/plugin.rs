@@ -2,11 +2,14 @@
 
 use std::borrow::Cow;
 
-use crate::{ast::GlobalVariable, parser::function::arg_types::number::static_value};
+use crate::ast::{ActorArgs, GlobalVariable};
 
-use super::{number::form_id, string::string};
+use super::{
+    number::{form_id, static_value},
+    string::string,
+};
 
-use oar_values::{PluginValue, WeaponType};
+use oar_values::{ActorValue, ActorValueType, PluginValue, WeaponType};
 use winnow::{
     Parser,
     ascii::float,
@@ -56,6 +59,46 @@ pub(crate) fn global_pair<'i>(
         r#"(GlobalVariable, GlobalVariable): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, 10`)"#,
     )))
     .parse_next(input)
+}
+
+/// (global_variable, plugin)
+pub(crate) fn actor_args<'i, Error>(
+    actor_value_type: ActorValueType,
+) -> impl Parser<&'i str, ActorArgs<'i>, Error>
+where
+    Error: winnow::error::ParserError<&'i str>
+        + winnow::error::AddContext<&'i str, winnow::error::StrContext>
+        + std::convert::From<winnow::error::ErrMode<winnow::error::ContextError>>,
+{
+    move |input: &mut &'i str| {
+        alt((
+            seq! {
+                ActorArgs::PluginFirst {
+                    value_a: plugin_value,
+                    _: delimited_multispace0(","),
+                    value_b: static_value.map(|v| ActorValue {
+                        actor_value: v.value as i64,
+                        actor_value_type,
+                    }),
+                }
+            },
+            seq! {
+                ActorArgs::NumberFirst {
+                    value_a: static_value.map(|v| ActorValue {
+                        actor_value: v.value as i64,
+                        actor_value_type,
+                    }),
+                    _: delimited_multispace0(","),
+                    value_b: plugin_value,
+                }
+            },
+        ))
+        .context(StrContext::Label("Actor arguments"))
+        .context(StrContext::Expected(StrContextValue::Description(
+            r#"(PluginValue, Number)/(Number, PluginValue): e.g. `("Skyrim.esm" | 0x007`, 10), (30.0, "Skyrim.esm" | 0x007`)"#,
+        )))
+        .parse_next(input)
+    }
 }
 
 pub(crate) struct FactionArgs<'i> {

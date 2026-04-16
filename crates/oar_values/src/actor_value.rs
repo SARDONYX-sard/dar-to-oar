@@ -24,7 +24,7 @@ pub struct ActorValue {
 /// - Actor Value Percentage (0-1) => "Percentage"
 ///
 /// default: `ActorValue`
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ActorValueType {
     /// Value
     #[default]
