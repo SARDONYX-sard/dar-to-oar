@@ -7,6 +7,6 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
  */
 export function showWindow() {
   if (typeof window !== 'undefined' && isTauri()) {
-    getCurrentWindow().show();
+    void getCurrentWindow().show();
   }
 }

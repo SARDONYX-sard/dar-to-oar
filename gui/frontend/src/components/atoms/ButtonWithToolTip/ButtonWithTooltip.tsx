@@ -7,7 +7,6 @@ type Props = {
   buttonName: ReactNode;
   tooltipTitle?: ReactNode;
   icon?: ReactNode;
-  minWidth?: number;
   minScreenWidth?: number;
 } & ButtonProps;
 
@@ -15,7 +14,6 @@ export const ButtonWithToolTip = ({
   buttonName,
   tooltipTitle,
   icon,
-  minWidth = 97,
   minScreenWidth = 890, // Set default value for minimum screen width
   ...props
 }: Props) => {

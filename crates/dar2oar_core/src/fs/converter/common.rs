@@ -1,10 +1,11 @@
 //! Common parts for sequential and parallel conversions
 use crate::error::{ConvertError, Result};
 use crate::fs::converter::{ConvertOptions, parallel::is_contain_oar};
-use crate::fs::mapping_table::MappingTable;
 use crate::fs::path_changer::ParsedPath;
 use crate::fs::section_writer::{write_name_space_config, write_section_config};
 use crate::parser::parse_dar2oar;
+
+use mapping_table::MappingTable;
 use oar_conditions::conditions::ConditionsConfig;
 use std::path::Path;
 use tokio::fs;

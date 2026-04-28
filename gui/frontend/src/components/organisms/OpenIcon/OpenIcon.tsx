@@ -9,7 +9,7 @@ export const OpenIcon = ({ path }: { path: string }) => {
 
   return (
     <Tooltip
-      placement='bottom'
+      placement='top'
       sx={{ color: 'action.active', mr: 1, my: 2, cursor: 'pointer' }}
       title={t('open-directory-tooltip')}
     >

@@ -21,7 +21,7 @@ tracing = ["dep:tracing"]
 [dependencies]
 async-walkdir = "2.1.0" # To traverse dir recursively(Single thread)
 compact_str = { version = "0.9.0", features = ["serde"] }
-jwalk = "0.8.1" # To parallel traverse dir recursively
+jwalk = { workspace = true } # To parallel traverse dir recursively
 serde = { workspace = true } # Implement (De)Serializer
 serde_json = { workspace = true } # Json converter
 snafu = { workspace = true } # define errors type
@@ -30,8 +30,9 @@ tokio-stream = "0.1.17" # Async next() method
 tracing = { workspace = true, optional = true } # Logger
 
 # workspace members
-oar_conditions = { workspace = true }
 dar_syntax = { workspace = true }
+mapping_table = { workspace = true }
+oar_conditions = { workspace = true }
 
 
 [dev-dependencies]

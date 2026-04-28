@@ -6,8 +6,7 @@ pub mod sequential;
 pub mod support_cmd;
 
 use crate::error::Result;
-use compact_str::CompactString;
-use std::collections::HashMap;
+use mapping_table::MappingTable;
 
 /// Converts Dynamic Animation Replacer (DAR) files to Overwrite Animation Replacer (OAR) files.
 ///
@@ -98,9 +97,9 @@ pub struct ConvertOptions {
     /// mod description in config.json
     pub description: Option<String>,
     /// path to section name table
-    pub section_table: Option<HashMap<CompactString, String>>,
+    pub section_table: Option<MappingTable>,
     /// path to section name table(For `_1st_person`)
-    pub section_1person_table: Option<HashMap<CompactString, String>>,
+    pub section_1person_table: Option<MappingTable>,
     /// use multi thread(Probably effective for those with long DAR syntax. Basically single-threaded is faster.)
     pub run_parallel: bool,
     /// After converting to OAR, add mohidden to the DAR directory before conversion to treat it as a hidden directory. (for MO2 users)

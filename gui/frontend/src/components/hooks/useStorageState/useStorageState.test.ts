@@ -38,10 +38,6 @@ describe('useStorageState', () => {
   it('should handle numbers correctly', () => {
     const { result } = renderHook(() => useStorageState<number>(mockKey, 42));
 
-    act(() => {
-      result.current; // Read only.
-    });
-
     expect(result.current[0]).toBe(42); // Use fallback values since there are no items in STORAGE.
     expect(STORAGE.get(mockKey)).toBeNull(); // Nothing in STORAGE because it is currently read only.
   });

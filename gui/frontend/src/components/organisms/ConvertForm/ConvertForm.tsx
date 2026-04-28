@@ -138,7 +138,7 @@ export function ConvertForm() {
             }}
           >
             {checkFields.map((props) => (
-              <CheckboxField {...props} />
+              <CheckboxField key={props.label} {...props} />
             ))}
           </Grid>
 

@@ -98,6 +98,12 @@ pub enum ConvertError {
         source: tokio::task::JoinError,
     },
 
+    #[snafu(display("Error reading mapping table from {}:\n{}", path.display(), source))]
+    MappingTableError {
+        path: PathBuf,
+        source: mapping_table::reader::ReadableError,
+    },
+
     #[allow(clippy::use_self)]
     #[snafu(display("Errors: \n{}", errors.iter().map(|e| e.to_string()).collect::<Vec<_>>().join(",\n\n")))]
     NestedError { errors: Vec<ConvertError> },

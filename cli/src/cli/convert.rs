@@ -1,4 +1,6 @@
-use dar2oar_core::{Closure, ConvertOptions, convert_dar_to_oar, error::Result, get_mapping_table};
+use dar2oar_core::{
+    Closure, ConvertOptions, convert_dar_to_oar, error::Result, read_mapping_table,
+};
 use std::path::PathBuf;
 
 pub(crate) async fn dar2oar(args: CliArgs) -> Result<()> {
@@ -14,14 +16,23 @@ pub(crate) async fn dar2oar(args: CliArgs) -> Result<()> {
         hide_dar,
     } = args;
 
+    let section_table = match mapping_file {
+        Some(mapping_file) => Some(read_mapping_table(&mapping_file).await?),
+        None => None,
+    };
+    let section_1person_table = match mapping_1person_file {
+        Some(mapping_file) => Some(read_mapping_table(&mapping_file).await?),
+        None => None,
+    };
+
     let config = ConvertOptions {
         dar_dir: source,
         oar_dir: destination,
         mod_name: name,
         author,
         description,
-        section_table: get_mapping_table(mapping_file).await,
-        section_1person_table: get_mapping_table(mapping_1person_file).await,
+        section_table,
+        section_1person_table,
         run_parallel,
         hide_dar,
     };

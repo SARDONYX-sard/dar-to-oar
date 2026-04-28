@@ -18,7 +18,7 @@
 //! async fn create_options() -> Result<ConvertOptions> {
 //!     Ok(ConvertOptions {
 //!         dar_dir: DAR_DIR.into(),
-//!         section_table: get_mapping_table(Some(TABLE_PATH)).await,
+//!         section_table: read_mapping_table(TABLE_PATH).await,
 //!         ..Default::default()
 //!     })
 //! }
@@ -34,7 +34,7 @@
 //! ### Parallel Async with Progress report.
 //!
 //! ```no_run
-//! use dar2oar_core::{convert_dar_to_oar, ConvertOptions, error::Result, get_mapping_table};
+//! use dar2oar_core::{convert_dar_to_oar, ConvertOptions, error::Result, read_mapping_table};
 //!
 //! const DAR_DIR: &str = "../test/data/UNDERDOG Animations";
 //! const TABLE_PATH: &str = "../test/settings/UnderDog Animations_v1.9.6_mapping_table.txt";
@@ -43,7 +43,7 @@
 //! async fn create_options() -> Result<ConvertOptions> {
 //!     Ok(ConvertOptions {
 //!         dar_dir: DAR_DIR.into(),
-//!         section_table: get_mapping_table(Some(TABLE_PATH)).await,
+//!         section_table: read_mapping_table(TABLE_PATH).await,
 //!         run_parallel: true,
 //!         ..Default::default()
 //!     })
@@ -86,7 +86,7 @@ pub mod fs;
 #[doc = include_str!("../readme.md")]
 pub use crate::fs::converter::support_cmd::{remove_oar, unhide_dar};
 pub use crate::fs::converter::{Closure, ConvertOptions, convert_dar_to_oar};
-pub use crate::fs::mapping_table::{get_mapping_table, read_mapping_table};
+pub use crate::fs::mapping_table::read_mapping_table;
 
 #[cfg(test)]
 extern crate criterion as _; // Needed for cargo bench.
