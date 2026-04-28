@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-28
+### :sparkles: New Features
+- [`1f874cc`](https://github.com/SARDONYX-sard/dar-to-oar/commit/1f874cc6fb1dc2fa5b88a84ba0a34cd775679051) - change log debug *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`d4b3a3f`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d4b3a3fb30a77f2de394468cc6da397110129c2e) - **gui**: implement mapping table editor *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+### :bug: Bug Fixes
+- [`6b040ec`](https://github.com/SARDONYX-sard/dar-to-oar/commit/6b040ec3f00b19205496adc2680bebf6f0de2712) - **frontend**: remove i18n code *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`89724ca`](https://github.com/SARDONYX-sard/dar-to-oar/commit/89724caf2f0d95bb54103d84a3813e3f3fe54b5f) - fix actor inverse args *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+- [`d1105a9`](https://github.com/SARDONYX-sard/dar-to-oar/commit/d1105a97bc84a76c86c496b4cb2cbb7b8f1cd063) - fix actor value parser *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
+
+
 ## [1.0.1] - 2026-04-15
 ### :bug: Bug Fixes
 - [`ad95603`](https://github.com/SARDONYX-sard/dar-to-oar/commit/ad956035d33f137f8c6d87a1950b3f3998a03a65) - **frontend**: fix  forgotten description *(commit by [@SARDONYX-sard](https://github.com/SARDONYX-sard))*
@@ -584,3 +595,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.10.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.0...0.10.1
 [1.0.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/0.10.3...1.0.0
 [1.0.1]: https://github.com/SARDONYX-sard/dar-to-oar/compare/1.0.0...1.0.1
+[1.1.0]: https://github.com/SARDONYX-sard/dar-to-oar/compare/1.0.1...1.1.0
