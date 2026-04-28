@@ -10,7 +10,7 @@ import { showWindow } from '@/services/api/window';
 import type { ReactNode } from 'react';
 
 LANG.init();
-LOG.changeLevel(LOG.get());
+void LOG.changeLevel(LOG.get());
 
 type Props = Readonly<{
   children: ReactNode;

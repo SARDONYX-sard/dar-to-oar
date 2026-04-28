@@ -7,7 +7,9 @@ export type ParsedPath = {
 };
 
 const PATH_SEP = /\\|\//g;
+// oxlint-disable-next-line no-control-regex
 const ASCII0 = /^[\x00-\x7F]*$/;
+// oxlint-disable-next-line no-control-regex
 const NON_ASCII = /[^\x00-\x7F]+/;
 
 // Check if a string is ASCII

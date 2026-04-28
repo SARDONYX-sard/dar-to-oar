@@ -39,8 +39,8 @@ type DefineVimExCommand = {
 
 const defineVimExCommand = ({ vim, exCommand, editor, actionId, key, mode }: DefineVimExCommand) => {
   const cmd = exCommand ?? actionId.split('.').at(-1) ?? actionId;
-  vim.defineEx(cmd, cmd, async () => {
-    await editor.trigger('source', actionId, null);
+  vim.defineEx(cmd, cmd, () => {
+    editor.trigger('source', actionId, null);
   });
   vim.map(key, `:${cmd}`, mode ?? 'normal');
 };
@@ -55,6 +55,7 @@ const setCustomVimKeyConfig = (editor: MonacoEditor, vim: Vim) => {
     { actionId: 'editor.action.openLink', key: 'gx' },
     { actionId: 'editor.action.goToReferences', key: 'gf' },
     { actionId: 'editor.action.revealDefinition', key: 'gd' },
+    { actionId: 'editor.action.commentLine', key: 'gcc', mode: 'visual' },
   ] as const satisfies MappedOmit<DefineVimExCommand, 'vim' | 'editor'>[];
 
   for (const command of vimExCommands) {

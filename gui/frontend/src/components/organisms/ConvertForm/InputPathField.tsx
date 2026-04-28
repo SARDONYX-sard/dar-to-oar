@@ -1,7 +1,7 @@
 import { Box, TextField } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
+import { OpenIcon } from '../OpenIcon/OpenIcon';
 import { type FormProps, type PathFormKeys, setPathToStorage } from './ConvertForm';
-import { OpenIcon } from './OpenIcon';
 import { SelectPathButton } from '@/components/molecules/SelectPathButton';
 import { getParent } from '@/lib/path';
 

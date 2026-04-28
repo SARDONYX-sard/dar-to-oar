@@ -24,9 +24,11 @@ fn main() {
             crate::cmd::change_log_level,
             crate::cmd::convert_dar2oar,
             crate::cmd::convert_dar2oar_with_progress,
-            crate::cmd::write_file,
+            crate::cmd::generate_mapping_table,
+            crate::cmd::read_mapping_table,
             crate::cmd::remove_oar_dir,
             crate::cmd::unhide_dar_dir,
+            crate::cmd::write_file,
         ])
         .setup(|app| Ok(crate::log::init(app)?))
         .run(tauri::generate_context!())

@@ -2,6 +2,12 @@
 /// If we leave them as strings, we cannot automate symbol changes.
 import { OBJECT } from '@/lib/object-utils';
 
+const MAPPING_TABLE_PRIVATE_CACHE_KEYS_OBJ = {
+  mappingTableActiveTab: 'mapping-table-active-tab',
+  mappingTableFileTabs: 'mapping-table-file-tabs',
+  mappingTableOptions: 'mapping-table-options',
+} as const;
+
 const FORM_PUB_CACHE_KEYS_OBJ = {
   hideDar: 'hideDar',
   runParallel: 'runParallel',
@@ -38,6 +44,7 @@ const PUB_CACHE_KEYS_OBJ = {
   settingsTabPosition: 'settings-tab-position',
   snackbarLimit: 'snackbar-limit',
   snackbarPosition: 'snackbar-position',
+  lastPath: 'lastPath',
 } as const;
 
 const PRIVATE_CACHE_KEYS_OBJ = {
@@ -53,6 +60,7 @@ export const PUB_CACHE_OBJ = {
 } as const;
 
 export const PRIVATE_CACHE_OBJ = {
+  ...MAPPING_TABLE_PRIVATE_CACHE_KEYS_OBJ,
   ...FORM_PRIVATE_CACHE_KEYS_OBJ,
   ...PRIVATE_CACHE_KEYS_OBJ,
 } as const;

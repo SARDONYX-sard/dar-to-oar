@@ -63,7 +63,23 @@ macro_rules! sender {
 
 #[tauri::command]
 pub(crate) async fn convert_dar2oar(options: GuiConverterOptions) -> Result<(), String> {
-    time!("Conversion", dar_to_oar!(options, Closure::default))
+    let start = Instant::now();
+
+    let options = GuiConverterOptions::to_convert_options(options)
+        .await
+        .or_else(|err| bail!(err))?;
+    let res = convert_dar_to_oar(options, Closure::default)
+        .await
+        .or_else(|err| bail!(err));
+
+    let elapsed = start.elapsed();
+    tracing::info!(
+        "{} time: {}.{}secs.",
+        "Conversion",
+        elapsed.as_secs(),
+        elapsed.subsec_millis()
+    );
+    res
 }
 
 #[tauri::command]
@@ -86,6 +102,9 @@ pub(crate) async fn change_log_level(log_level: Option<&str>) -> Result<(), Stri
 /// (there was a case that the order of some data in contents was switched).
 #[tauri::command]
 pub(crate) async fn write_file(path: &str, content: &str) -> Result<(), String> {
+    if let Some(parent) = std::path::Path::new(path).parent() {
+        std::fs::create_dir_all(parent).or_else(|err| bail!(err))?;
+    }
     std::fs::write(path, content).or_else(|err| bail!(err))
 }
 
@@ -99,4 +118,31 @@ pub(crate) async fn remove_oar_dir(window: Window, path: &str) -> Result<(), Str
 pub(crate) async fn unhide_dar_dir(window: Window, dar_dir: &str) -> Result<(), String> {
     let sender = sender!(window, "/dar2oar/progress/unhide-dar");
     time!("unhide_dar", unhide_dar(dar_dir, sender))
+}
+
+#[tauri::command]
+pub(crate) async fn generate_mapping_table(
+    path: &std::path::Path,
+    strategy: mapping_table::builder::MappingStrategy,
+) -> Result<mapping_table::MappingTable, String> {
+    mapping_table::builder::generate_mapping_table(path, strategy).or_else(|err| bail!(err))
+}
+
+#[tauri::command]
+pub(crate) async fn read_mapping_table(
+    path: &std::path::Path,
+) -> Result<mapping_table::MappingTable, String> {
+    let content = std::fs::read_to_string(path).or_else(|err| bail!(err))?;
+    match mapping_table::reader::parse_mapping_table(&content) {
+        Ok(table) => Ok(table),
+        Err(error) => {
+            let error = format!(
+                "Error reading mapping table from {}:\n{}",
+                path.display(),
+                error
+            );
+            tracing::error!("{error}");
+            Err(error)
+        }
+    }
 }

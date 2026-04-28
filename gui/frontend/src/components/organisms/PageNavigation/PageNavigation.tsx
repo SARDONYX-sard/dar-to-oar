@@ -1,28 +1,31 @@
 'use client';
 
 import HomeIcon from '@mui/icons-material/Home';
+import NotesIcon from '@mui/icons-material/Notes';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { usePageRouter } from './usePageRedirect';
+import { usePageRedirect } from './usePageRedirect';
 
 import type { SxProps, Theme } from '@mui/material/styles';
 import type { JSX } from 'react';
 
-export const validPaths = ['/', '/settings'] as const;
+export const validPaths = ['/', '/table_gen', '/settings'] as const;
 
 const pathIcons: Record<(typeof validPaths)[number], JSX.Element> = {
   '/': <HomeIcon />,
+  '/table_gen': <NotesIcon />,
   '/settings': <SettingsIcon />,
 };
 
 const pathLabels: Record<(typeof validPaths)[number], string> = {
   '/': 'Home',
+  '/table_gen': 'Table Gen',
   '/settings': 'Settings',
 };
 
 export const PageNavigation = () => {
-  const { selectedIndex, navigateTo } = usePageRouter(validPaths);
+  const { selectedIndex, navigateTo } = usePageRedirect(validPaths);
   // height: Use z-index to occupy the space it occupies so it doesn't appear on top of other pages.
   return (
     <>

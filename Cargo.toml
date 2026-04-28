@@ -14,6 +14,7 @@ members = [
   "cli",
   "crates/dar2oar_core",
   "crates/dar_syntax",
+  "crates/mapping_table",
   "crates/oar_conditions",
   "crates/oar_values",
   "crates/tracing_rotation",
@@ -24,15 +25,17 @@ default-members = ["cli"]
 resolver = "3"
 
 [workspace.dependencies]
+jwalk = "0.8.1" # To parallel traverse dir recursively
 once_cell = "1.21.4"
+rayon = "1.12.0"
 serde = { version = "1.0.228", features = ["derive"] } # Implement (De)Serialize
 serde_json = "1.0.149" # core: To json/GUI: To avoid generate_context error.
 snafu = "0.9.0"
 sonic-rs = "0.5.8"
-tokio = { version = "1.51.1" } # Async runtime
+tokio = { version = "1.52.1" } # Async runtime
 tracing = { version = "0.1.44" } # logger
 tracing-subscriber = "0.3.23"
-winnow = { version = "1.0.1" }
+winnow = { version = "1.0.2" }
 
 # dev-dependencies
 temp-dir = "0.2.0"
@@ -42,6 +45,7 @@ quick_tracing = { version = "0.1.5", features = ["derive"] } # Easy logging
 # workspace members
 dar2oar_core = { path = "crates/dar2oar_core" }
 dar_syntax = { path = "crates/dar_syntax" }
+mapping_table = { path = "crates/mapping_table" }
 oar_conditions = { path = "crates/oar_conditions" }
 oar_values = { path = "crates/oar_values" }
 tracing_rotation = { path = "crates/tracing_rotation" }

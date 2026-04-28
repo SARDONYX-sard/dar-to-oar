@@ -1,7 +1,14 @@
 import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
-  lint: { options: { typeAware: true, typeCheck: true } },
+  lint: {
+    plugins: ['eslint', 'typescript', 'unicorn', 'react', 'react-perf', 'oxc'],
+    options: { typeAware: true, typeCheck: true },
+    rules: {
+      eqeqeq: 'warn',
+      'eslint/no-unused-vars': 'error',
+    },
+  },
   fmt: {
     sortImports: {
       newlinesBetween: false,

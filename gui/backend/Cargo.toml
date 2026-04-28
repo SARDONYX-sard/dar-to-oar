@@ -11,16 +11,12 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[package.metadata.dist]
-dist = false # To run CI and build separately from CLI (cargo dist)
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
 tauri-build = { version = "2.5.6", features = [] }
 
+
 [dependencies]
-dar2oar_core = { workspace = true, features = ["tracing"] }
 serde = { workspace = true, features = ["derive"] } # Implement (De)Serializer
 snafu = { workspace = true } # Implement error types
 tauri = { version = "2.10.3", features = ["devtools", "native-tls"] } # For GUI
@@ -31,7 +27,9 @@ tauri-plugin-window-state = "2.4.1"
 tracing = { workspace = true }
 
 # workspace members
+dar2oar_core = { workspace = true, features = ["tracing"] }
 tracing_rotation = { workspace = true }
+mapping_table = { workspace = true, features = ["serde"] }
 
 
 [features]
