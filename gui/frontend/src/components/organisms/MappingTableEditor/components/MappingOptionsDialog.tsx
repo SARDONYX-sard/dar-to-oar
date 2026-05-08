@@ -1,51 +1,38 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormControlLabel,
-  Checkbox,
-  Button,
   Box,
-  Typography,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControlLabel,
+  IconButton,
+  Tooltip,
+  Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { useEditorContext } from '../context/editorContext';
 import { useTranslation } from '@/components/hooks/useTranslation';
 import { OBJECT } from '@/lib/object-utils';
 
-const OPTION_META_KEYS = {
-  completion: {
-    labelKey: 'mapping-options-completion',
-    descriptionKey: 'mapping-options-completion-desc',
-  },
-  diagnostics: {
-    labelKey: 'mapping-options-diagnostics',
-    descriptionKey: 'mapping-options-diagnostics-desc',
-  },
-  formatter: {
-    labelKey: 'mapping-options-formatter',
-    descriptionKey: 'mapping-options-formatter-desc',
-  },
-  semanticTokens: {
-    labelKey: 'mapping-options-semantic-tokens',
-    descriptionKey: 'mapping-options-semantic-tokens-desc',
-  },
-  hover: {
-    labelKey: 'mapping-options-hover',
-    descriptionKey: 'mapping-options-hover-desc',
-  },
-  inlayHints: {
-    labelKey: 'mapping-options-inlay-hints',
-    descriptionKey: 'mapping-options-inlay-hints-desc',
-  },
-  signatureHelp: {
-    labelKey: 'mapping-options-signature-help',
-    descriptionKey: 'mapping-options-signature-help-desc',
-  },
-} as const;
+export const MappingLspOptionDialogButton = () => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
-export const MappingOptionsDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+  return (
+    <>
+      <Tooltip title={t('mapping-options-title')}>
+        <IconButton onClick={() => setOpen(true)}>⚙</IconButton>
+      </Tooltip>
+
+      <MappingOptionsDialog open={open} onClose={() => setOpen(false)} />
+    </>
+  );
+};
+
+const MappingOptionsDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [state, dispatch] = useEditorContext();
   const { t } = useTranslation();
   const options = state.options;
@@ -92,3 +79,34 @@ export const MappingOptionsDialog = ({ open, onClose }: { open: boolean; onClose
     </Dialog>
   );
 };
+
+const OPTION_META_KEYS = {
+  completion: {
+    labelKey: 'mapping-options-completion',
+    descriptionKey: 'mapping-options-completion-desc',
+  },
+  diagnostics: {
+    labelKey: 'mapping-options-diagnostics',
+    descriptionKey: 'mapping-options-diagnostics-desc',
+  },
+  formatter: {
+    labelKey: 'mapping-options-formatter',
+    descriptionKey: 'mapping-options-formatter-desc',
+  },
+  semanticTokens: {
+    labelKey: 'mapping-options-semantic-tokens',
+    descriptionKey: 'mapping-options-semantic-tokens-desc',
+  },
+  hover: {
+    labelKey: 'mapping-options-hover',
+    descriptionKey: 'mapping-options-hover-desc',
+  },
+  inlayHints: {
+    labelKey: 'mapping-options-inlay-hints',
+    descriptionKey: 'mapping-options-inlay-hints-desc',
+  },
+  signatureHelp: {
+    labelKey: 'mapping-options-signature-help',
+    descriptionKey: 'mapping-options-signature-help-desc',
+  },
+} as const;
