@@ -7,6 +7,7 @@ export default defineConfig({
     rules: {
       eqeqeq: 'warn',
       'eslint/no-unused-vars': 'error',
+      'no-restricted-imports': 'error',
     },
   },
   fmt: {

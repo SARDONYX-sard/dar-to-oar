@@ -13,7 +13,7 @@ export const BackupExportButton = () => {
   const [open, setOpen] = useState(false);
 
   const handleClick: DialogClickHandler = (checkedKeys) => {
-    NOTIFY.asyncTry(async () => {
+    void NOTIFY.asyncTry(async () => {
       if (await BACKUP.export(STORAGE.getByKeys(checkedKeys))) {
         NOTIFY.success(t('backup-export-success'));
         setOpen(false);

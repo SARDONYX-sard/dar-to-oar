@@ -33,7 +33,7 @@ export const NOTIFY = {
   },
 
   /** Try to execute async function, and then catch & notify if error. */
-  async asyncTry<Fn extends () => ReturnType<Fn>>(tryFn: Fn): Promise<ReturnType<Fn> | undefined> {
+  async asyncTry<T>(tryFn: () => Promise<T>): Promise<T | undefined> {
     try {
       return await tryFn();
     } catch (error) {

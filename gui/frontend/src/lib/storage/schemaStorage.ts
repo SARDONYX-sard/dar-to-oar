@@ -16,7 +16,7 @@ export const schemaStorage = {
    * @param schema - The Zod schema used for validation.
    * @returns The parsed data if valid, otherwise `null`.
    */
-  get<T>(key: CacheKey, schema: z.ZodType<T, {}, Json>): T | null {
+  get<T>(key: CacheKey, schema: z.ZodType<T, Json>): T | null {
     const data = STORAGE.get(key);
     if (data === null) {
       return null;
@@ -49,7 +49,7 @@ export const schemaStorage = {
    * @param schema - The Zod schema used for validation.
    * @returns A tuple containing the parsed data and a function to set the value.
    */
-  use<T>(key: CacheKey, schema: z.ZodType<T, {}, Json>): [T | null, (value: T) => void] {
+  use<T>(key: CacheKey, schema: z.ZodType<T, Json>): [T | null, (value: T) => void] {
     const value = this.get(key, schema);
     const setValue = (newValue: T) => {
       this.set(key, newValue);

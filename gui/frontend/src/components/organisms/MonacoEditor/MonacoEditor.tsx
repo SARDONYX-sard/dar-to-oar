@@ -32,6 +32,7 @@ export const MonacoEditor = memo(function MonacoEditor({ vimMode = false, onMoun
       editorRef.current = editor;
 
       setLangCustomConfig(editor, monaco);
+      enableNativeOpenUrl(monaco);
 
       if (vimMode) {
         loadVimKeyBindings({ editor, vimModeRef, vimStatusRef });
@@ -70,23 +71,25 @@ export const MonacoEditor = memo(function MonacoEditor({ vimMode = false, onMoun
   );
 });
 
-/**
- * - javascript: enable inlay-hint
- * - json: enable schema
- * */
-const setLangCustomConfig: OnMount = (_, monacoEnv) => {
-  // NOTE: By default, the URL is opened in the app, so prevent this and call the backend API to open the URL in the browser of each PC.
+/** By default, the URL is opened in the app, so prevent this and call the backend API to open the URL in the browser of each PC. */
+const enableNativeOpenUrl = (monacoEnv: typeof monaco) => {
   if (isTauri()) {
     monacoEnv.editor.registerLinkOpener({
-      open(url) {
-        openUrl(url.toString());
+      async open(url) {
+        await openUrl(url.toString());
         //? False is for hooks, but true replaces the function.
         //? In this case, it is a replacement because it opens the URL with its own API.
         return true;
       },
     });
   }
+};
 
+/**
+ * - javascript: enable inlay-hint
+ * - json: enable schema
+ * */
+const setLangCustomConfig: OnMount = (_, monacoEnv) => {
   monacoEnv.languages.typescript.javascriptDefaults.setInlayHintsOptions({
     includeInlayFunctionLikeReturnTypeHints: true,
     includeInlayFunctionParameterTypeHints: true,

@@ -62,7 +62,12 @@ const ThemeResponsiveSnackbar = memo(
 
     // HACK: Convert whitespace to a special Unicode space equal to the numeric width to alleviate whitespace misalignment.
     // - ref: https://www.fileformat.info/info/unicode/char/2007/index.htm
-    const errMsg = message?.toString().replaceAll(' ', '\u2007');
+    let errMsg: React.ReactNode = '';
+    if (typeof message === 'string') {
+      errMsg = message.replaceAll(' ', '\u2007');
+    } else {
+      errMsg = message;
+    }
 
     return (
       <Alert
