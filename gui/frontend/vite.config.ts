@@ -22,4 +22,17 @@ export default defineConfig({
   build: {
     sourcemap: IS_DEBUG,
   },
+  test: {
+    alias: [{ find: '@/', replacement: `${__dirname}/src/` }],
+    globals: true,
+    root: `./src/`,
+    environment: 'jsdom',
+    setupFiles: [`${__dirname}/vitest.setup.mts`],
+    reporters: ['default', 'hanging-process'],
+    server: {
+      // Avoid `TransitionGroupContext' is not supported resolving ES modules
+      // - ref: https://zenn.dev/kanata_o/articles/framework-upgrade-pitfalls
+      deps: { inline: [/@mui\//, /react-transition-group/] },
+    },
+  },
 });

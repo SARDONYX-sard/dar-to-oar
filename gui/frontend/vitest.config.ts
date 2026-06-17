@@ -1,14 +1,4 @@
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite-plus';
+// is a workaround to resolve an issue where this setting does not work in VS Code because it is located within the `fmt` key
+import * as config from './vite.config';
 
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    alias: [{ find: '@/', replacement: `${__dirname}/src/` }],
-    globals: true,
-    root: `./src/`,
-    environment: 'jsdom',
-    setupFiles: [`${__dirname}/vitest.setup.mts`],
-    reporters: ['default', 'hanging-process'],
-  },
-});
+export default config.default;
