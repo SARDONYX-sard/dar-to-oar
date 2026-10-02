@@ -21,25 +21,25 @@
     "fmt:back": "cargo +nightly fmt --all",
     "fmt": "npm run fmt:front && npm run fmt:back",
     "lint": "vp lint ./ && cargo clippy --workspace",
-    "lint:fix": "npm run fmt && vp check ./ --fix && cargo clippy --workspace --fix --allow-staged --allow-dirty",
+    "lint:fix": "npm run fmt && vp lint --fix ./ && cargo clippy --workspace --fix --allow-staged --allow-dirty",
     "tauri": "tauri",
     "test": "npm --workspace gui/frontend run test"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.2",
-    "@types/node": "25.9.3",
+    "@tauri-apps/cli": "2.12.1",
+    "@types/node": "26.6.4",
     "rimraf": "^6",
-    "typescript": "6.0.3",
-    "vite-plus": "^0.2.0",
-    "vitest": "4.1.9",
+    "typescript": "7.0.2",
+    "vite-plus": "^1.0.0",
+    "vitest": "5.0.1",
     "why-is-node-running": "^3.2.2"
   },
   "overrides": {
     "monaco-editor": "0.49.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vitest": "4.1.9"
+    "vitest": "5.0.1"
   },
   "packageManager": "npm@11.5.2"
 }

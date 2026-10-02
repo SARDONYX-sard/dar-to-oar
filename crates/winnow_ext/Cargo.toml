@@ -13,7 +13,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-annotate-snippets = "0.12.15" # Error reporting display
+annotate-snippets = "0.12.16" # Error reporting display
 winnow = { workspace = true } # Parser combinator
 
 [lints]

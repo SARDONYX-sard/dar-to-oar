@@ -14,7 +14,7 @@ rust-version.workspace = true
 
 [dependencies]
 serde = { workspace = true } # Implement (De)Serializer
-serde-untagged = "0.1.8"
+serde-untagged = "0.1.9"
 snafu = { workspace = true } # define errors type
 
 

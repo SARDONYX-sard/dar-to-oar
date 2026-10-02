@@ -13,17 +13,17 @@ rust-version.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [build-dependencies]
-tauri-build = { version = "2.5.6", features = [] }
+tauri-build = { version = "2.7.1", features = [] }
 
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] } # Implement (De)Serializer
 snafu = { workspace = true } # Implement error types
-tauri = { version = "2.11.1", features = ["devtools", "native-tls"] } # For GUI
-tauri-plugin-dialog = "2.7.0" # https://github.com/tauri-apps/plugins-workspace
-tauri-plugin-fs = "2.5.0"
-tauri-plugin-opener = "2.5.3"
-tauri-plugin-window-state = "2.4.1"
+tauri = { version = "2.12.1", features = ["devtools", "native-tls"] } # For GUI
+tauri-plugin-dialog = "2.8.1" # https://github.com/tauri-apps/plugins-workspace
+tauri-plugin-fs = "2.6.0"
+tauri-plugin-opener = "2.7.0"
+tauri-plugin-window-state = "2.5.0"
 tracing = { workspace = true }
 
 # workspace members

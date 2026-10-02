@@ -22,7 +22,7 @@
     "**/node_modules/**": true,
     "**/target/**": true
   },
-  "oxc.fmt.configPath": "./oxfmt.config.ts",
-  "oxc.configPath": "./oxlint.config.ts",
+  "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
   "rust-analyzer.check.command": "clippy"
 }

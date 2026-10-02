@@ -19,8 +19,8 @@ default = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-async-walkdir = "2.1.0" # To traverse dir recursively(Single thread)
-compact_str = { version = "0.9.0", features = ["serde"] }
+async-walkdir = "2.2.0" # To traverse dir recursively(Single thread)
+compact_str = { version = "0.10.0", features = ["serde"] }
 jwalk = { workspace = true } # To parallel traverse dir recursively
 serde = { workspace = true } # Implement (De)Serializer
 serde_json = { workspace = true } # Json converter
@@ -36,7 +36,7 @@ oar_conditions = { workspace = true }
 
 
 [dev-dependencies]
-criterion = { version = "0.7.0", features = ["async_futures", "async_tokio", "html_reports"] }
+criterion = { version = "0.8.2", features = ["async_futures", "async_tokio", "html_reports"] }
 pretty_assertions = { workspace = true }
 quick_tracing = { workspace = true, features = ["derive"] }
 temp-dir = { workspace = true }
