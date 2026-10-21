@@ -14,3 +14,4 @@ gui/backend/gen/
 
 # Rust build cache
 **/target
+.vitest/

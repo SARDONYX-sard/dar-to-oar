@@ -1,4 +1,4 @@
-import 'vitest';
+import 'vite-plus/test';
 
 /**
  * Custom matchers for extending Vitest assertions.

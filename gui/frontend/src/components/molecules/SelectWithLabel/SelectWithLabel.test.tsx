@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vitest } from 'vite-plus/test';
 import { SelectWithLabel } from './SelectWithLabel';
 
 describe('SelectWithLabel', () => {

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vite-plus/test';
 import { useInjectJs } from '../useInjectJs';
 import { JsProvider } from '@/components/providers/JsProvider';
 import { STORAGE } from '@/lib/storage';
